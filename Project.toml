@@ -1,4 +1,21 @@
 name = "Xranklin"
 uuid = "558449b0-171e-4e1f-900f-d076a5ddf486"
-authors = ["tlienart <tlienart@me.com>"]
+authors = ["Thibaut Lienart <tlienart@me.com>"]
 version = "0.1.0"
+
+[deps]
+CommonMark = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
+DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
+FranklinParser = "796511e7-1510-466f-ad0c-1823c64bcafa"
+
+[compat]
+CommonMark = "0.7.1"
+DocStringExtensions = "0.8"
+FranklinParser = "0.1"
+julia = "1.3"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
