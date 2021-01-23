@@ -2,13 +2,15 @@ module Xranklin
 
 import FranklinParser: SS, Block, SubVector, Token, MD_IGNORE
 # misc utils
-import FranklinParser: subs, prepare
+import FranklinParser: subs, prepare_text
 # block utils
 import FranklinParser: content, get_classes
 # partitioners
 import FranklinParser: default_md_partition
 
 import CommonMark
+import CommonMark: disable!, enable!
+const CM = CommonMark
 
 # ------------------------------------------------------------------------
 
@@ -25,7 +27,9 @@ const EmptyContext = Context(nothing, nothing)
 # ==============================================
 
 include("convert/md2html.jl")
-include("convert/md2html_rules/text.jl")
-include("convert/md2html_rules/basic.jl")
+include("convert/md2latex.jl")
+include("convert/html2html.jl")
+
+include("convert/rules/basic.jl")
 
 end # module
