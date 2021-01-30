@@ -5,6 +5,17 @@
     @test s // "<p>A <em>B</em> <em>C</em> <strong>D</strong></p>"
 end
 
+@testset "text+indent" begin
+    s = """
+        ABC
+
+            DEF
+
+        GHI
+        """ |> html
+    @test isapproxstr(s, "<p>ABC</p><p>DEF</p><p>GHI</p>")
+end
+
 @testset "text+div" begin
     s = """
         A @@b C @@ @@d,e F@@ G
@@ -20,6 +31,27 @@ end
         <p>G</p>
         """)
     isbalanced(s)
+end
+
+@testset "text+div+indent" begin
+    s = raw"""
+        ABC
+
+            @@DEF
+
+                \* \\ \{ \#
+
+            @@
+
+        GHI
+        """ |> html
+    @test isapproxstr(s, """
+        <p>ABC</p>
+        <div class="DEF">
+          <p>*<br>{ #</p>
+        </div>
+        <p>GHI</p>
+        """)
 end
 
 @testset "nesting divs" begin
@@ -40,4 +72,15 @@ end
         </div>
         """)
     isbalanced(s)
+end
+
+@testset "br and hr" begin
+    s = raw"""
+        A \\ B --- C
+        """ |> html
+    @test isapproxstr(s, """
+        <p>A<br>B</p>
+        <hr>
+        <p>C</p>
+        """)
 end

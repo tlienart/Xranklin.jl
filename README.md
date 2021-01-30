@@ -1,10 +1,16 @@
 # Structure
 
-# Goals
+## Goals
 
 * [ ] use FranklinParser.jl
 * [ ] remove dependency on HTTP
 * [ ] use concrete types and inferrable in-out relations where possible
+
+## Todo
+
+* [ ] need to check whether the CommonMark footnote rule is sufficient, if it is then we should remove the relevant block from FranklinParser as it's not useful.
+
+--
 
 
 ## Parts from Franklin
