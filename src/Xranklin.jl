@@ -1,12 +1,8 @@
 module Xranklin
 
-import FranklinParser: SS, Block, SubVector, Token, MD_IGNORE
-# misc utils
-import FranklinParser: subs, prepare_text
-# block utils
-import FranklinParser: content, get_classes
-# partitioners
-import FranklinParser: default_md_partition
+import FranklinParser
+import FranklinParser: subs, Block, SS
+const FP = FranklinParser
 
 import CommonMark
 import CommonMark: disable!, enable!

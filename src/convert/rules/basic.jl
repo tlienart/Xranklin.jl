@@ -10,18 +10,19 @@ function latex(b::Block, c::Context)
     return eval(:($f($b, $c)))
 end
 
+# --------------------------------------------------------------------------------------
 #
 # TEXT
 #
 function html_text(b::Block, ::Context)
-    # extract the content and inject HTML entities etc (see FranklinParser.prepare)
-    s = prepare_text(b)
+    # extract the content and inject HTML entities etc (see FranklinParser.prepare_text)
+    s = FP.prepare_text(b)
     return md2html(s)
 end
 
 function latex_text(b::Block, ::Context)
-    s = prepare(b)
-    return
+    s = FP.prepare_text(b)
+    return md2latex(s)
 end
 
 #
@@ -54,11 +55,11 @@ html_code_inline(b::Block, ::Context) = "<code>$(content(b))</code>"
 # DIV BLOCK
 #
 function html_div(b::Block, ctx::Context)
-    classes = get_classes(b)
-    inner   = html(default_md_partition(b), ctx)
+    classes = FP.get_classes(b)
+    inner   = html(FP.default_md_partition(b), ctx)
     return """<div class="$classes">$inner</div>"""
 end
 
 function latex_div(b::Block, ctx::Context)
-    return latex(default_md_partition(b), ctx)
+    return latex(FP.default_md_partition(b), ctx)
 end

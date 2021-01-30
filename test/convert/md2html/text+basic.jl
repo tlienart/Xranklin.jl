@@ -39,7 +39,7 @@ end
 
             @@DEF
 
-                \* \\ \{
+                \* \\ \{ \#
 
             @@
 
@@ -48,7 +48,7 @@ end
     @test isapproxstr(s, """
         <p>ABC</p>
         <div class="DEF">
-          <p>&amp;#42; &lt;br&gt; &amp;#123;</p>
+          <p>*<br>{ #</p>
         </div>
         <p>GHI</p>
         """)
@@ -74,13 +74,13 @@ end
     isbalanced(s)
 end
 
-# @testset "br and hr" begin
-#     s = raw"""
-#         A \\ B --- C
-#         """ |> html
-#     @test isapproxstr(s, """
-#         <p>A</p>
-#         <br><p>B</p>
-# <hr><p>C</p>
-# ")
-# end
+@testset "br and hr" begin
+    s = raw"""
+        A \\ B --- C
+        """ |> html
+    @test isapproxstr(s, """
+        <p>A<br>B</p>
+        <hr>
+        <p>C</p>
+        """)
+end
