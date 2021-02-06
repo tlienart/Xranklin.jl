@@ -8,3 +8,8 @@ include("utils.jl")
     include("$p/resolve_inline.jl")
     include("$p/rules_basic.jl")
 end
+
+@testset "MD2LATEX" begin
+    p = "convert/md2latex"
+    include("$p/rules_basic.jl")
+end

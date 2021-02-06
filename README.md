@@ -9,6 +9,7 @@
 ## Todo
 
 * [ ] need to check whether the CommonMark footnote rule is sufficient, if it is then we should remove the relevant block from FranklinParser as it's not useful.
+* [ ] there's a `\par` in latex which needs to be treated same as inline
 
 --
 

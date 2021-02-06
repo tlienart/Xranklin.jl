@@ -12,7 +12,7 @@ using DocStringExtensions
 
 # ------------------------------------------------------------------------
 
-export html
+export html, latex
 
 # ------------------------------------------------------------------------
 
@@ -30,5 +30,6 @@ include("convert/md2latex.jl")
 include("convert/html2html.jl")
 
 include("convert/md_rules/basic.jl")
+include("convert/md_rules/code.jl")
 
 end # module
