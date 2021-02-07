@@ -1,7 +1,7 @@
 module Xranklin
 
 import FranklinParser
-import FranklinParser: subs, Block, SS, content
+import FranklinParser: subs, Block, SS, content, previous_index, next_index
 const FP = FranklinParser
 
 import CommonMark
@@ -24,12 +24,12 @@ end
 const EmptyContext = Context(nothing, nothing)
 # ==============================================
 
-include("convert/commonmark.jl")
-include("convert/md2html.jl")
-include("convert/md2latex.jl")
-include("convert/html2html.jl")
+include("convert/markdown/commonmark.jl")
+include("convert/markdown/utils.jl")
+include("convert/markdown/to_html.jl")
+include("convert/markdown/to_latex.jl")
 
-include("convert/md_rules/basic.jl")
-include("convert/md_rules/code.jl")
+include("convert/markdown/rules/basic.jl")
+include("convert/markdown/rules/code.jl")
 
 end # module

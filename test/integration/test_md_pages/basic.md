@@ -2,7 +2,11 @@
 
 ## Basic text formatting -->
 
-A **B** C _D_ E _**F**_ \\ line break and `inline code` and block code:
+Bold, italic: A **B** C _D_ E _**F**_
+
+Line break \\ and `inline code`.
+
+Entities: &#42; and emojis 👎.
 
 <!-- ```julia
 println("Hello!")

@@ -5,7 +5,7 @@ html_comment(b::Block, _)  = ""
 latex_comment(b::Block, _) = ""
 
 html_linebreak(b::Block, _)  = "<br>"
-latex_linebreak(b::Block, _) = raw"\\"
+latex_linebreak(b::Block, _) = "\\\\"
 
 html_hrule(b::Block, _)  = "<hr>"
 latex_hrule(b::Block, _) = raw"\par\noindent\rule{\textwidth}{0.1pt}"
@@ -17,4 +17,4 @@ html_div(b::Block, c::Context)  =
     """<div class="$(FP.get_classes(b))">$(html(content(b), c))</div>"""
 latex_div(b::Block, c::Context) = latex(content(b), c)
 
-html_h1(b::Block, _)
+# html_h1(b::Block, _)
