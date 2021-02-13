@@ -13,6 +13,47 @@
 
 --
 
+## Conversion
+
+Add ✅ for the ones that are also in one of the test md pages.
+
+* text
+  * [x] bold, italic ✅
+  * [x] line break ✅
+  * [x] horizontal rules
+  * [x] comment ✅
+  * [ ] header
+  * [x] html entities ✅
+  * [x] emoji ✅
+  * [ ] links
+  * [ ] footnotes
+  * [ ] images
+  * [x] div
+  * [x] raw HTML
+* md-definition
+  * [ ] toml block
+  * [ ] `@def`
+* lists
+  * [ ] unordered
+  * [ ] ordered
+  * [ ] nested
+  * [ ] list item with injection
+* tables
+  * [ ] basic
+  * [ ] cell item with injection
+* hfun
+  * [ ] double brace injection
+  * [ ] function
+* code
+  * [x] inline
+  * [ ] block
+  * [ ] block executed
+* maths
+  * [ ] inline
+  * [ ] display
+* latex
+  * [ ] newcommands
+  * [ ] inclusion
 
 ## Parts from Franklin
 

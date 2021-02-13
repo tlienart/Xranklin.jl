@@ -38,6 +38,7 @@ Note that, unlike HTML, we don't need to distinguish "blocks" and "inline blocks
 latex(md::String, a...) = latex(FP.default_md_partition(md), a...)
 
 function latex(parts::Vector{Block}, ctx::Context=EmptyContext)::String
+    assemble_latex_objects!(parts)
     io = IOBuffer()
     inline_idx = Int[]
     for (i, part) in enumerate(parts)
