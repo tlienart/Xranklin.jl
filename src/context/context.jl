@@ -6,4 +6,4 @@ struct Context
     pagevars::PageVars
     lxdefs::Vector{LxDef}
 end
-const EmptyContext = Context(PageVars(), LxDef[])
+EmptyContext() = Context(PageVars(), LxDef[])

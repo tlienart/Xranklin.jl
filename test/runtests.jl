@@ -1,7 +1,12 @@
 using Xranklin
 using Test
+const X = Xranklin
 
 include("utils.jl")
+
+@testset "LaTeX" begin
+    include("convert/md_latex_obj.jl")
+end
 
 @testset "MD2HTML" begin
     p = "convert/md2html"

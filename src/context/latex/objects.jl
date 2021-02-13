@@ -2,23 +2,23 @@
 $(TYPEDEF)
 
 Structure to keep track of the definition of a latex command declared via a
-`\\newcommand{\\name}[narg]{def}` or of an environment via
-`\\newenvironment{name}[narg]{pre}{post}`.
+`\\newcommand{\\name}[nargs]{def}` or of an environment via
+`\\newenvironment{name}[nargs]{pre}{post}`.
 The parametric type depends on the definition type, for a command it will be
-a SS, for an environment it will be a Pair of SS (pre and post).
+a String, for an environment it will be a Pair of String (pre and post).
 """
 struct LxDef{T}
     name::String
-    narg::Int
-    def ::T
+    nargs::Int
+    def::T
     # location of the definition
     from::Int
-    to  ::Int
+    to::Int
 end
 # if offset unspecified, start from basically -∞ (configs etc)
-function LxDef(name::String, narg::Int, def)
+function LxDef(name::String, nargs::Int, def)
     o = FRANKLIN_ENV[:OFFSET_LXDEFS] += 5  # precise offset doesn't matter
-    LxDef(name, narg, def, o, o + 3)       # just forward a bit
+    LxDef(name, nargs, def, o, o + 3)       # just forward a bit
 end
 
 from(lxd::LxDef) = lxd.from
@@ -31,7 +31,7 @@ Convenience function to return a copy of a definition indicating as having
 already been defined earlier in the context i.e.: earlier than any other
 definition appearing in the current chunk.
 """
-pastdef(λ::LxDef) = LxDef(λ.name, λ.narg, λ.def)
+pastdef(λ::LxDef) = LxDef(λ.name, λ.nargs, λ.def)
 
 
 """
@@ -46,7 +46,7 @@ abstract type LxObj <: FP.AbstractSpan end
 $(TYPEDEF)
 
 A `LxCom` is a block with a definition and a vector of brace blocks. The type
-depends on whether there is a definition (narg >= 1) or not. In the first case
+depends on whether there is a definition (nargs >= 1) or not. In the first case
 it will be a `Ref{LxDef}`, and in the second, Nothing.
 """
 struct LxCom{T} <: LxObj

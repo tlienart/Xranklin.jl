@@ -38,7 +38,10 @@ html(md::SS, a...) = html(FP.default_md_partition(md), a...)
 
 html(md::String, a...) = html(subs(md), a...)
 
-function html(parts::Vector{Block}, ctx::Context=EmptyContext)::String
+function html(
+            parts::Vector{Block},
+            ctx::Context=EmptyContext()
+            )::String
     assemble_latex_objects!(parts, ctx)
     io = IOBuffer()
     inline_idx = Int[]

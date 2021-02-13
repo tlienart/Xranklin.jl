@@ -1,4 +1,6 @@
 
 const FRANKLIN_ENV = LittleDict{Symbol, Any}(
-    :OFFSET_LXDEFS => -typemax(Int)  # helps keep track of order in lxcoms/envs
+    :STRICT_PARSING => false,          # if true, fail on any parsing issue
+    :SHOW_WARNINGS  => true,
+    :OFFSET_LXDEFS  => -typemax(Int),  # helps keep track of order in lxcoms/envs
 )
