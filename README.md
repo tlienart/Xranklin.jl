@@ -1,5 +1,18 @@
 # Structure
 
+## Ongoing
+
+* newcommand
+  * [x] very basic one
+  * [ ] test dedent (e.g. can have an indented def)
+  * [ ] test nargs
+  * [ ] test problems
+* newenv
+  * [ ] very basic one
+  * [ ] test nargs
+  * [ ] test problems
+* commands
+
 ## Goals
 
 * [ ] use FranklinParser.jl
