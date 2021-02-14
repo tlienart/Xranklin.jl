@@ -3,7 +3,7 @@ module Xranklin
 import FranklinParser
 const FP = FranklinParser
 import FranklinParser: SS, Token, Block,
-                       subs, content, dedent,
+                       subs, content, dedent, parent_string,
                        from, to, previous_index, next_index
 
 import CommonMark

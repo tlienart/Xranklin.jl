@@ -82,7 +82,7 @@ end
     @test isapproxstr(h, """
         <p>a</p>
         <span style="color:red">[FAILED:]&gt;\\newcommand&lt;</span>
-        {foo}
+        <p>{foo}</p>
         """)
 
     s = raw"""
@@ -93,8 +93,7 @@ end
     @test isapproxstr(h, """
         <p>a</p>
         <span style="color:red">[FAILED:]&gt;\\newenvironment&lt;</span>
-        {foo}{bar}
-        <p>b</p>
+        <p>{foo}{bar} b</p>
         """)
 
     # nargs block incorrect
@@ -103,8 +102,6 @@ end
     @test isempty(c.lxdefs)
     @test isapproxstr(h, """
         <span style="color:red">[FAILED:]&gt;\\newcommand&lt;</span>
-        {\\bar}
-        <p>2</p>
-        {hello}
+        <p>{\\bar} 2{hello}</p>
         """)
 end

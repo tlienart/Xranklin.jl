@@ -4,11 +4,11 @@
 Form a raw block out of a block, the content of raw blocks is injected as is.
 This is for instance used in the processing of latex objects when resolving commands.
 """
-@inline raw_block(b::Block) = Block(:RAW, b.ss)
+@inline raw_inline_block(b::Block) = Block(:RAW_INLINE, b.ss)
 
 "List of Blocks that should be merged with neighbouring text blocks."
 const INLINE_BLOCKS = [
-    :RAW,
+    :RAW_INLINE,
     :RAW_HTML,
     :CODE_INLINE,
     :LINEBREAK

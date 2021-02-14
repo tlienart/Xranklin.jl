@@ -1,8 +1,10 @@
 html_comment(b, _)  = ""
 latex_comment(b, _) = ""
 
-html_raw(b, _)  = string(b.ss)
-latex_raw(b, _) = string(b.ss)
+html_raw_block(b, _)   = string(b.ss)
+latex_raw_block(b, _)  = string(b.ss)
+html_raw_inline(b, _)  = string(b.ss)
+latex_raw_inline(b, _) = string(b.ss)
 
 html_text(b, _)  = FP.prepare_text(b) |> md2html
 latex_text(b, _) = FP.prepare_text(b) |> md2latex

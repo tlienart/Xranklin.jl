@@ -4,6 +4,10 @@
 [![CI Actions Status](https://github.com/tlienart/Xranklin.jl/workflows/CI/badge.svg)](https://github.com/tlienart/Xranklin.jl/actions)
 [![codecov](https://codecov.io/gh/tlienart/Xranklin.jl/branch/main/graph/badge.svg?token=7gUn1zIEXw)](https://codecov.io/gh/tlienart/Xranklin.jl)
 
+## Ongoing
+
+- there's an issue with lx object, when there's only the lx object, what adds the surrounding `<p></p>`? this is problematic if injecting HTML because it'd be wrapped in a paragraph, same with an ENV block, wtf.
+
 ## Goals
 
 * [ ] use FranklinParser.jl
@@ -18,6 +22,7 @@
 ## Notes
 
 * remind people that in defining latex objects they should be careful with double braces which have a meaning! use whitespace, for instance `\newcommand{\foo}[1]{\bar{#1}}` is not ok, add whitespace around it or skip a line or whatever.
+* command names and environment names should be distinct. Cannot have `\newcommand{\foo}{...}` and `\newenvironment{foo}{...}{...}`; only the last one will be picked up.
 
 --
 
@@ -61,8 +66,8 @@ Add ✅ for the ones that are also in one of the test md pages.
   * [ ] display
 * latex
   * newcommand
-    * [x] very basic one
-    * [x] test nargs
+    * [x] very basic one ✅
+    * [x] test nargs ✅
     * [x] test dedent (e.g. can have an indented def)
     * [-] test problems
   * newenv
@@ -70,7 +75,7 @@ Add ✅ for the ones that are also in one of the test md pages.
     * [x] test nargs
     * [-] test problems
   * commands
-    * [x] basic one with args
+    * [x] basic one with args ✅
     * [x] nesting
     * [ ] basic one with args in maths env
     * [-] test problems

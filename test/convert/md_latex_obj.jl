@@ -29,3 +29,20 @@ end
     sl = s |> latex
     @test sl // "bar:hello!"
 end
+
+@testset "environment - basic" begin
+    s = raw"""
+        \newenvironment{foo}{bar:}{:baz}
+        \begin{foo}
+        abc
+        \end{foo}
+        """ |> html
+    @test s // "<p>bar:abc:baz</p>"
+    # s = raw"""
+    #     \newenvironment{foo}[2]{bar/#1/}{/#2/baz}
+    #     \begin{foo}{A}{B}
+    #     abc
+    #     \end{foo}
+    #     """ |> html
+    # @test s // "<p>bar/foo/"
+end
