@@ -265,9 +265,6 @@ function try_resolve_lxenv(
         m = "Couldn't close a \\begin{$env_name} with a valid \\end{$env_name}."
         return failed_block(parts, m), 0
     end
-    s = parent_string(cand)
-    env_content = subs(s, next_index(naming_brace), previous_index(parts[k-1]))
-    env_content = strip(dedent(env_content))
 
     # 1 -- look for definition
     if env_name ∉ keys(ctx.lxdefs)
@@ -291,7 +288,7 @@ function try_resolve_lxenv(
 
     # 2 -- get nargs
     nargs = lxdef.nargs
-    if (i + nargs > lastindex(parts)) || any(e -> e.name != :LXB, @view parts[i+1:i+nargs])
+    if (i+1+nargs > lastindex(parts)) || any(e -> e.name != :LXB, @view parts[i+2:i+1+nargs])
         m = "Not enough braces to resolve environment '$env_name'."
         return failed_block(cand, m), 0
     end
@@ -301,15 +298,19 @@ function try_resolve_lxenv(
     pre  = def.first
     post = def.second
 
+    s = parent_string(cand)
+    env_content = subs(s, next_index(parts[i+1+nargs]), previous_index(parts[k-1]))
+    env_content = strip(dedent(env_content))
+
     @inbounds for j in 1:nargs
-        c    = content(parts[i+j])
+        c    = content(parts[i+1+j])
         pre  = replace(pre,  "#$j" => c)
         post = replace(post, "#$j" => c)
     end
     r_html = html(pre * env_content * post, recursive(ctx))
 
     # 4 -- finalize
-    return Block(:RAW_BLOCK, subs(r_html)), k - i
+    default = Block(:RAW_BLOCK, subs(r_html)), k - i
     m = match(r"^<p>(.*?)<\/p>\s*$", r_html)
     m === nothing && return default
     c = m.captures[1]

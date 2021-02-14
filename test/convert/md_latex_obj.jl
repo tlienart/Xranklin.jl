@@ -36,13 +36,14 @@ end
         \begin{foo}
         abc
         \end{foo}
+        ABC
         """ |> html
-    @test s // "<p>bar:abc:baz</p>"
-    # s = raw"""
-    #     \newenvironment{foo}[2]{bar/#1/}{/#2/baz}
-    #     \begin{foo}{A}{B}
-    #     abc
-    #     \end{foo}
-    #     """ |> html
-    # @test s // "<p>bar/foo/"
+    @test s // "bar:abc:baz<p>ABC</p>"
+    s = raw"""
+        \newenvironment{foo}[2]{bar/#1/}{/#2/baz}
+        \begin{foo}{A}{B}
+        abc
+        \end{foo}
+        """ |> html
+    @test s // "bar/A/abc/B/baz"
 end
