@@ -1,6 +1,7 @@
 "List of Blocks that should be merged with neighbouring text blocks."
 const INLINE_BLOCKS = [
-    :RAW_HTML,     # need to check this
+    :RAW,
+    :RAW_HTML,
     :CODE_INLINE,
     :LINEBREAK
 ]

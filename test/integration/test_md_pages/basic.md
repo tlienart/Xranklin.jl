@@ -8,6 +8,14 @@ Line break \\ and `inline code`.
 
 Entities: &#42; and emojis 👎.
 
+<!-- commands -->
+
+\newcommand{\foo}{bar}
+\newcommand{\fooz}[1]{bar:#1}
+
+Command `\foo`: \foo; command `\fooz`: \fooz{abc!}.
+
+
 <!-- ```julia
 println("Hello!")
 ``` -->
