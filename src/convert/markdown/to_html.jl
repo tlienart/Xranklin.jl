@@ -29,20 +29,16 @@ end
 
 
 """
-$SIGNATURES
+    html(md, ctx)
 
 Take a markdown string, segment it in blocks, and re-form the corresponding HTML string
 out of processing each segment recursively.
 """
-html(md::SS, a...) = html(FP.default_md_partition(md), a...)
-
+html(md::SS,     a...) = html(FP.default_md_partition(md), a...)
 html(md::String, a...) = html(subs(md), a...)
 
-function html(
-            parts::Vector{Block},
-            ctx::Context=EmptyContext()
-            )::String
-    assemble_latex_objects!(parts, ctx)
+function html(parts::Vector{Block}, ctx::Context=EmptyContext())::String
+    process_latex_objects!(parts, ctx)
     io = IOBuffer()
     inline_idx = Int[]
     for (i, part) in enumerate(parts)
@@ -57,8 +53,8 @@ function html(
     return resolve_inline(interm, parts[inline_idx], ctx; to_html=true)
 end
 
-function html(b::Block, c::Context)
+function html(b::Block, ctx::Context)
     n = lowercase(String(b.name))
     f = Symbol("html_$n")
-    return eval(:($f($b, $c)))
+    return eval(:($f($b, $ctx)))
 end

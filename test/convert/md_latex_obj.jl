@@ -1,19 +1,19 @@
 @testset "command - basic" begin
     s = raw"""
         \newcommand{\foo}{bar}
-        \foo
+        \foo\foo
         """ |> html
-    @test s // "bar"
+    @test s // "<p>barbar</p>"
     s = raw"""
         \newcommand{\foo}[1]{bar:#1}
         \foo{hello}
         """ |> html
-    @test s // "bar:hello"
+    @test s // "<p>bar:hello</p>"
     s = raw"""
         \newcommand{\foo}[2]{bar:#1#2}
         \foo{hello}{!}
         """ |> html
-    @test s // "bar:hello!"
+    @test s // "<p>bar:hello!</p>"
 end
 
 @testset "command - nesting" begin
@@ -23,6 +23,9 @@ end
             \foo{hello}{#1}
         }
         \ext{!}
-        """ |> html
-    @test s // "bar:hello!"
+        """
+    sh = s |> html
+    @test sh // "<p>bar:hello!</p>"
+    sl = s |> latex
+    @test sl // "bar:hello!"
 end

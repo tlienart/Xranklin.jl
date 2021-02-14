@@ -1,20 +1,20 @@
 """
-$SIGNATURES
+    process_latex_objects!(parts::Vector{Block}, ctx::Context)
 
-After the partitioning, latex objects are not quite formed; they need to be merged into
-larger objects including the relevant braces.
-The function gradually goes over the blocks, adds new latex definitions to the context
+After the partitioning, latex objects are not quite formed; in particular they are not
+yet considered with the relevant braces.
+This function gradually goes over the blocks, adds new latex definitions to the context
 and assembles latex commands and environments based on existing definitions.
 
 The normal process is:
-
-* newcommand/environment: addition to context, replace by a comment block (invisible).
-* command/environment: read from context, form intermediate text, recurse
+  * newcommand/environment: addition to context, replace by a comment block (invisible).
+  * command/environment: read from context, form intermediate text, recurse and replace
+        by a raw block.
 
 If things fail, either a "failed block" is returned (shows up as read, doesn't stop the
 procedure) or an error is thrown (if strict parsing is on).
 """
-function assemble_latex_objects!(parts::Vector{Block}, ctx::Context)
+function process_latex_objects!(parts::Vector{Block}, ctx::Context)
     index_to_remove = Int[]
     i = 1
     @inbounds while i <= lastindex(parts)
@@ -45,6 +45,7 @@ end
 
 
 """
+
 Return:
 -------
 1. a skippable block or failed block

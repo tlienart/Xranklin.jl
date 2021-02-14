@@ -1,3 +1,11 @@
+"""
+    raw_block(b)
+
+Form a raw block out of a block, the content of raw blocks is injected as is.
+This is for instance used in the processing of latex objects when resolving commands.
+"""
+@inline raw_block(b::Block) = Block(:RAW, b.ss)
+
 "List of Blocks that should be merged with neighbouring text blocks."
 const INLINE_BLOCKS = [
     :RAW,
@@ -36,9 +44,9 @@ const INLINE_FINDER_LATEX = Regex(
 """
     resolve_inline(s::String, ib::Vector{Block}, ctx::Context)
 
-Takes a resolved HTML string and adjusts the `<p>` and `</p>` when considering inline
-elements such as `<code>...</code>`. This requires a fair bit of care to keep track of
-significant spaces, line skips etc; see also [`inject_with_ps`](@ref).
+Takes a resolved HTML string `s` and adjusts the `<p>` and `</p>` when considering
+inline elements such as `<code>...</code>`. This requires a fair bit of care to keep
+track of significant spaces, line skips etc.
 """
 function resolve_inline(s::String, ib::Vector{Block}, ctx::Context;
                         to_html::Bool=true)::String
@@ -79,6 +87,13 @@ function resolve_inline(s::String, ib::Vector{Block}, ctx::Context;
 end
 
 
+"""
+    html_injector(io, to_inject, m)
+
+Add something to a buffer corresponding to an inline element; depending on the
+neighbouring objects, different `<p>` tags will be used to ensure that the overall HTML
+remains valid.
+"""
 function html_injector(io::IOBuffer, to_inject::String, m::RegexMatch)
     # check the match
     prev_closes_p  = (m.captures[1] !== nothing)
@@ -142,6 +157,13 @@ function html_injector(io::IOBuffer, to_inject::String, m::RegexMatch)
 end
 
 
+"""
+    latex_injector(io, to_inject, m)
+
+Add something to a buffer corresponding to an inline element; depending on the
+neighbouring objects, `\\par` elements are added to ensure that the produced LaTeX
+has the appropriate paragraph structure.
+"""
 function latex_injector(io::IOBuffer, to_inject::String, m::RegexMatch)
     # check the match
     prev_closes_p  = (m.captures[1] !== nothing)
@@ -181,5 +203,3 @@ function latex_injector(io::IOBuffer, to_inject::String, m::RegexMatch)
     end
     return
 end
-
-@inline raw_block(b::Block) = Block(:RAW, b.ss)

@@ -29,19 +29,17 @@ end
 
 
 """
-$SIGNATURES
+    latex(md, ctx)
 
 Take a markdown string, segment it in blocks, and re-form the corresponding LaTeX string
 out of processing each segment recursively.
 Note that, unlike HTML, we don't need to distinguish "blocks" and "inline blocks".
 """
-latex(md::String, a...) = latex(FP.default_md_partition(md), a...)
+latex(md::SS,     a...) = latex(FP.default_md_partition(md), a...)
+latex(md::String, a...) = latex(subs(md), a...)
 
-function latex(
-            parts::Vector{Block},
-            ctx::Context=EmptyContext()
-            )::String
-    assemble_latex_objects!(parts, ctx)
+function latex(parts::Vector{Block}, ctx::Context=EmptyContext())::String
+    process_latex_objects!(parts, ctx)
     io = IOBuffer()
     inline_idx = Int[]
     for (i, part) in enumerate(parts)
@@ -56,8 +54,8 @@ function latex(
     return resolve_inline(interm, parts[inline_idx], ctx; to_html=false)
 end
 
-function latex(b::Block, c::Context)
+function latex(b::Block, ctx::Context)
     n = lowercase(String(b.name))
     f = Symbol("latex_$n")
-    return eval(:($f($b, $c)))
+    return eval(:($f($b, $ctx)))
 end

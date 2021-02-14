@@ -12,8 +12,6 @@ import CommonMark: disable!, enable!
 
 import OrderedCollections: LittleDict
 
-using DocStringExtensions
-
 # ------------------------------------------------------------------------
 
 export html, latex
@@ -29,7 +27,7 @@ include("convert/regex.jl")
 
 include("convert/markdown/commonmark.jl")
 include("convert/markdown/utils.jl")
-include("convert/markdown/assemble_latex_objects.jl")
+include("convert/markdown/latex_objects.jl")
 include("convert/markdown/to_html.jl")
 include("convert/markdown/to_latex.jl")
 

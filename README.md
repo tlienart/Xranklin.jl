@@ -4,25 +4,6 @@
 [![CI Actions Status](https://github.com/tlienart/Xranklin.jl/workflows/CI/badge.svg)](https://github.com/tlienart/Xranklin.jl/actions)
 [![codecov](https://codecov.io/gh/tlienart/Xranklin.jl/branch/main/graph/badge.svg?token=7gUn1zIEXw)](https://codecov.io/gh/tlienart/Xranklin.jl)
 
-## Ongoing
-
-* newcommand
-  * [x] very basic one
-  * [x] test nargs
-  * [x] test dedent (e.g. can have an indented def)
-  * [-] test problems
-* newenv
-  * [x] very basic one
-  * [x] test nargs
-  * [-] test problems
-* commands
-  * [x] basic one with args
-  * [ ] nesting
-  * [ ] basic one with args in maths env
-  * [-] test problems
-* environments
-  * [ ]
-
 ## Goals
 
 * [ ] use FranklinParser.jl
@@ -79,8 +60,24 @@ Add ✅ for the ones that are also in one of the test md pages.
   * [ ] inline
   * [ ] display
 * latex
-  * [ ] newcommands
-  * [ ] inclusion
+  * newcommand
+    * [x] very basic one
+    * [x] test nargs
+    * [x] test dedent (e.g. can have an indented def)
+    * [-] test problems
+  * newenv
+    * [x] very basic one
+    * [x] test nargs
+    * [-] test problems
+  * commands
+    * [x] basic one with args
+    * [x] nesting
+    * [ ] basic one with args in maths env
+    * [-] test problems
+  * environments
+    * [ ] basic one with args
+    * [ ] nesting
+    * [ ] test problems
 
 ## Parts from Franklin
 

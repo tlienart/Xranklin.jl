@@ -1,5 +1,5 @@
 """
-$(TYPEDEF)
+    LxDef{T}
 
 Structure to keep track of the definition of a latex command declared via a
 `\\newcommand{\\name}[nargs]{def}` or of an environment via
