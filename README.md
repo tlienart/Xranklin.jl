@@ -8,14 +8,20 @@
 
 * newcommand
   * [x] very basic one
-  * [ ] test dedent (e.g. can have an indented def)
-  * [ ] test nargs
-  * [ ] test problems
+  * [x] test nargs
+  * [x] test dedent (e.g. can have an indented def)
+  * [-] test problems
 * newenv
-  * [ ] very basic one
-  * [ ] test nargs
-  * [ ] test problems
+  * [x] very basic one
+  * [x] test nargs
+  * [-] test problems
 * commands
+  * [x] basic one with args
+  * [ ] nesting
+  * [ ] basic one with args in maths env
+  * [-] test problems
+* environments
+  * [ ]
 
 ## Goals
 
@@ -27,6 +33,10 @@
 
 * [ ] need to check whether the CommonMark footnote rule is sufficient, if it is then we should remove the relevant block from FranklinParser as it's not useful.
 * [ ] there's a `\par` in latex which needs to be treated same as inline
+
+## Notes
+
+* remind people that in defining latex objects they should be careful with double braces which have a meaning! use whitespace, for instance `\newcommand{\foo}[1]{\bar{#1}}` is not ok, add whitespace around it or skip a line or whatever.
 
 --
 

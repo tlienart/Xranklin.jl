@@ -180,3 +180,5 @@ function latex_injector(io::IOBuffer, to_inject::String, m::RegexMatch)
     end
     return
 end
+
+@inline raw_block(b::Block) = Block(:RAW, b.ss)

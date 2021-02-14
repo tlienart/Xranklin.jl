@@ -1,6 +1,9 @@
 html_comment(b, _)  = ""
 latex_comment(b, _) = ""
 
+html_raw(b, _)  = string(b.ss)
+latex_raw(b, _) = string(b.ss)
+
 html_text(b, _)  = FP.prepare_text(b) |> md2html
 latex_text(b, _) = FP.prepare_text(b) |> md2latex
 
@@ -20,6 +23,6 @@ latex_div(b, c) = latex(content(b), c)
 # html_h1(b, _)
 
 html_failed(b, _) =
-    """<span style="color:red">[FAILED:]&gt;$(content(b))&lt;</span>"""
+    """<span style="color:red">[FAILED:]&gt;$(b.ss)&lt;</span>"""
 latex_failed(b, _) =
-    """\\textcolor{crimson}{>$(content(b))<}"""
+    """\\textcolor{crimson}{>$(b.ss)<}"""

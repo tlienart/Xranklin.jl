@@ -1,9 +1,17 @@
 # Local context / page-wide
 
 const PageVars = LittleDict{Symbol,Pair}
+const LxDefs = LittleDict{String,LxDef}
 
 struct Context
     pagevars::PageVars
-    lxdefs::Vector{LxDef}
+    lxdefs::LxDefs
+    is_recursive::Bool
+    is_config::Bool
+    is_maths::Bool
 end
-EmptyContext() = Context(PageVars(), LxDef[])
+Context(pv, lxd) = Context(pv, lxd, false, false, false)
+EmptyContext()   = Context(PageVars(), LxDefs())
+
+
+recursive(c::Context) = Context(c.pagevars, c.lxdefs, true, c.is_config, c.is_maths)

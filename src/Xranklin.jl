@@ -25,7 +25,7 @@ include("environment.jl")
 include("context/latex/objects.jl")
 include("context/context.jl")
 
-include("convert/regexes.jl")
+include("convert/regex.jl")
 
 include("convert/markdown/commonmark.jl")
 include("convert/markdown/utils.jl")
@@ -36,5 +36,6 @@ include("convert/markdown/to_latex.jl")
 include("convert/markdown/rules/text.jl")
 include("convert/markdown/rules/code.jl")
 include("convert/markdown/rules/maths.jl")
+include("convert/markdown/rules/latex.jl")
 
 end # module
