@@ -39,7 +39,7 @@ latex(md::SS,     a...) = latex(FP.default_md_partition(md), a...)
 latex(md::String, a...) = latex(subs(md), a...)
 
 function latex(parts::Vector{Block}, ctx::Context=EmptyContext())::String
-    process_latex_objects!(parts, ctx)
+    process_latex_objects!(parts, ctx; recursion=latex)
     io = IOBuffer()
     inline_idx = Int[]
     for (i, part) in enumerate(parts)

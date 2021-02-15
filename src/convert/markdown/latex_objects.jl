@@ -14,7 +14,8 @@ The normal process is:
 If things fail, either a "failed block" is returned (shows up as read, doesn't stop the
 procedure) or an error is thrown (if strict parsing is on).
 """
-function process_latex_objects!(parts::Vector{Block}, ctx::Context)
+function process_latex_objects!(parts::Vector{Block}, ctx::Context;
+                                recursion::Function=html)
     index_to_remove = Int[]
     i = 1
     @inbounds while i <= lastindex(parts)
@@ -23,12 +24,12 @@ function process_latex_objects!(parts::Vector{Block}, ctx::Context)
         if part.name in (:LX_NEWCOMMAND, :LX_NEWENVIRONMENT)
             parts[i], n = try_form_lxdef(part, i, parts, ctx)
         elseif part.name == :LX_COMMAND
-            parts[i], n = try_resolve_lxcom(i, parts, ctx)
+            parts[i], n = try_resolve_lxcom(i, parts, ctx; recursion=recursion)
         elseif part.name == :LXB
             # stray braces
             parts[i], n = raw_inline_block(part), 0
         elseif part.name == :LX_BEGIN
-            parts[i], n = try_resolve_lxenv(i, parts, ctx)
+            parts[i], n = try_resolve_lxenv(i, parts, ctx; recursion=recursion)
         elseif part.name == :LX_END
             if ctx.is_maths
                 parts[i], n = raw_inline_block(part), 0
@@ -159,7 +160,8 @@ mode (in which case it might be something for the math engine to handle).
 function try_resolve_lxcom(
             i::Int,
             parts::Vector{Block},
-            ctx::Context
+            ctx::Context;
+            recursion::Function=html
             )::Tuple{Block,Int}
     # Process:
     # 1. look for definition --> fail if none and not in math mode
@@ -209,11 +211,11 @@ function try_resolve_lxcom(
         r = replace(r, "!#$k" => c)
         r = replace(r, "#$k"  => p * c)
     end
-    r_html = html(r, recursive(ctx))
+    r2 = recursion(r, recursive(ctx))
 
     # 4 -- try to match with exactly one <p>...</p>
-    default = (Block(:RAW_INLINE, subs(r_html)), nargs)
-    m = match(r"^<p>(.*?)<\/p>\s*$", r_html)
+    default = (Block(:RAW_INLINE, subs(r2)), nargs)
+    m = match(r"^<p>(.*?)<\/p>\s*$", r2)
     m === nothing && return default
     c = m.captures[1]
     if length(collect(eachmatch(r"<p>", c))) > 0
@@ -232,7 +234,8 @@ Same process as for a command except we need to find the matching `\\end` block.
 function try_resolve_lxenv(
             i::Int,
             parts::Vector{Block},
-            ctx::Context
+            ctx::Context;
+            recursion::Function=html
             )::Tuple{Block,Int}
     # Process:
     # 0. find the matching closing \end{...}
@@ -307,11 +310,11 @@ function try_resolve_lxenv(
         pre  = replace(pre,  "#$j" => c)
         post = replace(post, "#$j" => c)
     end
-    r_html = html(pre * env_content * post, recursive(ctx))
+    r2 = recursion(pre * env_content * post, recursive(ctx))
 
     # 4 -- finalize
-    default = Block(:RAW_BLOCK, subs(r_html)), k - i
-    m = match(r"^<p>(.*?)<\/p>\s*$", r_html)
+    default = Block(:RAW_BLOCK, subs(r2)), k - i
+    m = match(r"^<p>(.*?)<\/p>\s*$", r2)
     m === nothing && return default
     c = m.captures[1]
     if length(collect(eachmatch(r"<p>", c))) > 0

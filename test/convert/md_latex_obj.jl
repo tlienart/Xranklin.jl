@@ -27,7 +27,7 @@ end
     sh = s |> html
     @test sh // "<p>bar:hello!</p>"
     sl = s |> latex
-    @test sl // "bar:hello!"
+    @test sl // "bar:hello!\\par"
 end
 
 @testset "environment - basic" begin
@@ -46,4 +46,22 @@ end
         \end{foo}
         """ |> html
     @test s // "bar/A/abc/B/baz"
+end
+
+@testset "environment - nesting" begin
+    s = raw"""
+        \newenvironment{foo}{bar-}{-baz}
+        \newenvironment{fooz}{zar-}{-zaz}
+        \begin{foo}
+            abc
+            \begin{fooz}
+                def
+            \end{fooz}
+            ghi
+        \end{foo}
+        """
+    sh = s |> html
+    @test sh // "<p>bar-abc</p>\nzar-def-zaz<p>ghi-baz</p>"
+    sl = s |> latex
+    @test sl // "bar-abc\\par\nzar-def-zaz\\par\nghi-baz\\par"
 end

@@ -6,8 +6,6 @@
 
 ## Ongoing
 
-- there's an issue with lx object, when there's only the lx object, what adds the surrounding `<p></p>`? this is problematic if injecting HTML because it'd be wrapped in a paragraph, same with an ENV block, wtf.
-
 ## Goals
 
 * [ ] use FranklinParser.jl
@@ -37,7 +35,7 @@ Add ✅ for the ones that are also in one of the test md pages.
   * [x] comment ✅
   * [ ] header
   * [x] html entities ✅
-  * [x] emoji ✅
+  * [x] emoji ✅ -- **need validation in FP**
   * [ ] links
   * [ ] footnotes
   * [ ] images
@@ -80,8 +78,8 @@ Add ✅ for the ones that are also in one of the test md pages.
     * [ ] basic one with args in maths env
     * [-] test problems
   * environments
-    * [ ] basic one with args
-    * [ ] nesting
+    * [x] basic one with args
+    * [x] nesting
     * [ ] test problems
 
 ## Parts from Franklin
