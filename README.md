@@ -36,7 +36,7 @@ Add ✅ for the ones that are also in one of the test md pages.
   * [x] comment ✅
   * [ ] header
   * [x] html entities ✅
-  * [x] emoji ✅ -- **need validation in FP**
+  * [x] emoji (pasted and coded) ✅
   * [ ] links
   * [ ] footnotes
   * [ ] images
