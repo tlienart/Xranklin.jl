@@ -34,10 +34,13 @@ end
 Take a markdown string, segment it in blocks, and re-form the corresponding HTML string
 out of processing each segment recursively.
 """
-html(md::SS,     a...) = html(FP.default_md_partition(md), a...)
-html(md::String, a...) = html(subs(md), a...)
+html(md::SS,     a...; kw...) = html(FP.default_md_partition(md; kw...), a...)
+html(md::String, a...; kw...) = html(subs(md), a...;  kw...)
 
 function html(parts::Vector{Block}, ctx::Context=EmptyContext())::String
+    if ctx.is_maths
+        # make all blocks into raw blocks unless they're lxcommands
+    end
     process_latex_objects!(parts, ctx)
     io = IOBuffer()
     inline_idx = Int[]

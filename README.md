@@ -6,6 +6,8 @@
 
 ## Ongoing
 
+* math --> the reparsing should  be done only taking into account math tokens (and e.g. ignoring double braces), this should be done at FranklinParser level
+
 ## Goals
 
 * [x] use FranklinParser.jl

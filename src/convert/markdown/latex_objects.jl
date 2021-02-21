@@ -211,7 +211,7 @@ function try_resolve_lxcom(
         r = replace(r, "!#$k" => c)
         r = replace(r, "#$k"  => p * c)
     end
-    r2 = recursion(r, recursive(ctx))
+    r2 = recursion(r, recursify(ctx))
 
     # 4 -- try to match with exactly one <p>...</p>
     default = (Block(:RAW_INLINE, subs(r2)), nargs)
@@ -310,7 +310,7 @@ function try_resolve_lxenv(
         pre  = replace(pre,  "#$j" => c)
         post = replace(post, "#$j" => c)
     end
-    r2 = recursion(pre * env_content * post, recursive(ctx))
+    r2 = recursion(pre * env_content * post, recursify(ctx))
 
     # 4 -- finalize
     default = Block(:RAW_BLOCK, subs(r2)), k - i

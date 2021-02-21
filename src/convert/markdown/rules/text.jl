@@ -18,9 +18,10 @@ latex_hrule(b, _) = raw"\par\noindent\rule{\textwidth}{0.1pt}"
 html_raw_html(b, _)  = content(b)
 latex_raw_html(b, _) = ""
 
-html_div(b, c)  =
-    """<div class="$(FP.get_classes(b))">$(html(content(b), c))</div>"""
-latex_div(b, c) = latex(content(b), c)
+html_div(b, c) = """<div class="$(FP.get_classes(b))">""" *
+                 html(content(b), recursify(c); tokens=b.inner_tokens)) *
+                 """</div>"""
+latex_div(b, c) = latex(content(b), recursify(c); tokens=b.inner_tokens)
 
 # html_h1(b, _)
 

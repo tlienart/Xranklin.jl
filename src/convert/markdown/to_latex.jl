@@ -35,8 +35,8 @@ Take a markdown string, segment it in blocks, and re-form the corresponding LaTe
 out of processing each segment recursively.
 Note that, unlike HTML, we don't need to distinguish "blocks" and "inline blocks".
 """
-latex(md::SS,     a...) = latex(FP.default_md_partition(md), a...)
-latex(md::String, a...) = latex(subs(md), a...)
+latex(md::SS,     a...; kw...) = latex(FP.default_md_partition(md; kw...), a...)
+latex(md::String, a...; kw...) = latex(subs(md), a...; kw...)
 
 function latex(parts::Vector{Block}, ctx::Context=EmptyContext())::String
     process_latex_objects!(parts, ctx; recursion=latex)
