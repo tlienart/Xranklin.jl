@@ -11,7 +11,9 @@ const INLINE_BLOCKS = [
     :RAW_INLINE,
     :RAW_HTML,
     :CODE_INLINE,
-    :LINEBREAK
+    :LINEBREAK,
+    :MATH_A,
+    :MATH_I
 ]
 
 #

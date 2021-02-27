@@ -19,7 +19,7 @@ html_raw_html(b, _)  = content(b)
 latex_raw_html(b, _) = ""
 
 html_div(b, c) = """<div class="$(FP.get_classes(b))">""" *
-                 html(content(b), recursify(c); tokens=b.inner_tokens)) *
+                 html(content(b), recursify(c); tokens=b.inner_tokens) *
                  """</div>"""
 latex_div(b, c) = latex(content(b), recursify(c); tokens=b.inner_tokens)
 
