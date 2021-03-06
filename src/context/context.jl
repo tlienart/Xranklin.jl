@@ -3,15 +3,16 @@
 const PageVars = LittleDict{Symbol,Pair}
 const LxDefs = LittleDict{String,LxDef}
 
-struct Context
+mutable struct Context
     pagevars::PageVars
     lxdefs::LxDefs
     is_recursive::Bool
     is_config::Bool
-    is_maths::Bool
+    is_math::Bool
 end
 Context(pv, lxd) = Context(pv, lxd, false, false, false)
 EmptyContext()   = Context(PageVars(), LxDefs())
 
+recursify(c::Context) = (c.is_recursive = true; c)
 
-recursive(c::Context) = Context(c.pagevars, c.lxdefs, true, c.is_config, c.is_maths)
+mathify(c::Context) = (c.is_recursive = c.is_math = true; c)

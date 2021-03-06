@@ -15,6 +15,9 @@ Entities: &#42; and emojis 👎 and also :+1: but :foo:.
 
 Command `\foo`: \foo; command `\fooz`: \fooz{abc!}.
 
+<!-- basic maths -->
+
+Some maths: $\alpha + \beta = 5$.
 
 <!-- ```julia
 println("Hello!")

@@ -26,3 +26,61 @@ disable!(cm_parser, CM.InlineCodeRule())
 struct SkipIndented end
 CM.block_rule(::SkipIndented) = CM.Rule((p, c) -> 0, 8, "")
 enable!(cm_parser, SkipIndented())
+
+
+"""
+    md2x(s::String, to_html::Bool)
+
+Wrapper around what CommonMark does to keep track of spaces etc which CM strips away but
+which are actually needed in order to adequately resolve inline inserts. Leads to either
+html or latex based on the case.
+"""
+function md2x(s::String, to_html::Bool)::String
+    isempty(s) && return ""
+    if to_html
+        r = CM.html(cm_parser(s))
+    else
+        r = CM.latex(cm_parser(s))
+    end
+    # if there was only r"\s*" in s, preserve that unless it's a lineskip
+    if isempty(r)
+        return ifelse(occursin("\n\n", s), LINESKIP_PH, s)
+    end
+    # check if the block is preceded or followed by a lineskip (\n\n)
+    # or, by a space that we might have to preserve (e.g. inline)
+    # if that's the case, either inject an indicator or a space
+    pre  = ""
+    post = ""
+    if startswith(s, LINESKIP_PAT)
+        pre = LINESKIP_PH
+    elseif startswith(s, WHITESPACE_PAT)
+        pre = " "
+    end
+    if endswith(s, LINESKIP_PAT)
+        post = LINESKIP_PH
+    elseif endswith(s, WHITESPACE_PAT)
+        post = " "
+    end
+    return pre * r * post
+end
+
+md2html(s::String) = md2x(s, true)
+md2latex(s::String) = md2x(s, false)
+
+function md_core(parts::Vector{Block}, ctx::Context; to_html::Bool=true)::String
+    transformer = ifelse(to_html, html, latex)
+    process_latex_objects!(parts, ctx; recursion=transformer)
+
+    io = IOBuffer()
+    inline_idx = Int[]
+    for (i, part) in enumerate(parts)
+        if part.name in INLINE_BLOCKS
+            write(io, INLINE_PH)
+            push!(inline_idx, i)
+        else
+            write(io, transformer(part, ctx))
+        end
+    end
+    interm = String(take!(io))
+    return resolve_inline(interm, parts[inline_idx], ctx, to_html)
+end

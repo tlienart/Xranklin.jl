@@ -1,20 +1,36 @@
 @testset "command - basic" begin
-    s = raw"""
+    let s = raw"""
         \newcommand{\foo}{bar}
         \foo\foo
-        """ |> html
-    @test s // "<p>barbar</p>"
-    s = raw"""
+        """
+        h = html(s)
+        l = latex(s)
+        @test h // "<p>barbar</p>"
+        @test l // "barbar"
+    end
+    let s = raw"""
         \newcommand{\foo}[1]{bar:#1}
         \foo{hello}
-        """ |> html
-    @test s // "<p>bar:hello</p>"
-    s = raw"""
+        """
+        h = html(s)
+        l = latex(s)
+        @test h // "<p>bar:hello</p>"
+        @test l // "bar:hello"
+    end
+    let s = raw"""
         \newcommand{\foo}[2]{bar:#1#2}
         \foo{hello}{!}
-        """ |> html
-    @test s // "<p>bar:hello!</p>"
+        """
+        h = html(s)
+        l = latex(s)
+        @test h // "<p>bar:hello!</p>"
+        @test l // "bar:hello!"
+    end
 end
+
+
+# XXX continue with latex tests
+
 
 @testset "command - nesting" begin
     s = raw"""
@@ -27,7 +43,7 @@ end
     sh = s |> html
     @test sh // "<p>bar:hello!</p>"
     sl = s |> latex
-    @test sl // "bar:hello!\\par"
+    @test sl // "bar:hello!"
 end
 
 @testset "environment - basic" begin

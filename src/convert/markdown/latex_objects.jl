@@ -14,8 +14,12 @@ The normal process is:
 If things fail, either a "failed block" is returned (shows up as read, doesn't stop the
 procedure) or an error is thrown (if strict parsing is on).
 """
-function process_latex_objects!(parts::Vector{Block}, ctx::Context;
-                                recursion::Function=html)
+function process_latex_objects!(
+            parts::Vector{Block},
+            ctx::Context;
+            recursion::Function=html
+            )::Nothing
+
     index_to_remove = Int[]
     i = 1
     @inbounds while i <= lastindex(parts)
@@ -31,7 +35,7 @@ function process_latex_objects!(parts::Vector{Block}, ctx::Context;
         elseif part.name == :LX_BEGIN
             parts[i], n = try_resolve_lxenv(i, parts, ctx; recursion=recursion)
         elseif part.name == :LX_END
-            if ctx.is_maths
+            if ctx.is_math
                 parts[i], n = raw_inline_block(part), 0
             else
                 m = "Found an orphaned \\end."
@@ -54,7 +58,11 @@ In the case of an issue, e.g. a command with not enough braces, either an error 
 thrown (if strict parsing is on) or a warning along with a "failed block" which will
 make the object appear in red on the document without crashing the server.
 """
-function failed_block(b::Block, m::String)
+function failed_block(
+            b::Block,
+            m::String
+            )::Block
+
     FRANKLIN_ENV[:STRICT_PARSING] && throw(m)
     FRANKLIN_ENV[:SHOW_WARNINGS]  && @warn m
     # form a "failedblock"
@@ -176,7 +184,7 @@ function try_resolve_lxcom(
     cand = parts[i]
     name = strip(cand.ss, '\\')
     if name ∉ keys(ctx.lxdefs)
-        if ctx.is_maths
+        if ctx.is_math
             return raw_inline_block(cand), 0
         end
         m = "Command '$(cand.ss)' used before it was defined."
@@ -205,13 +213,22 @@ function try_resolve_lxcom(
     r = lxdef.def::String
     # in math env, inject whitespace to avoid issues with chains; this can't happen
     # outside of maths envs as we force the use of braces
-    p = ifelse(ctx.is_maths, " ", "")
+    p = ifelse(ctx.is_math, " ", "")
     @inbounds for k in 1:nargs
         c = content(parts[i+k])
         r = replace(r, "!#$k" => c)
         r = replace(r, "#$k"  => p * c)
     end
-    r2 = recursion(r, recursive(ctx))
+    r2 = recursion(r, recursify(ctx))
+
+    # 4 -- in latex case, strip \\par
+    if recursion === latex
+        r3 = ifelse(endswith(r2, "\\par\n"),
+                chop(r2, head=0, tail=5),
+                subs(r2)
+             )
+        return Block(:RAW_INLINE, r3), nargs
+    end
 
     # 4 -- try to match with exactly one <p>...</p>
     default = (Block(:RAW_INLINE, subs(r2)), nargs)
@@ -271,7 +288,7 @@ function try_resolve_lxenv(
 
     # 1 -- look for definition
     if env_name ∉ keys(ctx.lxdefs)
-        if ctx.is_maths
+        if ctx.is_math
             return raw_inline_block(cand), 0
         end
         m = "Environment '$env_name' used before it was defined."
@@ -310,7 +327,7 @@ function try_resolve_lxenv(
         pre  = replace(pre,  "#$j" => c)
         post = replace(post, "#$j" => c)
     end
-    r2 = recursion(pre * env_content * post, recursive(ctx))
+    r2 = recursion(pre * env_content * post, recursify(ctx))
 
     # 4 -- finalize
     default = Block(:RAW_BLOCK, subs(r2)), k - i

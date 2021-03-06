@@ -19,6 +19,8 @@ foot_html = read(joinpath(ASSETS, "foot.html"), String)
 head_latex = read(joinpath(ASSETS, "head.tex"), String)
 foot_latex = read(joinpath(ASSETS, "foot.tex"), String)
 
+cp(joinpath(ASSETS, "katex"), joinpath(OUTPUT, "katex"))
+
 for file in readdir(INPUT_MD)
     md = read(joinpath(INPUT_MD, file), String)
     do_html && open(joinpath(OUTPUT, splitext(file)[1] * ".html"), "w") do f
