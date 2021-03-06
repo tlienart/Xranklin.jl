@@ -13,7 +13,7 @@ html_linebreak(b, _)  = "<br>"
 latex_linebreak(b, _) = "\\\\"
 
 html_hrule(b, _)  = "<hr>"
-latex_hrule(b, _) = raw"\par\noindent\rule{\textwidth}{0.1pt}"
+latex_hrule(b, _) = raw"\par\noindent\rule{\textwidth}{0.1pt}\par"
 
 html_raw_html(b, _)  = content(b)
 latex_raw_html(b, _) = ""

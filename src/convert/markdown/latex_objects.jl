@@ -221,6 +221,15 @@ function try_resolve_lxcom(
     end
     r2 = recursion(r, recursify(ctx))
 
+    # 4 -- in latex case, strip \\par
+    if recursion === latex
+        r3 = ifelse(endswith(r2, "\\par\n"),
+                chop(r2, head=0, tail=5),
+                subs(r2)
+             )
+        return Block(:RAW_INLINE, r3), nargs
+    end
+
     # 4 -- try to match with exactly one <p>...</p>
     default = (Block(:RAW_INLINE, subs(r2)), nargs)
     m = match(r"^<p>(.*?)<\/p>\s*$", r2)

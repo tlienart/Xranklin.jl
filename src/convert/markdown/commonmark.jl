@@ -71,13 +71,6 @@ function md_core(parts::Vector{Block}, ctx::Context; to_html::Bool=true)::String
     transformer = ifelse(to_html, html, latex)
     process_latex_objects!(parts, ctx; recursion=transformer)
 
-    # XXX XXX XXX XXX
-    for part in parts
-        ss = replace(part.ss, " " => "␣")
-        ss = replace(ss, "\n" => "\\n")
-        println("$(part.name) :: $ss")
-    end
-
     io = IOBuffer()
     inline_idx = Int[]
     for (i, part) in enumerate(parts)

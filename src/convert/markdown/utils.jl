@@ -62,8 +62,6 @@ function resolve_inline(s::String, ib::Vector{Block}, ctx::Context,
     inline_finder = ifelse(to_html, INLINE_FINDER_HTML, INLINE_FINDER_LATEX)
     convertor     = ifelse(to_html, html, latex)
 
-    @show s
-
     @inbounds for m in eachmatch(inline_finder, s)
         o = m.offset
         # inject text before this point
@@ -100,7 +98,7 @@ function check_case(m::RegexMatch, to_html::Bool=true)::NTuple{3,String}
     prev_closes_p = (m.captures[1] !== nothing)
     prev_lineskip = (m.captures[2] !== nothing)
     next_lineskip = (m.captures[4] !== nothing)
-    next_opens_p  = to_html ? (m.captures[5] !== nothing) : false
+    next_opens_p  = to_html ? (m.captures[5] !== nothing) : true
 
     # check if there's a space to preserve before or after the injection
     space_before = ifelse(prev_closes_p && endswith(m.captures[1],   " "), " ", "")
@@ -118,20 +116,19 @@ end
     paragraph_injector(io, to_inject, m; to_html)
 
 Add something to a buffer corresponding to an inline element; depending on the
-neighbouring objects, different `<p>`, `</p>` or `\\par` tags will be used to
+neighbouring objects, different `<p>`, `</p>` or `\\par ` tags will be used to
 ensure that the overall HTML/LaTeX remains valid and carries the initial intent.
+Note the whitespace after `\\par` to avoid having something like `\\parand`.
 """
 function paragraph_injector(io::IOBuffer, to_inject::String, m::RegexMatch;
                             to_html::Bool=true)
 
     case, space_before, space_after = check_case(m, to_html)
 
-    @show (case, space_before, space_after)
-
     # There are 2^4 = 16 cases corresponding to the 16 combinations of
     # - is the previous element a text block (T</p>) or not (B)
     # - is there a line skip before (LS)
-    # - is the next element a text block (<p>T) or not (B)
+    # - is the next element a text block (<p>T) or not (B) (LaTeX: always true)
     # - is there a line skip after (LS)
     #
     # NOTE: some cases are redundant or irrelevant (e.g. for LaTeX), but it's
@@ -144,59 +141,47 @@ function paragraph_injector(io::IOBuffer, to_inject::String, m::RegexMatch;
     if case == "0000"
         # (B _ B)
         # => html: (B <p> _ </p> B)
-        # => latex: (B _ B)
         h = ("<p>", "</p>")
-        l = ("", "")
 
     elseif case == "1000"
         # (T </p> _ B)
         # => html: (T _ </p> B)
-        # => latex: (T _ \par B)
         h = ("", "</p>")
-        l = ("", "\\par")
     elseif case == "0100"
         # (B LS _ B)
         # => html: (B <p> _ </p> B)
-        # => latex: (B _ \par B)
         h = ("<p>", "</p>")
-        l = ("", "\\par")
     elseif case == "0010"
         # (B _ <p> T)
         # => html: (B <p> _ T)
         # => latex: (B _ T)
         h = ("<p>", "")
-        l = ("", "")
+        l = ("\n", "")
     elseif case == "0001"
         # (B _ LS B)
         # => html: B <p> _ </p> B
-        # => latex: B _ \\par B
         h = ("<p>", "</p>")
-        l = ("", "\\par")
 
     elseif case == "1100"
         # (T </p> LS _ B)
         # => html: (T </p> <p> _ </p> B)
-        # => latex: (T \par _ \par B)
         h = ("</p><p>", "</p>")
-        l = ("\\par", "\\par")
     elseif case == "0011"
         # (B _ LS <p> T)
         # => html: (B <p> _ </p> <p> T)
         # => latex: (B _ \par T)
         h = ("<p>", "</p><p>")
-        l = ("", "\\par")
+        l = ("\n", "\\par\n")
     elseif case == "0110"
         # (B LS _ <p>T)
         # => html: (B <p> _ T)
         # => latex: (B _ T)
         h = ("<p>", "")
-        l = ("", "")
+        l = ("\n", "")
     elseif case == "1001"
         # (T </p> _ LS B)
         # => html: (T _ </p> B)
-        # => latex: (T _ \par B)
         h = ("", "</p>")
-        l = ("", "\\par")
     elseif case == "1010"
         # (T </p> _ <p> T)
         # => html: (T _ T)
@@ -206,41 +191,37 @@ function paragraph_injector(io::IOBuffer, to_inject::String, m::RegexMatch;
     elseif case == "0101"
         # (B LS _ LS B)
         # => html: (B <p> _ </p> B)
-        # => latex: (B _ \par B)
         h = ("<p>", "</p>")
-        l = ("", "\\par")
 
     elseif case == "1110"
         # (T </p> LS _ <p> T)
         # => html: (T </p> <p> _ T)
         # => latex: (T \par _ T)
         h = ("</p><p>", "")
-        l = ("\\par", "")
+        l = ("\\par\n", "")
     elseif case == "0111"
         # (B LS _ LS <p> T)
         # => html: (B <p> _ </p><p> T)
         # => latex: (B _ \par T)
         h = ("<p>", "</p><p>")
-        l = ("", "\\par")
+        l = ("\n", "\\par\n")
     elseif case == "1101"
         # (T </p> LS _ LS B)
         # => html: (T </p> <p> _ </p> B)
-        # => latex: (T \par _ \par B)
         h = ("</p><p>", "</p>")
-        l = ("\\par", "\\par")
     elseif case == "1011"
         # (T </p> _ LS <p>T)
         # => html: (T _ </p> <p> T)
         # => latex: (T _ \par T)
         h = ("", "</p><p>")
-        l = ("", "\\par")
+        l = ("", "\\par\n")
 
     elseif case == "1111"
         # (T </p> LS _ LS <p> T)
         # => html: (T </p> <p> _ </p> <p> T)
         # => latex: (T \par _ \par T)
         h = ("</p><p>", "</p><p>")
-        l = ("\\par", "\\par")
+        l = ("\\par\n", "\\par\n")
     end
     pre  = ifelse(to_html, h[1], l[1])
     post = ifelse(to_html, h[2], l[2])
