@@ -12,12 +12,13 @@ Entities: &#42; and emojis 👎 and also :+1: but :foo:.
 
 \newcommand{\foo}{bar}
 \newcommand{\fooz}[1]{bar:#1}
+\newcommand{\abeta}{\alpha\beta}
 
 Command `\foo`: \foo; command `\fooz`: \fooz{abc!}.
 
 <!-- basic maths -->
 
-Some maths: $\alpha + \beta = 5$.
+Some maths: $\alpha + \beta = 5\abeta$.
 
 <!-- ```julia
 println("Hello!")

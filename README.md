@@ -6,10 +6,6 @@
 
 ## Ongoing
 
-* complete the tests with latex for `test/convert/md_latex_obj`
-
-* math --> the reparsing should  be done only taking into account math tokens (and e.g. ignoring double braces), this should be done at FranklinParser level
-
 ## Goals
 
 * [x] use FranklinParser.jl
@@ -20,6 +16,7 @@
 
 * [ ] need to check whether the CommonMark footnote rule is sufficient, if it is then we should remove the relevant block from FranklinParser as it's not useful.
 * [ ] there's a `\par` in latex which needs to be treated same as inline
+* [ ] ordering of parsing, when are `{{...}}` resolved, see issue
 
 ## Notes
 
