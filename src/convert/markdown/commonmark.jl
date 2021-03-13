@@ -64,8 +64,9 @@ function md2x(s::String, to_html::Bool)::String
     return pre * r * post
 end
 
-md2html(s::String) = md2x(s, true)
+md2html(s::String)  = md2x(s, true)
 md2latex(s::String) = md2x(s, false)
+
 
 function md_core(parts::Vector{Block}, ctx::Context; to_html::Bool=true)::String
     transformer = ifelse(to_html, html, latex)

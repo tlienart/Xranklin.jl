@@ -19,11 +19,9 @@ html_raw_html(b, _)  = content(b)
 latex_raw_html(b, _) = ""
 
 html_div(b, c) = """<div class="$(FP.get_classes(b))">""" *
-                 html(content(b), recursify(c); tokens=b.inner_tokens) *
+                 recursive_html(b, c) *
                  """</div>"""
-latex_div(b, c) = latex(content(b), recursify(c); tokens=b.inner_tokens)
-
-# html_h1(b, _)
+latex_div(b, c) = recursive_latex(b, c)
 
 html_failed(b, _) =
     """<span style="color:red">[FAILED:]&gt;$(b.ss)&lt;</span>"""

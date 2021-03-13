@@ -32,9 +32,10 @@ include("convert/markdown/to_html.jl")
 include("convert/markdown/to_latex.jl")
 include("convert/markdown/to_math.jl")
 
+include("convert/markdown/rules/utils.jl")
 include("convert/markdown/rules/text.jl")
+include("convert/markdown/rules/headers.jl")
 include("convert/markdown/rules/code.jl")
 include("convert/markdown/rules/maths.jl")
-include("convert/markdown/rules/latex.jl")
 
 end # module

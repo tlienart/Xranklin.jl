@@ -6,6 +6,10 @@
 
 ## Ongoing
 
+* header rules --> partially done, can do with more testing 13/3 18.31
+* md definitions
+* code blocks
+
 ## Goals
 
 * [x] use FranklinParser.jl
@@ -15,8 +19,9 @@
 ## Todo
 
 * [ ] need to check whether the CommonMark footnote rule is sufficient, if it is then we should remove the relevant block from FranklinParser as it's not useful.
-* [ ] there's a `\par` in latex which needs to be treated same as inline
 * [ ] ordering of parsing, when are `{{...}}` resolved, see issue
+* [ ] test rule overriding in utils (`Xranklin.html_hk`...)
+* [ ] when recursing, ignore mddefs
 
 ## Notes
 
