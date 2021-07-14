@@ -18,6 +18,22 @@ end
     end
 end
 
+@testset "entities" begin
+    let s = raw"""
+        &#42; &plusmn; &ndash; \{ \} \`
+        """
+        @test html(s) // "<p>* ± – { } `</p>"
+        @test latex(s) // "* ± – \\{ \\} `\\par"
+    end
+    # emojis (note, lualatex will skip those chars)
+    let s = raw"""
+        👎 :+1: :foo:
+        """
+        @test html(s) // "<p>👎 👍 :foo:</p>"
+        @test latex(s) // "👎 👍 :foo:\\par"
+    end
+end
+
 @testset "indentation" begin
     # indentation is completely ignored
     let s = """

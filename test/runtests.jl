@@ -1,4 +1,4 @@
-using Xranklin
+using Xranklin, LiveServer
 using Test
 const X = Xranklin
 
@@ -6,6 +6,7 @@ X.FRANKLIN_ENV[:STRICT_PARSING] = false
 X.FRANKLIN_ENV[:SHOW_WARNINGS] = false
 
 include("utils.jl")
+include("integration.jl")
 
 @testset "LaTeX" begin
     p = "convert/"

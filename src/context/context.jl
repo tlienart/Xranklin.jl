@@ -4,6 +4,7 @@
     PageVars
 
 Mapping `:varname => value`.
+
 Legacy note: allowed types are not kept track of anymore. But when extracting values,
 a default value can be specified and acts effectively as a type constraint.
 """
@@ -52,8 +53,7 @@ Context(pv, h, lxd) = Context(pv, h, lxd, false, false, false)
 EmptyContext()      = Context(PageVars(), PageHeaders(), LxDefs())
 
 recursify(c::Context) = (c.is_recursive = true; c)
-
-mathify(c::Context) = (c.is_recursive = c.is_math = true; c)
+mathify(c::Context)   = (c.is_recursive = c.is_math = true; c)
 
 
 """
