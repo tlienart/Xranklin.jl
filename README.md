@@ -31,22 +31,25 @@
 
 --
 
-## Conversion
+## Conversion MD > (HTML, LaTeX)
 
+Add tick for the ones that are explicitly tested
 Add ✅ for the ones that are also in one of the test md pages.
+Add 🚨 for the ones that are thoroughly tested (including potential errors / ambiguities).
 
-* text
-  * [x] bold, italic ✅
+* text (`test/convert/md2x/rules_text`)
+  * [x] bold, italic ✅ 🚨
   * [x] line break ✅
   * [x] horizontal rules
   * [x] comment ✅
-  * [ ] header
+  * [x] header
   * [x] html entities ✅
+  * [x] escaped chars `{}[]`
   * [x] emoji (pasted and coded) ✅
   * [ ] links
   * [ ] footnotes
   * [ ] images
-  * [x] div
+  * [x] (D1) div
   * [x] raw HTML
 * md-definition
   * [ ] toml block
@@ -64,11 +67,17 @@ Add ✅ for the ones that are also in one of the test md pages.
   * [ ] function
 * code
   * [x] inline
-  * [ ] block
+  * [ ] block plain ✅
+  * [ ] block lang ✅
   * [ ] block executed
 * maths
-  * [ ] inline
-  * [ ] display
+  * [x] inline ✅
+  * [x] display ✅  (**note**: we number by default for `$$` and `\[...\]`).
+  * [ ] env
+    * [ ] `equation`
+    * [ ] `align`,
+    * [ ] `equation*`,
+    * [ ] `align*`
 * latex
   * newcommand
     * [x] very basic one ✅
@@ -88,6 +97,8 @@ Add ✅ for the ones that are also in one of the test md pages.
     * [x] basic one with args
     * [x] nesting
     * [ ] test problems
+  * special commands
+    * [ ] toc
 
 ## Parts from Franklin
 

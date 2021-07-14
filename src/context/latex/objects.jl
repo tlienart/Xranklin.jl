@@ -24,7 +24,7 @@ from(lxd::LxDef) = lxd.from
 to(lxd::LxDef)   = lxd.to
 
 """
-pastdef(λ)
+    pastdef(λ)
 
 Convenience function to return a copy of a definition indicating as having
 already been defined earlier in the context i.e.: earlier than any other

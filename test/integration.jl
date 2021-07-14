@@ -1,17 +1,20 @@
+@assert success(`lualatex -v`) "lualatex must be available to Julia for this to work"
+
 using Xranklin
-# using Test
 
 do_html = true
 do_latex = true
 compile_latex = true
 
 INTEGRATION = normpath(joinpath(@__FILE__, "..", "integration"))
-OUTPUT = normpath(joinpath(@__FILE__, "..", "_output"))
-INPUT_MD = joinpath(INTEGRATION, "test_md_pages")
-ASSETS = joinpath(INTEGRATION, "assets")
+OUTPUT      = normpath(joinpath(@__FILE__, "..", "_output"))
+INPUT_MD    = joinpath(INTEGRATION, "test_md_pages")
+ASSETS      = joinpath(INTEGRATION, "assets")
 
 isdir(OUTPUT) && rm(OUTPUT, recursive=true)
 mkpath(OUTPUT)
+
+# HEAD / FOOT ---------------------------------------------
 
 head_html = read(joinpath(ASSETS, "head.html"), String)
 foot_html = read(joinpath(ASSETS, "foot.html"), String)
@@ -20,6 +23,9 @@ head_latex = read(joinpath(ASSETS, "head.tex"), String)
 foot_latex = read(joinpath(ASSETS, "foot.tex"), String)
 
 cp(joinpath(ASSETS, "katex"), joinpath(OUTPUT, "katex"))
+cp(joinpath(ASSETS, "jlcode.sty"), joinpath(OUTPUT, "jlcode.sty"))
+
+# ---------------------------------------------------------
 
 for file in readdir(INPUT_MD)
     md = read(joinpath(INPUT_MD, file), String)
@@ -31,9 +37,18 @@ for file in readdir(INPUT_MD)
     end
     compile_latex && begin
         bk = pwd()
-        cd(OUTPUT)
-        name = splitext(file)[1]
-        run(`lualatex $name --shell-escape`)
-        cd(bk)
+        try
+            cd(OUTPUT)
+            name = splitext(file)[1]
+            run(`lualatex $name`)
+        catch ErrorException
+        finally
+            cd(bk)
+        end
     end
+end
+
+if true
+    import LiveServer
+    LiveServer.serve(dir=OUTPUT)
 end

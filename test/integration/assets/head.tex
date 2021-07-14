@@ -1,14 +1,33 @@
+\nonstopmode
+
 \documentclass[12pt]{article}
 
+
+% FONT
 \usepackage{cmap}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-
 \usepackage{lmodern}
 
+\usepackage[svgnames]{xcolor}
+
+
+% MATHS
 \usepackage{amsmath}
 \usepackage{amssymb}
 
-\usepackage[svgnames]{xcolor}
+
+% CODE
+\usepackage{listings}
+\lstset{
+  backgroundcolor=\color{AliceBlue},
+  basicstyle=\footnotesize
+}
+\usepackage{jlcode}
+
+
+% LAYOUT
+\setlength{\parindent}{0em}           % no indentation on paragraph
+\setlength{\parskip}{\baselineskip}   % skip line on new paragraph
 
 \begin{document}

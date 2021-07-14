@@ -8,7 +8,7 @@ import FranklinParser: SS, Token, Block,
 
 import CommonMark
 const CM = CommonMark
-import CommonMark: disable!, enable!
+import CommonMark: disable!, enable!, escape_xml
 
 import OrderedCollections: LittleDict
 
@@ -18,10 +18,17 @@ export html, latex
 
 # ------------------------------------------------------------------------
 
-include("environment.jl")
+const FRANKLIN_ENV = LittleDict{Symbol, Any}(
+    :STRICT_PARSING => false,          # if true, fail on any parsing issue
+    :SHOW_WARNINGS  => true,
+    :OFFSET_LXDEFS  => -typemax(Int),  # helps keep track of order in lxcoms/envs
+)
+
+# ------------------------------------------------------------------------
 
 include("context/latex/objects.jl")
 include("context/context.jl")
+include("context/default_context.jl")
 
 include("convert/regex.jl")
 

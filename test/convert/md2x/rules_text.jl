@@ -1,11 +1,11 @@
 @testset "text" begin
     let s = """
-        A *B* _C_ **D**
+        A *B* _C_ **D** _**C** D_ **_C_ D**
         """
-        @test html(s) //
-                "<p>A <em>B</em> <em>C</em> <strong>D</strong></p>"
+        @test html(s) // (
+                "<p>A <em>B</em> <em>C</em> <strong>D</strong> <em><strong>C</strong> D</em> <strong><em>C</em> D</strong></p>")
         @test latex(s) //
-                raw"A \textit{B} \textit{C} \textbf{D}\par"
+                raw"A \textit{B} \textit{C} \textbf{D} \textit{\textbf{C} D} \textbf{\textit{C} D}\par"
     end
 end
 

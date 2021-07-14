@@ -33,7 +33,7 @@ headers, definitions etc. to specify the context in which conversion is happenin
 
 Fields:
 -------
-    pagevars: a dictionary of the current page variables.
+    vars: a dictionary of the current page variables.
     headers: a dictionary of the current page headers
     lxdefs: a dictionary of the currently available 'latex' definitions.
     is_recursive: whether we're in a recursive context.
@@ -64,9 +64,11 @@ the default value is returned. Note that the type of the default value indicates
 expected type returned unless the default is set to nothing or equally if no default
 value is given.
 """
-function value(c::Context, n::Symbol,
-               default::T=default_value(n)
-               )::T where T
+function value(
+            c::Context,
+            n::Symbol,
+            default::T=default_value(n)
+            )::T where T
     n in keys(c.vars) && return c.vars[n]::T
     return default
 end
@@ -74,15 +76,3 @@ value(c::Context, n::String, a...) = value(c, Symbol(n), a...)
 
 # this is type unstable
 value(c::Context, n::Symbol, default::Nothing) = get(c.vars, n, nothing)
-
-
-const DefaultLocalPageVars = PageVars(
-    # header
-    :header_class      => "",
-    :header_link       => true,
-    :header_link_class => ""
-)
-
-default_value(n::Symbol) = get(DefaultLocalPageVars, n, nothing)
-
-DefaultContext() = Context(copy(DefaultLocalPageVars), PageHeaders(), LxDefs())
