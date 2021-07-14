@@ -11,6 +11,36 @@ L> Entities: \{&#42; &reg; &plusmn;\} and emojis 👎 and also :+1: but :foo: (e
 
 L> Escaped chars: \{ \} \* \_ \`
 
+---
+
+### Raw HTML
+
+In LaTeX nothing will show here
+
+~~~
+<span style="color: blue">Hello in blue</span>
+~~~
+
+### Div
+
+(In LaTeX just the text will show)
+
+~~~
+<style>
+.da {
+  background-color: lemonchiffon;
+  padding: 15px;
+}
+.db {
+  font-size: larger;
+  color: navy;
+}
+</style>
+~~~
+
+@@da,db
+Hello friend (HTML: in yellow)
+@@
 
 <!-- ============================================================ -->
 ## COMMANDS

@@ -9,6 +9,15 @@
     end
 end
 
+@testset "comment" begin
+    let s = """
+        A <!-- B --> C
+        """
+        @test html(s) // "<p>A</p>\n  <p>C</p>\n"
+        @test latex(s) // "A\\par\n  C\\par"
+    end
+end
+
 @testset "indentation" begin
     # indentation is completely ignored
     let s = """
