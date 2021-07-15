@@ -40,8 +40,7 @@ function md2x(s::String, to_html::Bool)::String
     if to_html
         r = CM.html(cm_parser(s))
     else
-        # HACK fix for CommonMark bug https://github.com/MichaelHatherly/CommonMark.jl/issues/23
-        r = replace(CM.latex(cm_parser(s)), "setcounter{enumi}{1}" => "setcounter{enumi}{0}")
+        r = CM.latex(cm_parser(s))
     end
     # if there was only r"\s*" in s, preserve that unless it's a lineskip
     if isempty(r)

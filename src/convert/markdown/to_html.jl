@@ -7,7 +7,7 @@ out of processing each segment recursively.
 html(md::SS,     a...; kw...) = html(FP.default_md_partition(md; kw...), a...)
 html(md::String, a...; kw...) = html(subs(md), a...;  kw...)
 
-html(parts::Vector{Block}, ctx::Context=DefaultContext())::String =
+html(parts::Vector{Block}, ctx::LocalContext=DefaultContext())::String =
     md_core(parts, ctx; to_html=true)
 
 function html(b::Block, ctx::Context)

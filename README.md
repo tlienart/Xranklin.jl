@@ -31,6 +31,10 @@
 
 --
 
+## Context
+
+* when a page gets processed, the global context deps should be updated. So at the end of the page processing, there should be a list of global variables accessed on that page currently that should then query the global context, update it (so that if a page does or does not depend on some variables anymore, gc gets updated...)
+
 ## Conversion MD > (HTML, LaTeX)
 
 Add 🌴 for the ones that are explicitly tested
