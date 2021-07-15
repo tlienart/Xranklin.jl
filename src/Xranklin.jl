@@ -14,6 +14,7 @@ import OrderedCollections: LittleDict
 
 # ------------------------------------------------------------------------
 
+export value
 export html, latex
 
 # ------------------------------------------------------------------------
@@ -26,7 +27,7 @@ const FRANKLIN_ENV = LittleDict{Symbol, Any}(
 
 # ------------------------------------------------------------------------
 
-include("context/latex/objects.jl")
+include("context/types.jl")
 include("context/context.jl")
 include("context/default_context.jl")
 

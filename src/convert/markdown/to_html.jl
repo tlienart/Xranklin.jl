@@ -7,13 +7,13 @@ out of processing each segment recursively.
 html(md::SS,     a...; kw...) = html(FP.default_md_partition(md; kw...), a...)
 html(md::String, a...; kw...) = html(subs(md), a...;  kw...)
 
-html(parts::Vector{Block}, ctx::Context=DefaultContext())::String =
-    md_core(parts, ctx; to_html=true)
+html(parts::Vector{Block}, c::LocalContext=DefaultLocalContext())::String =
+    md_core(parts, c; to_html=true)
 
-function html(b::Block, ctx::Context)
+function html(b::Block, c::LocalContext)
     n = lowercase(String(b.name))
     f = Symbol("html_$n")
-    return eval(:($f($b, $ctx)))
+    return eval(:($f($b, $c)))
 end
 
 recursive_html(b, c) =

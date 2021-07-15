@@ -1,12 +1,16 @@
-using Xranklin, LiveServer
-using Test
-const X = Xranklin
+using Xranklin, LiveServer, Test; X = Xranklin;
 
 X.FRANKLIN_ENV[:STRICT_PARSING] = false
 X.FRANKLIN_ENV[:SHOW_WARNINGS] = false
 
 include("utils.jl")
-include("integration.jl")
+
+@testset "Context" begin
+    p = "context/"
+    include("$p/types.jl")
+    include("$p/context.jl")
+    include("$p/default_context.jl")
+end
 
 @testset "LaTeX" begin
     p = "convert/"
@@ -21,7 +25,6 @@ end
     include("$p/rules_text.jl")
     include("$p/rules_headers.jl")
     include("$p/rules_maths.jl")
-    # include("$p/rules_code.jl")
-    # utils
-    # include("$p/utils.jl")
 end
+
+include("integration.jl")

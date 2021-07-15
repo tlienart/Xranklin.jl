@@ -42,7 +42,7 @@ function latex_hk(b, c, hk::Symbol)
     return "\\subsubsection{\\label{$id}$header_text}"
 end
 
-function header_id(c::Context, header_text::String, hk::Symbol)::String
+function header_id(c::LocalContext, header_text::String, hk::Symbol)::String
     id  = string_to_anchor(header_text)
     lvl = parse(Int, String(hk)[2])
     if id in keys(c.headers)

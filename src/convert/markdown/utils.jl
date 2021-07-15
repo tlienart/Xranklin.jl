@@ -1,14 +1,19 @@
 """
     raw_block(b)
 
-Form a raw block out of a block, the content of raw blocks is injected as is (without
-tags surrounding it). This is for instance used in the processing of latex objects when
-resolving commands.
+Form a raw block out of a block, the content of raw blocks is injected as is
+(without tags surrounding it). This is for instance used in the processing of
+latex objects when resolving commands.
 """
 @inline raw_inline_block(b::Block) = Block(:RAW_INLINE, b.ss)
 
 
-"List of Blocks that should be merged with neighbouring text blocks."
+"""
+    INLINE_BLOCKS
+
+List of Blocks that should be merged with neighbouring text blocks.
+Note: a COMMENT is not one of those (it always splits).
+"""
 const INLINE_BLOCKS = [
     :RAW_INLINE,
     :RAW_HTML,
@@ -20,8 +25,7 @@ const INLINE_BLOCKS = [
 
 #
 # Everything below is logic to resolve inline insertions, and place
-# `<p>..</p>` adequately (this is pretty annoying, probably best
-# is to start looking at
+# `<p>..</p>` adequately (this is pretty annoying).
 #
 
 const WHITESPACE_PAT = r"[^\S\n]"
@@ -45,15 +49,21 @@ const INLINE_FINDER_LATEX = Regex(
 
 
 """
-    resolve_inline(s::String, ib::Vector{Block}, ctx::Context)
+    resolve_inline(s::String, ib::Vector{Block}, ctx::LocalContext)
 
-Takes a resolved HTML or LaTeX string and rewrites a string after inserting inline
-blocks while adjusting the paragraph tags (`<p>`, `</p>`, `\\par`) appropriately.
-This unfortunately requires a fair bit of care to keep track of significant spaces,
-line skips etc.
+Takes a resolved HTML or LaTeX string and rewrites a string after inserting
+inline blocks while adjusting the paragraph tags (`<p>`, `</p>`, `\\par`)
+appropriately.
+This unfortunately requires a fair bit of care to keep track of significant
+spaces, line skips etc.
 """
-function resolve_inline(s::String, ib::Vector{Block}, ctx::Context,
-                        to_html::Bool=true)::String
+function resolve_inline(
+            s::String,
+            ib::Vector{Block},
+            ctx::LocalContext,
+            to_html::Bool=true
+            )::String
+
     # io is the buffer for the resulting 'injected' string
     io       = IOBuffer()
     head_ib  = 1
@@ -83,7 +93,7 @@ function resolve_inline(s::String, ib::Vector{Block}, ctx::Context,
         head_ib = k
         # form the string to inject then pass it to the final injector
         to_inject = String(take!(iio))
-        paragraph_injector(io, to_inject, m; to_html=to_html)
+        paragraph_injector!(io, to_inject, m; to_html=to_html)
     end
     # write tail of the text
     write(io, s[head_txt:end])
@@ -93,6 +103,8 @@ end
 
 """
     check_case(m)
+
+Check what kind of situation we're in to figure out how to merge blocks.
 """
 function check_case(m::RegexMatch, to_html::Bool=true)::NTuple{3,String}
     prev_closes_p = (m.captures[1] !== nothing)
@@ -101,8 +113,14 @@ function check_case(m::RegexMatch, to_html::Bool=true)::NTuple{3,String}
     next_opens_p  = to_html ? (m.captures[5] !== nothing) : true
 
     # check if there's a space to preserve before or after the injection
-    space_before = ifelse(prev_closes_p && endswith(m.captures[1],   " "), " ", "")
-    space_after  = ifelse(to_html && next_opens_p && startswith(m.captures[5], " "), " ", "")
+    space_before = ifelse(
+        prev_closes_p && endswith(m.captures[1],   " "),
+        " ", ""
+    )
+    space_after  = ifelse(
+        to_html && next_opens_p && startswith(m.captures[5], " "),
+        " ", ""
+    )
 
     # convert the set of boolean flags into a simple "boolean string"
     case = prod(string(Int(e)) for e in
@@ -113,15 +131,20 @@ end
 
 
 """
-    paragraph_injector(io, to_inject, m; to_html)
+    paragraph_injector!(io, to_inject, m; to_html)
 
 Add something to a buffer corresponding to an inline element; depending on the
 neighbouring objects, different `<p>`, `</p>` or `\\par ` tags will be used to
-ensure that the overall HTML/LaTeX remains valid and carries the initial intent.
-Note the whitespace after `\\par` to avoid having something like `\\parand`.
+ensure that the overall HTML/LaTeX remains valid and carries the initial
+intent. Note the whitespace after `\\par` to avoid having something like
+`\\parand`.
 """
-function paragraph_injector(io::IOBuffer, to_inject::String, m::RegexMatch;
-                            to_html::Bool=true)
+function paragraph_injector!(
+            io::IOBuffer,
+            to_inject::String,
+            m::RegexMatch;
+            to_html::Bool=true
+            )::Nothing
 
     case, space_before, space_after = check_case(m, to_html)
 

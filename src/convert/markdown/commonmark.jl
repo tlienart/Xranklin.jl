@@ -40,8 +40,7 @@ function md2x(s::String, to_html::Bool)::String
     if to_html
         r = CM.html(cm_parser(s))
     else
-        # HACK fix for CommonMark bug https://github.com/MichaelHatherly/CommonMark.jl/issues/23
-        r = replace(CM.latex(cm_parser(s)), "setcounter{enumi}{1}" => "setcounter{enumi}{0}")
+        r = CM.latex(cm_parser(s))
     end
     # if there was only r"\s*" in s, preserve that unless it's a lineskip
     if isempty(r)
@@ -69,9 +68,14 @@ md2html(s::String)  = md2x(s, true)
 md2latex(s::String) = md2x(s, false)
 
 
-function md_core(parts::Vector{Block}, ctx::Context; to_html::Bool=true)::String
+function md_core(
+            parts::Vector{Block},
+            c::LocalContext;
+            to_html::Bool=true
+            )::String
+
     transformer = ifelse(to_html, html, latex)
-    process_latex_objects!(parts, ctx; recursion=transformer)
+    process_latex_objects!(parts, c; recursion=transformer)
 
     io = IOBuffer()
     inline_idx = Int[]
@@ -80,9 +84,9 @@ function md_core(parts::Vector{Block}, ctx::Context; to_html::Bool=true)::String
             write(io, INLINE_PH)
             push!(inline_idx, i)
         else
-            write(io, transformer(part, ctx))
+            write(io, transformer(part, c))
         end
     end
     interm = String(take!(io))
-    return resolve_inline(interm, parts[inline_idx], ctx, to_html)
+    return resolve_inline(interm, parts[inline_idx], c, to_html)
 end
