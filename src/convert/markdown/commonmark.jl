@@ -68,9 +68,14 @@ md2html(s::String)  = md2x(s, true)
 md2latex(s::String) = md2x(s, false)
 
 
-function md_core(parts::Vector{Block}, ctx::Context; to_html::Bool=true)::String
+function md_core(
+            parts::Vector{Block},
+            c::LocalContext;
+            to_html::Bool=true
+            )::String
+
     transformer = ifelse(to_html, html, latex)
-    process_latex_objects!(parts, ctx; recursion=transformer)
+    process_latex_objects!(parts, c; recursion=transformer)
 
     io = IOBuffer()
     inline_idx = Int[]
@@ -79,9 +84,9 @@ function md_core(parts::Vector{Block}, ctx::Context; to_html::Bool=true)::String
             write(io, INLINE_PH)
             push!(inline_idx, i)
         else
-            write(io, transformer(part, ctx))
+            write(io, transformer(part, c))
         end
     end
     interm = String(take!(io))
-    return resolve_inline(interm, parts[inline_idx], ctx, to_html)
+    return resolve_inline(interm, parts[inline_idx], c, to_html)
 end

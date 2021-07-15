@@ -1,22 +1,23 @@
 """
-    process_latex_objects!(parts::Vector{Block}, ctx::Context)
+    process_latex_objects!(parts::Vector{Block}, ctx::LocalContext)
 
-After the partitioning, latex objects are not quite formed; in particular they are not
-yet considered with the relevant braces.
-This function gradually goes over the blocks, adds new latex definitions to the context
-and assembles latex commands and environments based on existing definitions.
+After the partitioning, latex objects are not quite formed; in particular they
+are not yet associated with the relevant braces.
+This function gradually goes over the blocks, adds new latex definitions to
+the context and assembles latex commands and environments based on existing
+definitions.
 
 The normal process is:
-  * newcommand/environment: addition to context, replace by a comment block (invisible).
-  * command/environment: read from context, form intermediate text, recurse and replace
-        by a raw block.
+  * newcom/env: addition to context, replace by comment block (invisible).
+  * com/env: read from context, form intermediate text, recurse and replace
+             by a raw block.
 
-If things fail, either a "failed block" is returned (shows up as read, doesn't stop the
-procedure) or an error is thrown (if strict parsing is on).
+If things fail, either a "failed block" is returned (shows up as read, doesn't
+stop the procedure) or an error is thrown (if strict parsing is on).
 """
 function process_latex_objects!(
             parts::Vector{Block},
-            ctx::Context;
+            ctx::LocalContext;
             recursion::Function=html
             )::Nothing
 
@@ -54,9 +55,10 @@ end
 """
     failed_block(b::Block, m::String)
 
-In the case of an issue, e.g. a command with not enough braces, either an error is
-thrown (if strict parsing is on) or a warning along with a "failed block" which will
-make the object appear in red on the document without crashing the server.
+In the case of an issue, e.g. a command with not enough braces, either an error
+is thrown (if strict parsing is on) or a warning along with a "failed block"
+which will make the object appear in red on the document without crashing the
+server.
 """
 function failed_block(
             b::Block,
@@ -73,20 +75,21 @@ end
 """
     try_form_lxdef(...)
 
-Given an indicator of a newcommand or a newenvironment, try to find the relevant braces
-and, if successful, add the definition to the context. If unsuccessful, return a failed
-block.
+Given an indicator of a newcommand or a newenvironment, try to find the
+relevant braces and, if successful, add the definition to the context.
+If unsuccessful, return a failed block.
 
 Note the proper syntax for newcommand and newenvironment are respectively:
-  * `\\newcommand{\\naming}[narg]{def}` and
-  * `\\newenvironment{naming}[narg]{pre}{post}`.
+  * `\\newcommand{\\naming}[narg]{def}`
+  * `\\newenvironment{naming}[narg]{pre}{post}`
 """
 function try_form_lxdef(
             part::Block,
             i::Int,
             parts::Vector{Block},
-            ctx::Context
+            ctx::LocalContext
             )::Tuple{Block,Int}
+
     # command or env?
     case = ifelse(part.name == :LX_NEWCOMMAND, :com, :env)
     # find all brace blocks
@@ -107,11 +110,12 @@ function try_form_lxdef(
     # CHECK the following brace(s)
     next_idx = naming_idx + 1
     next_bad = """
-        The block(s) following the naming brace of a \\newcommand or \\newenvironment
-        is/are incorrect, Franklin expected another brace or a text indicating the
-        number of arguments followed by defining brace(s). For environments, the
-        defining braces should not be separated (i.e. the closing brace and the
-        following opening brace should touch).
+        The block(s) following the naming brace of a \\newcommand or
+        \\newenvironment is/are incorrect, Franklin expected another brace or
+        a text indicating the number of arguments followed by defining
+        brace(s).
+        For environments, the defining braces should not be separated (i.e.
+        the closing brace and the following opening brace should touch).
         """
 
     # the next block should either be a brace or a text block with content [.\d.]
@@ -138,8 +142,8 @@ function try_form_lxdef(
 
     # found a newcommand! push it to context and return a skipped block
     if case == :com
-        name = string(strip(strip(content(naming)), '\\'))
-        ctx.lxdefs[name] = LxDef(nargs, def, from(part), to(nextb))
+        name = lstrip(strip(content(naming)), '\\') |> string
+        setdef!(ctx, name, LxDef(nargs, def, from(part), to(nextb)))
         return Block(:COMMENT, subs("")), 2 + Int(nargs_block)
     end
 
@@ -152,8 +156,8 @@ function try_form_lxdef(
     post = content(nextb) |> dedent |> strip |> String
 
     # found a newenvironment! push it to context and return a skipped block
-    name = string(strip(content(naming)))
-    ctx.lxdefs[name] = LxDef(nargs, pre => post, from(part), to(nextb))
+    name = strip(content(naming)) |> string
+    setdef!(ctx, name, LxDef(nargs, pre => post, from(part), to(nextb)))
     return Block(:COMMENT, subs("")), 3 + Int(nargs_block)
 end
 
@@ -168,7 +172,7 @@ mode (in which case it might be something for the math engine to handle).
 function try_resolve_lxcom(
             i::Int,
             parts::Vector{Block},
-            ctx::Context;
+            ctx::LocalContext;
             recursion::Function=html
             )::Tuple{Block,Int}
     # Process:
@@ -182,15 +186,15 @@ function try_resolve_lxcom(
     # ------------------------------------------------------------------------
     # 1 -- look for definition
     cand = parts[i]
-    name = strip(cand.ss, '\\')
-    if name ∉ keys(ctx.lxdefs)
+    name = lstrip(cand.ss, '\\') |> string
+    if !hasdef(ctx, name)
         if ctx.is_math
             return raw_inline_block(cand), 0
         end
         m = "Command '$(cand.ss)' used before it was defined."
         return failed_block(cand, m), 0
     end
-    lxdef = ctx.lxdefs[name]
+    lxdef = getdef(ctx, name)
 
     # runtime check; lxdef should be a LxDef{String} otherwise
     # there's a clash in names with an environment
@@ -251,7 +255,7 @@ Same process as for a command except we need to find the matching `\\end` block.
 function try_resolve_lxenv(
             i::Int,
             parts::Vector{Block},
-            ctx::Context;
+            ctx::LocalContext;
             recursion::Function=html
             )::Tuple{Block,Int}
     # Process:
@@ -269,14 +273,14 @@ function try_resolve_lxenv(
             """
         return failed_block(cand, m), 0
     end
-    env_name = strip(content(naming_brace))
+    env_name = strip(content(naming_brace)) |> string
 
     imbalance = 1
     k = i + 1
     @inbounds while (imbalance > 0) && (k < lastindex(parts))
         if parts[k].name == :LX_END &&
-           parts[k+1].name == :LXB  &&
-           strip(content(parts[k+1])) == env_name
+             parts[k+1].name == :LXB  &&
+               strip(content(parts[k+1])) == env_name
            imbalance -= 1
         end
         k += 1
@@ -287,14 +291,14 @@ function try_resolve_lxenv(
     end
 
     # 1 -- look for definition
-    if env_name ∉ keys(ctx.lxdefs)
+    if !hasdef(ctx, env_name)
         if ctx.is_math
             return raw_inline_block(cand), 0
         end
         m = "Environment '$env_name' used before it was defined."
         return failed_block(cand, m), 0
     end
-    lxdef = ctx.lxdefs[env_name]
+    lxdef = getdef(ctx, env_name)
 
     # runtime check; lxdef should be a LxDef{Pair{String,String}} otherwise
     # there's a clash in names with an environment

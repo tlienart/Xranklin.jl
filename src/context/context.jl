@@ -42,7 +42,6 @@ function getdef(gc::GlobalContext, n::String; requester::String="")
 end
 
 
-
 """
     LocalContext
 

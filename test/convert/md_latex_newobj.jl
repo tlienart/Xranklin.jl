@@ -1,10 +1,12 @@
+using Xranklin, Test; X = Xranklin;
+
 @testset "newcommand" begin
     s = raw"""
         abc \newcommand{\foo}{bar} def
         """
-    c = X.EmptyContext()
+    c = X.LocalContext()
     h = html(s, c)
-    @test isapproxstr(h, "<p>abc</p> <p>def</p>")
+    @test isapproxstr(h, "<p>abc</p>\n  <p>def</p>")
     @test length(c.lxdefs.keys) == 1
     d = c.lxdefs["foo"]
     @test d isa X.LxDef{String}
@@ -16,9 +18,9 @@
     s = raw"""
         abc \newcommand{\foo}[1]{bar} def
         """
-    c = X.EmptyContext()
+    c = X.LocalContext()
     h = html(s, c)
-    @test isapproxstr(h, "<p>abc</p> <p>def</p>")
+    @test isapproxstr(h, "<p>abc</p>\n  <p>def</p>")
     @test length(c.lxdefs.keys) == 1
     d = c.lxdefs["foo"]
     @test d.nargs == 1
@@ -26,9 +28,9 @@
     s = raw"""
         abc \newcommand{\foo}[ 1] {bar} def
         """
-    c = X.EmptyContext()
+    c = X.LocalContext()
     h = html(s, c)
-    @test isapproxstr(h, "<p>abc</p> <p>def</p>")
+    @test isapproxstr(h, "<p>abc</p>\n  <p>def</p>")
     @test length(c.lxdefs.keys) == 1
     d = c.lxdefs["foo"]
     @test d.nargs == 1
@@ -43,9 +45,9 @@
         }
         def
         """
-    c = X.EmptyContext()
+    c = X.LocalContext()
     h = html(s, c)
-    @test isapproxstr(h, "<p>abc</p> <p>def</p>")
+    @test isapproxstr(h, "<p>abc</p>\n  <p>def</p>")
     d = c.lxdefs["foo"]
     @test d.def == "bar\n  biz\n    boz\nbaz"
 end
@@ -54,9 +56,9 @@ end
     s = raw"""
         abc \newenvironment{foo}{bar}{baz} def
         """
-    c = X.EmptyContext()
+    c = X.LocalContext()
     h = html(s, c)
-    @test isapproxstr(h, "<p>abc</p> <p>def</p>")
+    @test isapproxstr(h, "<p>abc</p>\n  <p>def</p>")
     d = c.lxdefs["foo"]
     @test d isa X.LxDef{Pair{String,String}}
     @test d.def == ("bar" => "baz")
@@ -65,7 +67,7 @@ end
     s = raw"""
         abc \newenvironment{foo}[1]{bar}{baz} def
         """
-    c = X.EmptyContext()
+    c = X.LocalContext()
     h = html(s, c)
     d = c.lxdefs["foo"]
     @test d.nargs == 1
@@ -77,7 +79,7 @@ end
     s = raw"""
         a \newcommand{foo}
         """
-    c = X.EmptyContext(); h = html(s, c)
+    c = X.LocalContext(); h = html(s, c)
     @test isempty(c.lxdefs)
     @test isapproxstr(h, """
         <p>a</p>
@@ -88,7 +90,7 @@ end
     s = raw"""
         a \newenvironment{foo}{bar} b
         """
-    c = X.EmptyContext(); h = html(s, c)
+    c = X.LocalContext(); h = html(s, c)
     @test isempty(c.lxdefs)
     @test isapproxstr(h, """
         <p>a</p>
@@ -98,7 +100,7 @@ end
 
     # nargs block incorrect
     s = raw"""\newcommand{\bar} 2{hello}"""
-    c = X.EmptyContext(); h = html(s, c)
+    c = X.LocalContext(); h = html(s, c)
     @test isempty(c.lxdefs)
     @test isapproxstr(h, """
         <span style="color:red">[FAILED:]&gt;\\newcommand&lt;</span>

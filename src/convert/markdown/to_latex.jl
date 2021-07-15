@@ -8,13 +8,13 @@ Note that, unlike HTML, we don't need to distinguish "blocks" and "inline blocks
 latex(md::SS,     a...; kw...) = latex(FP.default_md_partition(md; kw...), a...)
 latex(md::String, a...; kw...) = latex(subs(md), a...; kw...)
 
-latex(parts::Vector{Block}, ctx::Context=DefaultContext())::String =
-    md_core(parts, ctx; to_html=false)
+latex(parts::Vector{Block}, c::LocalContext=DefaultLocalContext())::String =
+    md_core(parts, c; to_html=false)
 
-function latex(b::Block, ctx::Context)
+function latex(b::Block, c::Context)
     n = lowercase(String(b.name))
     f = Symbol("latex_$n")
-    return eval(:($f($b, $ctx)))
+    return eval(:($f($b, $c)))
 end
 
 recursive_latex(b, c) =
