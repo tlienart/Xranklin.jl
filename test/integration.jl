@@ -1,11 +1,11 @@
-@assert success(`lualatex -v`) "lualatex must be available to Julia for this to work"
-
 using Xranklin
 
 function itest(
             files=String[];
             do_html=true, do_latex=true, compile=false, show_html=false
         )
+    @assert success(`lualatex -v`) "lualatex must be available to Julia for this to work"
+
     INTEGRATION = normpath(joinpath(@__FILE__, "..", "integration"))
     OUTPUT      = normpath(joinpath(@__FILE__, "..", "_output"))
     INPUT_MD    = joinpath(INTEGRATION, "test_md_pages")
