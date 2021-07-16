@@ -1,6 +1,10 @@
 html_code_inline(b::Block, _)  = "<code>$(content(b))</code>"
 latex_code_inline(b::Block, _) = "\\texttt{$(replace(content(b), "\\" => "{\\textbackslash}"))}"
 
+#
+# TODO: eval code if known language etc.
+#
+
 _isspace2(c) = c != ' ' && isspace(c)
 _strip(s) = strip(_isspace2, s)
 

@@ -12,9 +12,9 @@
 
 ## Goals
 
-* [x] use FranklinParser.jl
-* [ ] remove dependency on HTTP
-* [ ] use concrete types and inferrable in-out relations where possible
+* use FranklinParser.jl
+* remove dependency on HTTP
+* use concrete types and inferrable in-out relations where possible
 
 ## Todo
 
@@ -23,9 +23,8 @@
 * [ ] test rule overriding in utils (`Xranklin.html_hk`...)
 * [ ] when recursing, ignore mddefs
 
-## Notes
+## Important Notes
 
-* remind people that in defining latex objects they should be careful with double braces which have a meaning! use whitespace, for instance `\newcommand{\foo}[1]{\bar{#1}}` is not ok, add whitespace around it or skip a line or whatever.
 * command names and environment names should be distinct. Cannot have `\newcommand{\foo}{...}` and `\newenvironment{foo}{...}{...}`; only the last one will be picked up.
 * requires Julia >= 1.5
 
