@@ -60,7 +60,7 @@ spaces, line skips etc.
 function resolve_inline(
             s::String,
             ib::Vector{Block},
-            ctx::LocalContext,
+            ctx::Context,
             to_html::Bool=true
             )::String
 

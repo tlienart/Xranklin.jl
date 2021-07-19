@@ -17,7 +17,7 @@ stop the procedure) or an error is thrown (if strict parsing is on).
 """
 function process_latex_objects!(
             parts::Vector{Block},
-            ctx::LocalContext;
+            ctx::Context;
             recursion::Function=html
             )::Nothing
 

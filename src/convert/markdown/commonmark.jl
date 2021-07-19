@@ -70,7 +70,7 @@ md2latex(s::String) = md2x(s, false)
 
 function md_core(
             parts::Vector{Block},
-            c::LocalContext;
+            c::Context;
             to_html::Bool=true
             )::String
 
