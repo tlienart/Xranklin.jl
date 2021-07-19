@@ -11,11 +11,15 @@ const CM = CommonMark
 import CommonMark: disable!, enable!, escape_xml
 
 import OrderedCollections: LittleDict
+import Dates
 
 # ------------------------------------------------------------------------
 
 export value
 export html, latex
+
+# legacy
+export locvar, globvar
 
 # ------------------------------------------------------------------------
 
@@ -23,6 +27,7 @@ const FRANKLIN_ENV = LittleDict{Symbol, Any}(
     :STRICT_PARSING => false,          # if true, fail on any parsing issue
     :SHOW_WARNINGS  => true,
     :OFFSET_LXDEFS  => -typemax(Int),  # helps keep track of order in lxcoms/envs
+    :CUR_LOCAL_CTX  => nothing,        # current local context
 )
 
 # ------------------------------------------------------------------------

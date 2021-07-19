@@ -43,3 +43,19 @@ end
     @test isempty(gc.lxdefs_deps.fwd["abc"])
     @test isempty(gc.lxdefs_deps.bwd["REQ"])
 end
+
+@testset "cur_ctx" begin
+    # no current context set
+    X.FRANKLIN_ENV[:CUR_LOCAL_CTX] = nothing
+    @test value(:abc, 0) == 0
+    @test value(:abc) === nothing
+    # with current context
+    lc = X.LocalContext()
+    X.set_current_local_context(lc)
+    @test value(:lang) == value(lc, :lang)
+    @test value(:prepath) == value(lc.glob, :prepath)
+
+    # legacy access
+    @test locvar(:lang) == value(lc, :lang)
+    @test globvar(:base_url_prefix) == value(lc.glob, :prepath)
+end

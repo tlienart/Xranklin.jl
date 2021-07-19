@@ -1,3 +1,5 @@
+const Alias = LittleDict{Symbol,Symbol}
+
 abstract type Context end
 
 
@@ -14,20 +16,24 @@ Fields:
     vars: the variables accessible in the global context
     lxdefs: the lx definitions accessible in the global context
     vars_deps: keeps track of what requester needs what vars and vice versa
-    lxdefs_deps: keeps track of what requester needs what lxdefs and vv
+    lxdefs_deps: keeps track of what requester needs what lxdefs and vice versa
+    vars_aliases: other accepted names for default variables.
 """
 mutable struct GlobalContext <: Context
     vars::Vars
     lxdefs::LxDefs
     vars_deps::VarsDeps
     lxdefs_deps::LxDefsDeps
+    vars_aliases::Alias
 end
-GlobalContext(v=Vars(), d=LxDefs()) = GlobalContext(v, d, VarsDeps(), LxDefsDeps())
+GlobalContext(v=Vars(), d=LxDefs(); alias=Alias()) =
+    GlobalContext(v, d, VarsDeps(), LxDefsDeps(), alias)
 
 # when a value from the global context is requested, we can track the requester
 # who requested the value so that, when the global context is updated,
 # all relevant dependent pages get updated as well.
 function value(gc::GlobalContext, n::Symbol, d=nothing; requester::String="")
+    n = get(gc.vars_aliases, n, n)
     isempty(requester) || add!(gc.vars_deps, n, requester)
     return value(gc.vars, n, d)
 end
@@ -59,6 +65,7 @@ Fields:
     headers: a dictionary of the current page headers
     is_recursive: whether we're in a recursive context.
     is_math: whether we're recursing in a math environment.
+    vars_aliases: other accepted names for default variables.
 """
 mutable struct LocalContext <: Context
     glob::GlobalContext
@@ -72,18 +79,21 @@ mutable struct LocalContext <: Context
     # stores
     req_glob_vars::Set{Symbol}
     req_glob_lxdefs::Set{String}
+    vars_aliases::Alias
 end
-LocalContext(g, v, d, h, id="") =
-    LocalContext(g, v, d, h, id, false, false, Set{Symbol}(), Set{String}())
+LocalContext(g, v, d, h, id="", alias=Alias()) =
+    LocalContext(g, v, d, h, id, false, false,
+                 Set{Symbol}(), Set{String}(), alias)
 
-LocalContext(g=GlobalContext(), v=Vars(), d=LxDefs(); id="") =
-    LocalContext(g, v, d, PageHeaders(), id)
+LocalContext(g=GlobalContext(), v=Vars(), d=LxDefs(); id="", alias=Alias()) =
+    LocalContext(g, v, d, PageHeaders(), id, alias)
 
 recursify(c::LocalContext) = (c.is_recursive = true; c)
 mathify(c::LocalContext)   = (c.is_recursive = c.is_math = true; c)
 
 
 function value(lc::LocalContext, n::Symbol, d=nothing)
+    n = get(lc.vars_aliases, n, n)
     if n ∉ keys(lc.vars)
         # if we try to get the variable from global, keep track of that
         union!(lc.req_glob_vars, [n])
@@ -126,4 +136,27 @@ function refresh_global_context!(lc::LocalContext)
         pop!(lc.glob.lxdefs_deps.bwd[lc.id], n)
     end
     return
+end
+
+
+"""
+    set_current_local_context
+
+Set the current local context (and the global context that it points to).
+"""
+@inline set_current_local_context(lc::LocalContext) =
+    (FRANKLIN_ENV[:CUR_LOCAL_CTX] = lc; nothing)
+
+value(::Nothing, n::Symbol, d=nothing) = d
+value(n::Symbol, d=nothing) = value(FRANKLIN_ENV[:CUR_LOCAL_CTX], n, d)
+
+# ======================
+# LEGACY ACCESS COMMANDS
+# ======================
+
+locvar(n::Union{Symbol,String};  default=nothing) = value(Symbol(n), default)
+globvar(n::Union{Symbol,String}; default=nothing) = begin
+    lc = FRANKLIN_ENV[:CUR_LOCAL_CTX]
+    lc === nothing && return default
+    return value(lc.glob, Symbol(n), default)
 end
