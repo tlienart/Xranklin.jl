@@ -25,9 +25,11 @@ mutable struct GlobalContext <: Context
     vars_deps::VarsDeps
     lxdefs_deps::LxDefsDeps
     vars_aliases::Alias
+    children_contexts::LittleDict{String,Context}
 end
 GlobalContext(v=Vars(), d=LxDefs(); alias=Alias()) =
-    GlobalContext(v, d, VarsDeps(), LxDefsDeps(), alias)
+    GlobalContext(v, d, VarsDeps(), LxDefsDeps(),
+                  alias, LittleDict{String,Context}())
 
 # when a value from the global context is requested, we can track the requester
 # who requested the value so that, when the global context is updated,
@@ -81,9 +83,10 @@ mutable struct LocalContext <: Context
     req_glob_lxdefs::Set{String}
     vars_aliases::Alias
 end
-LocalContext(g, v, d, h, id="", alias=Alias()) =
-    LocalContext(g, v, d, h, id, false, false,
-                 Set{Symbol}(), Set{String}(), alias)
+LocalContext(g, v, d, h, id="", a=Alias()) = (
+    g.children_contexts[id] = LocalContext(g, v, d, h, id, false, false,
+                                           Set{Symbol}(), Set{String}(), a)
+)
 
 LocalContext(g=GlobalContext(), v=Vars(), d=LxDefs(); id="", alias=Alias()) =
     LocalContext(g, v, d, PageHeaders(), id, alias)
@@ -119,8 +122,8 @@ end
     refresh_global_context!(lc)
 
 Once a string/page with id has been processed, we know on what global
-variables/lxdefs it depends. As it might have changed, we refresh the global
-context.
+variables/lxdefs it depends. As this might have changed since the previous time
+we processed that string/page, we refresh the global context with that info.
 """
 function refresh_global_context!(lc::LocalContext)
     cur = lc.glob.vars_deps.bwd[lc.id]   # necessarily exists but may contain too much
@@ -150,13 +153,21 @@ Set the current local context (and the global context that it points to).
 value(::Nothing, n::Symbol, d=nothing) = d
 value(n::Symbol, d=nothing) = value(FRANKLIN_ENV[:CUR_LOCAL_CTX], n, d)
 
+function valuefrom(s::String, n::Symbol, d=nothing)
+    clc = FRANKLIN_ENV[:CUR_LOCAL_CTX]
+    (clc === nothing || s ∉ keys(clc.glob.children_contexts)) && return d
+    return value(clc.glob.children_contexts[s], n, d)
+end
+
 # ======================
 # LEGACY ACCESS COMMANDS
 # ======================
 
 locvar(n::Union{Symbol,String};  default=nothing) = value(Symbol(n), default)
-globvar(n::Union{Symbol,String}; default=nothing) = begin
-    lc = FRANKLIN_ENV[:CUR_LOCAL_CTX]
-    lc === nothing && return default
-    return value(lc.glob, Symbol(n), default)
+function globvar(n::Union{Symbol,String}; default=nothing)
+    clc = FRANKLIN_ENV[:CUR_LOCAL_CTX]
+    clc === nothing && return default
+    return value(clc.glob, Symbol(n), default)
 end
+pagevar(s::String, n::Union{Symbol,String}; default=nothing) =
+    valuefrom(s, Symbol(n), default)

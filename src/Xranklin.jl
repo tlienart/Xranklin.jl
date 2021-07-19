@@ -15,11 +15,11 @@ import Dates
 
 # ------------------------------------------------------------------------
 
-export value
+export value, valuefrom
 export html, latex
 
 # legacy
-export locvar, globvar
+export locvar, globvar, pagevar
 
 # ------------------------------------------------------------------------
 
