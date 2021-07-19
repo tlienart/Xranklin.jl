@@ -1,7 +1,7 @@
 using Xranklin, LiveServer, Test; X = Xranklin;
 
 X.FRANKLIN_ENV[:STRICT_PARSING] = false
-X.FRANKLIN_ENV[:SHOW_WARNINGS] = false
+X.FRANKLIN_ENV[:SHOW_WARNINGS]  = false
 
 include("utils.jl")
 
@@ -25,6 +25,17 @@ end
     include("$p/rules_text.jl")
     include("$p/rules_headers.jl")
     include("$p/rules_maths.jl")
+    include("$p/rules_vars.jl")
 end
 
 include("integration.jl")
+
+#=
+TODO: need more tests for vars:
+
+* with block of vars
+* with errors
+* with other modules like Dates or whatever
+
+Need to add tests for some utils as well
+=#

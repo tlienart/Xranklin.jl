@@ -1,3 +1,5 @@
+using Xranklin, Test
+
 @testset "text" begin
     let s = """
         A *B* _C_ **D** _**C** D_ **_C_ D**

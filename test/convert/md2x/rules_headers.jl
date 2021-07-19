@@ -1,4 +1,6 @@
-@testset "text" begin
+using Xranklin, Test
+
+@testset "headers" begin
     let s = """
         # A
         ## B

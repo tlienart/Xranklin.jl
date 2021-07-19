@@ -1,3 +1,5 @@
+using Xranklin, Test
+
 # 1 - is the previous element a text block (T</p>) or not (B)
 # 2 - is there a line skip before (LS)
 # 3 - is the next element a text block (<p>T) or not (B)

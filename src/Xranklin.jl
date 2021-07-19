@@ -23,6 +23,8 @@ export locvar, globvar
 
 # ------------------------------------------------------------------------
 
+const MODULE_NAME = "Xranklin"
+
 const FRANKLIN_ENV = LittleDict{Symbol, Any}(
     :STRICT_PARSING => false,          # if true, fail on any parsing issue
     :SHOW_WARNINGS  => true,
@@ -31,6 +33,8 @@ const FRANKLIN_ENV = LittleDict{Symbol, Any}(
 )
 
 # ------------------------------------------------------------------------
+
+include("misc_utils.jl")
 
 include("context/types.jl")
 include("context/context.jl")
@@ -45,10 +49,14 @@ include("convert/markdown/to_html.jl")
 include("convert/markdown/to_latex.jl")
 include("convert/markdown/to_math.jl")
 
+include("convert/markdown/code/utils.jl")
+include("convert/markdown/code/run.jl")
+
 include("convert/markdown/rules/utils.jl")
 include("convert/markdown/rules/text.jl")
 include("convert/markdown/rules/headers.jl")
 include("convert/markdown/rules/code.jl")
 include("convert/markdown/rules/maths.jl")
+include("convert/markdown/rules/vars.jl")
 
 end # module

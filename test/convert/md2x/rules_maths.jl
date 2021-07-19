@@ -1,3 +1,5 @@
+using Xranklin, Test
+
 @testset "math-a" begin
     let s = raw"""
         A $B$ C
