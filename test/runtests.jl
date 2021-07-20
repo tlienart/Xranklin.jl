@@ -33,9 +33,7 @@ include("integration.jl")
 #=
 TODO: need more tests for vars:
 
-* with block of vars
 * with errors
-* with other modules like Dates or whatever
 
 Need to add tests for some utils as well
 =#

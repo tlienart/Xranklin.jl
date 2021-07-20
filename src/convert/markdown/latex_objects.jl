@@ -217,7 +217,7 @@ function try_resolve_lxcom(
     r = lxdef.def::String
     # in math env, inject whitespace to avoid issues with chains; this can't happen
     # outside of maths envs as we force the use of braces
-    p = ifelse(ctx.is_math, " ", "")
+    p = ifelse(ctx.is_math[], " ", "")
     @inbounds for k in 1:nargs
         c = content(parts[i+k])
         r = replace(r, "!#$k" => c)
