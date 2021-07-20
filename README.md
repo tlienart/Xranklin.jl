@@ -6,7 +6,16 @@
 
 ## Ongoing
 
-* header rules --> partially done, can do with more testing 13/3 18.31
+* set of pages with one global context, test children contexts, pruning etc,
+* continuous update, check proper updating triggers, no delays
+* code blocks (also add native python if PyCall is imported)
+* tags
+* utils
+
+
+## More tests
+
+* header rules
 * md definitions
 * code blocks
 
