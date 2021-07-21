@@ -13,27 +13,19 @@ const TrackedFiles = LittleDict{Pair{String, String}, Float64}
 
 
 """
-    collect_files_to_watch(folder)
+    find_files_to_watch(folder)
 
 Walk through `folder` and look for files to track,
 """
-function collect_files_to_watch(folder)::NamedTuple
+function find_files_to_watch(
+            folder::String,
+            in_loop::Bool = false
+            )::LittleDict{Symbol, TrackedFiles}
+
     set_paths(folder)
+    f2i, d2i = files_and_dirs_to_ignore()
 
-
-    to_ignore = globvar(:ignore_base) ∪ globvar(:ignore)
-    dir_to_ignore = Union{String,Regex}[]
-    files_to_ignore
-    filter!(!_isempty, to_ignore)
-    # patterns for directories
-    dir_mask = [_endswith(c, '/') for c in to_ignore]
-    # ignore '/' or other single char
-    d2i = filter!(d -> length(d) >  1, to_ignore[dir_mask])
-    f2i = to_ignore[.!dir_mask]
-
-
-
-    watched_files = LittleDict{Symbol, TrackedFiles}(
+    wf = LittleDict{Symbol, TrackedFiles}(
         e => TrackedFiles()
         for e in (:other, :infra, :md, :html, :literate)
     )
@@ -47,13 +39,65 @@ function collect_files_to_watch(folder)::NamedTuple
             fext  = splitext(file)[2]
 
             # early skip of irrelevant fpaths
-            (!isfile(fpath) || should_ignore(fpath)) && continue
+            skip = !isfile(fpath) ||
+                   startswith(fpath, path(:site)) ||
+                   startswith(fpath, path(:folder) / ".git") ||
+                   should_ignore(fpath, f2i, d2i)
+            if skip
+                debug(LOGGER, "Skipping $fpath")
+                continue
+            end
 
+            if startswith(fpath, path(:css)) ||
+                   startswith(fpath, path(:layout)) ||
+                   startswith(fpath, path(:libs)) ||
+                   file == "config.md" || file == "utils.jl"
+                # files that, when they get changed, might change the aspect of
+                # the full website
+                add_if_new_file!(wf[:infra], fpair, in_loop)
 
+            elseif startswith(fpath, path(:assets))
+                add_if_new_file!(wf[:other], fpair, in_loop)
+
+            elseif startswith(fpath, path(:literate))
+                add_if_new_file!(wf[:literate], fpair, in_loop)
+
+            elseif fext == ".md"
+                add_if_new_file!(wf[:md], fpair, in_loop)
+
+            elseif fext in (".html", ".htm")
+                add_if_new_file!(wf[:html], fpair, in_loop)
+
+            else
+                # any other files (e.g. Project.toml) just get copied over
+                add_if_new_file!(wf[:other], fpair, in_loop)
+
+            end
         end
     end
+    return wf
+end
 
-    return watched_files
+
+"""
+    add_if_new_file!(d, fpair, in_loop)
+
+Helper function, if `fpair` is not referenced in the dictionary (new file) add
+the entry to the dictionary with the time of last modification.
+"""
+function add_if_new_file!(
+            dict::TrackedFiles,
+            fpair::Pair{String, String},
+            in_loop::Bool=false
+            )::Nothing
+    # check if the file is already watched
+    haskey(dict, fpair) && return nothing
+    # if not, track it
+    fpath = joinpath(fpair...)
+    # save it's modification time, set to zero if it's a new file in a loop
+    # to force its processing
+    dict[fpair] = ifelse(in_loop, 0, mtime(fpath))
+    return nothing
 end
 
 

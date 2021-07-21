@@ -1,4 +1,4 @@
-using Xranklin, Test
+include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
 @testset "headers" begin
     let s = """

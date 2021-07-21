@@ -1,4 +1,4 @@
-using Xranklin, Test
+include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
 # 1 - is the previous element a text block (T</p>) or not (B)
 # 2 - is there a line skip before (LS)

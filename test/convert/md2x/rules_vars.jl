@@ -1,4 +1,4 @@
-using Xranklin, Test, Dates; X = Xranklin
+include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
 @testset "mddef" begin
     X.setenv(:cur_local_ctx, nothing)

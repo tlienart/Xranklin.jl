@@ -11,8 +11,8 @@ const CM = CommonMark
 import CommonMark: disable!, enable!, escape_xml
 
 import OrderedCollections: LittleDict
-import Dates
 
+import Dates
 import Base.(/)
 
 # ------------------------------------------------------------------------

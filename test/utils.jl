@@ -1,4 +1,12 @@
+using Xranklin
+using Dates
 import Base.//
+
+X = Xranklin
+
+# ----------------------- #
+# String comparison utils #
+# ----------------------- #
 
 isapproxstr(s1::AbstractString, s2::AbstractString) =
     isequal(map(s->replace(s, r"\s|\n"=>""), String.((s1, s2)))...)

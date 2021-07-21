@@ -1,4 +1,4 @@
-using Xranklin, Test; X = Xranklin;
+include(joinpath(@__DIR__, "..", "utils.jl"))
 
 @testset "global" begin
     gc = X.GlobalContext()

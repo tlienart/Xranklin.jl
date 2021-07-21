@@ -8,6 +8,7 @@ CommonMark = "a80b9123-70ca-4bc0-993e-6e3bcb318db6"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 FranklinParser = "796511e7-1510-466f-ad0c-1823c64bcafa"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [compat]
 CommonMark = "0.8"
