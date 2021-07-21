@@ -102,7 +102,7 @@ struct LxDef{T}
 end
 # if offset unspecified, start from basically -∞ (configs etc)
 function LxDef(nargs::Int, def)
-    o = FRANKLIN_ENV[:OFFSET_LXDEFS] += 5  # precise offset doesn't matter
+    o = FRANKLIN_ENV[:offset_lxdefs] += 5  # precise offset doesn't matter
     LxDef(nargs, def, o, o + 3)            # just forward a bit
 end
 

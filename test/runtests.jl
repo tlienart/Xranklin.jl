@@ -1,7 +1,7 @@
 using Xranklin, LiveServer, Test; X = Xranklin;
 
-X.FRANKLIN_ENV[:STRICT_PARSING] = false
-X.FRANKLIN_ENV[:SHOW_WARNINGS]  = false
+X.setenv(:strict_parsing, false)
+X.setenv(:show_warnings, false)
 
 include("utils.jl")
 
@@ -40,4 +40,5 @@ Need to add tests for some utils as well
 
 @testset "build" begin
     include("build/paths.jl")
+    include("build/watch.jl")
 end

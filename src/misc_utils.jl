@@ -1,7 +1,9 @@
+const StringOrRegex = Union{String,Regex}
+
 printyb(msg) = printstyled(msg, color=:yellow, bold=true)
 
 function print_warning(msg)
-    env(:SHOW_WARNINGS) || return
+    env(:show_warnings) || return
     printyb("┌ Franklin Warning: ")
     for line in split(strip(msg), '\n')
         printyb("│ ")

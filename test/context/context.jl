@@ -54,7 +54,7 @@ end
 
 @testset "cur_ctx" begin
     # no current context set
-    X.FRANKLIN_ENV[:CUR_LOCAL_CTX] = nothing
+    X.setenv(:cur_local_ctx, nothing)
     @test value(:abc, 0) == 0
     @test value(:abc) === nothing
     # with current context
@@ -69,7 +69,7 @@ end
 end
 
 @testset "pagevar" begin
-    X.FRANKLIN_ENV[:CUR_LOCAL_CTX] = nothing
+    X.setenv(:cur_local_ctx, nothing)
     gc = X.GlobalContext()
     lc1 = X.LocalContext(gc, id="C1")
     X.setvar!(lc1, :a, 123)

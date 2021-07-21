@@ -14,8 +14,11 @@ const DefaultGlobalVars = Vars(
     :autocode           => true,
     :automath           => true,
     # File management
-    :ignore             => [".DS_Store", ".gitignore", "node_modules/",
-                            "LICENSE.md", "README.md"],
+    :ignore_base        => StringOrRegex[
+                               ".DS_Store", ".gitignore", "node_modules/",
+                               "LICENSE.md", "README.md"
+                               ],
+    :ignore             => StringOrRegex[],
     :keep_path          => String[],
     :robots_disallow    => String[],
     :generate_robots    => true,

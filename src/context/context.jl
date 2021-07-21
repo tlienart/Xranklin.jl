@@ -192,13 +192,10 @@ end
 
 Set the current local context (and the global context that it points to).
 """
-function set_current_local_context(lc::LocalContext)
-    FRANKLIN_ENV[:CUR_LOCAL_CTX] = lc
-    return nothing
-end
+set_current_local_context(lc::LocalContext) = setenv(:cur_local_ctx, lc)
 
 value(::Nothing, n::Symbol, d=nothing) = d
-value(n::Symbol, d=nothing) = value(FRANKLIN_ENV[:CUR_LOCAL_CTX], n, d)
+value(n::Symbol, d=nothing) = value(env(:cur_local_ctx), n, d)
 
 """
     valuefrom(id, n, d)
@@ -207,7 +204,7 @@ Retrieve a value correpsonding to symbol `n` from a local context with id `s`
 if it exists.
 """
 function valuefrom(id::String, n::Symbol, d=nothing)
-    clc = FRANKLIN_ENV[:CUR_LOCAL_CTX]
+    clc = env(:cur_local_ctx)
     (clc === nothing || id ∉ keys(clc.glob.children_contexts)) && return d
     return value(clc.glob.children_contexts[id], n, d)
 end
@@ -222,7 +219,7 @@ function locvar(n::Union{Symbol,String};  default=nothing)
 end
 
 function globvar(n::Union{Symbol,String}; default=nothing)
-    clc = FRANKLIN_ENV[:CUR_LOCAL_CTX]
+    clc = env(:cur_local_ctx)
     clc === nothing && return default
     return value(clc.glob, Symbol(n), default)
 end

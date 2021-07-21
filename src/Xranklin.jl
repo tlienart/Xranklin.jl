@@ -26,14 +26,17 @@ export locvar, globvar, pagevar
 # ------------------------------------------------------------------------
 
 const FRANKLIN_ENV = LittleDict{Symbol, Any}(
-    :MODULE_NAME    => "Xranklin",     # TODO: remove here and in newmodule
-    :STRICT_PARSING => false,          # if true, fail on any parsing issue
-    :SHOW_WARNINGS  => true,
-    :OFFSET_LXDEFS  => -typemax(Int),  # helps keep track of order in lxcoms/envs
-    :CUR_LOCAL_CTX  => nothing,        # current local context
-    :PATHS          => LittleDict{Symbol,String}(),
+    :module_name    => "Xranklin",     # TODO: remove here and in newmodule
+    :strict_parsing => false,          # if true, fail on any parsing issue
+    :show_warnings  => true,
+    :offset_lxdefs  => -typemax(Int),  # helps keep track of order in lxcoms/envs
+    :cur_local_ctx  => nothing,        # current local context
+    :cur_source     => "",             # relative path to current page inc extension
+    :paths          => LittleDict{Symbol,String}(),
+    :idx_rpath      => 1,              # index at which to start to trim path(:folder)
 )
-env(s::Symbol) = FRANKLIN_ENV[s]
+env(s::Symbol)       = FRANKLIN_ENV[s]
+setenv(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
 
 # ------------------------------------------------------------------------
 
@@ -63,5 +66,6 @@ include("convert/markdown/rules/maths.jl")
 include("convert/markdown/rules/vars.jl")
 
 include("build/paths.jl")
+include("build/watch.jl")
 
 end # module

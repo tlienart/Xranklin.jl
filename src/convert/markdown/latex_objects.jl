@@ -65,8 +65,8 @@ function failed_block(
             m::String
             )::Block
 
-    env(:STRICT_PARSING) && throw(m)
-    env(:SHOW_WARNINGS)  && @warn m
+    env(:strict_parsing) && throw(m)
+    env(:show_warnings)  && @warn m
     # form a "failedblock"
     return Block(:FAILED, b.ss)
 end

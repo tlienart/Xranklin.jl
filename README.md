@@ -9,6 +9,7 @@
 * set of pages with one global context, test children contexts, pruning etc,
 * continuous update, check proper updating triggers, no delays
 * code blocks (also add native python if PyCall is imported)
+  * use `output_path` / `code_out`
 * tags
 * utils
 
