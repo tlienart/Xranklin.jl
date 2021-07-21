@@ -13,6 +13,8 @@ import CommonMark: disable!, enable!, escape_xml
 import OrderedCollections: LittleDict
 import Dates
 
+import Base.(/)
+
 # ------------------------------------------------------------------------
 
 export value, valuefrom
@@ -23,14 +25,15 @@ export locvar, globvar, pagevar
 
 # ------------------------------------------------------------------------
 
-const MODULE_NAME = "Xranklin"
-
 const FRANKLIN_ENV = LittleDict{Symbol, Any}(
+    :MODULE_NAME    => "Xranklin",     # TODO: remove here and in newmodule
     :STRICT_PARSING => false,          # if true, fail on any parsing issue
     :SHOW_WARNINGS  => true,
     :OFFSET_LXDEFS  => -typemax(Int),  # helps keep track of order in lxcoms/envs
     :CUR_LOCAL_CTX  => nothing,        # current local context
+    :PATHS          => LittleDict{Symbol,String}(),
 )
+env(s::Symbol) = FRANKLIN_ENV[s]
 
 # ------------------------------------------------------------------------
 
@@ -58,5 +61,7 @@ include("convert/markdown/rules/headers.jl")
 include("convert/markdown/rules/code.jl")
 include("convert/markdown/rules/maths.jl")
 include("convert/markdown/rules/vars.jl")
+
+include("build/paths.jl")
 
 end # module

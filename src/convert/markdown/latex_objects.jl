@@ -36,7 +36,7 @@ function process_latex_objects!(
         elseif part.name == :LX_BEGIN
             parts[i], n = try_resolve_lxenv(i, parts, ctx; recursion=recursion)
         elseif part.name == :LX_END
-            if ctx.is_math
+            if ctx.is_math[]
                 parts[i], n = raw_inline_block(part), 0
             else
                 m = "Found an orphaned \\end."
@@ -65,8 +65,8 @@ function failed_block(
             m::String
             )::Block
 
-    FRANKLIN_ENV[:STRICT_PARSING] && throw(m)
-    FRANKLIN_ENV[:SHOW_WARNINGS]  && @warn m
+    env(:STRICT_PARSING) && throw(m)
+    env(:SHOW_WARNINGS)  && @warn m
     # form a "failedblock"
     return Block(:FAILED, b.ss)
 end
@@ -188,7 +188,7 @@ function try_resolve_lxcom(
     cand = parts[i]
     name = lstrip(cand.ss, '\\') |> string
     if !hasdef(ctx, name)
-        if ctx.is_math
+        if ctx.is_math[]
             return raw_inline_block(cand), 0
         end
         m = "Command '$(cand.ss)' used before it was defined."
@@ -292,7 +292,7 @@ function try_resolve_lxenv(
 
     # 1 -- look for definition
     if !hasdef(ctx, env_name)
-        if ctx.is_math
+        if ctx.is_math[]
             return raw_inline_block(cand), 0
         end
         m = "Environment '$env_name' used before it was defined."

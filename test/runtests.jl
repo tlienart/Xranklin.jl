@@ -5,6 +5,8 @@ X.FRANKLIN_ENV[:SHOW_WARNINGS]  = false
 
 include("utils.jl")
 
+include("integration_convert.jl")  # itest function
+
 @testset "Context" begin
     p = "context/"
     include("$p/types.jl")
@@ -28,8 +30,6 @@ end
     include("$p/rules_vars.jl")
 end
 
-include("integration.jl")
-
 #=
 TODO: need more tests for vars:
 
@@ -37,3 +37,7 @@ TODO: need more tests for vars:
 
 Need to add tests for some utils as well
 =#
+
+@testset "build" begin
+    include("build/paths.jl")
+end
