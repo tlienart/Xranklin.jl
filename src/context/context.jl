@@ -85,7 +85,11 @@ function value(gc::GlobalContext, n::Symbol, d=nothing; requester::String="")
     return value(gc.vars, n, d)
 end
 
-setvar!(gc::GlobalContext, n::Symbol, v) = setvar!(gc.vars, n, v)
+function setvar!(gc::GlobalContext, n::Symbol, v)
+    n = get(gc.vars_aliases, n, n)
+    setvar!(gc.vars, n, v)
+end
+
 setdef!(gc::GlobalContext, n::String, d) = setdef!(gc.lxdefs, n, d)
 hasdef(gc::GlobalContext,  n::String)    = hasdef(gc.lxdefs, n)
 
@@ -142,7 +146,11 @@ function value(lc::LocalContext, n::Symbol, d=nothing)
     return value(lc.vars, n, d)
 end
 
-setvar!(lc::LocalContext, n::Symbol, v) = setvar!(lc.vars, n, v)
+function setvar!(lc::LocalContext, n::Symbol, v)
+    n = get(lc.vars_aliases, n, n)
+    setvar!(lc.vars, n, v)
+end
+
 setdef!(lc::LocalContext, n::String, d) = setdef!(lc.lxdefs, n, d)
 
 # for hasdef, check the local context then the global context

@@ -132,8 +132,7 @@ as `"README.md"` or indicators for directories such as `"node_modules/"` or
 regex patterns for either like `r"READ*"` or `r"node_*/"`.
 """
 function should_ignore(fpath::String, f2i, d2i)
-    # form path relative to folder
-    rpath = fpath[env(:idx_rpath):end]
+    rpath = get_rpath(fpath)
     return any(p -> startswith(rpath, p), d2i) ||   # dir match
            any(p -> _check(rpath, p), f2i)          # file match
 end

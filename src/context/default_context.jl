@@ -33,6 +33,7 @@ const DefaultGlobalVars = Vars(
     :generate_rss       => false,
     :rss_website_title  => "",
     :rss_website_url    => "",
+    :rss_feed_url       => "",      # generated
     :rss_website_descr  => "",
     :rss_file           => "feed",
     :rss_full_content   => false,
@@ -102,14 +103,14 @@ const DefaultLocalLxDefs = LxDefs()
 ##############################################################################
 
 DefaultGlobalContext() = GlobalContext(
-    DefaultGlobalVars,
-    DefaultGlobalLxDefs,
-    alias=DefaultGlobalVarsAlias
+    copy(DefaultGlobalVars),
+    copy(DefaultGlobalLxDefs),
+    alias=copy(DefaultGlobalVarsAlias)
 )
 
 DefaultLocalContext(g=DefaultGlobalContext()) = LocalContext(
     g,
-    DefaultLocalVars,
-    DefaultLocalLxDefs,
-    alias=DefaultLocalVarsAlias
+    copy(DefaultLocalVars),
+    copy(DefaultLocalLxDefs),
+    alias=copy(DefaultLocalVarsAlias)
 )

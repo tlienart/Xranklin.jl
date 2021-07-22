@@ -10,14 +10,6 @@ include("utils.jl")
 
 include("integration_convert.jl")  # itest function
 
-@testset "misc-utils" begin
-    @testset "time_fmt" begin
-        @test X.time_fmt(0.5) == "(δt = 0.5s)"
-        @test X.time_fmt(60) == "(δt = 1.0min)"
-        @test X.time_fmt(0.01) == "(δt = 10ms)"
-    end
-end
-
 @testset "Context" begin
     p = "context/"
     include("$p/types.jl")
@@ -52,4 +44,19 @@ Need to add tests for some utils as well
 @testset "build" begin
     include("build/paths.jl")
     include("build/watch.jl")
+    include("build/process.jl")
+end
+
+# =========================================================
+
+@testset "misc-utils" begin
+    @testset "time_fmt" begin
+        @test X.time_fmt(0.5) == "(δt = 0.5s)"
+        @test X.time_fmt(60) == "(δt = 1.0min)"
+        @test X.time_fmt(0.01) == "(δt = 10ms)"
+    end
+    @testset "change_ext" begin
+        @test X.change_ext("foo.html", ".md") == "foo.md"
+        @test X.change_ext("foo.md") == "foo.html"
+    end
 end

@@ -75,7 +75,7 @@ end
 
 
 @testset "new* issues" begin
-    Logging.disable_logging(Logging.Warn)
+    nowarn()
     # not enough braces
     s = raw"""
         a \newcommand{foo}
@@ -107,5 +107,5 @@ end
         <span style="color:red">[FAILED:]&gt;\\newcommand&lt;</span>
         <p>{\\bar} 2{hello}</p>
         """)
-    Logging.disable_logging(Logging.Debug)
+    logall()
 end

@@ -27,3 +27,6 @@ function isbalanced(s)
     cd = nmatch(r"<\/div>", s)
     @test od == cd
 end
+
+nowarn() = Logging.disable_logging(Logging.Warn)
+logall() = Logging.disable_logging(Logging.Debug)

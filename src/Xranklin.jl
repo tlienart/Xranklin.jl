@@ -30,7 +30,6 @@ const FRANKLIN_ENV = LittleDict{Symbol, Any}(
     :strict_parsing => false,          # if true, fail on any parsing issue
     :offset_lxdefs  => -typemax(Int),  # helps keep track of order in lxcoms/envs
     :cur_local_ctx  => nothing,        # current local context
-    :cur_source     => "",             # relative path to current page inc extension
     :paths          => LittleDict{Symbol,String}(),
     :idx_rpath      => 1,              # index at which to start to trim path(:folder)
 )
@@ -38,17 +37,16 @@ env(s::Symbol)       = FRANKLIN_ENV[s]
 setenv(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
 
 # ------------------------------------------------------------------------
-# Convenience types
-
-const StringOrRegex = Union{String, Regex}
-
-# ------------------------------------------------------------------------
 
 include("misc_utils.jl")
+
+# ------------------------------------------------------------------------
 
 include("context/types.jl")
 include("context/context.jl")
 include("context/default_context.jl")
+
+# ------------------------------------------------------------------------
 
 include("convert/regex.jl")
 
@@ -69,7 +67,10 @@ include("convert/markdown/rules/code.jl")
 include("convert/markdown/rules/maths.jl")
 include("convert/markdown/rules/vars.jl")
 
+# ------------------------------------------------------------------------
+
 include("build/paths.jl")
 include("build/watch.jl")
+include("build/process.jl")
 
 end # module

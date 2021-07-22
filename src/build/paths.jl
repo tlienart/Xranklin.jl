@@ -10,6 +10,7 @@ path(s::Symbol) = env(:paths)[s]
 
 function set_paths(folder::String=pwd())
     @assert isdir(folder) "$folder is not a valid path"
+    # keep track of prefix, see get_rpath
     setenv(:idx_rpath, lastindex(folder / "") + 1)
     P = env(:paths)
     f = P[:folder] = normpath(folder)
@@ -36,3 +37,15 @@ and then later have something that loads that file e.g.:
 * in the markdown: `\fig{"f1.png"}`
 """
 code_output_path(s::String="") = path(:code_out) / s
+
+
+"""
+    get_rpath(fpath)
+
+Extract the relative path out of the full path to a file.
+
+## Example
+
+    `/foo/bar/baz/site/blog/page.md` --> `blog/page.md`
+"""
+get_rpath(fpath::String) = fpath[env(:idx_rpath):end]
