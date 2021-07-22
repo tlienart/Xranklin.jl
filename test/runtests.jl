@@ -1,11 +1,22 @@
-using Xranklin, LiveServer, Test; X = Xranklin;
+using Xranklin
+using LiveServer
+using Logging
+using Test
+X = Xranklin;
 
 X.setenv(:strict_parsing, false)
-X.setenv(:show_warnings, false)
 
 include("utils.jl")
 
 include("integration_convert.jl")  # itest function
+
+@testset "misc-utils" begin
+    @testset "time_fmt" begin
+        @test X.time_fmt(0.5) == "(δt = 0.5s)"
+        @test X.time_fmt(60) == "(δt = 1.0min)"
+        @test X.time_fmt(0.01) == "(δt = 10ms)"
+    end
+end
 
 @testset "Context" begin
     p = "context/"

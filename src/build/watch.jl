@@ -10,8 +10,6 @@ indication of when the file was last modified.
 const TrackedFiles = LittleDict{Pair{String, String}, Float64}
 
 
-
-
 """
     find_files_to_watch(folder)
 
@@ -43,10 +41,7 @@ function find_files_to_watch(
                    startswith(fpath, path(:site)) ||
                    startswith(fpath, path(:folder) / ".git") ||
                    should_ignore(fpath, f2i, d2i)
-            if skip
-                debug(LOGGER, "Skipping $fpath")
-                continue
-            end
+            skip && (@info "Skipping $fpath"; continue)
 
             if startswith(fpath, path(:css)) ||
                    startswith(fpath, path(:layout)) ||
@@ -94,6 +89,7 @@ function add_if_new_file!(
     haskey(dict, fpair) && return nothing
     # if not, track it
     fpath = joinpath(fpair...)
+    in_loop && @info "📖 Tracking new file $fpath"
     # save it's modification time, set to zero if it's a new file in a loop
     # to force its processing
     dict[fpair] = ifelse(in_loop, 0, mtime(fpath))

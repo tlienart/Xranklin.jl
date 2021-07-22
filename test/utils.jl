@@ -1,5 +1,8 @@
 using Xranklin
+using Xranklin: (/)
+using Test
 using Dates
+using Logging
 import Base.//
 
 X = Xranklin

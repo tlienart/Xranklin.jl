@@ -28,7 +28,6 @@ export locvar, globvar, pagevar
 const FRANKLIN_ENV = LittleDict{Symbol, Any}(
     :module_name    => "Xranklin",     # TODO: remove here and in newmodule
     :strict_parsing => false,          # if true, fail on any parsing issue
-    :show_warnings  => true,
     :offset_lxdefs  => -typemax(Int),  # helps keep track of order in lxcoms/envs
     :cur_local_ctx  => nothing,        # current local context
     :cur_source     => "",             # relative path to current page inc extension
@@ -37,6 +36,11 @@ const FRANKLIN_ENV = LittleDict{Symbol, Any}(
 )
 env(s::Symbol)       = FRANKLIN_ENV[s]
 setenv(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
+
+# ------------------------------------------------------------------------
+# Convenience types
+
+const StringOrRegex = Union{String, Regex}
 
 # ------------------------------------------------------------------------
 

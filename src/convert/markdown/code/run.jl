@@ -22,7 +22,8 @@ function run_code(
             mod::Module,
             code::SS,
             out_path::String=tempname();
-            exs::Vector=[]
+            exs::Vector=[],
+            block_name::String=""
             )
 
     isempty(code) && return nothing
@@ -34,6 +35,10 @@ function run_code(
     stacktrace = nothing
     ispath(out_path) || mkpath(dirname(out_path))
 
+    @info """
+        ⏳ Evaluating code... $(isempty(block_name) ? "" : "($block_name)")
+        """
+    start = time()
     open(out_path, "w") do outf
         redirect_stdout(outf) do
             e = 1
@@ -62,17 +67,23 @@ function run_code(
 
     # if there was an error, return nothing and possibly show warning
     if !isnothing(err)
-        print_warning(
-            """
+        @warn """
+            Code evaluation
+            ---------------
             There was an error of type '$err' when running a code block.
             Checking the output files '$(splitext(out_path)[1]).(out|res)'
             might be helpful to understand and solve the issue.
 
             Details:
             $(trim_stacktrace(stacktrace))
+
             """
-        )
         res = nothing
+    else
+        δt = time() - start
+        @info """
+            ... ✔ $(time_fmt(δt))
+            """
     end
 
     # Check what should be displayed at the end if anything

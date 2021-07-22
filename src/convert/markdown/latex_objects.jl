@@ -66,7 +66,7 @@ function failed_block(
             )::Block
 
     env(:strict_parsing) && throw(m)
-    env(:show_warnings)  && @warn m
+    @warn m
     # form a "failedblock"
     return Block(:FAILED, b.ss)
 end
