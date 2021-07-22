@@ -3,7 +3,7 @@ using Xranklin: (/)
 using Test
 using Dates
 using Logging
-import Base.//
+import Base: (//)
 
 X = Xranklin
 

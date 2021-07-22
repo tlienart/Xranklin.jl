@@ -196,14 +196,29 @@ end
 # -------------------------------------- #
 
 """
+    set_current_global_context(gc)
+
+Set the current global context and reset the current local context if any
+to guarantee consistency.
+"""
+function set_current_global_context(gc::GlobalContext)
+    setenv(:cur_global_ctx, gc)
+    setenv(:cur_local_ctx, nothing)
+end
+
+"""
     set_current_local_context(lc)
 
 Set the current local context (and the global context that it points to).
 """
-set_current_local_context(lc::LocalContext) = setenv(:cur_local_ctx, lc)
+function set_current_local_context(lc::LocalContext)
+    setenv(:cur_local_ctx, lc)
+    setenv(:cur_global_ctx, lc.glob)
+end
 
 value(::Nothing, n::Symbol, d=nothing) = d
-value(n::Symbol, d=nothing) = value(env(:cur_local_ctx), n, d)
+value(n::Symbol, d=nothing)  = value(env(:cur_local_ctx), n, d)
+valueglob(n::Symbol, d=nothing) = value(env(:cur_global_ctx), n, d)
 
 """
     valuefrom(id, n, d)
@@ -227,9 +242,9 @@ function locvar(n::Union{Symbol,String};  default=nothing)
 end
 
 function globvar(n::Union{Symbol,String}; default=nothing)
-    clc = env(:cur_local_ctx)
-    clc === nothing && return default
-    return value(clc.glob, Symbol(n), default)
+    cgc = env(:cur_global_ctx)
+    cgc === nothing && return default
+    return value(cgc, Symbol(n), default)
 end
 
 function pagevar(s::String, n::Union{Symbol,String}; default=nothing)

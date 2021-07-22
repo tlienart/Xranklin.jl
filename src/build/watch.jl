@@ -111,7 +111,7 @@ Form the list of files to ignore and dirs to ignore. These lists have element
 type `Union{String,Regex}` and so either indicate an exact match or a pattern.
 """
 function files_and_dirs_to_ignore()
-    ignore = globvar(:ignore_base) ∪ globvar(:ignore)
+    ignore = valueglob(:ignore_base) ∪ valueglob(:ignore)
     f2i    = StringOrRegex[]
     d2i    = StringOrRegex[]
     for p in ignore

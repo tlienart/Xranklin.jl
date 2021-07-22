@@ -6,6 +6,8 @@ import FranklinParser: SS, Token, Block,
                        subs, content, dedent, parent_string,
                        from, to, previous_index, next_index
 
+import FranklinTemplates: newsite, filecmp
+
 import CommonMark
 const CM = CommonMark
 import CommonMark: disable!, enable!, escape_xml
@@ -17,7 +19,7 @@ import Base.(/)
 
 # ------------------------------------------------------------------------
 
-export value, valuefrom
+export value, valuefrom, valueglob
 export html, latex
 
 # legacy
@@ -29,9 +31,11 @@ const FRANKLIN_ENV = LittleDict{Symbol, Any}(
     :module_name    => "Xranklin",     # TODO: remove here and in newmodule
     :strict_parsing => false,          # if true, fail on any parsing issue
     :offset_lxdefs  => -typemax(Int),  # helps keep track of order in lxcoms/envs
+    :cur_global_ctx => nothing,        # current global context
     :cur_local_ctx  => nothing,        # current local context
     :paths          => LittleDict{Symbol,String}(),
     :idx_rpath      => 1,              # index at which to start to trim path(:folder)
+    :idx_ropath     => 1,              # index at which to start to trim out path
 )
 env(s::Symbol)       = FRANKLIN_ENV[s]
 setenv(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)

@@ -18,3 +18,11 @@ end
 Change the file extension of a filename.
 """
 change_ext(fn, ext=".html") = splitext(fn)[1] * ext
+
+
+"""
+    html_attr
+
+Convenience function to add an attribute to a html element.
+"""
+html_attr(n::Symbol, v::String) = ifelse(isempty(v), "", " $n=\"$v\"")

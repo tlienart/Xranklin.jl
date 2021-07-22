@@ -58,14 +58,20 @@ end
     @test value(:abc, 0) == 0
     @test value(:abc) === nothing
     # with current context
-    lc = X.LocalContext()
+    lc = X.DefaultLocalContext()
     X.set_current_local_context(lc)
+
+    @test X.env(:cur_global_ctx) === lc.glob
+
     @test value(:lang) == value(lc, :lang)
-    @test value(:prepath) == value(lc.glob, :prepath)
+    @test value(:prepath) == value(lc.glob, :prepath) == ""
 
     # legacy access
-    @test locvar(:lang) == value(lc, :lang)
-    @test globvar(:base_url_prefix) == value(lc.glob, :prepath)
+    @test locvar(:lang) == value(lc, :lang) == "julia"
+    @test globvar(:base_url_prefix) == value(lc.glob, :prepath) == ""
+
+    X.setvar!(lc.glob, :prepath, "foo")
+    @test globvar(:base_url_prefix) == "foo"
 end
 
 @testset "pagevar" begin

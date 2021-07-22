@@ -175,13 +175,13 @@ Add 🚨 for the ones that are thoroughly tested (including potential errors / a
   * [x] add_if_new_file
   * [x] should_ignore
   * [ ] prepare output dir
-  * [ ] form output path
-  * [ ] out path
-  * [ ] keep path
+  * [x] form output path
+  * [x] out path
+  * [x] keep path
   * [ ] form custom output path
 * [ ] **include("manager/file_utils.jl")**
-  * [ ] process_config
-  * [ ] include external config
+  * [x] process_config
+  * [-] include external config _not necessary, use process_config_
   * [ ] process_utils
   * [ ] process_file
   * [ ] process_file_err

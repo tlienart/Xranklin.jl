@@ -27,3 +27,46 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     @test value(gc, :generate_rss, true) == false
     logall()
 end
+
+@testset "md file" begin
+    d = mktempdir()
+    X.set_paths(d)
+    fpair = d => "foo.md"
+    fpath = joinpath(fpair...)
+    opath = X.form_output_path(fpair, :md)
+    write(fpath, """
+        abc `def` **ghi**
+        """)
+    gc = X.DefaultGlobalContext()
+    X.set_current_global_context(gc)
+    X.process_md_file(gc, fpath, opath)
+    @test isfile(opath)
+    # there's no layout files so everything is empty, we just get the content
+    s = read(opath, String)
+    @test isapproxstr(s, """
+        <div class="franklin-content">
+          <p>abc <code>def</code> <strong>ghi</strong></p>
+        </div>
+        """)
+
+    isdir(d/"_layout") || mkdir(d/"_layout")
+    write(d/"_layout"/"head.html", """
+        HEAD
+        """)
+    write(d/"_layout/page_foot.html", """
+        PAGE_FOOT
+        """)
+    write(d/"_layout"/"foot.html", """
+        FOOT
+        """)
+    X.process_md_file(gc, fpath, opath)
+    s = read(opath, String)
+    @test isapproxstr(s, """
+        HEAD
+        <div class="franklin-content">
+          <p>abc <code>def</code> <strong>ghi</strong></p>
+        PAGE_FOOT
+        </div>
+        FOOT
+        """)
+end
