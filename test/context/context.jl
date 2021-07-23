@@ -58,8 +58,7 @@ end
     @test value(:abc, 0) == 0
     @test value(:abc) === nothing
     # with current context
-    lc = X.DefaultLocalContext()
-    X.set_current_local_context(lc)
+    lc = X.DefaultLocalContext() # becomes the current as well
 
     @test X.env(:cur_global_ctx) === lc.glob
 

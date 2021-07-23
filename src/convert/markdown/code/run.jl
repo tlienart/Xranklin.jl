@@ -36,7 +36,7 @@ function run_code(
     ispath(out_path) || mkpath(dirname(out_path))
 
     @info """
-        ⏳ Evaluating code... $(isempty(block_name) ? "" : "($block_name)")
+        ⏳ evaluating code... $(hl(isempty(block_name) ? "" : "($block_name)", :light_green))
         """
     start = time()
     open(out_path, "w") do outf
@@ -82,7 +82,7 @@ function run_code(
     else
         δt = time() - start
         @info """
-            ... ✔ $(time_fmt(δt))
+            ... ✔ $(hl(time_fmt(δt)))
             """
     end
 

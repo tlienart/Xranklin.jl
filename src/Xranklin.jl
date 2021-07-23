@@ -76,5 +76,6 @@ include("convert/markdown/rules/vars.jl")
 include("build/paths.jl")
 include("build/watch.jl")
 include("build/process.jl")
+include("build/serve.jl")
 
 end # module

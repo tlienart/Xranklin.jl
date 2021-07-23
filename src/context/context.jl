@@ -204,6 +204,7 @@ to guarantee consistency.
 function set_current_global_context(gc::GlobalContext)
     setenv(:cur_global_ctx, gc)
     setenv(:cur_local_ctx, nothing)
+    gc
 end
 
 """
@@ -214,6 +215,7 @@ Set the current local context (and the global context that it points to).
 function set_current_local_context(lc::LocalContext)
     setenv(:cur_local_ctx, lc)
     setenv(:cur_global_ctx, lc.glob)
+    lc
 end
 
 value(::Nothing, n::Symbol, d=nothing) = d

@@ -41,7 +41,10 @@ function find_files_to_watch(
                    startswith(fpath, path(:site)) ||
                    startswith(fpath, path(:folder) / ".git") ||
                    should_ignore(fpath, f2i, d2i)
-            skip && (@info "Skipping $fpath"; continue)
+            if skip
+                @info "🔺 skipping $(hl(str_fmt(get_rpath(fpath)), :cyan))"
+                continue
+            end
 
             if startswith(fpath, path(:css)) ||
                    startswith(fpath, path(:layout)) ||
@@ -89,7 +92,9 @@ function add_if_new_file!(
     haskey(dict, fpair) && return nothing
     # if not, track it
     fpath = joinpath(fpair...)
-    in_loop && @info "📖 Tracking new file $fpath"
+    in_loop && @info """
+        👀 tracking new file $(hl(str_fmt(get_rpath(fpath)), :cyan))
+        """
     # save it's modification time, set to zero if it's a new file in a loop
     # to force its processing
     dict[fpair] = ifelse(in_loop, 0, mtime(fpath))

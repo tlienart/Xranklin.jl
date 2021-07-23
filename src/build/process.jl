@@ -65,21 +65,18 @@ function process_file(
 
     opath = form_output_path(fpair, case)
 
-    if case == :md
+    if case in (:md, :html)
         start = time(); @info """
-            ⌛ processing $fpair...
+            ⌛ processing $(hl(get_rpath(fpath), :cyan))
             """
-        process_md_file(gc, fpath, opath)
+        if case == :md
+            process_md_file(gc, fpath, opath)
+        elseif case == :html
+            process_html_file(gc, fpath, opath)
+        end
+        ropath = "__site"/get_ropath(opath)
         @info """
-            ... ✔ $(time_fmt(time()-start))
-            """
-    elseif case == :html
-        start = time(); @info """
-            ⌛ processing $fpair...
-            """
-        process_html_file(gc, fpath, opath)
-        @info """
-            ... ✔ $(time_fmt(time()-start))
+            ... ✔ $(hl(time_fmt(time()-start))), wrote $(hl((str_fmt(ropath)), :cyan))
             """
     else
         # copy the file over if
@@ -93,6 +90,12 @@ function process_file(
 end
 
 
+"""
+    process_md_file(gc, fpath, opath)
+
+Process a markdown file located at `fpath` within global context `gc` and
+write the result at `opath`.
+"""
 function process_md_file(
             gc::GlobalContext,
             fpath::String,
@@ -102,11 +105,6 @@ function process_md_file(
     rpath  = get_rpath(fpath)
     ropath = get_ropath(opath)
     ctx    = DefaultLocalContext(gc, id=rpath)
-
-    start = time()
-    @info """
-        ⌛ processing file $rpath
-        """
 
     # set meta parameters
     s = stat(fpath)
@@ -131,6 +129,7 @@ function process_md_file(
     c_class = value(ctx, :content_class, "franklin-content")
     c_id    = value(ctx, :content_id, "")
 
+    # Assemble the body, wrap it in tags if required
     body_html = ""
     if !isempty(c_tag)
         body_html = """
@@ -146,22 +145,40 @@ function process_md_file(
             """
     end
 
+    # Assemble the full page
     full_page_html = ""
+
+    # head if it exists
     head_path = path(:folder) / valueglob(:layout_head, "")
     if !isempty(head_path) && isfile(head_path)
         full_page_html = read(head_path, String)
     end
 
+    # attach the body
     full_page_html *= body_html
 
+    # then the foot if it exists
     foot_path = path(:folder) / valueglob(:layout_foot, "")
     if !isempty(foot_path) && isfile(foot_path)
         full_page_html *= read(foot_path, String)
     end
 
+    # write to file
     write(opath, full_page_html)
-    @info """
-        ... ✔ $(time_fmt(time()-start)), wrote: $opath
-        """
     return
+end
+
+
+"""
+    process_html_file(gc, fpath, opath)
+
+Process a html file located at `fpath` within global context `gc` and
+write the result at `opath`.
+"""
+function process_html_file(
+            gc::GlobalContext,
+            fpath::String,
+            opath::String
+            )
+    throw(ErrorException("Not Implemented Yet"))
 end

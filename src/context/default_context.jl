@@ -121,7 +121,7 @@ DefaultGlobalContext() = GlobalContext(
     copy(DefaultGlobalVars),
     copy(DefaultGlobalLxDefs),
     alias=copy(DefaultGlobalVarsAlias)
-)
+) |> set_current_global_context
 
 DefaultLocalContext(g=DefaultGlobalContext(); id="") = LocalContext(
     g,
@@ -129,4 +129,4 @@ DefaultLocalContext(g=DefaultGlobalContext(); id="") = LocalContext(
     copy(DefaultLocalLxDefs),
     alias=copy(DefaultLocalVarsAlias),
     id=id
-)
+) |> set_current_local_context

@@ -3,6 +3,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
 @testset "defaultglobal" begin
     gc = X.DefaultGlobalContext()
     @test gc isa X.GlobalContext
+    @test gc === X.env(:cur_global_ctx)
     # accessing stuff (no default here)
     @test value(gc, :autocode) === true
     # using alias

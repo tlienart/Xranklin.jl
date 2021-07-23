@@ -1,5 +1,18 @@
 const StringOrRegex = Union{String, Regex}
 
+
+ """
+    hl(s, c)
+
+Make a string coloured and printable within a macro such as `@info`.
+Courtesy of Andrey Oskin.
+"""
+function hl(o, c::Symbol=:light_magenta)
+    io = IOBuffer()
+    printstyled(IOContext(io, :color => true), o, color=c)
+    return io |> take! |> String
+end
+
 """
     time_fmt(δt)
 
@@ -9,6 +22,18 @@ function time_fmt(δt)
     δt ≥ 10  && return "(δt = $(round(δt / 60, digits=1))min)"
     δt ≥ 0.1 && return "(δt = $(round(δt, digits=1))s)"
     return "(δt = $(round(Int, δt * 1000))ms)"
+end
+
+"""
+    str_fmt(s, l=40)
+
+Simple shortening of long strings to a string of max `l` characters
+preceding the string with `[...]` if it's been shortened.
+"""
+function str_fmt(s::String, l=40)
+    ss = last(s, l)
+    ss == s && return "$s"
+    return "[...]$ss"
 end
 
 
