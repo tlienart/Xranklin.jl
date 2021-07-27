@@ -1,4 +1,4 @@
-using Xranklin, Test; X = Xranklin;
+include(joinpath(@__DIR__, "..", "utils.jl"))
 
 @testset "setdict" begin
     sd = X.SetDict{Symbol, String}()

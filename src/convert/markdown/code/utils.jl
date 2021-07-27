@@ -34,7 +34,8 @@ function newmodule(name::String)::Module
         redirect_stderr(outf) do
             mod = Core.eval(Main, Meta.parse("""
                 module $name
-                    using $MODULE_NAME
+                    using $(env(:module_name))
+                    using $(env(:module_name)): code_output_path
                 end
                 """)
             )

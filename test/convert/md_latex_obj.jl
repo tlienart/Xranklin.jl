@@ -1,3 +1,5 @@
+include(joinpath(@__DIR__, "..", "utils.jl"))
+
 @testset "command - basic" begin
     let s = raw"""
         \newcommand{\foo}{bar}

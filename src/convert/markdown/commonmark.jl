@@ -31,9 +31,9 @@ enable!(cm_parser, SkipIndented())
 """
     md2x(s::String, to_html::Bool)
 
-Wrapper around what CommonMark does to keep track of spaces etc which CM strips away but
-which are actually needed in order to adequately resolve inline inserts. Leads to either
-html or latex based on the case.
+Wrapper around what CommonMark does to keep track of spaces etc which CM
+strips away but which are actually needed in order to adequately resolve
+inline inserts. Leads to either html or latex based on the case.
 """
 function md2x(s::String, to_html::Bool)::String
     isempty(s) && return ""
@@ -68,6 +68,12 @@ md2html(s::String)  = md2x(s, true)
 md2latex(s::String) = md2x(s, false)
 
 
+"""
+    md_core(parts, ctx; to_html)
+
+Function processing blocks in sequence and assembling them while resolving
+possible balancing issues.
+"""
 function md_core(
             parts::Vector{Block},
             c::Context;

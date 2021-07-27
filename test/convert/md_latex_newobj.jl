@@ -1,4 +1,4 @@
-using Xranklin, Test; X = Xranklin;
+include(joinpath(@__DIR__, "..", "utils.jl"))
 
 @testset "newcommand" begin
     s = raw"""
@@ -75,6 +75,7 @@ end
 
 
 @testset "new* issues" begin
+    nowarn()
     # not enough braces
     s = raw"""
         a \newcommand{foo}
@@ -106,4 +107,5 @@ end
         <span style="color:red">[FAILED:]&gt;\\newcommand&lt;</span>
         <p>{\\bar} 2{hello}</p>
         """)
+    logall()
 end

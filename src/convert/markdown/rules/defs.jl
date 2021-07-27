@@ -1,7 +1,7 @@
 function process_defs(cb, c)
     mdl = newmodule("__FRANKLIN_VARS")
     exs = parse_code(cb)
-    run_code(mdl, cb; exs=exs)
+    run_code(mdl, cb; exs=exs, block_name="vars assignment")
 
     # get the variable names from all assignment expressions
     vnames = [

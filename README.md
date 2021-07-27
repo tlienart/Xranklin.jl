@@ -9,9 +9,10 @@
 * set of pages with one global context, test children contexts, pruning etc,
 * continuous update, check proper updating triggers, no delays
 * code blocks (also add native python if PyCall is imported)
+  * use `output_path` / `code_out`
 * tags
 * utils
-
+* list of all warning messages and explaination / what to do
 
 ## More tests
 
@@ -168,8 +169,25 @@ Add 🚨 for the ones that are thoroughly tested (including potential errors / a
 * [ ] include("manager/sitemap_generator.jl")
 * [ ] include("manager/robots_generator.jl")
 * [ ] include("manager/write_page.jl")
-* [ ] include("manager/dir_utils.jl")
-* [ ] include("manager/file_utils.jl")
+* [ ] **include("manager/dir_utils.jl")**
+  * [x] TrackedFiles
+  * [x] scan_input_dir!
+  * [x] add_if_new_file
+  * [x] should_ignore
+  * [ ] prepare output dir
+  * [x] form output path
+  * [x] out path
+  * [x] keep path
+  * [ ] form custom output path
+* [ ] **include("manager/file_utils.jl")**
+  * [x] process_config
+  * [-] include external config _not necessary, use process_config_
+  * [ ] process_utils
+  * [ ] process_file
+  * [ ] process_file_err
+  * [x] change_ext
+  * [x] get_rpath
+  * [ ] set_cur_rpath _maybe not necessary_
 * [ ] include("manager/franklin.jl")
 * [ ] include("manager/extras.jl")
 * [ ] include("manager/post_processing.jl")

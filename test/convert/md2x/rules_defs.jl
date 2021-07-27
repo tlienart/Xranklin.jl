@@ -1,7 +1,7 @@
-using Xranklin, Test, Dates; X = Xranklin
+include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
 @testset "mddef" begin
-    X.FRANKLIN_ENV[:CUR_LOCAL_CTX] = nothing
+    X.setenv(:cur_local_ctx, nothing)
     gc = X.GlobalContext()
     lc = X.LocalContext(gc)
     s = """

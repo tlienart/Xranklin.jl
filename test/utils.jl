@@ -1,4 +1,15 @@
-import Base.//
+using Xranklin
+using Xranklin: (/)
+using Test
+using Dates
+using Logging
+import Base: (//)
+
+X = Xranklin
+
+# ----------------------- #
+# String comparison utils #
+# ----------------------- #
 
 isapproxstr(s1::AbstractString, s2::AbstractString) =
     isequal(map(s->replace(s, r"\s|\n"=>""), String.((s1, s2)))...)
@@ -16,3 +27,6 @@ function isbalanced(s)
     cd = nmatch(r"<\/div>", s)
     @test od == cd
 end
+
+nowarn() = Logging.disable_logging(Logging.Warn)
+logall() = Logging.disable_logging(Logging.Debug)

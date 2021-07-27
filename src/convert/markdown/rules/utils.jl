@@ -1,5 +1,5 @@
 """
-    attr(name, value)
+    attr(name, val)
 
 Convenience function to add an attribute to a HTML element.
 """
