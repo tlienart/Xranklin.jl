@@ -35,7 +35,7 @@ end
 
 @testset "Utils" begin
     p = "convert/utils"
-#    include(p/"utils.jl")
+    include(p/"utils.jl")
 end
 
 @testset "build" begin
