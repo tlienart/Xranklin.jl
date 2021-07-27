@@ -20,7 +20,8 @@ const INLINE_BLOCKS = [
     :CODE_INLINE,
     :LINEBREAK,
     :MATH_A,
-    :MATH_I
+    :MATH_I,
+    :DBB
 ]
 
 #

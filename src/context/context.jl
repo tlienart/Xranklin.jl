@@ -201,26 +201,31 @@ end
 Set the current global context and reset the current local context if any
 to guarantee consistency.
 """
-function set_current_global_context(gc::GlobalContext)
+function set_current_global_context(gc::GlobalContext)::GlobalContext
     setenv(:cur_global_ctx, gc)
     setenv(:cur_local_ctx, nothing)
     gc
 end
+
 
 """
     set_current_local_context(lc)
 
 Set the current local context (and the global context that it points to).
 """
-function set_current_local_context(lc::LocalContext)
+function set_current_local_context(lc::LocalContext)::LocalContext
     setenv(:cur_local_ctx, lc)
     setenv(:cur_global_ctx, lc.glob)
     lc
 end
 
-value(::Nothing, n::Symbol, d=nothing) = d
-value(n::Symbol, d=nothing)  = value(env(:cur_local_ctx), n, d)
-valueglob(n::Symbol, d=nothing) = value(env(:cur_global_ctx), n, d)
+
+cur_gc() = env(:cur_global_ctx)::GlobalContext
+cur_lc() = env(:cur_local_ctx)::LocalContext
+setgvar!(n::Symbol, v) = setvar!(cur_gc(), n, v)
+setlvar!(n::Symbol, v) = setvar!(cur_lc(), n, v)
+value(n::Symbol, d=nothing)     = value(cur_lc(), n, d)
+valueglob(n::Symbol, d=nothing) = value(cur_gc(), n, d)
 
 """
     valuefrom(id, n, d)

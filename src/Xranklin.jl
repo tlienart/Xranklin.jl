@@ -1,5 +1,14 @@
 module Xranklin
 
+# ------------------------------------------------------------------------
+# stdlib
+
+import Dates
+import Base.(/)
+
+# ------------------------------------------------------------------------
+# external
+
 import FranklinParser
 const FP = FranklinParser
 import FranklinParser: SS, Token, Block,
@@ -14,9 +23,6 @@ import CommonMark: disable!, enable!, escape_xml
 
 import OrderedCollections: LittleDict
 
-import Dates
-import Base.(/)
-
 # ------------------------------------------------------------------------
 
 export value, valuefrom, valueglob
@@ -28,14 +34,11 @@ export locvar, globvar, pagevar
 # ------------------------------------------------------------------------
 
 const FRANKLIN_ENV = LittleDict{Symbol, Any}(
-    :module_name    => "Xranklin",     # TODO: remove here and in newmodule
-    :strict_parsing => false,          # if true, fail on any parsing issue
-    :offset_lxdefs  => -typemax(Int),  # helps keep track of order in lxcoms/envs
-    :cur_global_ctx => nothing,        # current global context
-    :cur_local_ctx  => nothing,        # current local context
-    :paths          => LittleDict{Symbol,String}(),
-    :idx_rpath      => 1,              # index at which to start to trim path(:folder)
-    :idx_ropath     => 1,              # index at which to start to trim out path
+    :module_name       => "Xranklin",     # TODO: remove here and in newmodule
+    :strict_parsing    => false,          # if true, fail on any parsing issue
+    :offset_lxdefs     => -typemax(Int),  # helps keep track of order in lxcoms/envs
+    :cur_global_ctx    => nothing,        # current global context
+    :cur_local_ctx     => nothing,        # current local context
 )
 env(s::Symbol)       = FRANKLIN_ENV[s]
 setenv(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
@@ -69,7 +72,12 @@ include("convert/markdown/rules/text.jl")
 include("convert/markdown/rules/headers.jl")
 include("convert/markdown/rules/code.jl")
 include("convert/markdown/rules/maths.jl")
-include("convert/markdown/rules/vars.jl")
+include("convert/markdown/rules/defs.jl")
+
+include("convert/postprocess/html/html2.jl")
+include("convert/postprocess/latex/latex2.jl")
+
+include("convert/utils/utils.jl")
 
 # ------------------------------------------------------------------------
 

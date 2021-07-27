@@ -1,7 +1,7 @@
 include(joinpath(@__DIR__, "..", "utils.jl"))
 
 @testset "paths" begin
-    empty!(X.env(:paths))
+    gc = X.DefaultGlobalContext()
     @test_throws AssertionError X.set_paths("i_dont_exist")
     X.set_paths()
     @test isdir(X.path(:folder))
@@ -30,6 +30,7 @@ end
     @test op == d/"__site"/"libs"/"foo.js"
     # keep path
     gc = X.DefaultGlobalContext()
+    X.set_paths(d)
     X.setvar!(gc, :keep_path, ["foo/bar.html", "foo/baz.md", "blog/"])
     X.set_current_global_context(gc)
     op = X.form_output_path(d/"foo" => "bar.html", :html)

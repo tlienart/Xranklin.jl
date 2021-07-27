@@ -1,42 +1,54 @@
 """
-    process_config(gc, config)
+    process_config(config, gc)
 
-Process a configuration file into a given global context object.
-The configuration can be given explicitly as a string to allow
-for pre-configuration (e.g. a Utils package generating a default
-config).
+Process a configuration string into a given global context object. The
+configuration can be given explicitly as a string to allow for
+pre-configuration (e.g. a Utils package generating a default config).
 """
 function process_config(
             config::String,
-            gc::GlobalContext=env(:cur_global_ctx)
+            gc::GlobalContext=cur_gc()
             )
 
+    start = time(); @info """
+        ⌛ processing config
+        """
     html(config, gc)
-    if value(gc, :generate_rss, false)
+    @info """
+        ... ✔ $(hl(time_fmt(time()-start)))
+        """
+    if value(gc, :generate_rss)::Bool
         # :website_url must be given
-        url = value(gc, :rss_website_url, "")
+        url = value(gc, :rss_website_url)::String
         if isempty(url)
             @warn """
+                Process config
+                --------------
                 When `generate_rss=true`, `rss_website_url` must be given.
                 Setting `generate_rss=false` in the meantime.
                 """
             setvar!(gc, :generate_rss, false)
         else
             endswith(url, '/') || (url *= '/')
-            full_url =  url * value(gc, :rss_file, "feed") * ".xml"
+            full_url =  url * value(gc, :rss_file)::String * ".xml"
             setvar!(gc, :rss_feed_url, full_url)
         end
     end
     return
 end
 
-function process_config(gc::GlobalContext=env(:cur_global_ctx))
+function process_config(gc::GlobalContext=cur_gc())
     config_path = path(:folder) / "config.md"
     if isfile(config_path)
         process_config(read(config_path, String), gc)
     else
-        @warn "Config file $config not found."
+        @warn """
+            Process config
+            --------------
+            Config file $config not found.
+            """
     end
+    return
 end
 
 
@@ -52,7 +64,7 @@ function process_file(
             fpair::Pair{String,String},
             case::Symbol,
             t::Float64=0.0;     # compare modif time
-            gc::GlobalContext=env(:cur_global_ctx)
+            gc::GlobalContext=cur_gc()
             )
 
     # there's things we don't want to copy over or (re)process
@@ -118,16 +130,16 @@ function process_md_file(
     page_content_html = html(page_content_md, ctx)
 
     # get and process html for the foot of the page
-    page_foot_path = path(:folder) / valueglob(:layout_page_foot, "")
+    page_foot_path = path(:folder) / valueglob(:layout_page_foot)::String
     page_foot_html = ""
     if !isempty(page_foot_path) && isfile(page_foot_path)
         page_foot_html = read(page_foot_path, String)
     end
 
     # add the content tags if required
-    c_tag   = value(ctx, :content_tag, "div")
-    c_class = value(ctx, :content_class, "franklin-content")
-    c_id    = value(ctx, :content_id, "")
+    c_tag   = value(ctx, :content_tag)::String
+    c_class = value(ctx, :content_class)::String
+    c_id    = value(ctx, :content_id)::String
 
     # Assemble the body, wrap it in tags if required
     body_html = ""
@@ -149,7 +161,7 @@ function process_md_file(
     full_page_html = ""
 
     # head if it exists
-    head_path = path(:folder) / valueglob(:layout_head, "")
+    head_path = path(:folder) / valueglob(:layout_head)::String
     if !isempty(head_path) && isfile(head_path)
         full_page_html = read(head_path, String)
     end
@@ -158,7 +170,7 @@ function process_md_file(
     full_page_html *= body_html
 
     # then the foot if it exists
-    foot_path = path(:folder) / valueglob(:layout_foot, "")
+    foot_path = path(:folder) / valueglob(:layout_foot)::String
     if !isempty(foot_path) && isfile(foot_path)
         full_page_html *= read(foot_path, String)
     end

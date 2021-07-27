@@ -44,6 +44,17 @@ const DefaultGlobalVars = Vars(
     :rss_full_content   => false,
     # Tags
     :tag_page_path      => "tag",
+    # Paths related
+    :_offset_lxdefs     => -typemax(Int),
+    :_paths             => LittleDict{Symbol, String}(),
+    :_idx_rpath         => 1,
+    :_idx_ropath        => 1,
+    # Utils related
+    :_utils_mod_cntr    => 0,
+    :_utils_mod_hash    => zero(UInt64),
+    :_utils_hfun_names  => Symbol[],
+    :_utils_lxfun_names => Symbol[],
+    :_utils_var_names   => Symbol[],
 )
 const DefaultGlobalVarsAlias = Alias(
     :prepath                => :base_url_prefix,

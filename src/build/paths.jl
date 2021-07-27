@@ -1,16 +1,23 @@
 (/)(s...) = joinpath(s...)
 
 """
+    paths()
+
+Retrieve the dictionary of paths.
+"""
+paths() = valueglob(:_paths)::LittleDict{Symbol, String}
+
+"""
     path(s)
 
 Return the path corresponding to `s` e.g. `path(:folder)`.
 """
-path(s::Symbol) = env(:paths)[s]
+path(s::Symbol) = paths()[s]
 
 
 function set_paths(folder::String=pwd())
     @assert isdir(folder) "$folder is not a valid path"
-    P = env(:paths)
+    P = paths()
     f = P[:folder] = normpath(folder)
     P[:site]       = f / "__site"
     P[:assets]     = f / "_assets"
@@ -22,8 +29,8 @@ function set_paths(folder::String=pwd())
     P[:code_out]   = ""
 
     # keep track of prefix, see get_rpath, get_ropath
-    setenv(:idx_rpath,  lastindex(P[:folder] / "") + 1)
-    setenv(:idx_ropath, lastindex(P[:site] / "") + 1)
+    setgvar!(:_idx_rpath,  lastindex(P[:folder] / "") + 1)
+    setgvar!(:_idx_ropath, lastindex(P[:site] / "") + 1)
     return
 end
 
@@ -50,7 +57,7 @@ Extract the relative path out of the full path to a file.
 
     `/foo/bar/baz/site/blog/page.md` --> `blog/page.md`
 """
-get_rpath(fpath::String) = fpath[env(:idx_rpath):end]
+get_rpath(fpath::String) = fpath[(valueglob(:_idx_rpath)::Int):end]
 
 
 """
@@ -58,7 +65,7 @@ get_rpath(fpath::String) = fpath[env(:idx_rpath):end]
 
 Extract the relative path out of the full output path to a file.
 """
-get_ropath(fpath::String) = fpath[env(:idx_ropath):end]
+get_ropath(fpath::String) = fpath[(valueglob(:_idx_ropath)::Int):end]
 
 
 """
@@ -117,7 +124,7 @@ if either there's an exact match (including extension) or whether
 it's a dir indicator and fpath starts with it.
 """
 function keep_path(fpath::String)
-    keep = value(env(:cur_global_ctx), :keep_path, String[])
+    keep = valueglob(:keep_path)::Vector{String}
     isempty(keep) && return false
     rpath = get_rpath(fpath)
     # check if either we have an exact match blog/page.md == blog/page.md

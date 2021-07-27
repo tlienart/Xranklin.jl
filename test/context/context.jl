@@ -55,12 +55,12 @@ end
 @testset "cur_ctx" begin
     # no current context set
     X.setenv(:cur_local_ctx, nothing)
-    @test value(:abc, 0) == 0
-    @test value(:abc) === nothing
+    @test_throws TypeError value(:abc, 0) == 0
+    @test_throws TypeError value(:abc) === nothing
     # with current context
     lc = X.DefaultLocalContext() # becomes the current as well
 
-    @test X.env(:cur_global_ctx) === lc.glob
+    @test X.cur_gc() === lc.glob
 
     @test value(:lang) == value(lc, :lang)
     @test value(:prepath) == value(lc.glob, :prepath) == ""

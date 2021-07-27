@@ -1,9 +1,9 @@
-html_h1(b, c) = html_hk(b, c, :h1)
-html_h2(b, c) = html_hk(b, c, :h2)
-html_h3(b, c) = html_hk(b, c, :h3)
-html_h4(b, c) = html_hk(b, c, :h4)
-html_h5(b, c) = html_hk(b, c, :h5)
-html_h6(b, c) = html_hk(b, c, :h6)
+html_h1(b, c)  = html_hk(b, c, :h1)
+html_h2(b, c)  = html_hk(b, c, :h2)
+html_h3(b, c)  = html_hk(b, c, :h3)
+html_h4(b, c)  = html_hk(b, c, :h4)
+html_h5(b, c)  = html_hk(b, c, :h5)
+html_h6(b, c)  = html_hk(b, c, :h6)
 
 latex_h1(b, c) = latex_hk(b, c, :h1)
 latex_h2(b, c) = latex_hk(b, c, :h2)
@@ -19,15 +19,15 @@ function html_hk(b, c, hk::Symbol)
     # header id
     id = header_id(c, header_text, hk)
     # extra attributes
-    class      = value(c, :header_class)
-    add_link   = value(c, :header_link)
-    link_class = value(c, :header_link_class)
+    class      = value(c, :header_class)::String
+    add_link   = value(c, :header_link)::Bool
+    link_class = value(c, :header_link_class)::String
     # make the header a link if required
     if add_link
         header_text = "<a href=\"#$(id)\">$(header_text)</a>"
     end
     return "<$(hk)$(attr(:id, id))$(attr(:class, class))>" *
-           "$header_text" *
+           header_text *
            "</$hk>"
 end
 
