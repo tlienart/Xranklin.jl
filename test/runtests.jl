@@ -33,8 +33,10 @@ end
     include(p/"rules_defs.jl")
 end
 
-@testset "Utils" begin
-    p = "convert/utils"
+@testset "Code" begin
+    p = "convert/code"
+    include(p/"modules.jl")
+    include(p/"run.jl")
     include(p/"utils.jl")
 end
 

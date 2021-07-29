@@ -1,6 +1,7 @@
 include(joinpath(@__DIR__, "..", "utils.jl"))
 
 @testset "config" begin
+    gc = X.DefaultGlobalContext()
     d  = mktempdir()
     X.set_paths(d)
     write(d/"config.md", """
@@ -10,7 +11,6 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         website_url = "https://foo.com/"
         +++
         """)
-    gc = X.DefaultGlobalContext()
     X.process_config(gc)
     @test value(gc, :rss_feed_url, "") == "https://foo.com/feed.xml"
 
@@ -24,7 +24,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     gc = X.DefaultGlobalContext()
     @test value(gc, :rss_website_url, "") == ""
     X.process_config(gc)
-    @test value(gc, :generate_rss, true) == false
+    @test value(gc, :generate_rss, false) == true
     logall()
 end
 

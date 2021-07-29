@@ -1,23 +1,19 @@
 include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
 @testset "mddef" begin
-    X.setenv(:cur_local_ctx, nothing)
     gc = X.GlobalContext()
     lc = X.LocalContext(gc)
+    X.set_current_local_context(lc)
     s = """
         @def x = 5
         """
     o = html(s, lc)
     @test isempty(o)
-    @test value(lc, :x) == 5
-
-    o = html(s, gc)
-    @test value(gc, :x) == 5
+    @test locvar(:x) == value(lc, :x) == 5
     @test globvar(:x) === nothing
 
-    X.set_current_local_context(lc)
-    @test globvar(:x) == 5
-    @test locvar(:x) == 5
+    o = html(s, gc)
+    @test globvar(:x) == value(gc, :x) == 5
 end
 
 @testset "mddef-block" begin

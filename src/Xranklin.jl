@@ -5,6 +5,7 @@ module Xranklin
 
 import Dates
 import Base.(/)
+import REPL: softscope
 
 # ------------------------------------------------------------------------
 # external
@@ -57,15 +58,16 @@ include("context/default_context.jl")
 
 include("convert/regex.jl")
 
+include("convert/code/modules.jl")
+include("convert/code/run.jl")
+include("convert/code/utils.jl")
+
 include("convert/markdown/commonmark.jl")
 include("convert/markdown/utils.jl")
 include("convert/markdown/latex_objects.jl")
 include("convert/markdown/to_html.jl")
 include("convert/markdown/to_latex.jl")
 include("convert/markdown/to_math.jl")
-
-include("convert/markdown/code/utils.jl")
-include("convert/markdown/code/run.jl")
 
 include("convert/markdown/rules/utils.jl")
 include("convert/markdown/rules/text.jl")
@@ -76,8 +78,6 @@ include("convert/markdown/rules/defs.jl")
 
 include("convert/postprocess/html/html2.jl")
 include("convert/postprocess/latex/latex2.jl")
-
-include("convert/utils/utils.jl")
 
 # ------------------------------------------------------------------------
 

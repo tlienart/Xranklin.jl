@@ -9,15 +9,14 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
         lx_foo() = "baz"
         lx_bar() = "baz"
         """
-    X.process_utils(utils)
-    @test X.valueglob(:_utils_mod_cntr) == 1
+    X.process_utils(utils, gc)
     @test X.valueglob(:_utils_mod_hash) == hash(utils)
     @test Set(X.valueglob(:_utils_hfun_names))  == Set([:foo, :bar])
     @test Set(X.valueglob(:_utils_lxfun_names)) == Set([:foo, :bar])
     @test X.valueglob(:_utils_var_names) == [:a,]
 
     lc = X.DefaultLocalContext(gc)
-    s = "{{a}}"
+    s = "utils: {{a}}, lc:{{lang}}, gc:{{rss_file}}"
     h = html(s, lc)
-    @test h // "<p>5</p>"
+    @test h // "<p>utils: 5, lc:julia, gc:feed</p>"
 end

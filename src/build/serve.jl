@@ -20,6 +20,11 @@ function serve(;
     watched_files = find_files_to_watch(folder)
 
     full_pass(watched_files; gc=gc)
+
+    # wipe parent module (make all children modules inaccessible so that GC
+    # should be able to destroy them)
+    parent_module(wipe=true)
+    return
 end
 
 

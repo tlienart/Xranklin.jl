@@ -50,7 +50,6 @@ const DefaultGlobalVars = Vars(
     :_idx_rpath         => 1,
     :_idx_ropath        => 1,
     # Utils related
-    :_utils_mod_cntr    => 0,
     :_utils_mod_hash    => zero(UInt64),
     :_utils_hfun_names  => Symbol[],
     :_utils_lxfun_names => Symbol[],

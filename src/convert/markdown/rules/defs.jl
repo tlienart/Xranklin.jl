@@ -1,13 +1,11 @@
-function process_defs(cb, c)
-    mdl = newmodule("__FRANKLIN_VARS")
-    exs = parse_code(cb)
-    run_code(mdl, cb; exs=exs, block_name="vars assignment")
-
-    # get the variable names from all assignment expressions
-    vnames = [
-        ex.args[1] for ex in exs
-        if (ex.head == :(=)) && (ex.args[1] isa Symbol)
-    ]
+function process_defs(d::SS, c::Context)
+    mdl = vars_module()
+    include_string(softscope, mdl, d)
+    vnames = filter!(
+        n -> n != nameof(mdl) &&
+             string(n)[1] != "#",
+        names(mdl, all=true)
+    )
     for vname in vnames
         setvar!(c, vname, getproperty(mdl, vname))
     end
