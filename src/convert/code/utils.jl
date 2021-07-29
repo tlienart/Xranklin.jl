@@ -6,6 +6,7 @@ function process_utils(
     start = time(); @info """
         ⌛ processing utils
         """
+
     # check to see if utils has changed since last we saw it
     h = hash(utils)
     h == value(gc, :_utils_mod_hash)::UInt64 && return
@@ -31,6 +32,7 @@ function process_utils(
                 Symbol.([n[4:end] for n in ns if startswith(n, "lx_")]))
     setvar!(gc, :_utils_var_names,
                 Symbol.([n for n in ns if !startswith(n, r"lx_|hfun_")]))
+
     @info """
         ... ✔ $(hl(time_fmt(time()-start)))
         """

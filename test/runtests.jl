@@ -51,8 +51,8 @@ end
 
 @testset "misc-utils" begin
     @testset "time_fmt" begin
-        @test X.time_fmt(0.5) == "(δt = 0.5s)"
-        @test X.time_fmt(60) == "(δt = 1.0min)"
+        @test X.time_fmt(0.5)  == "(δt = 0.5s)"
+        @test X.time_fmt(60)   == "(δt = 1.0min)"
         @test X.time_fmt(0.01) == "(δt = 10ms)"
     end
     @testset "str_fmt" begin

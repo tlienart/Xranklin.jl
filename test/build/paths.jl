@@ -13,6 +13,7 @@ end
 
 @testset "form_output_path" begin
     d = mktempdir()
+    gc = X.DefaultGlobalContext()
     X.set_paths(d)
     # MD
     op = X.form_output_path(d/"abc" => "def.md", :md)

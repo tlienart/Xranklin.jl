@@ -19,4 +19,8 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
     s = "utils: {{a}}, lc:{{lang}}, gc:{{rss_file}}"
     h = html(s, lc)
     @test h // "<p>utils: 5, lc:julia, gc:feed</p>"
+
+    s = "foo: {{foo}}, bar: {{bar}}"
+    h = html(s, lc)
+    @test h // "<p>foo: bar, bar: bar</p>"
 end

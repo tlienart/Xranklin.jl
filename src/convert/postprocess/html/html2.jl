@@ -59,14 +59,24 @@ function html2(parts::Vector{Block}, c::Context)::String
             # look for the matching closing END then pass the scope
             # to a dedicated sub-processing which can recurse
             throw(ErrorException("NOT IMPLEMENTED YET"))
+
         elseif fname in utils_hfun_names()
             # 'external' functions defined with `hfun_*`, they
             # take precedence so a user can overwrite the behaviour of
             # internal functions
-            throw(ErrorException("NOT IMPLEMENTED YET"))
+
+            # XXX isdelayed() && return ""
+
+            um   = utils_module()
+            args = split_cb[2:end]
+            f    = getproperty(um, Symbol("hfun_$fname"))
+            out  = isempty(args) ? f() : f(args)
+            write(io, out)
+
         elseif fname in HTML_FUNCTIONS
             # 'internal' function like {{insert ...}} or {{fill ...}}
             throw(ErrorException("NOT IMPLEMENTED YET"))
+
         else
             # try to see if it could be an implicit fill {{vname}}
             if (length(split_cb) == 1) && ((v = value(cur_lc(), fname)) !== nothing)

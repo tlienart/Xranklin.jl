@@ -2,66 +2,31 @@
 
 ## Modules
 
-### Times
+### Module creation + eval
 
-Time it takes to generate a new full module:
-
-```
-julia> s() = "module Foo_$(abs(rand(Int))) end"
-julia> @btime Base.include_string(Main, s())
-  700.422 μs (316 allocations: 21.83 KiB)
-```
-
-so around `0.7ms`.
-
-Time it takes to re-generate a full module, wiping existing defs:
-
-```
-julia> function newmodule(name::String)::Module
-    mod = nothing
-    mktemp() do _, outf
-        redirect_stderr(outf) do
-            mod = Base.include_string(Main, """
-                module $name end
-                """)
-        end
-    end
-    return mod
-end
-julia> @btime newmodule("abc")
-  1.210 ms (329 allocations: 23.60 KiB)
-```
-
-This is not a lot but we still don't want to pay that cost once for every page on the full pass.
-
-**Time it takes to call the Module constructor directly (it wipes):**
+The fastest way to create a module as a namespace is to use the constructor:
 
 ```
 julia> @btime Module(:abc)
   72.420 μs (2 allocations: 672 bytes)
 ```
 
-yup, that's what we'll use since it's much faster than the other two options and doesn't need to redirect the output even when overwriting.
+evaluation inside such a module via `include_string(m, code)` or `include_string(softscope, m, code)` incurs an overhead especially if the code defines functions:
 
-As a result we:
+```
+julia> m = Module(:abc); @btime include_string($m, "a=5")
+  91.039 μs (48 allocations: 2.81 KiB)
+julia> m = Module(:abc); @btime include_string($m, "a = 5; foo() = 0.5")
+  320.534 μs (178 allocations: 11.49 KiB)
+```
+
+### What we do
 
 - (**G**) one global parent module in which all other submodules are evaluated, so that when it's wiped all children modules are inaccessible and should be eventually cleared by GC
-- (**G**) have one module for utils (attached to GlobalContext) which gets re-generated every time utils has refreshed definitions
-- (**L**) have one module for var defs which gets re-generated every time the page is refreshed
+- (**G**) one module for utils which gets re-generated every time utils has refreshed definitions
+- (**G**) one module for vars which gets wiped every time we switch context and within a page uses softscope
 - (**L**) have one module for each page with code, with softscope
 
-## Scopes
+## Possible time optimisations
 
-During one session we have
-
-### Global Context (one)
-
-* variables (default + what gets defined in `config.md`)
-    * one special `:_vars_module  => mod`, a `baremodule` with `softscope`, persistent (fixed name), global markdown definitions get evaluated here
-    * one special `:_utils_module => mod`, a `module` with standard scope, non persistent (incrementally-set name, generated every time `utils.jl` is modified)
-* definitions (default + what gets defined in `config.md`)
-
-###
-
-* One `LocalContext` per page
-  * variables (default + what gets defined in md definitions)
+* keep track of the hashes of mddefs seen within the life of `vars_module`, if it's in the list, skip

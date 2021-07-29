@@ -15,8 +15,8 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         some markdown
         """)
 
-    X.set_paths(d)
     gc = X.DefaultGlobalContext()
+    X.set_paths(d)
     wf = X.find_files_to_watch(d)
     X.full_pass(wf; gc=gc)
 

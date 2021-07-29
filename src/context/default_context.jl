@@ -54,6 +54,8 @@ const DefaultGlobalVars = Vars(
     :_utils_hfun_names  => Symbol[],
     :_utils_lxfun_names => Symbol[],
     :_utils_var_names   => Symbol[],
+    # mddefs related
+    :_md_def_hashes     => Set{UInt64}(),
 )
 const DefaultGlobalVarsAlias = Alias(
     :prepath                => :base_url_prefix,
@@ -110,6 +112,8 @@ const DefaultLocalVars = Vars(
     :_relative_url      => "",
     :_creation_time     => 0.0,
     :_modification_time => 0.0,
+    # mddefs related
+    :_md_def_hashes     => Set{UInt64}(),
 )
 const DefaultLocalVarsAlias = Alias(
     :fd_rpath     => :_relative_path,
@@ -128,15 +132,15 @@ const DefaultLocalLxDefs = LxDefs()
 ##############################################################################
 
 DefaultGlobalContext() = GlobalContext(
-    copy(DefaultGlobalVars),
-    copy(DefaultGlobalLxDefs),
+    deepcopy(DefaultGlobalVars),
+    deepcopy(DefaultGlobalLxDefs),
     alias=copy(DefaultGlobalVarsAlias)
 ) |> set_current_global_context
 
 DefaultLocalContext(g=DefaultGlobalContext(); id="") = LocalContext(
     g,
-    copy(DefaultLocalVars),
-    copy(DefaultLocalLxDefs),
+    deepcopy(DefaultLocalVars),
+    deepcopy(DefaultLocalLxDefs),
     alias=copy(DefaultLocalVarsAlias),
     id=id
 ) |> set_current_local_context

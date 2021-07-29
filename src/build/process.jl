@@ -64,7 +64,8 @@ function process_file(
             fpair::Pair{String,String},
             case::Symbol,
             t::Float64=0.0;     # compare modif time
-            gc::GlobalContext=cur_gc()
+            gc::GlobalContext=cur_gc(),
+            skip::Vector{Pair{String, String}}=Pair{String, String}[]
             )
 
     # there's things we don't want to copy over or (re)process
@@ -72,7 +73,8 @@ function process_file(
     skip = startswith(fpath, path(:layout)) ||
            startswith(fpath, path(:literate)) ||
            startswith(fpath, path(:rss)) ||
-           fpair.second in ("config.md", "utils.jl")
+           fpair.second in ("config.md", "utils.jl") ||
+           fpair in skip
     skip && return
 
     opath = form_output_path(fpair, case)

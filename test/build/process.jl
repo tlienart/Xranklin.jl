@@ -14,6 +14,10 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     X.process_config(gc)
     @test value(gc, :rss_feed_url, "") == "https://foo.com/feed.xml"
 
+    # reprocessing should be free because the definitions haven't changed and match
+    # the hash and we didn't switch context so that the vars module is still the same
+    X.process_config(gc)
+
     nowarn()
     write(d/"config.md", """
         +++
@@ -22,6 +26,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         +++
         """)
     gc = X.DefaultGlobalContext()
+    X.set_paths(d)
     @test value(gc, :rss_website_url, "") == ""
     X.process_config(gc)
     @test value(gc, :generate_rss, false) == true
@@ -30,6 +35,7 @@ end
 
 @testset "md file" begin
     d = mktempdir()
+    gc = X.DefaultGlobalContext()
     X.set_paths(d)
     fpair = d => "foo.md"
     fpath = joinpath(fpair...)
@@ -38,6 +44,7 @@ end
         abc `def` **ghi**
         """)
     gc = X.DefaultGlobalContext()
+    X.set_paths(d)
     X.set_current_global_context(gc)
     X.process_md_file(gc, fpath, opath)
     @test isfile(opath)

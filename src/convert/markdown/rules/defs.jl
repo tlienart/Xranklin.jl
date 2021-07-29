@@ -1,4 +1,9 @@
 function process_defs(d::SS, c::Context)
+    # check if the definition has already been processed and if so skip
+    h = hash(d)
+    h in value(c, :_md_def_hashes)::Set{UInt64} && return
+    # otherwise add the hash of the definition and evaluate it
+    union!(c.vars[:_md_def_hashes], h)
     mdl = vars_module()
     include_string(softscope, mdl, d)
     vnames = filter!(
@@ -9,6 +14,7 @@ function process_defs(d::SS, c::Context)
     for vname in vnames
         setvar!(c, vname, getproperty(mdl, vname))
     end
+    return
 end
 
 html_md_def(b, c)  = (process_defs(content(b), c); "")

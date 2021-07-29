@@ -1,9 +1,10 @@
 include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
 @testset "mddef" begin
-    gc = X.GlobalContext()
-    lc = X.LocalContext(gc)
+    gc = X.DefaultGlobalContext()
+    lc = X.DefaultLocalContext(gc)
     X.set_current_local_context(lc)
+    @test isempty(locvar(:_md_def_hashes))
     s = """
         @def x = 5
         """
@@ -11,13 +12,15 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
     @test isempty(o)
     @test locvar(:x) == value(lc, :x) == 5
     @test globvar(:x) === nothing
+    @test !isempty(locvar(:_md_def_hashes))
 
     o = html(s, gc)
     @test globvar(:x) == value(gc, :x) == 5
+    @test !isempty(globvar(:_md_def_hashes))
 end
 
 @testset "mddef-block" begin
-    lc = X.LocalContext()
+    lc = X.DefaultLocalContext()
     s = """
         +++
         using Dates
@@ -34,4 +37,19 @@ end
     @test value(lc, :b, "bye") == "hello"
     @test value(lc, :c) == [1 2; 3 4]
     @test year(value(lc, :d)) == 1
+end
+
+@testset "skip re-val" begin
+    lc = X.DefaultLocalContext()
+    s = """
+        +++
+        a = 7
+        b = 8
+        +++
+        """
+    o = html(s * "\nabc", lc)
+    @test length(lc.vars[:_md_def_hashes]) == 1
+    # no reeval
+    o = html(s * "\ndef", lc)
+    @test length(lc.vars[:_md_def_hashes]) == 1
 end

@@ -10,7 +10,7 @@ function serve(;
             )
 
     gc = DefaultGlobalContext()
-    set_paths(folder, gc)
+    set_paths(folder)
 
     # check if there's a config file and process it, this must happen prior
     # to everything as it defines 'ignore' for instance which is needed in
@@ -70,12 +70,8 @@ function full_pass(
     @info """
         💡 $(hl("starting the full pass", :yellow))
         """
-    for (case, dict) in watched_files
-        case == :md || continue
-        for (fp, t) in dict
-            fp in skip_files && continue
-            process_file(fp, case, dict[fp], gc=gc)
-        end
+    for (case, dict) in watched_files, (fp, t) in dict
+        process_file(fp, case, dict[fp], gc=gc, skip=skip_files)
     end
     @info """
         💡 $(hl("full pass done", :yellow)) $(hl(time_fmt(time()-start)))
