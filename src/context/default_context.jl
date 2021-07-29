@@ -1,5 +1,5 @@
 #=
-title_links    -- make headers into links
+header_link    -- make headers into links
 keep_path      -- don't insert `index.html` at the end of the path for these files
                   e.g. ["foo/bar.md", "foo/bar.html", "foo/"]
 layout         -- head * (<tag>content * pg_foot<tag>) * foot
@@ -9,7 +9,6 @@ const DefaultGlobalVars = Vars(
     :author             => "The Author",
     :base_url_prefix    => "",
     # Layout
-    :title_links        => true,
     :content_tag        => "div",
     :content_class      => "franklin-content",
     :content_id         => "",
@@ -28,6 +27,11 @@ const DefaultGlobalVars = Vars(
     :robots_disallow    => String[],
     :generate_robots    => true,
     :generate_sitemap   => true,
+    # Headers
+    # header
+    :header_class       => "",
+    :header_link        => true,
+    :header_link_class  => "",
     # Dates
     :date_format        => "U dd, yyyy",
     :date_days          => String[],
@@ -86,10 +90,6 @@ const DefaultLocalVars = Vars(
     # toc
     :mintoclevel        => 1,
     :maxtoclevel        => 10,
-    # header
-    :header_class       => "",
-    :header_link        => true,
-    :header_link_class  => "",
     # code
     :reeval             => false,
     :showall            => false,
