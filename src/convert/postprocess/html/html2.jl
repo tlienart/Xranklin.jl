@@ -79,7 +79,7 @@ function html2(parts::Vector{Block}, c::Context)::String
 
         else
             # try to see if it could be an implicit fill {{vname}}
-            if (length(split_cb) == 1) && ((v = value(cur_lc(), fname)) !== nothing)
+            if (length(split_cb) == 1) && ((v = getvar(cur_lc(), fname)) !== nothing)
                 write(io, string(v))
             elseif (length(split_cb) == 1) && (fname in utils_var_names())
                 write(io, string(getproperty(utils_module(), fname)))

@@ -78,3 +78,12 @@ function full_pass(
         """
     return
 end
+
+
+#=
+NOTE
+
+loop
+- use prune_children! 
+
+=#

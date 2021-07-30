@@ -17,9 +17,9 @@ function process_config(
     @info """
         ... ✔ $(hl(time_fmt(time()-start)))
         """
-    if value(gc, :generate_rss)::Bool
+    if getvar(gc, :generate_rss)::Bool
         # :website_url must be given
-        url = value(gc, :rss_website_url)::String
+        url = getvar(gc, :rss_website_url)::String
         if isempty(url)
             @warn """
                 Process config
@@ -30,7 +30,7 @@ function process_config(
             setvar!(gc, :generate_rss, false)
         else
             endswith(url, '/') || (url *= '/')
-            full_url =  url * value(gc, :rss_file)::String * ".xml"
+            full_url =  url * getvar(gc, :rss_file)::String * ".xml"
             setvar!(gc, :rss_feed_url, full_url)
         end
     end
@@ -132,16 +132,16 @@ function process_md_file(
     page_content_html = html(page_content_md, ctx)
 
     # get and process html for the foot of the page
-    page_foot_path = path(:folder) / valueglob(:layout_page_foot)::String
+    page_foot_path = path(:folder) / getgvar(:layout_page_foot)::String
     page_foot_html = ""
     if !isempty(page_foot_path) && isfile(page_foot_path)
         page_foot_html = read(page_foot_path, String)
     end
 
     # add the content tags if required
-    c_tag   = value(ctx, :content_tag)::String
-    c_class = value(ctx, :content_class)::String
-    c_id    = value(ctx, :content_id)::String
+    c_tag   = getvar(ctx, :content_tag)::String
+    c_class = getvar(ctx, :content_class)::String
+    c_id    = getvar(ctx, :content_id)::String
 
     # Assemble the body, wrap it in tags if required
     body_html = ""
@@ -163,7 +163,7 @@ function process_md_file(
     full_page_html = ""
 
     # head if it exists
-    head_path = path(:folder) / valueglob(:layout_head)::String
+    head_path = path(:folder) / getgvar(:layout_head)::String
     if !isempty(head_path) && isfile(head_path)
         full_page_html = read(head_path, String)
     end
@@ -172,7 +172,7 @@ function process_md_file(
     full_page_html *= body_html
 
     # then the foot if it exists
-    foot_path = path(:folder) / valueglob(:layout_foot)::String
+    foot_path = path(:folder) / getgvar(:layout_foot)::String
     if !isempty(foot_path) && isfile(foot_path)
         full_page_html *= read(foot_path, String)
     end

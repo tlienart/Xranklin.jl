@@ -12,7 +12,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         +++
         """)
     X.process_config(gc)
-    @test value(gc, :rss_feed_url, "") == "https://foo.com/feed.xml"
+    @test getvar(gc, :rss_feed_url, "") == "https://foo.com/feed.xml"
 
     # reprocessing should be free because the definitions haven't changed and match
     # the hash and we didn't switch context so that the vars module is still the same
@@ -27,9 +27,9 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         """)
     gc = X.DefaultGlobalContext()
     X.set_paths(d)
-    @test value(gc, :rss_website_url, "") == ""
+    @test getvar(gc, :rss_website_url, "") == ""
     X.process_config(gc)
-    @test value(gc, :generate_rss, false) == true
+    @test getvar(gc, :generate_rss, false) == true
     logall()
 end
 

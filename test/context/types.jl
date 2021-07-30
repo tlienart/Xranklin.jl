@@ -22,13 +22,13 @@ end
         :a => 1,
         :b => "hello"
     )
-    @test value(v, :a, 0) == 1
-    @test value(v, :b, "") == "hello"
-    @test value(v, :c, 0) == 0
-    @test value(v, :c) === nothing
+    @test getvar(v, :a, 0) == 1
+    @test getvar(v, :b, "") == "hello"
+    @test getvar(v, :c, 0) == 0
+    @test getvar(v, :c) === nothing
 
     X.setvar!(v, :a, true)
-    @test value(v, :a) === true
+    @test getvar(v, :a) === true
 end
 
 

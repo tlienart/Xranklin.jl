@@ -5,7 +5,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     @test gc isa X.Context
 
     X.setvar!(gc, :a, 5)
-    @test value(gc, :a) == 5
+    @test getvar(gc, :a) == 5
 
     X.setdef!(gc, "abc", X.LxDef(0, "hello"))
     @test X.hasdef(gc, "abc") === true
@@ -25,8 +25,8 @@ end
     lc = X.LocalContext(gc, id="REQ")
     X.setvar!(lc, :b, 0)
 
-    @test value(lc, :a) == value(gc, :a)
-    @test value(lc, :b) == 0
+    @test getvar(lc, :a) == getvar(gc, :a)
+    @test getvar(lc, :b) == 0
     @test X.hasdef(lc, "abc") === true
     @test X.getdef(lc, "abc").def == "hello"
 
@@ -49,25 +49,21 @@ end
     @test isempty(gc.lxdefs_deps.bwd["REQ"])
 
     X.setvar!(lc, :b, 0)
-    @test value(gc.children_contexts["REQ"], :b) == 0
+    @test getvar(gc.children_contexts["REQ"], :b) == 0
 end
 
 @testset "cur_ctx" begin
     # no current context set
-    X.setenv(:cur_local_ctx, nothing)
-    @test_throws TypeError value(:abc, 0) == 0
-    @test_throws TypeError value(:abc) === nothing
-    # with current context
-    lc = X.DefaultLocalContext() # becomes the current as well
+    lc = X.DefaultLocalContext()
 
     @test X.cur_gc() === lc.glob
 
-    @test value(:lang) == value(lc, :lang)
-    @test value(:prepath) == value(lc.glob, :prepath) == ""
+    @test getlvar(:lang) == getvar(lc, :lang)
+    @test getgvar(:prepath) == getvar(lc.glob, :prepath) == ""
 
     # legacy access
-    @test locvar(:lang) == value(lc, :lang) == "julia"
-    @test globvar(:base_url_prefix) == value(lc.glob, :prepath) == ""
+    @test locvar(:lang) == getvar(lc, :lang) == "julia"
+    @test globvar(:base_url_prefix) == getvar(lc.glob, :prepath) == ""
 
     X.setvar!(lc.glob, :prepath, "foo")
     @test globvar(:base_url_prefix) == "foo"
@@ -81,7 +77,7 @@ end
     lc2 = X.LocalContext(gc, id="C2")
     X.setvar!(lc2, :b, 321)
     X.set_current_local_context(lc2)
-    @test valuefrom("C1", :a, 0) == 123
-    @test valuefrom("C2", :b, 0) == 321  # dumb but should work
+    @test getvarfrom("C1", :a, 0) == 123
+    @test getvarfrom("C2", :b, 0) == 321  # dumb but should work
     @test pagevar("C1", :a) == 123
 end

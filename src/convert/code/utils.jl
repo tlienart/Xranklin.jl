@@ -9,7 +9,7 @@ function process_utils(
 
     # check to see if utils has changed since last we saw it
     h = hash(utils)
-    h == value(gc, :_utils_mod_hash)::UInt64 && return
+    h == getvar(gc, :_utils_mod_hash)::UInt64 && return
     setvar!(gc, :_utils_mod_hash, h)
 
     # create new module and load script into it, we want the module to
@@ -49,6 +49,6 @@ function process_utils(gc::GlobalContext=cur_gc())
     return
 end
 
-utils_hfun_names()  = valueglob(:_utils_hfun_names)::Vector{Symbol}
-utils_lxfun_names() = valueglob(:_utils_lxfun_names)::Vector{Symbol}
-utils_var_names()   = valueglob(:_utils_var_names)::Vector{Symbol}
+utils_hfun_names()  = getgvar(:_utils_hfun_names)::Vector{Symbol}
+utils_lxfun_names() = getgvar(:_utils_lxfun_names)::Vector{Symbol}
+utils_var_names()   = getgvar(:_utils_var_names)::Vector{Symbol}

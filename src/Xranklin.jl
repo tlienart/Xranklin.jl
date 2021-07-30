@@ -26,11 +26,12 @@ import OrderedCollections: LittleDict
 
 # ------------------------------------------------------------------------
 
-export value, valuefrom, valueglob
+# Conversion functions
 export html, latex
 
-# legacy
-export locvar, globvar, pagevar
+# Access contexts
+export getvar, getvarfrom, getlvar, getgvar, setlvar!, setgvar!
+export locvar, globvar, pagevar  # LEGACY
 
 # ------------------------------------------------------------------------
 

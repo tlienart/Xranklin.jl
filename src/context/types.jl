@@ -40,7 +40,7 @@ end
 Mapping `:varname => value`.
 
 Legacy note: allowed types are not kept track of anymore. But when extracting
-values via `value(...)` a default value can be specified and effectively acts
+values via `getvar(...)` a default value can be specified and effectively acts
 as a type constraint.
 """
 const Vars = LittleDict{Symbol, Any}
@@ -55,7 +55,7 @@ const VarsDeps = SetDict{Symbol, String}
 
 
 """
-    value(...)
+    getvar(...)
 
 Get the value of a variable with default if there's no page variable of that
 name in the context.
@@ -65,8 +65,8 @@ Type stable: when an explicit default is given, the value returned is
 Type unstable: when no explicit default is given (or is nothing), the value
          returned is unconstrained.
 """
-value(v::Vars, name::Symbol, default::T) where T = get(v, name, default)::T
-value(v::Vars, name::Symbol, d::Nothing=nothing) = get(v, name, nothing)
+getvar(v::Vars, name::Symbol, default::T) where T = get(v, name, default)::T
+getvar(v::Vars, name::Symbol, d::Nothing=nothing) = get(v, name, nothing)
 
 
 """

@@ -10,10 +10,10 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
         lx_bar() = "baz"
         """
     X.process_utils(utils, gc)
-    @test X.valueglob(:_utils_mod_hash) == hash(utils)
-    @test Set(X.valueglob(:_utils_hfun_names))  == Set([:foo, :bar])
-    @test Set(X.valueglob(:_utils_lxfun_names)) == Set([:foo, :bar])
-    @test X.valueglob(:_utils_var_names) == [:a,]
+    @test X.getgvar(:_utils_mod_hash) == hash(utils)
+    @test Set(X.getgvar(:_utils_hfun_names))  == Set([:foo, :bar])
+    @test Set(X.getgvar(:_utils_lxfun_names)) == Set([:foo, :bar])
+    @test X.getgvar(:_utils_var_names) == [:a,]
 
     lc = X.DefaultLocalContext(gc)
     s = "utils: {{a}}, lc:{{lang}}, gc:{{rss_file}}"

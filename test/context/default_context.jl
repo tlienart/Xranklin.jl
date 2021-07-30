@@ -5,13 +5,13 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     @test gc isa X.GlobalContext
     @test gc === X.env(:cur_global_ctx)
     # accessing stuff (no default here)
-    @test value(gc, :autocode) === true
+    @test getvar(gc, :autocode) === true
     # using alias
-    @test value(gc, :prepath) == value(gc, :prefix) == value(gc, :base_url_prefix)
+    @test getvar(gc, :prepath) == getvar(gc, :prefix) == getvar(gc, :base_url_prefix)
 end
 
 @testset "defaultlocal" begin
     lc = X.DefaultLocalContext()
     @test lc isa X.LocalContext
-    @test value(lc, :hasmath, true) === false
+    @test getvar(lc, :hasmath, true) === false
 end

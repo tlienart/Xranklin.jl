@@ -1,4 +1,4 @@
-const Alias  = LittleDict{Symbol,Symbol}
+const Alias  = LittleDict{Symbol, Symbol}
 
 abstract type Context end
 
@@ -26,7 +26,7 @@ struct GlobalContext{LC<:Context} <: Context
     vars_deps::VarsDeps
     lxdefs_deps::LxDefsDeps
     vars_aliases::Alias
-    children_contexts::LittleDict{String,LC}
+    children_contexts::LittleDict{String, LC}
 end
 
 
@@ -72,22 +72,26 @@ end
 function GlobalContext(v=Vars(), d=LxDefs(); alias=Alias())
     vd = VarsDeps()
     ld = LxDefsDeps()
-    c  = LittleDict{String,LocalContext}()
-    GlobalContext(v, d, vd, ld, alias, c)
+    c  = LittleDict{String, LocalContext}()
+    return GlobalContext(v, d, vd, ld, alias, c)
 end
 
 # when a value from the global context is requested, we can track the requester
 # so that, when the global context is updated, all relevant dependent pages
 # can get updated as well.
-function value(gc::GlobalContext, n::Symbol, d=nothing; requester::String="")
+function getvar(gc::GlobalContext, n::Symbol, d=nothing; requester::String="")
     n = get(gc.vars_aliases, n, n)
     isempty(requester) || add!(gc.vars_deps, n, requester)
-    return value(gc.vars, n, d)
+    return getvar(gc.vars, n, d)
 end
 
 function setvar!(gc::GlobalContext, n::Symbol, v)
     n = get(gc.vars_aliases, n, n)
     setvar!(gc.vars, n, v)
+end
+
+function hasvar(gc::GlobalContext, n::Symbol)
+    return n in keys(gc.vars) || n in keys(gc.vars_aliases)
 end
 
 setdef!(gc::GlobalContext, n::String, d) = setdef!(gc.lxdefs, n, d)
@@ -99,7 +103,7 @@ function getdef(gc::GlobalContext, n::String; requester::String="")
 end
 
 """
-    prune_children!
+    prune_children!(gc)
 
 Remove children if their id does not correspond to an existing page.
 This can happen if, during a session, a page `page1.md` is created, has its
@@ -121,6 +125,8 @@ end
 # LOCAL CONTEXT CONSTRUCTORS AND METHODS #
 # -------------------------------------- #
 
+# Note that when a local context is created it is automatically
+# attached to its global context via the children_contexts
 function LocalContext(g, v, d, h, id="", a=Alias())
     lc = LocalContext(g, v, d, h, id, Ref(false), Ref(false),
                       Set{Symbol}(), Set{String}(), a)
@@ -135,15 +141,17 @@ end
 recursify(c::LocalContext) = (c.is_recursive[] = true; c)
 mathify(c::LocalContext)   = (c.is_recursive[] = c.is_math[] = true; c)
 
-function value(lc::LocalContext, n::Symbol, d=nothing)
+# when trying to retrieve a variable from a local context, we first check
+# whether the local context contains the variable an
+function getvar(lc::LocalContext, n::Symbol, d=nothing)
     n = get(lc.vars_aliases, n, n)
-    if n ∉ keys(lc.vars)
+    if n ∉ keys(lc.vars) && hasvar(lc.glob, n)
         # if we try to get the variable from global, keep track of that
         # see also refresh_global_context
         union!(lc.req_glob_vars, [n])
-        return value(lc.glob, n, d; requester=lc.id)
+        return getvar(lc.glob, n, d; requester=lc.id)
     end
-    return value(lc.vars, n, d)
+    return getvar(lc.vars, n, d)
 end
 
 function setvar!(lc::LocalContext, n::Symbol, v)
@@ -198,8 +206,8 @@ end
 """
     set_current_global_context(gc)
 
-Set the current global context and reset the current local context if any
-to guarantee consistency.
+Set the current global context and reset the current local context if any, in
+order to guarantee consistency.
 """
 function set_current_global_context(gc::GlobalContext)::GlobalContext
     setenv(:cur_global_ctx, gc)
@@ -211,7 +219,8 @@ end
 """
     set_current_local_context(lc)
 
-Set the current local context (and the global context that it points to).
+Set the current local context. And since a local context is always attached to
+a global context, also set the current global context to that one.
 """
 function set_current_local_context(lc::LocalContext)::LocalContext
     setenv(:cur_local_ctx, lc)
@@ -219,24 +228,29 @@ function set_current_local_context(lc::LocalContext)::LocalContext
     lc
 end
 
-
+# helper functions to retrieve current local/global context
 cur_gc() = env(:cur_global_ctx)::GlobalContext
 cur_lc() = env(:cur_local_ctx)::LocalContext
+
+# helper functions to set var in current local/global context
 setgvar!(n::Symbol, v) = setvar!(cur_gc(), n, v)
 setlvar!(n::Symbol, v) = setvar!(cur_lc(), n, v)
-value(n::Symbol, d=nothing)     = value(cur_lc(), n, d)
-valueglob(n::Symbol, d=nothing) = value(cur_gc(), n, d)
+
+# helper function to retrieve var in current local/global context
+getgvar(n::Symbol, d=nothing) = getvar(cur_gc(), n, d)
+getlvar(n::Symbol, d=nothing) = getvar(cur_lc(), n, d)
+
 
 """
-    valuefrom(id, n, d)
+    getvarfrom(id, n, d)
 
-Retrieve a value correpsonding to symbol `n` from a local context with id `s`
+Retrieve a value corresponding to symbol `n` from a local context with id `s`
 if it exists.
 """
-function valuefrom(id::String, n::Symbol, d=nothing)
+function getvarfrom(id::String, n::Symbol, d=nothing)
     clc = env(:cur_local_ctx)
     (clc === nothing || id ∉ keys(clc.glob.children_contexts)) && return d
-    return value(clc.glob.children_contexts[id], n, d)
+    return getvar(clc.glob.children_contexts[id], n, d)
 end
 
 
@@ -245,15 +259,13 @@ end
 # ---------------------- #
 
 function locvar(n::Union{Symbol,String};  default=nothing)
-    return value(Symbol(n), default)
+    return getlvar(Symbol(n), default)
 end
 
 function globvar(n::Union{Symbol,String}; default=nothing)
-    cgc = env(:cur_global_ctx)
-    cgc === nothing && return default
-    return value(cgc, Symbol(n), default)
+    return getgvar(Symbol(n), default)
 end
 
 function pagevar(s::String, n::Union{Symbol,String}; default=nothing)
-    return valuefrom(s, Symbol(n), default)
+    return getvarfrom(s, Symbol(n), default)
 end

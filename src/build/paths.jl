@@ -5,7 +5,7 @@
 
 Retrieve the dictionary of paths.
 """
-paths() = valueglob(:_paths)::LittleDict{Symbol, String}
+paths() = getgvar(:_paths)::LittleDict{Symbol, String}
 
 """
     path(s)
@@ -57,7 +57,7 @@ Extract the relative path out of the full path to a file.
 
     `/foo/bar/baz/site/blog/page.md` --> `blog/page.md`
 """
-get_rpath(fpath::String) = fpath[(valueglob(:_idx_rpath)::Int):end]
+get_rpath(fpath::String) = fpath[(getgvar(:_idx_rpath)::Int):end]
 
 
 """
@@ -65,7 +65,7 @@ get_rpath(fpath::String) = fpath[(valueglob(:_idx_rpath)::Int):end]
 
 Extract the relative path out of the full output path to a file.
 """
-get_ropath(fpath::String) = fpath[(valueglob(:_idx_ropath)::Int):end]
+get_ropath(fpath::String) = fpath[(getgvar(:_idx_ropath)::Int):end]
 
 
 """
@@ -124,7 +124,7 @@ if either there's an exact match (including extension) or whether
 it's a dir indicator and fpath starts with it.
 """
 function keep_path(fpath::String)
-    keep = valueglob(:keep_path)::Vector{String}
+    keep = getgvar(:keep_path)::Vector{String}
     isempty(keep) && return false
     rpath = get_rpath(fpath)
     # check if either we have an exact match blog/page.md == blog/page.md

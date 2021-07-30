@@ -10,12 +10,12 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
         """
     o = html(s, lc)
     @test isempty(o)
-    @test locvar(:x) == value(lc, :x) == 5
+    @test locvar(:x) == getvar(lc, :x) == 5
     @test globvar(:x) === nothing
     @test !isempty(locvar(:_md_def_hashes))
 
     o = html(s, gc)
-    @test globvar(:x) == value(gc, :x) == 5
+    @test globvar(:x) == getvar(gc, :x) == 5
     @test !isempty(globvar(:_md_def_hashes))
 end
 
@@ -33,10 +33,10 @@ end
         """
     o = html(s, lc)
     @test isempty(strip(o))
-    @test value(lc, :a) == 5
-    @test value(lc, :b, "bye") == "hello"
-    @test value(lc, :c) == [1 2; 3 4]
-    @test year(value(lc, :d)) == 1
+    @test getvar(lc, :a) == 5
+    @test getvar(lc, :b, "bye") == "hello"
+    @test getvar(lc, :c) == [1 2; 3 4]
+    @test year(getvar(lc, :d)) == 1
 end
 
 @testset "skip re-val" begin

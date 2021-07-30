@@ -19,9 +19,9 @@ function html_hk(b, c, hk::Symbol)
     # header id
     id = header_id(c, header_text, hk)
     # extra attributes
-    class      = value(c, :header_class)::String
-    add_link   = value(c, :header_link)::Bool
-    link_class = value(c, :header_link_class)::String
+    class      = getvar(c, :header_class)::String
+    add_link   = getvar(c, :header_link)::Bool
+    link_class = getvar(c, :header_link_class)::String
     # make the header a link if required
     if add_link
         header_text = "<a href=\"#$(id)\">$(header_text)</a>"

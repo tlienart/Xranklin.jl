@@ -1,7 +1,7 @@
 function process_defs(d::SS, c::Context)
     # check if the definition has already been processed and if so skip
     h = hash(d)
-    h in value(c, :_md_def_hashes)::Set{UInt64} && return
+    h in getvar(c, :_md_def_hashes)::Set{UInt64} && return
     # otherwise add the hash of the definition and evaluate it
     union!(c.vars[:_md_def_hashes], h)
     mdl = vars_module()
