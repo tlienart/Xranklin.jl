@@ -51,6 +51,12 @@ include("misc_utils.jl")
 
 # ------------------------------------------------------------------------
 
+# the ordering here is a bit awkard but we want contexts to point
+# to 'Notebook' objects which are tied to code environment.
+include("context/code/modules.jl")
+include("context/code/run.jl")
+include("context/code/notebook.jl")
+
 include("context/types.jl")
 include("context/context.jl")
 include("context/default_context.jl")
@@ -58,10 +64,6 @@ include("context/default_context.jl")
 # ------------------------------------------------------------------------
 
 include("convert/regex.jl")
-
-include("convert/code/modules.jl")
-include("convert/code/run.jl")
-include("convert/code/utils.jl")
 
 include("convert/markdown/commonmark.jl")
 include("convert/markdown/utils.jl")

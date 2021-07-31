@@ -9,6 +9,8 @@ function process_config(
             config::String,
             gc::GlobalContext=cur_gc()
             )
+    # set the notebooks at the top
+    reset_nb_counters!(gc)
 
     start = time(); @info """
         ⌛ processing config
@@ -17,6 +19,7 @@ function process_config(
     @info """
         ... ✔ $(hl(time_fmt(time()-start)))
         """
+
     if getvar(gc, :generate_rss)::Bool
         # :website_url must be given
         url = getvar(gc, :rss_website_url)::String
@@ -50,6 +53,62 @@ function process_config(gc::GlobalContext=cur_gc())
     end
     return
 end
+
+
+"""
+    process_utils(utils, gc)
+
+Process a utils string into a given global context object.
+"""
+function process_utils(
+            utils::String,
+            gc::GlobalContext=cur_gc()
+            )
+    # set the notebooks at the top
+    reset_nb_counters!(gc)
+
+    start = time(); @info """
+        ⌛ processing utils
+        """
+    add_code!(gc, subs(utils); block_name="utils")
+
+    @info """
+        ... ✔ $(hl(time_fmt(time()-start)))
+        """
+
+    # check names of hfun, lx and vars; since we wiped the module before the
+    # include_string, all the proper names recuperated here are 'fresh'.
+    mdl = gc.nb_code.mdl
+    ns = String.(names(mdl, all=true))
+    filter!(
+        n -> n[1] != '#' &&
+             n ∉ ("eval", "include", string(nameof(mdl))),
+        ns
+    )
+    setvar!(gc, :_utils_hfun_names,
+                Symbol.([n[6:end] for n in ns if startswith(n, "hfun_")]))
+    setvar!(gc, :_utils_lxfun_names,
+                Symbol.([n[4:end] for n in ns if startswith(n, "lx_")]))
+    setvar!(gc, :_utils_var_names,
+                Symbol.([n for n in ns if !startswith(n, r"lx_|hfun_")]))
+
+    return
+end
+
+function process_utils(gc::GlobalContext=cur_gc())
+    utils_path = path(:folder) / "utils.jl"
+    if isfile(utils_path)
+        process_utils(read(utils_path, String), gc)
+    else
+        @info "❎ no utils file found."
+    end
+    return
+end
+
+utils_hfun_names()  = getgvar(:_utils_hfun_names)::Vector{Symbol}
+utils_lxfun_names() = getgvar(:_utils_lxfun_names)::Vector{Symbol}
+utils_var_names()   = getgvar(:_utils_var_names)::Vector{Symbol}
+
 
 
 """
@@ -118,7 +177,15 @@ function process_md_file(
     # path of the file relative to path(:folder)
     rpath  = get_rpath(fpath)
     ropath = get_ropath(opath)
-    ctx    = DefaultLocalContext(gc, id=rpath)
+
+    # retrieve the context from gc's children if it exists or
+    # create it if it doesn't
+    ctx = (rpath in keys(gc.children_contexts)) ?
+            gc.children_contexts[rpath] :
+            DefaultLocalContext(gc, id=rpath)
+
+    # reset the notebooks at the top
+    reset_nb_counters!(ctx)
 
     # set meta parameters
     s = stat(fpath)

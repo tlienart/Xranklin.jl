@@ -17,6 +17,13 @@ include("integration_convert.jl")  # itest function
     include(p/"default_context.jl")
 end
 
+@testset "Context/Code" begin
+    p = "context"/"code"
+    include(p/"modules.jl")
+    include(p/"run.jl")
+    include(p/"notebook.jl")  # most important one
+end
+
 @testset "LaTeX" begin
     p = "convert/"
     include(p/"md_latex_newobj.jl")
@@ -33,18 +40,12 @@ end
     include(p/"rules_defs.jl")
 end
 
-@testset "Code" begin
-    p = "convert/code"
-    include(p/"modules.jl")
-    include(p/"run.jl")
-    include(p/"utils.jl")
-end
-
 @testset "build" begin
-    include("build/paths.jl")
-    include("build/watch.jl")
-    include("build/process.jl")
-    include("build/serve.jl")
+    p = "build"
+    include(p/"paths.jl")
+    include(p/"watch.jl")
+    include(p/"process.jl")
+    include(p/"serve.jl")
 end
 
 # =========================================================

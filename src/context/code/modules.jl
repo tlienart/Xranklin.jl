@@ -65,11 +65,3 @@ function submodule(n::Symbol; wipe::Bool=false)
     !wipe && ismodule(n, p) && return getfield(p, n)
     return newmodule(n, p)
 end
-
-
-const UTILS_MODULE_NAME = modulename("utils")
-const VARS_MODULE_NAME  = modulename("vars")
-
-vars_module(; wipe=false)          = submodule(VARS_MODULE_NAME;  wipe=wipe)
-utils_module(; wipe=false)         = submodule(UTILS_MODULE_NAME; wipe=wipe)
-page_module(p::String; wipe=false) = submodule(modulename(p, true); wipe=wipe)

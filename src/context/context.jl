@@ -18,7 +18,10 @@ Fields:
     vars_deps:          keeps track of requester <-> vars
     lxdefs_deps:        keeps track of requester <-> lxdefs
     vars_aliases:       other accepted names for default variables
+    nb_vars:            notebook associated with markdown defs in config.md
+    nb_code:            notebook associated with utils.jl
     children_contexts:  associated local contexts {id => lc}
+
 """
 struct GlobalContext{LC<:Context} <: Context
     vars::Vars
@@ -26,6 +29,8 @@ struct GlobalContext{LC<:Context} <: Context
     vars_deps::VarsDeps
     lxdefs_deps::LxDefsDeps
     vars_aliases::Alias
+    nb_vars::Notebook
+    nb_code::Notebook
     children_contexts::LittleDict{String, LC}
 end
 
@@ -49,6 +54,8 @@ Fields:
     req_glob_vars:    set of global variables requested by the page
     req_glob_lxdefs:  set of global lxdefs requested by the page
     vars_aliases:     other accepted names for default variables
+    nb_vars:          notebook associated with markdown defs
+    nb_code:          notebook associated with the page code
 """
 struct LocalContext <: Context
     glob::GlobalContext
@@ -63,7 +70,11 @@ struct LocalContext <: Context
     req_glob_vars::Set{Symbol}
     req_glob_lxdefs::Set{String}
     vars_aliases::Alias
+    # notebooks
+    nb_vars::Notebook
+    nb_code::Notebook
 end
+
 
 # --------------------------------------- #
 # GLOBAL CONTEXT CONSTRUCTORS AND METHODS #
@@ -72,8 +83,10 @@ end
 function GlobalContext(v=Vars(), d=LxDefs(); alias=Alias())
     vd = VarsDeps()
     ld = LxDefsDeps()
+    nv = Notebook("__global_vars")
+    nc = Notebook("__global_utils")
     c  = LittleDict{String, LocalContext}()
-    return GlobalContext(v, d, vd, ld, alias, c)
+    return GlobalContext(v, d, vd, ld, alias, nv, nc, c)
 end
 
 # when a value from the global context is requested, we can track the requester
@@ -121,6 +134,7 @@ function prune_children!(gc::GlobalContext)
     end
 end
 
+
 # -------------------------------------- #
 # LOCAL CONTEXT CONSTRUCTORS AND METHODS #
 # -------------------------------------- #
@@ -128,8 +142,10 @@ end
 # Note that when a local context is created it is automatically
 # attached to its global context via the children_contexts
 function LocalContext(g, v, d, h, id="", a=Alias())
+    nv = Notebook("$(id)_vars")
+    nc = Notebook("$(id)_code")
     lc = LocalContext(g, v, d, h, id, Ref(false), Ref(false),
-                      Set{Symbol}(), Set{String}(), a)
+                      Set{Symbol}(), Set{String}(), a, nv, nc)
     g.children_contexts[id] = lc
 end
 
@@ -194,6 +210,60 @@ function refresh_global_context!(lc::LocalContext)
     for n in setdiff(cur, lc.req_glob_lxdefs)
         pop!(lc.glob.lxdefs_deps.fwd[n], lc.id)
         pop!(lc.glob.lxdefs_deps.bwd[lc.id], n)
+    end
+    return
+end
+
+
+# ------------------------ #
+# NOTEBOOK FUNCTIONALITIES #
+# ------------------------ #
+
+# see also add_md_defs! defined later
+function add_code!(ctx::Context, code::SS; out_path=tempname(), block_name="")
+    add!(ctx.nb_code, code;
+         name=block_name,
+         out_path=out_path,
+         block_name=block_name
+    )
+end
+
+function add_vars!(ctx::Context, code::SS)
+    add!(ctx.nb_vars, code; ismddefs=true, context=ctx)
+end
+
+function reset_nb_counters!(ctx::Context)
+    reset_counter!(ctx.nb_vars)
+    reset_counter!(ctx.nb_code)
+    return
+end
+
+"""
+    remove_bindings(nb, cntr)
+
+Let's say that on pass one, there was a block defining `a=5; b=7` but then
+on pass two, that the block only defines `a=5`, the binding to `b` should be
+removed from the local context.
+
+Note: it's assumed that `nb` is attached to the current lc, this is checked with
+the assertion.
+"""
+function remove_bindings(nb::Notebook, cntr::Int)
+    lc = cur_lc()
+    @assert nb === lc.nb_vars  # see note in docstring
+    all_bindings = Symbol[]
+    for i in cntr:length(nb)
+        cp = nb.code_pairs[i]
+        append!(all_bindings, cp.result)
+    end
+    unique!(all_bindings)
+    bindings_with_default = [b for b in all_bindings if b in keys(DefaultLocalVars)]
+    KD = keys(DefaultLocalVars)
+    for b in all_bindings
+        delete!(lc.vars, b)
+        if b in KD
+            lc.vars[b] = DefaultLocalVars[b]
+        end
     end
     return
 end

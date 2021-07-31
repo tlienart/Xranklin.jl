@@ -26,11 +26,9 @@ end
 
 @testset "submodule" begin
     p = X.parent_module(wipe=true)
-    vm = X.vars_module()
-    @test X.ismodule(nameof(vm), p)
-    include_string(X.softscope, vm, "a = 7")
-    vm2 = X.vars_module()
-    @test vm2.a == 7
-    vm3 = X.vars_module(wipe=true)
-    @test !isdefined(vm3, :a)
+    sm = X.submodule(:foobar)
+    include_string(sm, "foo = 5")
+    @test sm.foo == 5
+    sm = X.submodule(:foobar; wipe=true)
+    @test !isdefined(sm, :foo)
 end

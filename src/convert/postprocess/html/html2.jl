@@ -67,7 +67,7 @@ function html2(parts::Vector{Block}, c::Context)::String
 
             # XXX isdelayed() && return ""
 
-            um   = utils_module()
+            um   = cur_gc().nb_code.mdl
             args = split_cb[2:end]
             f    = getproperty(um, Symbol("hfun_$fname"))
             out  = isempty(args) ? f() : f(args)
@@ -82,7 +82,8 @@ function html2(parts::Vector{Block}, c::Context)::String
             if (length(split_cb) == 1) && ((v = getvar(cur_lc(), fname)) !== nothing)
                 write(io, string(v))
             elseif (length(split_cb) == 1) && (fname in utils_var_names())
-                write(io, string(getproperty(utils_module(), fname)))
+                mdl = cur_gc().nb_code.mdl
+                write(io, string(getproperty(mdl, fname)))
             else
                 @warn """
                     {{ ... }}

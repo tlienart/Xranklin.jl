@@ -54,12 +54,9 @@ const DefaultGlobalVars = Vars(
     :_idx_rpath         => 1,
     :_idx_ropath        => 1,
     # Utils related
-    :_utils_mod_hash    => zero(UInt64),
     :_utils_hfun_names  => Symbol[],
     :_utils_lxfun_names => Symbol[],
     :_utils_var_names   => Symbol[],
-    # mddefs related
-    :_md_def_hashes     => Set{UInt64}(),
 )
 const DefaultGlobalVarsAlias = Alias(
     :prepath                => :base_url_prefix,

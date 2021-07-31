@@ -1,7 +1,7 @@
 include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
 @testset "run_code" begin
-    pm = X.page_module("foo", wipe=true)
+    pm = X.submodule(:foo, wipe=true)
     r = X.run_code(pm, SubString("""
         a = 5
         a^2
@@ -11,14 +11,14 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
     r = X.run_code(pm, SubString("""
         a = 5
         @show a^5
-        """), tp)
+        """), out_path=tp)
     @test read(tp, String) // "a ^ 5 = 3125"
     @test r === nothing
     tp = tempname()
     r = X.run_code(pm, SubString("""
         a = 5
         a^2;
-        """), tp)
+        """), out_path=tp)
     @test r === nothing
     @test read(tp, String) // ""
 end
