@@ -12,6 +12,11 @@ function process_config(
     # set the notebooks at the top
     reset_nb_counters!(gc)
 
+
+    # XXX keep some copy of defs as they are now, check after whether they changed
+    # and if they did, trigger all pages that depend upon it see also trigger_dependent_pages
+
+
     start = time(); @info """
         ⌛ processing config
         """
@@ -124,7 +129,8 @@ function process_file(
             case::Symbol,
             t::Float64=0.0;     # compare modif time
             gc::GlobalContext=cur_gc(),
-            skip::Vector{Pair{String, String}}=Pair{String, String}[]
+            skip_files::Vector{Pair{String, String}}=Pair{String, String}[],
+            initial_pass::Bool=false
             )
 
     # there's things we don't want to copy over or (re)process
@@ -133,7 +139,7 @@ function process_file(
            startswith(fpath, path(:literate)) ||
            startswith(fpath, path(:rss)) ||
            fpair.second in ("config.md", "utils.jl") ||
-           fpair in skip
+           fpair in skip_files
     skip && return
 
     opath = form_output_path(fpair, case)
@@ -143,7 +149,7 @@ function process_file(
             ⌛ processing $(hl(get_rpath(fpath), :cyan))
             """
         if case == :md
-            process_md_file(gc, fpath, opath)
+            process_md_file(gc, fpath, opath; initial_pass=initial_pass)
         elseif case == :html
             process_html_file(gc, fpath, opath)
         end
@@ -172,15 +178,27 @@ write the result at `opath`.
 function process_md_file(
             gc::GlobalContext,
             fpath::String,
-            opath::String
-            )
+            opath::String;
+            initial_pass::Bool = false
+            )::Nothing
+    # usually not necessary apart in getvarfrom
+    isfile(fpath) || return
     # path of the file relative to path(:folder)
     rpath  = get_rpath(fpath)
     ropath = get_ropath(opath)
 
+    # if it's the initial pass and the gc already has a reference to this
+    # file, it means it's already been processed (e.g. cached or because
+    # it was triggered by another page requesting a var from it)
+    in_gc = rpath in keys(gc.children_contexts)
+    if initial_pass && in_gc
+        @debug "🚀 skipping (page already processed)."
+        return
+    end
+
     # retrieve the context from gc's children if it exists or
     # create it if it doesn't
-    ctx = (rpath in keys(gc.children_contexts)) ?
+    ctx = in_gc ?
             gc.children_contexts[rpath] :
             DefaultLocalContext(gc, id=rpath)
 
@@ -247,6 +265,13 @@ function process_md_file(
     # write to file
     write(opath, full_page_html)
     return
+end
+
+function process_md_file(gc::GlobalContext, rpath::String; kw...)
+    fpath = path(:folder)/rpath
+    d, f = splitdir(fpath)
+    opath = form_output_path(d => f, :md)
+    process_md_file(gc, fpath, opath; kw...)
 end
 
 

@@ -1,7 +1,41 @@
+const CodePair      = NamedTuple{(:hash, :result), Tuple{UInt64, Any}}
+const DummyCodePair = CodePair((zero(UInt64), nothing))
+const CodeMap       = LittleDict{String, Int}
+
+"""
+    Notebook{V}
+
+Structure wrapping around a module in which code gets evaluated. A Notebook
+is always contained within a context and is always accessed via the context.
+The `V` parameter is `true` for a notebook associated with vars definitions
+and `false` for code notebooks (see contexts).
+
+## Fields
+
+    mdl:        the module in which code gets evaluated
+    cntr_refs:  keeps track of the evaluated "cell number" when sequentially
+                 evaluating code
+    code_pairs: keeps track of [(h => result)] where `h` is the hash of the
+                 code of a cell and `result` is the result of the cell
+    code_map:   keeps track of {name => cntr} for code cells which have a
+                 name to map to an entry in `code_pairs`
+"""
+struct Notebook{V}
+    mdl::Module
+    cntr_ref::Ref{Int}
+    code_pairs::Vector{CodePair}
+    code_map::LittleDict{String, Int}
+end
+
+
+# ------------------------------ #
+# GLOBAL and LOCAL CONTEXT TYPES #
+# ------------------------------ #
+
+# allows to have several varname for the same effect (e.g. prepath, base_url_prefix)
 const Alias  = LittleDict{Symbol, Symbol}
 
 abstract type Context end
-
 
 """
     GlobalContext
@@ -15,22 +49,18 @@ Fields:
 -------
     vars:               the variables accessible in the global context
     lxdefs:             the lx definitions accessible in the global context
-    vars_deps:          keeps track of requester <-> vars
-    lxdefs_deps:        keeps track of requester <-> lxdefs
     vars_aliases:       other accepted names for default variables
     nb_vars:            notebook associated with markdown defs in config.md
     nb_code:            notebook associated with utils.jl
-    children_contexts:  associated local contexts {id => lc}
+    children_contexts:  associated local contexts {rpath => lc}
 
 """
 struct GlobalContext{LC<:Context} <: Context
     vars::Vars
     lxdefs::LxDefs
-    vars_deps::VarsDeps
-    lxdefs_deps::LxDefsDeps
     vars_aliases::Alias
-    nb_vars::Notebook
-    nb_code::Notebook
+    nb_vars::Notebook{true}
+    nb_code::Notebook{false}
     children_contexts::LittleDict{String, LC}
 end
 
@@ -48,32 +78,47 @@ Fields:
     vars:             a dictionary of the local variables
     lxdefs:           a dictionary of the local lx-definitions
     headers:          a dictionary of the current page headers
-    id:               id for the context, typically the path of the file
+    rpath:            relative path to the page with this local context.
     is_recursive:     whether we're in a recursive context
     is_math:          whether we're recursing in a math environment
-    req_glob_vars:    set of global variables requested by the page
-    req_glob_lxdefs:  set of global lxdefs requested by the page
+    req_vars:         mapping {pg => set of vars requested from pg}
+    req_lxdefs:       mapping {pg => set of defs requested from pg}
     vars_aliases:     other accepted names for default variables
     nb_vars:          notebook associated with markdown defs
     nb_code:          notebook associated with the page code
+
+Note: for req_lxdefs, there is only one other context from which one can get
+def, the global context, but we use the same structure for symmetry with
+req_vars (for which it does make sense to request variables from other pages).
 """
 struct LocalContext <: Context
     glob::GlobalContext
     vars::Vars
     lxdefs::LxDefs
     headers::PageHeaders
-    id::String
+    rpath::String
     # chars
     is_recursive::Ref{Bool}
     is_math::Ref{Bool}
     # stores
-    req_glob_vars::Set{Symbol}
-    req_glob_lxdefs::Set{String}
+    req_vars::LittleDict{String, Set{Symbol}}
+    req_lxdefs::LittleDict{String, Set{String}}
     vars_aliases::Alias
     # notebooks
-    nb_vars::Notebook
-    nb_code::Notebook
+    nb_vars::Notebook{true}
+    nb_code::Notebook{false}
 end
+
+
+isglob(::GlobalContext) = true
+isglob(::LocalContext)  = false
+
+
+getid(::GlobalContext)::String = "__global"
+getid(c::LocalContext)::String = c.rpath
+
+getglob(c::GlobalContext)::GlobalContext = c
+getglob(c::LocalContext)::GlobalContext  = c.glob
 
 
 # --------------------------------------- #
@@ -81,20 +126,23 @@ end
 # --------------------------------------- #
 
 function GlobalContext(v=Vars(), d=LxDefs(); alias=Alias())
-    vd = VarsDeps()
-    ld = LxDefsDeps()
-    nv = Notebook("__global_vars")
-    nc = Notebook("__global_utils")
-    c  = LittleDict{String, LocalContext}()
-    return GlobalContext(v, d, vd, ld, alias, nv, nc, c)
+    # vars notebook
+    mdl = submodule(modulename("__global_vars", true), wipe=true)
+    nv  = Notebook{true}(mdl, Ref(1), CodePair[], CodeMap())
+    # utils notebook
+    mdl = submodule(modulename("__global_utils", true), wipe=true)
+    nc  = Notebook{false}(mdl, Ref(1), CodePair[], CodeMap())
+    # children
+    c   = LittleDict{String, LocalContext}()
+    return GlobalContext(v, d, alias, nv, nc, c)
 end
 
-# when a value from the global context is requested, we can track the requester
-# so that, when the global context is updated, all relevant dependent pages
-# can get updated as well.
-function getvar(gc::GlobalContext, n::Symbol, d=nothing; requester::String="")
+function hasvar(gc::GlobalContext, n::Symbol)
+    return n in keys(gc.vars) || n in keys(gc.vars_aliases)
+end
+
+function getvar(gc::GlobalContext, n::Symbol, d=nothing)
     n = get(gc.vars_aliases, n, n)
-    isempty(requester) || add!(gc.vars_deps, n, requester)
     return getvar(gc.vars, n, d)
 end
 
@@ -103,25 +151,18 @@ function setvar!(gc::GlobalContext, n::Symbol, v)
     setvar!(gc.vars, n, v)
 end
 
-function hasvar(gc::GlobalContext, n::Symbol)
-    return n in keys(gc.vars) || n in keys(gc.vars_aliases)
-end
-
-setdef!(gc::GlobalContext, n::String, d) = setdef!(gc.lxdefs, n, d)
 hasdef(gc::GlobalContext,  n::String)    = hasdef(gc.lxdefs, n)
+getdef(gc::GlobalContext, n::String)     = getdef(gc.lxdefs, n)
+setdef!(gc::GlobalContext, n::String, d) = setdef!(gc.lxdefs, n, d)
 
-function getdef(gc::GlobalContext, n::String; requester::String="")
-    isempty(requester) || add!(gc.lxdefs_deps, n, requester)
-    return getdef(gc.lxdefs, n)
-end
 
 """
     prune_children!(gc)
 
-Remove children if their id does not correspond to an existing page.
+Remove children if their rpath does not correspond to an existing page.
 This can happen if, during a session, a page `page1.md` is created, has its
 local context that gets appended to the list of children of the global
-context, then the user renames the file `page2.md`. The id `page1.md`
+context, then the user renames the file `page2.md`. The rpath `page1.md`
 does then not correspond to an existing page anymore and should be popped.
 
 This function should be called whenever `.md` pages are removed in the server
@@ -129,7 +170,7 @@ loop.
 """
 function prune_children!(gc::GlobalContext)
     for (k, v) in gc.children_contexts
-        isfile(v.id) && continue
+        isfile(v.rpath) && continue
         pop!(gc.children_contexts, k)
     end
 end
@@ -141,31 +182,46 @@ end
 
 # Note that when a local context is created it is automatically
 # attached to its global context via the children_contexts
-function LocalContext(g, v, d, h, id="", a=Alias())
-    nv = Notebook("$(id)_vars")
-    nc = Notebook("$(id)_code")
-    lc = LocalContext(g, v, d, h, id, Ref(false), Ref(false),
-                      Set{Symbol}(), Set{String}(), a, nv, nc)
-    g.children_contexts[id] = lc
+function LocalContext(glob, vars, defs, headers, rpath="", alias=Alias())
+    # vars notebook
+    mdl = submodule(modulename("$(rpath)_vars", true), wipe=true)
+    nv  = Notebook{true}(mdl, Ref(1), CodePair[], CodeMap())
+    # code notebook
+    mdl = submodule(modulename("$(rpath)_code", true), wipe=true)
+    nc  = Notebook{false}(mdl, Ref(1), CodePair[], CodeMap())
+    # req vars (keep track of what is requested by this page)
+    rv = LittleDict{String, Set{Symbol}}(
+        "__global" => Set{Symbol}()
+    )
+    rl = LittleDict{String, Set{String}}(
+        "__global" => Set{String}()
+    )
+    # form the object
+    lc = LocalContext(glob, vars, defs, headers,
+                      rpath, Ref(false), Ref(false),
+                      rv, rl, alias, nv, nc)
+    # attach it to global
+    glob.children_contexts[rpath] = lc
+    return lc
 end
 
 function LocalContext(g=GlobalContext(), v=Vars(), d=LxDefs();
-                      id="", alias=Alias())
-    return LocalContext(g, v, d, PageHeaders(), id, alias)
+                      rpath="", alias=Alias())
+    return LocalContext(g, v, d, PageHeaders(), rpath, alias)
 end
 
 recursify(c::LocalContext) = (c.is_recursive[] = true; c)
 mathify(c::LocalContext)   = (c.is_recursive[] = c.is_math[] = true; c)
 
 # when trying to retrieve a variable from a local context, we first check
-# whether the local context contains the variable an
+# whether the local context contains the variable, if it doesn't but the
+# global context has it, then get from global
 function getvar(lc::LocalContext, n::Symbol, d=nothing)
     n = get(lc.vars_aliases, n, n)
     if n ∉ keys(lc.vars) && hasvar(lc.glob, n)
         # if we try to get the variable from global, keep track of that
-        # see also refresh_global_context
-        union!(lc.req_glob_vars, [n])
-        return getvar(lc.glob, n, d; requester=lc.id)
+        union!(lc.req_vars["__global"], [n])
+        return getvar(lc.glob, n, d)
     end
     return getvar(lc.vars, n, d)
 end
@@ -182,96 +238,48 @@ hasdef(lc::LocalContext, n::String) =
     hasdef(lc.lxdefs, n) || hasdef(lc.glob.lxdefs, n)
 
 function getdef(lc::LocalContext, n::String)
-    if n ∉ keys(lc.lxdefs)
-        union!(lc.req_glob_lxdefs, [n])
-        return getdef(lc.glob, n; requester=lc.id)
+    if n ∉ keys(lc.lxdefs) && hasdef(lc.glob, n)
+        union!(lc.req_lxdefs["__global"], [n])
+        return getdef(lc.glob, n)
     end
     return getdef(lc.lxdefs, n)
 end
 
-"""
-    refresh_global_context!(lc)
-
-Once a string/page with id has been processed, we know on what global
-variables/lxdefs it depends. As this might have changed since the previous
-time we processed that string/page, we refresh the global context with that
-info.
-"""
-function refresh_global_context!(lc::LocalContext)
-    # cur below necessarily exists but may contain too much which we'll prune
-    cur = lc.glob.vars_deps.bwd[lc.id]
-    # go over the vars that are not needed by that page anymore and prune
-    for n in setdiff(cur, lc.req_glob_vars)
-        pop!(lc.glob.vars_deps.fwd[n], lc.id)
-        pop!(lc.glob.vars_deps.bwd[lc.id], n)
-    end
-    # same for lxdefs
-    cur = lc.glob.lxdefs_deps.bwd[lc.id]
-    for n in setdiff(cur, lc.req_glob_lxdefs)
-        pop!(lc.glob.lxdefs_deps.fwd[n], lc.id)
-        pop!(lc.glob.lxdefs_deps.bwd[lc.id], n)
-    end
-    return
-end
-
-
-# ------------------------ #
-# NOTEBOOK FUNCTIONALITIES #
-# ------------------------ #
-
-# see also add_md_defs! defined later
-function add_code!(ctx::Context, code::SS; out_path=tempname(), block_name="")
-    add!(ctx.nb_code, code;
-         name=block_name,
-         out_path=out_path,
-         block_name=block_name
-    )
-end
-
-function add_vars!(ctx::Context, code::SS)
-    add!(ctx.nb_vars, code; ismddefs=true, context=ctx)
-end
-
-function reset_nb_counters!(ctx::Context)
-    reset_counter!(ctx.nb_vars)
-    reset_counter!(ctx.nb_code)
-    return
-end
 
 """
-    remove_bindings(nb, cntr)
+    getvarfrom(rpath, n, d)
 
-Let's say that on pass one, there was a block defining `a=5; b=7` but then
-on pass two, that the block only defines `a=5`, the binding to `b` should be
-removed from the local context.
-
-Note: it's assumed that `nb` is attached to the current lc, this is checked with
-the assertion.
+Retrieve a value corresponding to symbol `n` from a local context with rpath
+`rpath` if it exists.
 """
-function remove_bindings(nb::Notebook, cntr::Int)
-    lc = cur_lc()
-    @assert nb === lc.nb_vars  # see note in docstring
-    all_bindings = Symbol[]
-    for i in cntr:length(nb)
-        cp = nb.code_pairs[i]
-        append!(all_bindings, cp.result)
+function getvarfrom(rpath::String, n::Symbol, d=nothing)
+    # is there such an rpath in current GC ? if not but the rpath corresponds
+    # to a file, then trigger a process of that file and try again
+    clc = env(:cur_local_ctx)
+    clc === nothing && return d
+    glob = clc.glob
+    if rpath ∉ keys(glob.children_contexts)
+        # if there's no file at that rpath, process_md_file will not do
+        # anything and the default will be returned later
+        process_md_file(glob, rpath)
+        # if rpath didn't correspond to a file then it's still not in the children
+        # contexts key and we should return the default
+        rpath ∉ keys(glob.children_contexts) && return d
     end
-    unique!(all_bindings)
-    bindings_with_default = [b for b in all_bindings if b in keys(DefaultLocalVars)]
-    KD = keys(DefaultLocalVars)
-    for b in all_bindings
-        delete!(lc.vars, b)
-        if b in KD
-            lc.vars[b] = DefaultLocalVars[b]
-        end
+    # here we do have rpath as a child, add the relevant symbol as a requested
+    # variable and return the value
+    ctx = glob.children_contexts[rpath]
+    n = get(ctx.vars_aliases, n, n)
+    if n in keys(ctx.vars)
+        clc.req_vars[rpath] = union!(get(clc.req_vars, rpath, Set{Symbol}()), [n])
     end
-    return
+    return getvar(glob.children_contexts[rpath], n, d)
 end
 
 
-# -------------------------------------- #
-# LOCAL CONTEXT CONSTRUCTORS AND METHODS #
-# -------------------------------------- #
+# ----------------------- #
+# CURRENT GC / CURRENT LC #
+# ----------------------- #
 
 """
     set_current_global_context(gc)
@@ -309,19 +317,6 @@ setlvar!(n::Symbol, v) = setvar!(cur_lc(), n, v)
 # helper function to retrieve var in current local/global context
 getgvar(n::Symbol, d=nothing) = getvar(cur_gc(), n, d)
 getlvar(n::Symbol, d=nothing) = getvar(cur_lc(), n, d)
-
-
-"""
-    getvarfrom(id, n, d)
-
-Retrieve a value corresponding to symbol `n` from a local context with id `s`
-if it exists.
-"""
-function getvarfrom(id::String, n::Symbol, d=nothing)
-    clc = env(:cur_local_ctx)
-    (clc === nothing || id ∉ keys(clc.glob.children_contexts)) && return d
-    return getvar(clc.glob.children_contexts[id], n, d)
-end
 
 
 # ---------------------- #

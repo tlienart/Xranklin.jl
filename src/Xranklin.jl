@@ -53,40 +53,51 @@ include("misc_utils.jl")
 
 # the ordering here is a bit awkard but we want contexts to point
 # to 'Notebook' objects which are tied to code environment.
-include("context/code/modules.jl")
-include("context/code/run.jl")
-include("context/code/notebook.jl")
 
 include("context/types.jl")
 include("context/context.jl")
 include("context/default_context.jl")
 
-# ------------------------------------------------------------------------
+include("context/code/modules.jl")
+include("context/code/notebook.jl")
+include("context/code/notebook_vars.jl")
+include("context/code/notebook_code.jl")
 
+#
+# include("context/code/modules.jl")
+# include("context/code/run.jl")
+# include("context/code/notebook.jl")
+#
+# include("context/types.jl")
+# include("context/context.jl")
+# include("context/default_context.jl")
+#
+# # ------------------------------------------------------------------------
+#
 include("convert/regex.jl")
-
-include("convert/markdown/commonmark.jl")
-include("convert/markdown/utils.jl")
-include("convert/markdown/latex_objects.jl")
-include("convert/markdown/to_html.jl")
-include("convert/markdown/to_latex.jl")
-include("convert/markdown/to_math.jl")
-
-include("convert/markdown/rules/utils.jl")
-include("convert/markdown/rules/text.jl")
-include("convert/markdown/rules/headers.jl")
-include("convert/markdown/rules/code.jl")
-include("convert/markdown/rules/maths.jl")
-include("convert/markdown/rules/defs.jl")
-
-include("convert/postprocess/html/html2.jl")
-include("convert/postprocess/latex/latex2.jl")
-
-# ------------------------------------------------------------------------
-
+#
+# include("convert/markdown/commonmark.jl")
+# include("convert/markdown/utils.jl")
+# include("convert/markdown/latex_objects.jl")
+# include("convert/markdown/to_html.jl")
+# include("convert/markdown/to_latex.jl")
+# include("convert/markdown/to_math.jl")
+#
+# include("convert/markdown/rules/utils.jl")
+# include("convert/markdown/rules/text.jl")
+# include("convert/markdown/rules/headers.jl")
+# include("convert/markdown/rules/code.jl")
+# include("convert/markdown/rules/maths.jl")
+# include("convert/markdown/rules/defs.jl")
+#
+# include("convert/postprocess/html/html2.jl")
+# include("convert/postprocess/latex/latex2.jl")
+#
+# # ------------------------------------------------------------------------
+#
 include("build/paths.jl")
-include("build/watch.jl")
-include("build/process.jl")
-include("build/serve.jl")
+# include("build/watch.jl")
+# include("build/process.jl")
+# include("build/serve.jl")
 
 end # module

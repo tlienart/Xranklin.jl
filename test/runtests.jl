@@ -20,9 +20,11 @@ end
 @testset "Context/Code" begin
     p = "context"/"code"
     include(p/"modules.jl")
-    include(p/"run.jl")
-    include(p/"notebook.jl")  # most important one
+    include(p/"notebook_vars.jl")
+    include(p/"notebook_code.jl")
 end
+
+# -------------------------------------------
 
 @testset "LaTeX" begin
     p = "convert/"
