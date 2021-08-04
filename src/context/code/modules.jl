@@ -1,3 +1,5 @@
+const USING_FRANKLIN = Meta.parse("using $(env(:module_name))")
+
 """
     modulename(id, h)
 
@@ -63,7 +65,9 @@ parent module or create a new one and return it.
 function submodule(n::Symbol; wipe::Bool=false)
     p = parent_module()
     !wipe && ismodule(n, p) && return getfield(p, n)
-    return newmodule(n, p)
+    m = newmodule(n, p)
+    Core.eval(m, USING_FRANKLIN)
+    return m
 end
 
 
@@ -73,9 +77,10 @@ end
 Consumes a string with Julia code, returns a vector of expression(s).
 """
 function parse_code(code::SS)
-    exs = Any[]             # Expr, Symbol or Any Julia core value
-    n   = sizeof(code)
-    pos = 1
+    code = strip(code)
+    exs  = Any[]             # Expr, Symbol or Any Julia core value
+    n    = sizeof(code)
+    pos  = 1
     while pos ≤ n
         ex, pos = Meta.parse(code, pos)
         isnothing(ex) && continue

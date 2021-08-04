@@ -14,11 +14,14 @@
 * utils
 * list of all warning messages and explaination / what to do
 
+* mode where can "test" only a subset of pages
+
 ## More tests
 
 * header rules
 * md definitions
 * code blocks
+* 🔺🔺🔺 dependencies (pagevar/defs/reprocessing) + do we need `@delay` anymore?
 
 ## Goals
 

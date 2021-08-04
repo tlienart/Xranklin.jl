@@ -78,3 +78,7 @@ Mixed
 ### Inline
 
 ### Block
+
+## Page variables
+
+**Note**: the `@def ...` is still supported but the `+++...+++` should be preferred to it.

@@ -61,9 +61,7 @@ end
 
 
 @testset "md file" begin
-    d = mktempdir()
-    gc = X.DefaultGlobalContext()
-    X.set_paths(d)
+    d, gc = testdir()
     fpair = d => "foo.md"
     fpath = joinpath(fpair...)
     opath = X.form_output_path(fpair, :md)
@@ -103,4 +101,86 @@ end
         </div>
         FOOT
         """)
+end
+
+
+@testset "deps on glob" begin
+    d, gc = testdir()
+    write(d/"config.md", raw"""
+        +++
+        a = 5
+        +++
+        \newcommand{\foo}{bar}
+        """)
+    write(d/"pg1.md", raw"""
+        {{a}}
+        """)
+    write(d/"pg2.md", raw"""
+        \foo
+        """)
+    X.process_config(gc)
+    X.process_md_file(gc, "pg1.md")
+    X.process_md_file(gc, "pg2.md")
+
+    @test isapproxstr(readpg("pg1.md"), """
+    <div class="franklin-content">
+    <p>5</p>
+    </div>
+    """)
+    @test isapproxstr(readpg("pg2.md"), """
+    <div class="franklin-content">
+    <p>bar</p>
+    </div>
+    """)
+
+    # Modify var of config
+    write(d/"config.md", raw"""
+        +++
+        a = 7
+        +++
+        \newcommand{\foo}{bar}
+        """)
+    X.process_config(gc)
+    @test gc.to_trigger == Set(["pg1.md"])
+    empty!(gc.to_trigger)
+    write(d/"config.md", raw"""
+        +++
+        a = 7
+        +++
+        \newcommand{\foo}{baz}
+        """)
+    X.process_config(gc)
+    @test gc.to_trigger == Set(["pg2.md"])
+end
+
+@testset "cross var deps" begin
+    d, gc = testdir(tag=false)
+    write(d/"utils.jl", """
+        hfun_geta(params) = getvarfrom(params[1], :a)
+        """)
+    X.process_utils(gc)
+    write(d/"pg1.md", raw"""
+        +++
+        a = 5
+        +++
+        {{a}}
+        """)
+    write(d/"pg2.md", raw"""
+        {{geta pg1.md}}
+        """)
+    X.process_md_file(gc, "pg1.md")
+    X.process_md_file(gc, "pg2.md")
+    @test readpg("pg1.md") // "<p>5</p>"
+    @test readpg("pg2.md") // "<p>5</p>"
+
+    # Modify vars on pg1 --> pg2 should be marked as trigger
+    write(d/"pg1.md", """
+        +++
+        a = 7
+        +++
+        {{a}}
+        """)
+    X.process_md_file(gc, "pg1.md")
+    @test readpg("pg1.md") // "<p>7</p>"
+    @test X.cur_lc().to_trigger == Set(["pg2.md"])
 end

@@ -72,17 +72,35 @@ function full_pass(
     end
 
     # Go over all the watched files and run `process_file` on them.
-    start = time()
-    @info """
+    start = time(); @info """
         💡 $(hl("starting the full pass", :yellow))
         """
     for (case, dict) in watched_files, (fp, t) in dict
         process_file(fp, case, dict[fp];
                      gc=gc, skip_files=skip_files, initial_pass=initial_pass)
     end
-    @info """
-        💡 $(hl("full pass done", :yellow)) $(hl(time_fmt(time()-start)))
+    δt = time() - start; @info """
+        💡 $(hl("full pass done", :yellow)) $(hl(time_fmt(δt)))
         """
+
+    # Collect the pages that may need re-processing if they depend on definitions
+    # that got updated in the meantime.
+    # We can ignore gc because we just did a full pass
+    empty!(gc.to_trigger)
+    re_process = gc.to_trigger
+    for c in values(gc.children_contexts)
+        union!(re_process, c.to_trigger)
+        empty!(c.to_trigger)
+    end
+    for rpath in re_process
+        start = time(); @info """
+        ⌛ re-processing $(hl(rpath)) as it depends on things that were updated...
+        """
+        process_md_file(gc, rpath)
+        δt = time() - start; @info """
+        ... ✔ [reproccess] $(hl(time_fmt(δt)))
+        """
+    end
     return
 end
 

@@ -53,6 +53,7 @@ Fields:
     nb_vars:            notebook associated with markdown defs in config.md
     nb_code:            notebook associated with utils.jl
     children_contexts:  associated local contexts {rpath => lc}
+    to_trigger:         set of dependent pages to trigger after updating GC
 
 """
 struct GlobalContext{LC<:Context} <: Context
@@ -62,6 +63,7 @@ struct GlobalContext{LC<:Context} <: Context
     nb_vars::Notebook{true}
     nb_code::Notebook{false}
     children_contexts::LittleDict{String, LC}
+    to_trigger::Set{String}
 end
 
 
@@ -86,6 +88,7 @@ Fields:
     vars_aliases:     other accepted names for default variables
     nb_vars:          notebook associated with markdown defs
     nb_code:          notebook associated with the page code
+    to_trigger:       set of dependent pages to trigger after updating LC
 
 Note: for req_lxdefs, there is only one other context from which one can get
 def, the global context, but we use the same structure for symmetry with
@@ -107,12 +110,12 @@ struct LocalContext <: Context
     # notebooks
     nb_vars::Notebook{true}
     nb_code::Notebook{false}
+    to_trigger::Set{String}
 end
 
 
 isglob(::GlobalContext) = true
 isglob(::LocalContext)  = false
-
 
 getid(::GlobalContext)::String = "__global"
 getid(c::LocalContext)::String = c.rpath
@@ -134,7 +137,9 @@ function GlobalContext(v=Vars(), d=LxDefs(); alias=Alias())
     nc  = Notebook{false}(mdl, Ref(1), CodePair[], CodeMap())
     # children
     c   = LittleDict{String, LocalContext}()
-    return GlobalContext(v, d, alias, nv, nc, c)
+    # to_trigger
+    tt  = Set{String}()
+    return GlobalContext(v, d, alias, nv, nc, c, tt)
 end
 
 function hasvar(gc::GlobalContext, n::Symbol)
@@ -196,10 +201,11 @@ function LocalContext(glob, vars, defs, headers, rpath="", alias=Alias())
     rl = LittleDict{String, Set{String}}(
         "__global" => Set{String}()
     )
+    tt = Set{String}()
     # form the object
     lc = LocalContext(glob, vars, defs, headers,
                       rpath, Ref(false), Ref(false),
-                      rv, rl, alias, nv, nc)
+                      rv, rl, alias, nv, nc, tt)
     # attach it to global
     glob.children_contexts[rpath] = lc
     return lc

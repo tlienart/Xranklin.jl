@@ -6,6 +6,7 @@ using Logging
 import Base: (//)
 
 X = Xranklin
+MDL = X.env(:module_name)
 
 # ----------------------- #
 # String comparison utils #
@@ -33,3 +34,20 @@ logall() = (
     Logging.disable_logging(Logging.Debug - 100);
     ENV["JULIA_DEBUG"] = "all";
 )
+
+function testdir(; tag=true)
+    d = mktempdir();
+    gc = X.DefaultGlobalContext();
+    X.set_paths(d);
+    if !tag
+        setgvar!(:content_tag, "")
+    end
+    d, gc
+end
+
+function readpg(rpath)
+    fpath = X.path(:folder)/rpath
+    d, f = splitdir(fpath)
+    opath = X.form_output_path(d => f, :md)
+    read(opath, String)
+end

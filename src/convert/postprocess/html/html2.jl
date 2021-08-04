@@ -70,7 +70,9 @@ function html2(parts::Vector{Block}, c::Context)::String
             um   = cur_gc().nb_code.mdl
             args = split_cb[2:end]
             f    = getproperty(um, Symbol("hfun_$fname"))
-            out  = isempty(args) ? f() : f(args)
+            # force the output to be a string to not risk the write to io
+            # being a bunch of gibberish
+            out  = (isempty(args) ? f() : f(string.(args))) |> string
             write(io, out)
 
         elseif fname in HTML_FUNCTIONS

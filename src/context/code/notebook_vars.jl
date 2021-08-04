@@ -18,12 +18,29 @@ function eval_vars_cell!(ctx::Context, cell_code::SS)::Nothing
     vnames = _eval_vars_cell(nb.mdl, cell_code, ctx)
 
     # if some variables change and other pages are dependent upon them
-    # then these pages must be re-triggered.
+    # then these pages must eventually be re-triggered.
     if cntr ≤ lnb
-        pruned_bindings  = prune_vars_bindings(ctx)
-        updated_bindings = union!(pruned_bindings, vnames)
-        trigger_dependent_pages(ctx, updated_bindings)
+        pruned_vars  = prune_vars_bindings(ctx)
+        updated_vars = union!(pruned_vars, vnames)
+        if !isempty(updated_vars)
+            gc = getglob(ctx)
+            id = getid(ctx)
+            for (rpath, sctx) in gc.children_contexts
+                id == rpath && continue
+                trigger = id in keys(sctx.req_vars) &&
+                            anymatch(sctx.req_vars[id], updated_vars)
+                if trigger
+                    union!(ctx.to_trigger, [rpath])
+                end
+            end
+        end
     end
+
+    # assign the variables
+    for vname in vnames
+        setvar!(ctx, vname, getproperty(nb.mdl, vname))
+    end
+
     return finish_cell_eval!(nb, CodePair((h, vnames)))
 end
 
@@ -60,9 +77,6 @@ function _eval_vars_cell(mdl::Module, code::SS, ctx::Context)::Vector{Symbol}
     # get the variable names from all assignment expressions
     vnames = [ex.args[1] for ex in exs if ex.head == :(=)]
     filter!(v -> v isa Symbol, vnames)
-    for vname in vnames
-        setvar!(ctx, vname, getproperty(mdl, vname))
-    end
     return vnames
 end
 
@@ -97,37 +111,4 @@ function prune_vars_bindings(ctx::Context)::Vector{Symbol}
         end
     end
     return pruned_bindings
-end
-
-
-"""
-    trigger_dependent_pages(gc, updated_bindings)
-
-When changing variables on a page (or `config.md`), other pages which depend
-on these variables must be updated as well.
-"""
-function trigger_dependent_pages(
-            ctx::Context,
-            updated_bindings::Vector{Symbol}
-            )::Nothing
-    # recover the relevant global context
-    gc = getglob(ctx)
-    # look at all sister context, check the ones that indicate they depend
-    # upon ctx and check if they depend on a variable that was updated
-    for (rpath, sctx) in gc.children_contexts
-        rpath == ctx.rpath && continue
-        # check if the page depends on something from this context
-        trigger = ctx.rpath in keys(sctx.req_vars) &&
-                    any(a == b for a in sctx.req_vars[ctx.rpath], b in updated_bindings)
-        if trigger
-            start = time(); @info """
-            ... updating $(hl(id, :cyan)) as it depends on a var that changed
-            """
-            process_md_file(gc, id)
-            @info """
-                ... ... ✔ $(hl(time_fmt(time()-start)))
-                """
-        end
-    end
-    return
 end

@@ -87,7 +87,7 @@ function try_form_lxdef(
             part::Block,
             i::Int,
             parts::Vector{Block},
-            ctx::LocalContext
+            ctx::Context
             )::Tuple{Block,Int}
 
     # command or env?

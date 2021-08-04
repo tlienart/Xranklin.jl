@@ -11,11 +11,14 @@ function process_config(
             )
     # set the notebooks at the top
     reset_notebook_counters!(gc)
+    set_current_global_context(gc)
 
-
-    # XXX keep some copy of defs as they are now, check after whether they changed
-    # and if they did, trigger all pages that depend upon it see also trigger_dependent_pages
-
+    old_lxdefs = LittleDict{String, UInt64}(
+        n => hash(lxd.def)
+        for (n, lxd) in gc.lxdefs
+    )
+    # discard current defs, it will be repopulated by the call to html
+    empty!(gc.lxdefs)
 
     start = time(); @info """
         ⌛ processing config
@@ -40,6 +43,23 @@ function process_config(
             endswith(url, '/') || (url *= '/')
             full_url =  url * getvar(gc, :rss_file)::String * ".xml"
             setvar!(gc, :rss_feed_url, full_url)
+        end
+    end
+
+    # go over the old lxdefs and check the ones that either have been
+    # removed or updated
+    updated_lxdefs = [
+        n
+        for (n, h) in old_lxdefs
+        if n ∉ keys(gc.lxdefs) || h != hash(gc.lxdefs[n].def)
+    ]
+    # if there are updated lxdefs, find the pages which this might affect
+    # and mark them for re-processing
+    if !isempty(updated_lxdefs)
+        for (rpath, ctx) in gc.children_contexts
+            if anymatch(ctx.req_lxdefs["__global"], updated_lxdefs)
+                union!(gc.to_trigger, [rpath])
+            end
         end
     end
     return
@@ -71,6 +91,7 @@ function process_utils(
             )
     # set the notebooks at the top
     reset_notebook_counters!(gc)
+    set_current_global_context(gc)
 
     start = time(); @info """
         ⌛ processing utils
@@ -203,6 +224,7 @@ function process_md_file(
 
     # reset the notebooks at the top
     reset_notebook_counters!(ctx)
+    set_current_local_context(ctx)
 
     # set meta parameters
     s = stat(fpath)

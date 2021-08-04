@@ -1,6 +1,5 @@
 const StringOrRegex = Union{String, Regex}
 
-
  """
     hl(s, c)
 
@@ -51,3 +50,11 @@ change_ext(fn, ext=".html") = splitext(fn)[1] * ext
 Convenience function to add an attribute to a html element.
 """
 html_attr(n::Symbol, v::String) = ifelse(isempty(v), "", " $n=\"$v\"")
+
+
+"""
+    anymatch(v1, v2)
+
+Check if there's any matching pairs of element in v1 and v2.
+"""
+anymatch(v1, v2) = any(a == b for a in v1, b in v2)
