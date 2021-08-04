@@ -134,10 +134,10 @@ DefaultGlobalContext() = GlobalContext(
     alias=copy(DefaultGlobalVarsAlias)
 ) |> set_current_global_context
 
-DefaultLocalContext(g=DefaultGlobalContext(); id="") = LocalContext(
+DefaultLocalContext(g=DefaultGlobalContext(); rpath="") = LocalContext(
     g,
     deepcopy(DefaultLocalVars),
     deepcopy(DefaultLocalLxDefs),
     alias=copy(DefaultLocalVarsAlias),
-    id=id
+    rpath=rpath
 ) |> set_current_local_context

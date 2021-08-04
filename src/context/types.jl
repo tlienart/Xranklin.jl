@@ -1,40 +1,4 @@
 """
-    SetDict
-
-Bidirectional dictionary to help keep track of relations where we need to both
-be able to get `value => set_of_requesters` and `requester => set_of_values`.
-"""
-struct SetDict{A, B}
-    fwd::LittleDict{A, Set{B}}
-    bwd::LittleDict{B, Set{A}}
-end
-SetDict{A, B}() where {A, B} = SetDict(
-    LittleDict{A, Set{B}}(),
-    LittleDict{B, Set{A}}()
-)
-
-"""
-    add!(sd, k, v)
-
-Add the forward relation `k => v` and the backward relation `v => k`.
-"""
-function add!(sd::SetDict{A, B}, k::A, v::B) where {A, B}
-    if k in keys(sd.fwd)
-        union!(sd.fwd[k], [v])
-    else
-        sd.fwd[k] = Set{B}([v])
-    end
-    if v in keys(sd.bwd)
-        union!(sd.bwd[v], [k])
-    else
-        sd.bwd[v] = Set{A}([k])
-    end
-    return
-end
-
-
-# ============================================================================
-"""
     Vars
 
 Mapping `:varname => value`.
@@ -44,14 +8,6 @@ values via `getvar(...)` a default value can be specified and effectively acts
 as a type constraint.
 """
 const Vars = LittleDict{Symbol, Any}
-
-
-"""
-    VarsDeps
-
-Bidirectional mapping `:varname => [pages using]`.
-"""
-const VarsDeps = SetDict{Symbol, String}
 
 
 """
@@ -126,14 +82,6 @@ pastdef(λ::LxDef) = LxDef(λ.nargs, λ.def)
 Mapping `lx_name => definition`.
 """
 const LxDefs = LittleDict{String, LxDef}
-
-
-"""
-    LxDefsDeps
-
-Bidirectional mapping `com_or_env_name <=> [pages using]`.
-"""
-const LxDefsDeps = SetDict{String, String}
 
 
 """

@@ -19,7 +19,7 @@ function serve(;
 
     watched_files = find_files_to_watch(folder)
 
-    full_pass(watched_files; gc=gc)
+    full_pass(watched_files; gc=gc, initial_pass=true)
 
     # wipe parent module (make all children modules inaccessible so that GC
     # should be able to destroy them)
@@ -29,7 +29,7 @@ end
 
 
 """
-    full_pass(watched_files; gc)
+    full_pass(watched_files; kw...)
 
 Perform a full pass over a set of watched files: each of these is then
 processed in the `gc` context.
@@ -41,13 +41,19 @@ for warm-loading.
 
 ## KW-Args
 
-    gc: global context in which to do the full pass
-    skip: list of file pairs to ignore in the pass
+    gc:           global context in which to do the full pass
+    skip:         list of file pairs to ignore in the pass
+    initial_pass: whether it's the first pass, in that case there can be
+                    situations where we want to avoid double-processing some
+                    md files. E.g. if A requests a var from B, then A will
+                    trigger the processing of B and we shouldn't do B again.
+                    See process_md_file and getvarfrom.
 """
 function full_pass(
             watched_files::LittleDict{Symbol, TrackedFiles};
             gc::GlobalContext=cur_gc(),
-            skip_files::Vector{Pair{String, String}}=Pair{String, String}[]
+            skip_files::Vector{Pair{String, String}}=Pair{String, String}[],
+            initial_pass::Bool=false
             )::Nothing
     # make sure the context considers the config file
     process_config(gc)
@@ -71,7 +77,8 @@ function full_pass(
         💡 $(hl("starting the full pass", :yellow))
         """
     for (case, dict) in watched_files, (fp, t) in dict
-        process_file(fp, case, dict[fp], gc=gc, skip=skip_files)
+        process_file(fp, case, dict[fp];
+                     gc=gc, skip_files=skip_files, initial_pass=initial_pass)
     end
     @info """
         💡 $(hl("full pass done", :yellow)) $(hl(time_fmt(time()-start)))
@@ -84,6 +91,6 @@ end
 NOTE
 
 loop
-- use prune_children! 
+- use prune_children!
 
 =#

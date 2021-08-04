@@ -53,13 +53,15 @@ include("misc_utils.jl")
 
 # the ordering here is a bit awkard but we want contexts to point
 # to 'Notebook' objects which are tied to code environment.
-include("context/code/modules.jl")
-include("context/code/run.jl")
-include("context/code/notebook.jl")
 
 include("context/types.jl")
 include("context/context.jl")
 include("context/default_context.jl")
+
+include("context/code/modules.jl")
+include("context/code/notebook.jl")
+include("context/code/notebook_vars.jl")
+include("context/code/notebook_code.jl")
 
 # ------------------------------------------------------------------------
 
@@ -77,7 +79,6 @@ include("convert/markdown/rules/text.jl")
 include("convert/markdown/rules/headers.jl")
 include("convert/markdown/rules/code.jl")
 include("convert/markdown/rules/maths.jl")
-include("convert/markdown/rules/defs.jl")
 
 include("convert/postprocess/html/html2.jl")
 include("convert/postprocess/latex/latex2.jl")

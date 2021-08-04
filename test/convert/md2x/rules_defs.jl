@@ -3,8 +3,6 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 @testset "mddef" begin
     gc = X.DefaultGlobalContext()
     lc = X.DefaultLocalContext(gc)
-    X.set_current_local_context(lc)
-    @test isempty(locvar(:_md_def_hashes))
     s = """
         @def x = 5
         """

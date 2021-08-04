@@ -65,3 +65,21 @@ function submodule(n::Symbol; wipe::Bool=false)
     !wipe && ismodule(n, p) && return getfield(p, n)
     return newmodule(n, p)
 end
+
+
+"""
+    parse_code(code)
+
+Consumes a string with Julia code, returns a vector of expression(s).
+"""
+function parse_code(code::SS)
+    exs = Any[]             # Expr, Symbol or Any Julia core value
+    n   = sizeof(code)
+    pos = 1
+    while pos ≤ n
+        ex, pos = Meta.parse(code, pos)
+        isnothing(ex) && continue
+        push!(exs, ex)
+    end
+    exs
+end

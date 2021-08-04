@@ -14,6 +14,12 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     @test d.def == "hello"
 
     @test isempty(gc.children_contexts)
+
+    @test X.isglob(gc) == true
+    @test X.getid(gc) == "__global"
+    @test X.getglob(gc) === gc
+
+    @test X.hasvar(gc, :a) == true
 end
 
 @testset "local" begin
@@ -22,7 +28,7 @@ end
     X.setvar!(gc, :b, [1, 2])
     X.setdef!(gc, "abc", X.LxDef(0, "hello"))
 
-    lc = X.LocalContext(gc, id="REQ")
+    lc = X.LocalContext(gc, rpath="REQ")
     X.setvar!(lc, :b, 0)
 
     @test getvar(lc, :a) == getvar(gc, :a)
@@ -31,31 +37,26 @@ end
     @test X.getdef(lc, "abc").def == "hello"
 
     # dependencies
-    @test lc.req_glob_vars == Set([:a])
-    @test lc.req_glob_lxdefs == Set(["abc"])
-
-    @test gc.vars_deps.fwd[:a] == Set(["REQ"])
-    @test gc.lxdefs_deps.fwd["abc"] == Set(["REQ"])
+    @test lc.req_vars["__global"] == Set([:a])
+    @test lc.req_lxdefs["__global"] == Set(["abc"])
 
     # children contexts
     @test gc.children_contexts["REQ"] === lc
 
-    # now the page doesn't require anything from global
-    lc = X.LocalContext(gc, id="REQ")
-    X.refresh_global_context!(lc)
-    @test isempty(gc.vars_deps.fwd[:a])
-    @test isempty(gc.vars_deps.bwd["REQ"])
-    @test isempty(gc.lxdefs_deps.fwd["abc"])
-    @test isempty(gc.lxdefs_deps.bwd["REQ"])
-
     X.setvar!(lc, :b, 0)
     @test getvar(gc.children_contexts["REQ"], :b) == 0
+
+    @test X.isglob(lc) == false
+    @test X.getid(lc) == "REQ"
+    @test X.getglob(lc) === gc
+
+    X.prune_children!(gc)
+    @test isempty(gc.children_contexts)
 end
 
 @testset "cur_ctx" begin
     # no current context set
     lc = X.DefaultLocalContext()
-
     @test X.cur_gc() === lc.glob
 
     @test getlvar(:lang) == getvar(lc, :lang)
@@ -67,17 +68,28 @@ end
 
     X.setvar!(lc.glob, :prepath, "foo")
     @test globvar(:base_url_prefix) == "foo"
+
+    @test getgvar(:prepath) == "foo"
+    @test getlvar(:lang) == "julia"
+    setgvar!(:prepath, "bar")
+    @test getgvar(:prepath) == "bar"
+    setlvar!(:lang, "python")
+    @test getlvar(:lang) == "python"
 end
 
 @testset "pagevar" begin
     X.setenv(:cur_local_ctx, nothing)
     gc = X.GlobalContext()
-    lc1 = X.LocalContext(gc, id="C1")
+    lc1 = X.LocalContext(gc, rpath="C1")
     X.setvar!(lc1, :a, 123)
-    lc2 = X.LocalContext(gc, id="C2")
+    lc2 = X.LocalContext(gc, rpath="C2")
     X.setvar!(lc2, :b, 321)
     X.set_current_local_context(lc2)
     @test getvarfrom("C1", :a, 0) == 123
     @test getvarfrom("C2", :b, 0) == 321  # dumb but should work
+
+    @test "C1" in keys(lc2.req_vars)
+    @test lc2.req_vars["C1"] == Set([:a])
+
     @test pagevar("C1", :a) == 123
 end

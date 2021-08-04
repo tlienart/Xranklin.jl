@@ -27,3 +27,9 @@ latex_dbb(b, _)        = ""
 # failed blocks
 html_failed(b, _)      = "<span style=\"color:red\">[FAILED:]&gt;$(b.ss)&lt;</span>"
 latex_failed(b, _)     = "\\textcolor{crimson}{>$(b.ss)<}"
+
+# Markdown defs
+html_md_def(b, c)  = (eval_vars_cell!(c, content(b)); "")
+latex_md_def(b, c) = (eval_vars_cell!(c, content(b)); "")
+html_md_def_block  = html_md_def
+latex_md_def_block = latex_md_def
