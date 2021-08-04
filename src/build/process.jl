@@ -10,7 +10,7 @@ function process_config(
             gc::GlobalContext=cur_gc()
             )
     # set the notebooks at the top
-    reset_nb_counters!(gc)
+    reset_notebook_counters!(gc)
 
 
     # XXX keep some copy of defs as they are now, check after whether they changed
@@ -21,8 +21,8 @@ function process_config(
         ⌛ processing config
         """
     html(config, gc)
-    @info """
-        ... ✔ $(hl(time_fmt(time()-start)))
+    δt = time() - start; @info """
+        ... [config] ✔ $(hl(time_fmt(δt)))
         """
 
     if getvar(gc, :generate_rss)::Bool
@@ -70,15 +70,14 @@ function process_utils(
             gc::GlobalContext=cur_gc()
             )
     # set the notebooks at the top
-    reset_nb_counters!(gc)
+    reset_notebook_counters!(gc)
 
     start = time(); @info """
         ⌛ processing utils
         """
-    add_code!(gc, subs(utils); block_name="utils")
-
+    eval_code_cell!(gc, subs(utils); cell_name="utils")
     @info """
-        ... ✔ $(hl(time_fmt(time()-start)))
+        ... [utils] ✔ $(hl(time_fmt(time()-start)))
         """
 
     # check names of hfun, lx and vars; since we wiped the module before the
@@ -200,10 +199,10 @@ function process_md_file(
     # create it if it doesn't
     ctx = in_gc ?
             gc.children_contexts[rpath] :
-            DefaultLocalContext(gc, id=rpath)
+            DefaultLocalContext(gc, rpath=rpath)
 
     # reset the notebooks at the top
-    reset_nb_counters!(ctx)
+    reset_notebook_counters!(ctx)
 
     # set meta parameters
     s = stat(fpath)

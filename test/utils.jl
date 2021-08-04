@@ -29,4 +29,7 @@ function isbalanced(s)
 end
 
 nowarn() = Logging.disable_logging(Logging.Warn)
-logall() = Logging.disable_logging(Logging.Debug)
+logall() = (
+    Logging.disable_logging(Logging.Debug - 100);
+    ENV["JULIA_DEBUG"] = "all";
+)

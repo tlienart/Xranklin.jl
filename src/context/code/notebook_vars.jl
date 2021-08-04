@@ -37,7 +37,13 @@ variables assigned in the code.
 function _eval_vars_cell(mdl::Module, code::SS, ctx::Context)::Vector{Symbol}
     exs = parse_code(code)
     try
+        start = time(); @debug """
+        ⏳ evaluating vars cell...
+        """
         foreach(ex -> Core.eval(mdl, ex), exs)
+        δt = time() - start; @debug """
+            ... [vars cell] ✔ $(hl(time_fmt(δt)))
+            """
     catch
         msg = """
               Page Var assignment

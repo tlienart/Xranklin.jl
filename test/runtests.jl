@@ -10,6 +10,8 @@ include("utils.jl")
 
 include("integration_convert.jl")  # itest function
 
+logall()
+
 @testset "Context" begin
     p = "context"
     include(p/"types.jl")
@@ -23,8 +25,6 @@ end
     include(p/"notebook_vars.jl")
     include(p/"notebook_code.jl")
 end
-
-# -------------------------------------------
 
 @testset "LaTeX" begin
     p = "convert/"

@@ -36,7 +36,7 @@ function _eval_code_cell(mdl::Module, code::SS;
     ispath(out_path) || mkpath(dirname(out_path))
 
     start = time(); @debug """
-    ⏳ evaluating code... $(
+    ⏳ evaluating code cell... $(
         hl(isempty(block_name) ? "" : "($block_name)", :light_green))
     """
     open(out_path, "w") do outf
@@ -72,9 +72,8 @@ function _eval_code_cell(mdl::Module, code::SS;
      env(:strict_parsing)::Bool && throw(msg)
      return nothing
     else
-     δt = time() - start
-     @info """
-         ... ✔ $(hl(time_fmt(δt)))
+     δt = time() - start; @debug """
+         ... [code cell] ✔ $(hl(time_fmt(δt)))
          """
     end
 
