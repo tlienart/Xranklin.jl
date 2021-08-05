@@ -24,8 +24,8 @@ end
 # check if there's a match between what had been previously evaluated
 # (if anything) and the code cell to be evaluated. If it matches
 # skip the cell.
-function isunchanged(nb::Notebook, cntr::Int, h::UInt64)
-    return h == get(nb.code_pairs, cntr, DummyCodePair).hash
+function isunchanged(nb::Notebook, cntr::Int, code::String)
+    return code == get(nb.code_pairs, cntr, DummyCodePair).code
 end
 
 function finish_cell_eval!(nb::Notebook, cp::CodePair)

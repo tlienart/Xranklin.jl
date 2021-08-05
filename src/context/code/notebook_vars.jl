@@ -9,13 +9,13 @@ function eval_vars_cell!(ctx::Context, cell_code::SS)::Nothing
     nb   = ctx.nb_vars
     cntr = counter(nb)
     lnb  = length(nb)
-    h    = hash(cell_code)
+    code = cell_code |> strip |> string
 
     # skip cell if previously seen and unchanged
-    isunchanged(nb, cntr, h) && (increment!(nb); return)
+    isunchanged(nb, cntr, code) && (increment!(nb); return)
 
     # eval cell and recover the names of the variables assigned
-    vnames = _eval_vars_cell(nb.mdl, cell_code, ctx)
+    vnames = _eval_vars_cell(nb.mdl, code, ctx)
 
     # if some variables change and other pages are dependent upon them
     # then these pages must eventually be re-triggered.
@@ -41,7 +41,7 @@ function eval_vars_cell!(ctx::Context, cell_code::SS)::Nothing
         setvar!(ctx, vname, getproperty(nb.mdl, vname))
     end
 
-    return finish_cell_eval!(nb, CodePair((h, vnames)))
+    return finish_cell_eval!(nb, CodePair((code, vnames)))
 end
 
 
@@ -51,7 +51,7 @@ end
 Helper function to `eval_vars_cell!`. Returns the list of symbols matching the
 variables assigned in the code.
 """
-function _eval_vars_cell(mdl::Module, code::SS, ctx::Context)::Vector{Symbol}
+function _eval_vars_cell(mdl::Module, code::String, ctx::Context)::Vector{Symbol}
     exs = parse_code(code)
     try
         start = time(); @debug """

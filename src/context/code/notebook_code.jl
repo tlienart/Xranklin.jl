@@ -8,17 +8,17 @@ function eval_code_cell!(ctx::Context, cell_code::SS; cell_name::String="")::Not
 
     nb   = ctx.nb_code
     cntr = counter(nb)
-    h    = hash(cell_code)
+    code = cell_code |> strip |> string
 
     # skip cell if previously seen and unchanged
-    isunchanged(nb, cntr, h) && (increment!(nb); return)
+    isunchanged(nb, cntr, code) && (increment!(nb); return)
 
     # eval cell
-    result = _eval_code_cell(nb.mdl, cell_code)
+    result = _eval_code_cell(nb.mdl, code)
     # if an id was given, keep track (if none was given, the empty string
     # links to lots of stuff, like "ans" in a way)
     nb.code_map[cell_name] = cntr
-    return finish_cell_eval!(nb, CodePair((h, result)))
+    return finish_cell_eval!(nb, CodePair((code, result)))
 end
 
 """
@@ -27,7 +27,7 @@ end
 Helper function to `eval_code_cell!`. Returns the result corresponding to the
 execution of the code in module `mdl`.
 """
-function _eval_code_cell(mdl::Module, code::SS;
+function _eval_code_cell(mdl::Module, code::String;
                          out_path::String=tempname(), block_name::String="")
 
     res        = nothing   # to capture final result
@@ -40,41 +40,49 @@ function _eval_code_cell(mdl::Module, code::SS;
         hl(isempty(block_name) ? "" : "($block_name)", :light_green))
     """
     open(out_path, "w") do outf
+        # things like printlns etc
         redirect_stdout(outf) do
-            try
-                res = include_string(softscope, mdl, code)
-            catch
-                io = IOBuffer()
-                showerror(io, e)
-                println(String(take!(io)))
-                err = typeof(e)
-                if VERSION >= v"1.7.0-"
-                    exc, bt = last(Base.current_exceptions())
-                else
-                    exc, bt = last(Base.catch_stack())
-                end
-                stacktrace = sprint(showerror, exc, bt)
+            # things like @warn (errors are caught and written to stdout)
+            redirect_stderr(outf) do
+                try
+                    res = include_string(softscope, mdl, code)
+                catch e
+                    # write the error to stdout + process the stacktrace and
+                    # show it in the console
+                    io = IOBuffer()
+                    showerror(io, e)
+                    # write the error to stdout
+                    println(String(take!(io)))
+                    err = typeof(e)
+                    if VERSION >= v"1.7.0-"
+                        exc, bt = last(Base.current_exceptions())
+                    else
+                        exc, bt = last(Base.catch_stack())
+                    end
+                    # retrieve the stacktrace string so it can be shown in repl
+                    stacktrace = sprint(showerror, exc, bt)
+                 end
              end
         end
     end
     # if there was an error, return nothing and possibly show warning
     if !isnothing(err)
-    msg = """
-          Code evaluation
-          ---------------
-          There was an error of type '$err' when running a code block.
-          Checking the output files '$(splitext(out_path)[1]).(out|res)'
-          might be helpful to understand and solve the issue.
-          Details:
-          $(trim_stacktrace(stacktrace))
-          """
-     @warn msg
-     env(:strict_parsing)::Bool && throw(msg)
-     return nothing
+        msg = """
+              Code evaluation
+              ---------------
+              There was an error of type '$err' when running a code block.
+              Checking the output files '$(splitext(out_path)[1]).(out|res)'
+              might be helpful to understand and solve the issue.
+              Details:
+              $(trim_stacktrace(stacktrace))
+              """
+        @warn msg
+        env(:strict_parsing)::Bool && throw(msg)
+        return nothing
     else
-     δt = time() - start; @debug """
-         ... [code cell] ✔ $(hl(time_fmt(δt)))
-         """
+        δt = time() - start; @debug """
+                ... [code cell] ✔ $(hl(time_fmt(δt)))
+                """
     end
 
     # Check what should be displayed at the end if anything
@@ -87,7 +95,7 @@ function _eval_code_cell(mdl::Module, code::SS;
     isa(lex, Expr) || return res
     # if last expr is a `show`, return nothing
     if (length(lex.args) > 1) && (lex.args[1] == Symbol("@show"))
-     return nothing
+        return nothing
     end
     # otherwise return the result of the last expression
     return res

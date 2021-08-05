@@ -7,6 +7,10 @@ function serve(;
             clear::Bool         = false,
             single::Bool        = true,
             folder::String      = pwd(),
+            # LiveServer options
+            port::Int           = 8000,
+            host::String        = "127.0.0.1",
+            launch::Bool        = true,
             )
 
     gc = DefaultGlobalContext()
@@ -17,13 +21,40 @@ function serve(;
     # the watched_files step
     process_config(gc)
 
+    # scrape the folder for files to watch
     watched_files = find_files_to_watch(folder)
 
+    # activate the folder environment if there is one
+    project_file  = path(:folder)/"Project.toml"
+    if isfile(project_file)
+        Pkg.activate(project_file)
+    end
+
+    # do the initial build
     full_pass(watched_files; gc=gc, initial_pass=true)
 
-    # wipe parent module (make all children modules inaccessible so that GC
-    # should be able to destroy them)
+    # ---------------------------------------------------------------
+    # Start the build loop
+    if !single
+        @info "Starting the server"
+        loop = (cntr, watcher) -> build_loop(cntr, watcher, watched_files)
+        # start LiveServer
+        LiveServer.serve(
+            port=port,
+            coreloopfun=loop,
+            dir=path(:site),
+            host=host,
+            launch_browser=launch
+        )
+    end
+
+    # ---------------------------------------------------------------
+    # Cleanup:
+    # > wipe parent module (make all children modules inaccessible
+    #   so that the garbage collector should be able to destroy them)
     parent_module(wipe=true)
+    # > deactivate env
+    Pkg.activate()
     return
 end
 
@@ -75,6 +106,9 @@ function full_pass(
     start = time(); @info """
         💡 $(hl("starting the full pass", :yellow))
         """
+    # NOTE: it's not straightforward to parallelise this, pages can request
+    # access to other pages' context or the global context so there's a fair
+    # bit of interplay that's possible; we can't guarantee runs will be indep
     for (case, dict) in watched_files, (fp, t) in dict
         process_file(fp, case, dict[fp];
                      gc=gc, skip_files=skip_files, initial_pass=initial_pass)
@@ -112,3 +146,20 @@ loop
 - use prune_children!
 
 =#
+"""
+"""
+function build_loop(
+            cycle_counter::Int,
+            ::LiveServer.FileWatcher,
+            watched_files::LittleDict{Symbol, TrackedFiles}
+            )::Nothing
+    # every 30 cycles (3 seconds), scan directory to check for new
+    # or deleted files and update accordingly
+    if mod(cycle_counter, 30) == 0
+        # 1. check if some files have been deleted; note that we
+        # don't do anything, we just remove the file reference
+        for d ∈ watched_files
+        end
+    else
+    end
+end

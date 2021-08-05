@@ -1,5 +1,5 @@
-const CodePair      = NamedTuple{(:hash, :result), Tuple{UInt64, Any}}
-const DummyCodePair = CodePair((zero(UInt64), nothing))
+const CodePair      = NamedTuple{(:code, :result), Tuple{String, Any}}
+const DummyCodePair = CodePair(("", nothing))
 const CodeMap       = LittleDict{String, Int}
 
 """
@@ -15,8 +15,7 @@ and `false` for code notebooks (see contexts).
     mdl:        the module in which code gets evaluated
     cntr_refs:  keeps track of the evaluated "cell number" when sequentially
                  evaluating code
-    code_pairs: keeps track of [(h => result)] where `h` is the hash of the
-                 code of a cell and `result` is the result of the cell
+    code_pairs: keeps track of [(code => result)]
     code_map:   keeps track of {name => cntr} for code cells which have a
                  name to map to an entry in `code_pairs`
 """

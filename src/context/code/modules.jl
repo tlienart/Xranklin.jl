@@ -76,8 +76,7 @@ end
 
 Consumes a string with Julia code, returns a vector of expression(s).
 """
-function parse_code(code::SS)
-    code = strip(code)
+function parse_code(code::String)
     exs  = Any[]             # Expr, Symbol or Any Julia core value
     n    = sizeof(code)
     pos  = 1

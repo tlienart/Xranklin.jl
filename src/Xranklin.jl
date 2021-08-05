@@ -17,6 +17,7 @@ import FranklinParser: SS, Token, Block,
                        from, to, previous_index, next_index
 
 import FranklinTemplates: newsite, filecmp
+import LiveServer
 
 import CommonMark
 const CM = CommonMark
