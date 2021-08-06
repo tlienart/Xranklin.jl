@@ -3,7 +3,11 @@
 
 Evaluate the content of a cell we know runs some code.
 """
-function eval_code_cell!(ctx::Context, cell_code::SS; cell_name::String="")::Nothing
+function eval_code_cell!(
+            ctx::Context, cell_code::SS;
+            cell_name::String="", out_dir::String=tempdir()
+            )::Nothing
+
     isempty(cell_code) && return
 
     nb   = ctx.nb_code
@@ -13,12 +17,17 @@ function eval_code_cell!(ctx::Context, cell_code::SS; cell_name::String="")::Not
     # skip cell if previously seen and unchanged
     isunchanged(nb, cntr, code) && (increment!(nb); return)
 
-    # eval cell
-    result = _eval_code_cell(nb.mdl, code)
+    # eval cell and write to file
+    cname    = ifelse(isempty(cell_name), "auto", cell_name)
+    out_path = out_dir / "__$(cntr)_$(cname).out"
+    isfile(out_path) && rm(out_path)
+    _eval_code_cell(nb.mdl, code, out_path, cell_name)
+    out_str  = ""
+    isfile(out_path) && (out_str = read(out_path, String))
     # if an id was given, keep track (if none was given, the empty string
     # links to lots of stuff, like "ans" in a way)
     nb.code_map[cell_name] = cntr
-    return finish_cell_eval!(nb, CodePair((code, result)))
+    return finish_cell_eval!(nb, CodeCodePair((code, out_str)))
 end
 
 """
@@ -27,17 +36,17 @@ end
 Helper function to `eval_code_cell!`. Returns the result corresponding to the
 execution of the code in module `mdl`.
 """
-function _eval_code_cell(mdl::Module, code::String;
-                         out_path::String=tempname(), block_name::String="")
+function _eval_code_cell(mdl::Module, code::String,
+                         out_path::String, cell_name::String)::Nothing
 
-    res        = nothing   # to capture final result
+    result     = nothing   # to capture final result
     err        = nothing   # to capture any error
     stacktrace = nothing   # to capture stacktrace
     ispath(out_path) || mkpath(dirname(out_path))
 
     start = time(); @debug """
     ⏳ evaluating code cell... $(
-        hl(isempty(block_name) ? "" : "($block_name)", :light_green))
+        hl(isempty(cell_name) ? "" : "($cell_name)", :light_green))
     """
     open(out_path, "w") do outf
         # things like printlns etc
@@ -45,7 +54,7 @@ function _eval_code_cell(mdl::Module, code::String;
             # things like @warn (errors are caught and written to stdout)
             redirect_stderr(outf) do
                 try
-                    res = include_string(softscope, mdl, code)
+                    result = include_string(softscope, mdl, code)
                 catch e
                     # write the error to stdout + process the stacktrace and
                     # show it in the console
@@ -71,7 +80,7 @@ function _eval_code_cell(mdl::Module, code::String;
               Code evaluation
               ---------------
               There was an error of type '$err' when running a code block.
-              Checking the output files '$(splitext(out_path)[1]).(out|res)'
+              Checking the output file '$(out_path)'
               might be helpful to understand and solve the issue.
               Details:
               $(trim_stacktrace(stacktrace))
@@ -87,19 +96,40 @@ function _eval_code_cell(mdl::Module, code::String;
 
     # Check what should be displayed at the end if anything
     endswith(code, HIDE_FINAL_OUTPUT_PATTERN) && return nothing
-
-    # parse the code to check what the last expression is and how
-    # it should be displayed
-    lex = last(parse_code(code))
-    # if last expr is a Julia value (= to res), return
-    isa(lex, Expr) || return res
-    # if last expr is a `show`, return nothing
-    if (length(lex.args) > 1) && (lex.args[1] == Symbol("@show"))
-        return nothing
-    end
-    # otherwise return the result of the last expression
-    return res
+    append_result(out_path, code, result)
+    return
 end
+
+"""
+    append_result(out_path, code, result)
+
+Write a representation of the result to `out_path`.
+"""
+function append_result(out_path::String, code::String, result::R) where R
+    # check if the last expression is a SHOW, if it is, then
+    # don't do anything to avoid double printing since the
+    # SHOW was already captured in STDOUT
+    lex = last(parse_code(code))
+    is_show = isa(lex, Expr) &&
+                length(lex.args) > 1 &&
+                lex.args[1] == Symbol("@show")
+    is_show && return
+
+    # Try to see if there's a custom Base.show with MIME("text/html")
+    # for the type of Result, and if so use that, otherwise fall back to Base.show
+    open(out_path, "a") do outf
+        redirect_stdout(outf) do
+            if hasmethod(Base.show, (IO, MIME"text/html", R))
+                Base.show(stdout, MIME("text/html"), result)
+            else
+                Base.show(stdout, result)
+            end
+        end
+    end
+    return
+end
+
+append_result(::String, ::String, ::Nothing) = nothing
 
 
 """

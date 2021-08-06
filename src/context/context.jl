@@ -1,28 +1,55 @@
-const CodePair      = NamedTuple{(:code, :result), Tuple{String, Any}}
-const DummyCodePair = CodePair(("", nothing))
-const CodeMap       = LittleDict{String, Int}
+const VarsCodePair = NamedTuple{(:code, :vars), Tuple{String, Vector{Symbol}}}
+const CodeCodePair = NamedTuple{(:code, :repr), Tuple{String, String}}
+
+const VarsCodePairs = Vector{VarsCodePair}
+const CodeCodePairs = Vector{CodeCodePair}
+
+const CodeMap = LittleDict{String, Int}
+
 
 """
-    Notebook{V}
+    Notebook
 
-Structure wrapping around a module in which code gets evaluated. A Notebook
-is always contained within a context and is always accessed via the context.
-The `V` parameter is `true` for a notebook associated with vars definitions
-and `false` for code notebooks (see contexts).
+Structure wrapping around a module in which code gets evaluated sequentially.
+A Notebook is always contained within a context and is always accessed via
+that context.
+"""
+abstract type Notebook end
+
+
+"""
+    VarsNotebook
+
+Notebook for vars assignments.
 
 ## Fields
 
     mdl:        the module in which code gets evaluated
     cntr_refs:  keeps track of the evaluated "cell number" when sequentially
                  evaluating code
-    code_pairs: keeps track of [(code => result)]
-    code_map:   keeps track of {name => cntr} for code cells which have a
-                 name to map to an entry in `code_pairs`
+    code_pairs: keeps track of [(code => vnames)]
 """
-struct Notebook{V}
+struct VarsNotebook <: Notebook
     mdl::Module
     cntr_ref::Ref{Int}
-    code_pairs::Vector{CodePair}
+    code_pairs::VarsCodePairs
+end
+
+"""
+    CodeNotebook
+
+Notebook for code.
+
+## Fields
+
+Same as VarsNotebook with
+
+    code_map: keeps track of {code_name => cntr}
+"""
+struct CodeNotebook <: Notebook
+    mdl::Module
+    cntr_ref::Ref{Int}
+    code_pairs::CodeCodePairs
     code_map::LittleDict{String, Int}
 end
 
@@ -59,8 +86,8 @@ struct GlobalContext{LC<:Context} <: Context
     vars::Vars
     lxdefs::LxDefs
     vars_aliases::Alias
-    nb_vars::Notebook{true}
-    nb_code::Notebook{false}
+    nb_vars::VarsNotebook
+    nb_code::CodeNotebook
     children_contexts::LittleDict{String, LC}
     to_trigger::Set{String}
 end
@@ -107,8 +134,8 @@ struct LocalContext <: Context
     req_lxdefs::LittleDict{String, Set{String}}
     vars_aliases::Alias
     # notebooks
-    nb_vars::Notebook{true}
-    nb_code::Notebook{false}
+    nb_vars::VarsNotebook
+    nb_code::CodeNotebook
     to_trigger::Set{String}
 end
 
@@ -130,10 +157,10 @@ getglob(c::LocalContext)::GlobalContext  = c.glob
 function GlobalContext(v=Vars(), d=LxDefs(); alias=Alias())
     # vars notebook
     mdl = submodule(modulename("__global_vars", true), wipe=true)
-    nv  = Notebook{true}(mdl, Ref(1), CodePair[], CodeMap())
+    nv  = VarsNotebook(mdl, Ref(1), VarsCodePairs())
     # utils notebook
     mdl = submodule(modulename("__global_utils", true), wipe=true)
-    nc  = Notebook{false}(mdl, Ref(1), CodePair[], CodeMap())
+    nc  = CodeNotebook(mdl, Ref(1), CodeCodePairs(), CodeMap())
     # children
     c   = LittleDict{String, LocalContext}()
     # to_trigger
@@ -189,10 +216,10 @@ end
 function LocalContext(glob, vars, defs, headers, rpath="", alias=Alias())
     # vars notebook
     mdl = submodule(modulename("$(rpath)_vars", true), wipe=true)
-    nv  = Notebook{true}(mdl, Ref(1), CodePair[], CodeMap())
+    nv  = VarsNotebook(mdl, Ref(1), VarsCodePairs())
     # code notebook
     mdl = submodule(modulename("$(rpath)_code", true), wipe=true)
-    nc  = Notebook{false}(mdl, Ref(1), CodePair[], CodeMap())
+    nc  = CodeNotebook(mdl, Ref(1), CodeCodePairs(), CodeMap())
     # req vars (keep track of what is requested by this page)
     rv = LittleDict{String, Set{Symbol}}(
         "__global" => Set{Symbol}()

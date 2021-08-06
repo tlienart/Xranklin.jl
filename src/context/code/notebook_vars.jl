@@ -41,7 +41,7 @@ function eval_vars_cell!(ctx::Context, cell_code::SS)::Nothing
         setvar!(ctx, vname, getproperty(nb.mdl, vname))
     end
 
-    return finish_cell_eval!(nb, CodePair((code, vnames)))
+    return finish_cell_eval!(nb, VarsCodePair((code, vnames)))
 end
 
 
@@ -95,7 +95,7 @@ function prune_vars_bindings(ctx::Context)::Vector{Symbol}
     cntr = counter(nb)
     for i in cntr:length(nb)
         cp = nb.code_pairs[i]
-        append!(pruned_bindings, cp.result)
+        append!(pruned_bindings, cp.vars)
     end
     unique!(pruned_bindings)
 

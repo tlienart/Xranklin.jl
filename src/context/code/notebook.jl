@@ -25,10 +25,10 @@ end
 # (if anything) and the code cell to be evaluated. If it matches
 # skip the cell.
 function isunchanged(nb::Notebook, cntr::Int, code::String)
-    return code == get(nb.code_pairs, cntr, DummyCodePair).code
+    return code == get(nb.code_pairs, cntr, (code="",)).code
 end
 
-function finish_cell_eval!(nb::Notebook, cp::CodePair)
+function finish_cell_eval!(nb::Notebook, cp)
     cntr = counter(nb)
     lnb  = length(nb)
     if cntr ≤ lnb

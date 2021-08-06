@@ -2,7 +2,7 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
 @testset "nb-vars" begin
     lc = X.DefaultLocalContext(rpath="foo")
-    @test isa(lc.nb_vars, X.Notebook{true})
+    @test isa(lc.nb_vars, X.VarsNotebook)
     @test nameof(lc.nb_vars.mdl) == X.modulename("foo_vars", true)
     @test nameof(lc.nb_code.mdl) == X.modulename("foo_code", true)
     @test length(lc.nb_vars) == 0
@@ -21,7 +21,7 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
     @test getvar(lc, :b) == 7
     @test X.counter(lc.nb_vars) == 2
     nb = lc.nb_vars
-    @test nb.code_pairs[1].result == [:a, :b]
+    @test nb.code_pairs[1].vars == [:a, :b]
 
     # simulate re-running the page (counter reset)
 

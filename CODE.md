@@ -54,3 +54,8 @@ end
 ```
 
 This is incomplete and untested. Note that for users who'd want to have their own ALT or whatever, they can always write their own HTML at the bottom of the code cell or call a function that does this for them...
+
+
+## Load from previous state
+
+Should be able to reconstruct a **partial** notebook
