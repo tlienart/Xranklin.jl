@@ -19,10 +19,15 @@ import FranklinParser: SS, Token, Block,
 import FranklinTemplates: newsite, filecmp
 import LiveServer
 
-import CommonMark
-const CM = CommonMark
-import CommonMark: disable!, enable!, escape_xml
+# ------------------------------------------------------------------------
+# External Dependencies
 
+import CommonMark
+import CommonMark: disable!, enable!, escape_xml
+const CM = CommonMark
+
+import IOCapture
+import JSON3
 import OrderedCollections: LittleDict
 
 # ------------------------------------------------------------------------

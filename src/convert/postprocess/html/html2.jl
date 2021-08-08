@@ -64,12 +64,9 @@ function html2(parts::Vector{Block}, c::Context)::String
             # 'external' functions defined with `hfun_*`, they
             # take precedence so a user can overwrite the behaviour of
             # internal functions
-
-            # XXX isdelayed() && return ""
-
-            um   = cur_gc().nb_code.mdl
-            args = split_cb[2:end]
-            f    = getproperty(um, Symbol("hfun_$fname"))
+            Utils = cur_utils_module()
+            args  = split_cb[2:end]
+            f     = getproperty(Utils, Symbol("hfun_$fname"))
             # force the output to be a string to not risk the write to io
             # being a bunch of gibberish
             out  = (isempty(args) ? f() : f(string.(args))) |> string

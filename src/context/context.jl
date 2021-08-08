@@ -1,5 +1,6 @@
 const VarsCodePair = NamedTuple{(:code, :vars), Tuple{String, Vector{Symbol}}}
-const CodeCodePair = NamedTuple{(:code, :repr), Tuple{String, String}}
+const CodeRepr     = NamedTuple{(:html, :latex), Tuple{String, String}}
+const CodeCodePair = NamedTuple{(:code, :repr), Tuple{String, CodeRepr}}
 
 const VarsCodePairs = Vector{VarsCodePair}
 const CodeCodePairs = Vector{CodeCodePair}
@@ -350,6 +351,7 @@ setlvar!(n::Symbol, v) = setvar!(cur_lc(), n, v)
 getgvar(n::Symbol, d=nothing) = getvar(cur_gc(), n, d)
 getlvar(n::Symbol, d=nothing) = getvar(cur_lc(), n, d)
 
+cur_utils_module() = cur_gc().nb_code.mdl
 
 # ---------------------- #
 # LEGACY ACCESS COMMANDS #

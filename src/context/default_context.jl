@@ -14,6 +14,8 @@ const DefaultGlobalVars = Vars(
     :content_id         => "",
     :autocode           => true,
     :automath           => true,
+    :autosavefigs       => true,
+    :autoshowfigs       => true,
     :layout_head        => "_layout/head.html",
     :layout_page_foot   => "_layout/page_foot.html",
     :layout_foot        => "_layout/foot.html",
@@ -69,6 +71,7 @@ const DefaultGlobalVarsAlias = Alias(
 )
 
 #=
+autofig: automatically save figures that can be saved
 prerender: specific switch, there can be a global optimise but a page skipping it
 slug: allow specific target url
 robots_disallow: disallow the current page

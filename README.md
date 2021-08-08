@@ -15,6 +15,7 @@
 * list of all warning messages and explaination / what to do
 
 * mode where can "test" only a subset of pages
+* `MIME"text/html"` as base type is ok but not for latex output where it should be `MIME"text/latex"` which, for instance, is supported by DataFrames. This should be carried from context (unfortunately). This can be worked on later but basically you'd want a different representation based on whether you're outputting to HTML or LaTeX. For images in both cases you'd want to save the pictures to a location and include them. // note LaTeX output has to be a full path from scratch because of this MIME stuff... unless there's no picture. But this can't be guaranteed...
 
 ## More tests
 
