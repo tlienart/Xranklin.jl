@@ -14,6 +14,17 @@ function eval_vars_cell!(ctx::Context, cell_code::SS)::Nothing
     # skip cell if previously seen and unchanged
     isunchanged(nb, cntr, code) && (increment!(nb); return)
 
+    if isstale(nb)
+        # reeval all previous cells, we don't need to
+        # keep track of their vars or whatever as they haven't changed
+        tempc = 1
+        while tempc < cntr
+            _eval_vars_cell(nb.mdl, nb.code_pairs[tempc].code, ctx)
+            tempc += 1
+        end
+        fresh_notebook!(nb)
+    end
+
     # eval cell and recover the names of the variables assigned
     vnames = _eval_vars_cell(nb.mdl, code, ctx)
 

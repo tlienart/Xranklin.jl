@@ -34,6 +34,7 @@ struct VarsNotebook <: Notebook
     mdl::Module
     cntr_ref::Ref{Int}
     code_pairs::VarsCodePairs
+    is_stale_ref::Ref{Bool}
 end
 
 """
@@ -52,8 +53,12 @@ struct CodeNotebook <: Notebook
     cntr_ref::Ref{Int}
     code_pairs::CodeCodePairs
     code_map::LittleDict{String, Int}
+    is_stale_ref::Ref{Bool}
 end
 
+isstale(nb::Notebook) = nb.is_stale_ref[]
+stale_notebook!(nb::Notebook) = (nb.is_stale_ref[] = true;)
+fresh_notebook!(nb::Notebook) = (nb.is_stale_ref[] = false;)
 
 # ------------------------------ #
 # GLOBAL and LOCAL CONTEXT TYPES #
@@ -158,10 +163,10 @@ getglob(c::LocalContext)::GlobalContext  = c.glob
 function GlobalContext(v=Vars(), d=LxDefs(); alias=Alias())
     # vars notebook
     mdl = submodule(modulename("__global_vars", true), wipe=true)
-    nv  = VarsNotebook(mdl, Ref(1), VarsCodePairs())
+    nv  = VarsNotebook(mdl, Ref(1), VarsCodePairs(), Ref(false))
     # utils notebook
     mdl = submodule(modulename("__global_utils", true), wipe=true)
-    nc  = CodeNotebook(mdl, Ref(1), CodeCodePairs(), CodeMap())
+    nc  = CodeNotebook(mdl, Ref(1), CodeCodePairs(), CodeMap(), Ref(false))
     # children
     c   = LittleDict{String, LocalContext}()
     # to_trigger
@@ -217,10 +222,10 @@ end
 function LocalContext(glob, vars, defs, headers, rpath="", alias=Alias())
     # vars notebook
     mdl = submodule(modulename("$(rpath)_vars", true), wipe=true)
-    nv  = VarsNotebook(mdl, Ref(1), VarsCodePairs())
+    nv  = VarsNotebook(mdl, Ref(1), VarsCodePairs(), Ref(false))
     # code notebook
     mdl = submodule(modulename("$(rpath)_code", true), wipe=true)
-    nc  = CodeNotebook(mdl, Ref(1), CodeCodePairs(), CodeMap())
+    nc  = CodeNotebook(mdl, Ref(1), CodeCodePairs(), CodeMap(), Ref(false))
     # req vars (keep track of what is requested by this page)
     rv = LittleDict{String, Set{Symbol}}(
         "__global" => Set{Symbol}()

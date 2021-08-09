@@ -31,6 +31,25 @@ function eval_code_cell!(
     # skip cell if previously seen and unchanged
     isunchanged(nb, cntr, code) && (increment!(nb); return)
 
+    if isstale(nb)
+        # reeval all previous cells, we don't need to
+        # keep track of their vars or whatever as they haven't changed
+        tempc = 1
+        while tempc < cntr
+            cell_name = findfirst(cm.second == tempc for cm in nb.code_map)
+            if cell_name === nothing
+                cell_name = ""
+            end
+            _eval_code_cell(
+                nb.mdl,
+                nb.code_pairs[tempc].code,
+                cell_name
+            )
+            tempc += 1
+        end
+        fresh_notebook!(nb)
+    end
+
     # eval cell
     result, output = _eval_code_cell(nb.mdl, code, cell_name)
 
@@ -60,7 +79,7 @@ function eval_code_cell!(
 end
 
 """
-    _eval_code_cell(mdl, code)
+    _eval_code_cell(mdl, code, cell_name)
 
 Helper function to `eval_code_cell!`. Returns the output string corresponding
 to the captured stdout+stderr and the value (or nothing if nothing is to be
