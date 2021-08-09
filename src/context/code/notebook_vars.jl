@@ -75,7 +75,14 @@ function _eval_vars_cell(mdl::Module, code::String, ctx::Context)::Vector{Symbol
         end
     end
     # get the variable names from all assignment expressions
-    vnames = [ex.args[1] for ex in exs if ex.head == :(=)]
+    vnames = []
+    for ex in exs
+        if ex.head == :(=)
+            push!(vnames, ex.args[1])
+        elseif ex.args[1] isa Expr && ex.args[1].head == :(=)
+            push!(vnames, ex.args[1].args[1])
+        end
+    end
     filter!(v -> v isa Symbol, vnames)
     return vnames
 end

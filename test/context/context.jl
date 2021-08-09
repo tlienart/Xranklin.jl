@@ -29,7 +29,8 @@ end
     X.setdef!(gc, "abc", X.LxDef(0, "hello"))
 
     lc = X.LocalContext(gc, rpath="REQ")
-    X.setvar!(lc, :b, 0)
+    v = "b = 0"
+    X.eval_vars_cell!(lc, X.subs(v))
 
     @test getvar(lc, :a) == getvar(gc, :a)
     @test getvar(lc, :b) == 0
@@ -92,4 +93,40 @@ end
     @test lc2.req_vars["C1"] == Set([:a])
 
     @test pagevar("C1", :a) == 123
+end
+
+
+@testset "ordering" begin
+    lc = X.DefaultLocalContext()
+    gc = lc.glob
+    X.setvar!(gc, :a, 5)
+    X.setvar!(gc, :b, [1, 2])
+
+    X.setvar!(gc, :b, 0)
+    @test getvar(lc, :b) == 0
+    @test getvar(lc, :a) == getvar(gc, :a) == 5
+
+    lc = X.DefaultLocalContext()
+    gc = lc.glob
+    X.setvar!(gc, :lang, "foo")
+    @test getvar(lc, :lang) == "foo"
+
+    lc = X.DefaultLocalContext()
+    gc = lc.glob
+    X.setvar!(gc, :lang, "foo")
+    X.eval_vars_cell!(lc, X.subs("""lang = "bar";"""))
+    @test getvar(lc, :lang) == "bar"
+
+    gc = X.GlobalContext()
+    X.setvar!(gc, :a, 5)
+    X.setvar!(gc, :b, [1, 2])
+    X.setdef!(gc, "abc", X.LxDef(0, "hello"))
+    lc = X.LocalContext(gc, rpath="REQ")
+    v = "b = 0"
+    X.eval_vars_cell!(lc, X.subs(v))
+
+    @test getvar(lc, :a) == getvar(gc, :a)
+    @test getvar(lc, :b) == 0
+    @test X.hasdef(lc, "abc") === true
+    @test X.getdef(lc, "abc").def == "hello"
 end

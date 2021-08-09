@@ -113,7 +113,7 @@ const DefaultLocalVars = Vars(
     :_creation_time     => 0.0,
     :_modification_time => 0.0,
     # mddefs related
-    :_md_def_hashes     => Set{UInt64}(),
+    :_setvar            => Set{Symbol}(),
 )
 const DefaultLocalVarsAlias = Alias(
     :fd_rpath     => :_relative_path,

@@ -1,6 +1,6 @@
-const VarsCodePair = NamedTuple{(:code, :vars), Tuple{String, Vector{Symbol}}}
+const VarsCodePair = NamedTuple{(:code, :vars),  Tuple{String, Vector{Symbol}}}
 const CodeRepr     = NamedTuple{(:html, :latex), Tuple{String, String}}
-const CodeCodePair = NamedTuple{(:code, :repr), Tuple{String, CodeRepr}}
+const CodeCodePair = NamedTuple{(:code, :repr),  Tuple{String, CodeRepr}}
 
 const VarsCodePairs = Vector{VarsCodePair}
 const CodeCodePairs = Vector{CodeCodePair}
@@ -184,7 +184,7 @@ function setvar!(gc::GlobalContext, n::Symbol, v)
 end
 
 hasdef(gc::GlobalContext,  n::String)    = hasdef(gc.lxdefs, n)
-getdef(gc::GlobalContext, n::String)     = getdef(gc.lxdefs, n)
+getdef(gc::GlobalContext,  n::String)    = getdef(gc.lxdefs, n)
 setdef!(gc::GlobalContext, n::String, d) = setdef!(gc.lxdefs, n, d)
 
 
@@ -251,16 +251,38 @@ mathify(c::LocalContext)   = (c.is_recursive[] = c.is_math[] = true; c)
 # global context has it, then get from global
 function getvar(lc::LocalContext, n::Symbol, d=nothing)
     n = get(lc.vars_aliases, n, n)
-    if n ∉ keys(lc.vars) && hasvar(lc.glob, n)
-        # if we try to get the variable from global, keep track of that
-        union!(lc.req_vars["__global"], [n])
-        return getvar(lc.glob, n, d)
+    if hasvar(lc.glob, n)
+        # check whether to use the global definition or not, use global if
+        # 1. there's no clash
+        # 2. there's a clash but there's no local assignment or setvar!
+        use_global =
+            # 1. no clash
+            n ∉ keys(lc.vars) ||
+            # 2. clash but no loc assign and no setvar assign
+            begin
+                nb   = lc.nb_vars
+                cntr = counter(nb)
+                f1   = !any(
+                    i ≤ cntr && n in cp.vars
+                    for (i, cp) in enumerate(nb.code_pairs)
+                )
+                f1 && n ∉ get(lc.vars, :_setvar, Set{Symbol}())::Set{Symbol}
+            end
+
+        if use_global
+            # if we try to get the variable from global, keep track of that
+            union!(lc.req_vars["__global"], [n])
+            return getvar(lc.glob, n, d)
+        end
     end
     return getvar(lc.vars, n, d)
 end
 
 function setvar!(lc::LocalContext, n::Symbol, v)
     n = get(lc.vars_aliases, n, n)
+    # to ensure that this assignment takes over any global assignment,
+    # keep track of it (see getvar above)
+    union!(get(lc.vars, :_setvar, Set{Symbol}()), [n])
     setvar!(lc.vars, n, v)
 end
 
@@ -304,7 +326,10 @@ function getvarfrom(rpath::String, n::Symbol, d=nothing)
     ctx = glob.children_contexts[rpath]
     n = get(ctx.vars_aliases, n, n)
     if n in keys(ctx.vars)
-        clc.req_vars[rpath] = union!(get(clc.req_vars, rpath, Set{Symbol}()), [n])
+        clc.req_vars[rpath] = union!(
+            get(clc.req_vars, rpath, Set{Symbol}()),
+            [n]
+        )
     end
     return getvar(glob.children_contexts[rpath], n, d)
 end
