@@ -26,7 +26,8 @@ function eval_vars_cell!(ctx::Context, cell_code::SS)::Nothing
     end
 
     # eval cell and recover the names of the variables assigned
-    vnames = _eval_vars_cell(nb.mdl, code, ctx)
+    vpairs = _eval_vars_cell(nb.mdl, code, ctx)
+    vnames = [vp.var for vp in vpairs]
 
     # if some variables change and other pages are dependent upon them
     # then these pages must eventually be re-triggered.
@@ -48,11 +49,11 @@ function eval_vars_cell!(ctx::Context, cell_code::SS)::Nothing
     end
 
     # assign the variables
-    for vname in vnames
-        setvar!(ctx, vname, getproperty(nb.mdl, vname))
+    for vp in vpairs
+        setvar!(ctx, vp.var, vp.value)
     end
 
-    return finish_cell_eval!(nb, VarsCodePair((code, vnames)))
+    return finish_cell_eval!(nb, VarsCodePair((code, vpairs)))
 end
 
 
@@ -62,7 +63,7 @@ end
 Helper function to `eval_vars_cell!`. Returns the list of symbols matching the
 variables assigned in the code.
 """
-function _eval_vars_cell(mdl::Module, code::String, ctx::Context)::Vector{Symbol}
+function _eval_vars_cell(mdl::Module, code::String, ctx::Context)::Vector{VarPair}
     exs = parse_code(code)
     try
         start = time(); @debug """
@@ -95,7 +96,7 @@ function _eval_vars_cell(mdl::Module, code::String, ctx::Context)::Vector{Symbol
         end
     end
     filter!(v -> v isa Symbol, vnames)
-    return vnames
+    return [VarPair((vn, getproperty(mdl, vn))) for vn in vnames]
 end
 
 
@@ -113,7 +114,7 @@ function prune_vars_bindings(ctx::Context)::Vector{Symbol}
     cntr = counter(nb)
     for i in cntr:length(nb)
         cp = nb.code_pairs[i]
-        append!(pruned_bindings, cp.vars)
+        append!(pruned_bindings, [vp.var for vp in cp.vars])
     end
     unique!(pruned_bindings)
 

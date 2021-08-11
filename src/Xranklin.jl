@@ -6,6 +6,7 @@ module Xranklin
 import Dates
 import Base.(/)
 import REPL: softscope
+import Serialization: serialize, deserialize
 
 # ------------------------------------------------------------------------
 # external
@@ -66,6 +67,7 @@ include("context/default_context.jl")
 
 include("context/code/modules.jl")
 include("context/code/notebook.jl")
+include("context/code/serialize.jl")
 include("context/code/notebook_vars.jl")
 include("context/code/notebook_code.jl")
 

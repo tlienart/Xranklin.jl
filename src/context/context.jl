@@ -1,4 +1,5 @@
-const VarsCodePair = NamedTuple{(:code, :vars),  Tuple{String, Vector{Symbol}}}
+const VarPair      = NamedTuple{(:var,  :value), Tuple{Symbol, Any}}
+const VarsCodePair = NamedTuple{(:code, :vars),  Tuple{String, Vector{VarPair}}}
 const CodeRepr     = NamedTuple{(:html, :latex), Tuple{String, String}}
 const CodeCodePair = NamedTuple{(:code, :repr),  Tuple{String, CodeRepr}}
 
@@ -46,7 +47,10 @@ Notebook for code.
 
 Same as VarsNotebook with
 
-    code_map: keeps track of {code_name => cntr}
+    code_map:     keeps track of {code_name => cntr}
+    is_stale_ref: keeps track of whether the notebook was loaded from cache.
+                  If it was loaded from cache and a cell changes, all previous
+                  cell will have to be re-evaluated.
 """
 struct CodeNotebook <: Notebook
     mdl::Module
@@ -56,7 +60,7 @@ struct CodeNotebook <: Notebook
     is_stale_ref::Ref{Bool}
 end
 
-isstale(nb::Notebook) = nb.is_stale_ref[]
+isstale(nb::Notebook)         = nb.is_stale_ref[]
 stale_notebook!(nb::Notebook) = (nb.is_stale_ref[] = true;)
 fresh_notebook!(nb::Notebook) = (nb.is_stale_ref[] = false;)
 
@@ -268,7 +272,7 @@ function getvar(lc::LocalContext, n::Symbol, d=nothing)
                 nb   = lc.nb_vars
                 cntr = counter(nb)
                 f1   = !any(
-                    i ≤ cntr && n in cp.vars
+                    i ≤ cntr && any(n == v.var for v in cp.vars)
                     for (i, cp) in enumerate(nb.code_pairs)
                 )
                 f1 && n ∉ get(lc.vars, :_setvar, Set{Symbol}())::Set{Symbol}

@@ -182,7 +182,7 @@ HTML mime show or writing their own code in the cell.
 function append_result_html!(io::IOBuffer, result::R, fig::NamedTuple) where R
     Utils = cur_utils_module()
     if hasmethod(Utils.show, (IO, MIME"text/html", R))
-        Base.show(io, MIME("text/html"), result)
+        Utils.show(io, MIME("text/html"), result)
 
     elseif fig.save && hasmethod(Base.show, (IO, MIME"image/svg+xml", R))
         _write_img(result, fig.fpath * ".svg", MIME("image/svg+xml"))
@@ -213,7 +213,7 @@ function append_result_latex!(io::IOBuffer, result::R, fig::NamedTuple) where R
     Utils = cur_utils_module()
 
     if hasmethod(Utils.show, (IO, MIME"text/latex", R))
-        Base.show(io, MIME("text/latex"), result)
+        Utils.show(io, MIME("text/latex"), result)
 
     elseif fig.save && hasmethod(Base.show, (IO, MIME"application/pdf", R))
         _write_img(result, fig.fpath * ".pdf", MIME("application/pdf"))
