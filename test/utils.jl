@@ -40,7 +40,7 @@ logall() = (
 function testdir(; tag=true)
     d = mktempdir();
     gc = X.DefaultGlobalContext();
-    X.set_paths(d);
+    X.set_paths!(gc, d);
     if !tag
         setgvar!(:content_tag, "")
     end

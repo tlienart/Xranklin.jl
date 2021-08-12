@@ -10,7 +10,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
 
     lc = X.DefaultLocalContext()
     X.set_current_local_context(lc)
-    X.set_paths()
+    X.set_paths!(lc.glob, pwd())
     X.setvar!(lc.glob, :ignore, [r"abc/def.*/", r"foo*", "def", "/", r"\/", ""])
 
     f2i, d2i = X.files_and_dirs_to_ignore()
@@ -59,6 +59,9 @@ end
     write(joinpath(d, "_css", "a.css"), "abc")
     write(joinpath(d, "config.md"), "abc")
     write(joinpath(d, "README.md"), "abc")  # ignored
+
+    gc = X.DefaultGlobalContext()
+    X.set_paths!(gc, d)
 
     wf = X.find_files_to_watch(d)
     @test (d/"d1" => "a.md")    in keys(wf[:md])

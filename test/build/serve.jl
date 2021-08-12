@@ -16,7 +16,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         """)
 
     gc = X.DefaultGlobalContext()
-    X.set_paths(d)
+    X.set_paths!(gc, d)
     wf = X.find_files_to_watch(d)
     X.full_pass(wf; gc=gc)
 

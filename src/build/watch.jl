@@ -20,7 +20,6 @@ function find_files_to_watch(
             in_loop::Bool = false
             )::LittleDict{Symbol, TrackedFiles}
 
-    set_paths(folder)
     f2i, d2i = files_and_dirs_to_ignore()
 
     wf = LittleDict{Symbol, TrackedFiles}(

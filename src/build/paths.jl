@@ -15,7 +15,7 @@ Return the path corresponding to `s` e.g. `path(:folder)`.
 path(s::Symbol) = paths()[s]
 
 
-function set_paths(folder::String=pwd())
+function set_paths!(gc::GlobalContext, folder::String)
     @assert isdir(folder) "$folder is not a valid path"
     P = paths()
     f = P[:folder] = normpath(folder)

@@ -14,7 +14,7 @@ function serve(;
             )
 
     gc = DefaultGlobalContext()
-    set_paths(folder)
+    set_paths!(gc, folder)
 
     # check if there's a config file and process it, this must happen prior
     # to everything as it defines 'ignore' for instance which is needed in

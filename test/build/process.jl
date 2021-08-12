@@ -3,7 +3,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
 @testset "config" begin
     gc = X.DefaultGlobalContext()
     d  = mktempdir()
-    X.set_paths(d)
+    X.set_paths!(gc, d)
     write(d/"config.md", """
         +++
         a = 5
@@ -28,7 +28,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         +++
         """)
     gc = X.DefaultGlobalContext()
-    X.set_paths(d)
+    X.set_paths!(gc, d)
     @test getvar(gc, :rss_website_url, "") == ""
     X.process_config(gc)
     @test getvar(gc, :generate_rss, true) == false
@@ -69,7 +69,7 @@ end
         abc `def` **ghi**
         """)
     gc = X.DefaultGlobalContext()
-    X.set_paths(d)
+    X.set_paths!(gc, d)
     X.set_current_global_context(gc)
     X.process_md_file(gc, fpath, opath)
     @test isfile(opath)
