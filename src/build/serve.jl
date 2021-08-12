@@ -2,11 +2,33 @@
     serve(; kw...)
 
 Runs Franklin in the current directory.
+
+## Keyword Arguments
+
+    folder (String): website folder, this is the folder which is expected to
+                     contain the config.md as well as the index.(md|html).
+    clear (Bool): whether to clear everything and start from scratch, this
+                  will clear the `__site`, `__cache` and `__pdf` directories.
+                  This can be used when something got corrupted e.g. by
+                  having inadvertently modified files in one of those folders
+                  or if somehow a lot of stale files accumulated in one of
+                  these folders.
+    single (Bool): do a single build pass and stop.
+
+### LiveServer arguments
+
+    port (Int): port to use for the local server.
+    host (String): host to use for the local server.
+    launch (Bool): whether to launch the browser once the site is built and
+                   ready to be viewed. A user who has interrupted a previous
+                   `serve` might prefer to set this to `false` as they might
+                   already have a browser tab pointing to a page of interest.
+
 """
 function serve(;
+            folder::String      = pwd(),
             clear::Bool         = false,
             single::Bool        = true,
-            folder::String      = pwd(),
             # LiveServer options
             port::Int           = 8000,
             host::String        = "127.0.0.1",
