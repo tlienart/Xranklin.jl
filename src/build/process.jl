@@ -7,12 +7,22 @@ pre-configuration (e.g. a Utils package generating a default config).
 """
 function process_config(
             config::String,
-            gc::GlobalContext=cur_gc()
+            gc::GlobalContext=cur_gc();
+            initial_pass::Bool=false
             )
-    # set the notebooks at the top
-    reset_notebook_counters!(gc)
+    # ensure we're in the relevant gc
     set_current_global_context(gc)
+    # set the notebook counters at the top
+    reset_notebook_counters!(gc)
 
+    # try to load from cache if relevant
+    if initial_pass
+        fpv = path(:cache) / "gnbv.json"
+        isfile(fpv) && load_vars_cache!(gc, fpv)
+    end
+
+    # keep track of current lxdefs to see if they change during the pass
+    # and if they change, update all pages dependent on them later.
     old_lxdefs = LittleDict{String, UInt64}(
         n => hash(lxd.def)
         for (n, lxd) in gc.lxdefs
@@ -20,13 +30,19 @@ function process_config(
     # discard current defs, it will be repopulated by the call to html
     empty!(gc.lxdefs)
 
+    # -----------------------
     start = time(); @info """
         ⌛ processing config
         """
+    # -----------------------
+
     html(config, gc)
+
+    # ------------------------------------
     δt = time() - start; @info """
         ... [config] ✔ $(hl(time_fmt(δt)))
         """
+    # ------------------------------------
 
     if getvar(gc, :generate_rss)::Bool
         # :website_url must be given
@@ -65,10 +81,10 @@ function process_config(
     return
 end
 
-function process_config(gc::GlobalContext=cur_gc())
+function process_config(gc::GlobalContext=cur_gc(); initial_pass::Bool=false)
     config_path = path(:folder) / "config.md"
     if isfile(config_path)
-        process_config(read(config_path, String), gc)
+        process_config(read(config_path, String), gc; initial_pass)
     else
         @warn """
             Process config
@@ -87,19 +103,33 @@ Process a utils string into a given global context object.
 """
 function process_utils(
             utils::String,
-            gc::GlobalContext=cur_gc()
+            gc::GlobalContext=cur_gc();
+            initial_pass::Bool=false
             )
+    # ensure we're in the relevant gc
+    set_current_global_context(gc)
     # set the notebooks at the top
     reset_notebook_counters!(gc)
-    set_current_global_context(gc)
 
+    # try to load from cache if relevant
+    if initial_pass
+        fpc = path(:cache) / "gnbc.json"
+        isfile(fpc) && load_vars_cache!(gc, fpc)
+    end
+
+    # -----------------------
     start = time(); @info """
         ⌛ processing utils
         """
+    # -----------------------
+
     eval_code_cell!(gc, subs(utils); cell_name="utils")
+
+    # ---------------------------------------------
     @info """
         ... [utils] ✔ $(hl(time_fmt(time()-start)))
         """
+    # ---------------------------------------------
 
     # check names of hfun, lx and vars; since we wiped the module before the
     # include_string, all the proper names recuperated here are 'fresh'.
@@ -120,10 +150,10 @@ function process_utils(
     return
 end
 
-function process_utils(gc::GlobalContext=cur_gc())
+function process_utils(gc::GlobalContext=cur_gc(); initial_pass::Bool=false)
     utils_path = path(:folder) / "utils.jl"
     if isfile(utils_path)
-        process_utils(read(utils_path, String), gc)
+        process_utils(read(utils_path, String), gc; initial_pass)
     else
         @info "❎ no utils file found."
     end
@@ -165,18 +195,24 @@ function process_file(
     opath = form_output_path(fpair, case)
 
     if case in (:md, :html)
+        # ----------------------------------------------
         start = time(); @info """
             ⌛ processing $(hl(get_rpath(fpath), :cyan))
             """
+        # ----------------------------------------------
+
         if case == :md
             process_md_file(gc, fpath, opath; initial_pass=initial_pass)
         elseif case == :html
             process_html_file(gc, fpath, opath)
         end
         ropath = "__site"/get_ropath(opath)
+
+        # ----------------------------------------------------------------------------
         @info """
-            ... ✔ $(hl(time_fmt(time()-start))), wrote $(hl((str_fmt(ropath)), :cyan))
+            ... ✔ $(hl(time_fmt(time()-start))), wrote $(hl(str_fmt(ropath), :cyan))
             """
+        # ----------------------------------------------------------------------------
     else
         # copy the file over if
         # - it's not already there
@@ -201,7 +237,8 @@ function process_md_file(
             opath::String;
             initial_pass::Bool = false
             )::Nothing
-    # usually not necessary apart in getvarfrom
+
+    # usually not necessary apart if triggered from getvarfrom
     isfile(fpath) || return
     # path of the file relative to path(:folder)
     rpath  = get_rpath(fpath)
@@ -221,10 +258,19 @@ function process_md_file(
     ctx = in_gc ?
             gc.children_contexts[rpath] :
             DefaultLocalContext(gc, rpath=rpath)
-
-    # reset the notebooks at the top
-    reset_notebook_counters!(ctx)
+    # set it as current context in case it isn't
     set_current_local_context(ctx)
+
+    if initial_pass
+        # try to load notebooks from serialized
+        fpv = path(:cache) / noext(rpath) / "nbv.json"
+        fpc = path(:cache) / noext(rpath) / "nbc.json"
+        isfile(fpv) && load_vars_cache!(ctx, fpv)
+        isfile(fpc) && load_code_cache!(ctx, fpc)
+    else
+        # reset the notebook counters at the top
+        reset_notebook_counters!(ctx)
+    end
 
     # set meta parameters
     s = stat(fpath)
@@ -289,7 +335,7 @@ function process_md_file(
 end
 
 function process_md_file(gc::GlobalContext, rpath::String; kw...)
-    fpath = path(:folder)/rpath
+    fpath = path(:folder) / rpath
     d, f = splitdir(fpath)
     opath = form_output_path(d => f, :md)
     process_md_file(gc, fpath, opath; kw...)

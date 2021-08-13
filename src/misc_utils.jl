@@ -43,6 +43,12 @@ Change the file extension of a filename.
 """
 change_ext(fn, ext=".html") = splitext(fn)[1] * ext
 
+"""
+    noext(fpath)
+
+Return `fpath` without extension `foo/bar.md` --> `foo/bar`.
+"""
+noext(fp::String) = first(splitext(fp))
 
 """
     html_attr

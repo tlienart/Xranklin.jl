@@ -50,9 +50,6 @@ end
     @test X.isglob(lc) == false
     @test X.getid(lc) == "REQ"
     @test X.getglob(lc) === gc
-
-    X.prune_children!(gc)
-    @test isempty(gc.children_contexts)
 end
 
 @testset "cur_ctx" begin

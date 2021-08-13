@@ -6,6 +6,7 @@ module Xranklin
 import Dates
 import Base.(/)
 import REPL: softscope
+import Pkg
 import Serialization: serialize, deserialize
 
 # ------------------------------------------------------------------------
@@ -32,6 +33,8 @@ import JSON3
 import OrderedCollections: LittleDict
 
 # ------------------------------------------------------------------------
+
+export serve
 
 # Conversion functions
 export html, latex

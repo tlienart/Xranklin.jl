@@ -19,13 +19,18 @@ function set_paths!(gc::GlobalContext, folder::String)
     @assert isdir(folder) "$folder is not a valid path"
     P = paths()
     f = P[:folder] = normpath(folder)
-    P[:site]       = f / "__site"
     P[:assets]     = f / "_assets"
     P[:css]        = f / "_css"
     P[:layout]     = f / "_layout"
     P[:libs]       = f / "_libs"
     P[:rss]        = f / "_rss"          # optional/generated
     P[:literate]   = f / "_literate"     # optional
+
+    # output
+    P[:site]  = f / "__site"
+    P[:pdf]   = f / "__pdf"
+    P[:cache] = f / "__cache"
+
     P[:code_out]   = ""
 
     # keep track of prefix, see get_rpath, get_ropath
@@ -140,7 +145,7 @@ end
 """
     unixify(rpath)
 
-Take a path and return a unix version of the path.
+Take a path and return a unix version of the path (i.e. with forward slashes).
 For instance to convert a relative path corresponding to a local file and
 convert it to a relative URL.
 """

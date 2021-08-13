@@ -29,6 +29,7 @@
 * use FranklinParser.jl
 * remove dependency on HTTP
 * use concrete types and inferrable in-out relations where possible
+* remove deps on Literate, make it optional, same as Pluto
 
 ## Todo
 

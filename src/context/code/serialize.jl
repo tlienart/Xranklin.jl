@@ -10,23 +10,33 @@ composites of such).
 """
 is_easily_serializable(x) = is_easily_serializable(typeof(x))
 function is_easily_serializable(T::DataType)
+    T === Any && return false
     m = parentmodule(T)
     m in (Base, Core) && return true
     p = pathof(m)
     return p !== nothing && "stdlib" in splitpath(p)
 end
 
-is_easily_serializable(x::AA) where AA <: AbstractArray{T} where T =
-    is_easily_serializable(T) && is_easily_serializable(AA)
-is_easily_serializable(x::AR) where AR <: AbstractRange{T} where T =
-    is_easily_serializable(T) && is_easily_serializable(AR)
-is_easily_serializable(x::AD) where AD <: AbstractDict{K, V} where {K, V} =
-    is_easily_serializable(K) && is_easily_serializable(V) && is_easily_serializable(AD)
+is_easily_serializable(x::Union{Tuple, NamedTuple}) =
+    all(is_easily_serializable, v for v in x)
 
-is_easily_serializable(x::NamedTuple) = all(is_easily_serializable, v for v in x)
-is_easily_serializable(x::Tuple)      = all(is_easily_serializable, v for v in x)
-is_easily_serializable(::Function)    = false
-is_easily_serializable(::Module)      = false
+is_easily_serializable(x::AA) where AA <: AbstractArray{T} where T =
+    all(is_easily_serializable, (T, AA))
+is_easily_serializable(x::AR) where AR <: AbstractRange{T} where T =
+    all(is_easily_serializable, (T, AR))
+is_easily_serializable(x::AD) where AD <: AbstractDict{K, V} where {K, V} =
+    all(is_easily_serializable, (K, V, AD))
+
+# For composites with Any type, we need to go over each entry
+is_easily_serializable(x::AA) where AA <: AbstractArray{Any} =
+    all(is_easily_serializable, (AA, x...))
+is_easily_serializable(x::AD) where AD <: AbstractDict{K, Any} where {K} =
+    all(is_easily_serializable, (K, AD, values(x)...))
+
+is_easily_serializable(::Function) = false
+is_easily_serializable(::Module)   = false
+is_easily_serializable(::Ref)      = false
+is_easily_serializable(::Ptr)      = false
 
 
 # ======================== #
@@ -76,10 +86,11 @@ function serialize_vars_code_pairs(nb::VarsNotebook)::String
     return JSON3.write(all)
 end
 
-function serialize_notebok(nb::VarsNotebook, fpath::String)
+function serialize_notebook(nb::VarsNotebook, fpath::String)
     length(nb) == 0 && return
     json = serialize_vars_code_pairs(nb)
     isempty(json) && return
+    mkpath(splitdir(fpath)[1])
     open(fpath, "w") do outf
         write(outf, json)
     end
@@ -136,8 +147,9 @@ end
 # couple of strings that we have to keep track of
 # ------------------------------------------------------------------------
 
-function serialize_notebok(nb::CodeNotebook, fpath::String)
+function serialize_notebook(nb::CodeNotebook, fpath::String)
     length(nb) == 0 && return
+    mkpath(splitdir(fpath)[1])
     open(fpath, "w") do outf
         JSON3.write(outf,
             (

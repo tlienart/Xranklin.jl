@@ -10,22 +10,30 @@ indication of when the file was last modified.
 const TrackedFiles = LittleDict{Pair{String, String}, Float64}
 
 
-"""
-    find_files_to_watch(folder)
+new_wf() = LittleDict{Symbol, TrackedFiles}(
+    e => TrackedFiles()
+    for e in (:other, :infra, :md, :html, :literate)
+)
 
-Walk through `folder` and look for files to track,
+
 """
-function find_files_to_watch(
-            folder::String,
-            in_loop::Bool = false
+    update_files_to_watch!(wf, folder; in_loop)
+
+Walk through `folder` and look for files to track sorting them by type.
+
+* :md for all `.md` files that need to be watched excluding `config.md`
+* :html for all `.html` files
+* :infra for layout, libs, css files as well as `config.md` and `utils.jl`
+* :literate for all files that are in the `_literate` folder
+* :other files for anything else (these files will just be copied over)
+"""
+function update_files_to_watch!(
+            wf::LittleDict{Symbol, TrackedFiles},
+            folder::String;
+            in_loop::Bool=false
             )::LittleDict{Symbol, TrackedFiles}
 
     f2i, d2i = files_and_dirs_to_ignore()
-
-    wf = LittleDict{Symbol, TrackedFiles}(
-        e => TrackedFiles()
-        for e in (:other, :infra, :md, :html, :literate)
-    )
 
     # go over all files in the folder and add them to watched_files
     for (root, _, files) in walkdir(path(:folder))
@@ -38,10 +46,12 @@ function find_files_to_watch(
             # early skip of irrelevant fpaths
             skip = !isfile(fpath) ||
                    startswith(fpath, path(:site)) ||
+                   startswith(fpath, path(:pdf)) ||
+                   startswith(fpath, path(:cache)) ||
                    startswith(fpath, path(:folder) / ".git") ||
                    should_ignore(fpath, f2i, d2i)
             if skip
-                @info "🔺 skipping $(hl(str_fmt(get_rpath(fpath)), :cyan))"
+                @debug "🔺 skipping $(hl(str_fmt(get_rpath(fpath)), :cyan))"
                 continue
             end
 
@@ -73,6 +83,18 @@ function find_files_to_watch(
         end
     end
     return wf
+end
+
+
+"""
+    find_files_to_watch(folder)
+
+Sets up a new dictionary of watched files and updates it with the function
+`update_files_to_watch!`.
+"""
+function find_files_to_watch(folder::String)
+    wf = new_wf()
+    return update_files_to_watch!(wf, folder)
 end
 
 

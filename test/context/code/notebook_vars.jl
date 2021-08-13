@@ -79,7 +79,7 @@ end
     @test getvar(lc, :d) == getvar(lc, :a)
 
     fp = tempname()
-    X.serialize_notebok(lc.nb_vars, fp)
+    X.serialize_notebook(lc.nb_vars, fp)
     json = JSON3.read(read(fp, String))
     @test length(json) == 2
     @test json[1]["code"] // v1
@@ -91,27 +91,4 @@ end
     @test getvar(lc, :a) == getvar(lc2, :a)
     @test getvar(lc, :d) == getvar(lc2, :d)
     @test X.isstale(lc2.nb_vars)
-end
-
-
-@testset "is_easily_serializable" begin
-    # Acceptable
-    @test X.is_easily_serializable(5)
-    @test X.is_easily_serializable("hello")
-    @test X.is_easily_serializable(true)
-    @test X.is_easily_serializable([1,2,3])
-    @test X.is_easily_serializable([1 2; 3 4])
-    @test X.is_easily_serializable(1:5)
-    @test X.is_easily_serializable(Dict(:a=>5, :b=>7))
-    @test X.is_easily_serializable((1,2,3))
-    @test X.is_easily_serializable(([1,2,3], 2, :abc))
-    @test X.is_easily_serializable(today())
-    # Not acceptable
-    @test !X.is_easily_serializable(LittleDict(:a=>5))
-    @test !X.is_easily_serializable(x -> x)
-    @test !X.is_easily_serializable(Module(:x))
-    struct Foo
-        a::Int
-    end
-    @test !X.is_easily_serializable(Foo(1))
 end

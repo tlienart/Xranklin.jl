@@ -24,6 +24,7 @@ end
     include(p/"modules.jl")
     include(p/"notebook_vars.jl")
     include(p/"notebook_code.jl")
+    include(p/"serialize.jl")
 end
 
 @testset "LaTeX" begin

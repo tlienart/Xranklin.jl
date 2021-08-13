@@ -197,26 +197,6 @@ getdef(gc::GlobalContext,  n::String)    = getdef(gc.lxdefs, n)
 setdef!(gc::GlobalContext, n::String, d) = setdef!(gc.lxdefs, n, d)
 
 
-"""
-    prune_children!(gc)
-
-Remove children if their rpath does not correspond to an existing page.
-This can happen if, during a session, a page `page1.md` is created, has its
-local context that gets appended to the list of children of the global
-context, then the user renames the file `page2.md`. The rpath `page1.md`
-does then not correspond to an existing page anymore and should be popped.
-
-This function should be called whenever `.md` pages are removed in the server
-loop.
-"""
-function prune_children!(gc::GlobalContext)
-    for (k, v) in gc.children_contexts
-        isfile(v.rpath) && continue
-        pop!(gc.children_contexts, k)
-    end
-end
-
-
 # -------------------------------------- #
 # LOCAL CONTEXT CONSTRUCTORS AND METHODS #
 # -------------------------------------- #
