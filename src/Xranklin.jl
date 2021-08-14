@@ -35,6 +35,7 @@ import OrderedCollections: LittleDict
 # ------------------------------------------------------------------------
 
 export serve
+export newsite
 
 # Conversion functions
 export html, latex
@@ -91,6 +92,8 @@ include("convert/markdown/rules/headers.jl")
 include("convert/markdown/rules/code.jl")
 include("convert/markdown/rules/maths.jl")
 
+include("convert/postprocess/hfuns.jl")
+include("convert/postprocess/lxfuns.jl")
 include("convert/postprocess/html/html2.jl")
 include("convert/postprocess/latex/latex2.jl")
 

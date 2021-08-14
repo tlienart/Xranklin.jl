@@ -12,7 +12,7 @@ paths() = getgvar(:_paths)::LittleDict{Symbol, String}
 
 Return the path corresponding to `s` e.g. `path(:folder)`.
 """
-path(s::Symbol) = paths()[s]
+path(s::Symbol)::String = get(paths(), s, "")
 
 
 function set_paths!(gc::GlobalContext, folder::String)

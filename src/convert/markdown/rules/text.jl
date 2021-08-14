@@ -22,11 +22,13 @@ latex_div(b, c)        = recursive_latex(b, c)
 
 # {{...}}
 html_dbb(b, _)         = string(b.ss)  # will be post-processed in html2
-latex_dbb(b, _)        = ""
+latex_dbb(b, _)        = string(b.ss)  # will be post-processed in latex2
 
 # failed blocks
-html_failed(b, _)      = "<span style=\"color:red\">[FAILED:]&gt;$(b.ss)&lt;</span>"
-latex_failed(b, _)     = "\\textcolor{crimson}{>$(b.ss)<}"
+html_failed(s::String)  = "<span style=\"color:red\">[FAILED:]&gt;$s&lt;</span>"
+latex_failed(s::String) = "\\textcolor{crimson}{>$(b.ss)<}"
+html_failed(b, _)       = html_failed(string(b.ss))
+latex_failed(b, _)      = latex_failed(string(b.ss))
 
 # Markdown defs
 html_md_def(b, c)  = (eval_vars_cell!(c, content(b)); "")

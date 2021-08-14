@@ -291,12 +291,12 @@ end
 
 
 """
-    getvarfrom(rpath, n, d)
+    getvarfrom(n, rpath, d)
 
 Retrieve a value corresponding to symbol `n` from a local context with rpath
 `rpath` if it exists.
 """
-function getvarfrom(rpath::String, n::Symbol, d=nothing)
+function getvarfrom(n::Symbol, rpath::String, d=nothing)
     # is there such an rpath in current GC ? if not but the rpath corresponds
     # to a file, then trigger a process of that file and try again
     clc = env(:cur_local_ctx)
@@ -380,5 +380,5 @@ function globvar(n::Union{Symbol,String}; default=nothing)
 end
 
 function pagevar(s::String, n::Union{Symbol,String}; default=nothing)
-    return getvarfrom(s, Symbol(n), default)
+    return getvarfrom(Symbol(n), s, default)
 end
