@@ -89,7 +89,7 @@ function process_config(gc::GlobalContext=cur_gc(); initial_pass::Bool=false)
         @warn """
             Process config
             --------------
-            Config file $config not found.
+            Config file $config_path not found.
             """
     end
     return
@@ -294,7 +294,7 @@ end
 function process_md_file(
             gc::GlobalContext,
             fpath::String,
-            opath::String="";
+            opath::String;
             kw...)
     open(opath, "w") do outf
         process_md_file_io!(outf, gc, fpath; opath, kw...)

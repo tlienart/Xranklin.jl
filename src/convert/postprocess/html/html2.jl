@@ -66,7 +66,8 @@ function html2(parts::Vector{Block}, c::Context)::String
 
         elseif fname in INTERNAL_HFUNS
             # 'internal' function like {{insert ...}} or {{fill ...}}
-            f   = getproperty(@__MODULE__, Symbol("hfun_$fname"))
+            args = split_cb[2:end]
+            f    = getproperty(@__MODULE__, Symbol("hfun_$fname"))
             # same as above
             out = (isempty(args) ? f() : f(string.(args))) |> string
             write(io, out)

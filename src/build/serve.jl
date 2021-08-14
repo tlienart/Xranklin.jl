@@ -52,7 +52,7 @@ function serve(;
     # check if there's a config file and process it, this must happen prior
     # to everything as it defines 'ignore' for instance which is needed in
     # the watched_files step
-    process_config(gc; )
+    process_config(gc; initial_pass=true)
 
     # scrape the folder to collect all files that should be watched for
     # changes; this set will be updated in the loop if new files get
@@ -80,12 +80,14 @@ function serve(;
             host=host,
             launch_browser=launch
         )
+        println("") # skip a line to pass the '^C' character
     end
 
     # ---------------------------------------------------------------
     # Finalize
     # > go through every page and serialize them; this only needs
     # to be done at the end
+    start = time()
     @info "📓 serializing $(hl("config", :cyan))..."
     serialize_notebook(gc.nb_vars, path(:cache) / "gnbv.json")
     serialize_notebook(gc.nb_code, path(:cache) / "gnbc.json")
@@ -94,6 +96,9 @@ function serve(;
         serialize_notebook(gc.nb_vars, path(:cache) / noext(rp) / "nbv.json")
         serialize_notebook(gc.nb_code, path(:cache) / noext(rp) / "nbc.json")
     end
+    δt = time() - start; @info """
+        💡 $(hl("serializing done", :yellow)) $(hl(time_fmt(δt)))
+        """
 
     # ---------------------------------------------------------------
     # Cleanup:
