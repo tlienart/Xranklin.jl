@@ -31,6 +31,7 @@ a tick just means the feature is there not that it's properly tested
 * [ ] LX_BEGIN
 * [ ] LX_END
 * [ ] HTML entities?
+* [ ] INTERNAL HFUNS
 * [ ] INTERNAL LX
   * [ ] `\tableofcontents` `\toc`
   * [ ] `\label`, `\biblabel`, ...
