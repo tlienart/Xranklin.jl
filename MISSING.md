@@ -1,10 +1,12 @@
 # Missing Features
 
+a tick just means the feature is there not that it's properly tested
+
 ## FranklinParser Blocks
 
 ### MD
 
-* [ ] COMMENT
+* [x] COMMENT
 * [x] RAW_HTML `rules/text`
 * [x] MD_DEF_BLOCK `rules/text`
 * [ ] CODE_BLOCK_LANG `rules/code` **incomplete, need eval**
@@ -23,9 +25,9 @@
 * [ ] LINK_DEF
 * [x] LINEBREAK `rules/text`
 * [x] HRULE `rules/text`
-* [ ] LX_NEWENV
-* [ ] LX_NEWCOM
-* [ ] LX_COM
+* [x] LX_NEWENV `markdown/latex_objects`
+* [x] LX_NEWCOM `markdown/latex_objects`
+* [x] LX_COM `markdown/latex_objects`
 * [ ] LX_BEGIN
 * [ ] LX_END
 
@@ -40,6 +42,9 @@
 * [ ] tags
 * [ ] references
 * [ ] default hfun
+  * [x] fill
+  * [x] insert
+  * [ ] table of contents
 * [ ] default lxfun
 
 ## Code

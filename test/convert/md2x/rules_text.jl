@@ -138,7 +138,9 @@ end
 
 @testset "br and hr" begin
     let s = raw"""
-        A \\ B --- C
+        A \\ B
+        ---
+        C
         """
         h = html(s)
         l = latex(s)

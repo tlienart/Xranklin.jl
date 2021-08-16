@@ -1,3 +1,8 @@
+# ---------------------------------------------------
+# NOTE
+# hfun must necessarily return a String; see outputof
+# ---------------------------------------------------
+
 const INTERNAL_HENVS = [
     # :if,
     # :ifdef, :isdef,
@@ -22,21 +27,18 @@ const INTERNAL_HFUNS = [
 
 Hfun used for when other hfuns fail.
 """
-function hfun_failed(p::VS; tohtml=true)
+function hfun_failed(p::VS; tohtml::Bool=true)::String
     tohtml && return _hfun_failed_html(p)
-    _hfun_failed_latex(p)
+    return _hfun_failed_latex(p)
 end
-hfun_failed(s::String, p::VS; kw...) = hfun_failed([s, p...]; kw...)
+hfun_failed(s::String, p::VS) = hfun_failed([s, p...])
 
-function _hfun_failed_html(p::VS)
-    s  = "&lbrace;&lbrace; " * prod(e * " " for e in p) * "&rbrace;&rbrace;"
-    return html_failed(s)
-end
-
-function _hfun_failed_latex(p::VS)
+_hfun_failed_html(p::VS) = html_failed(
+    "&lbrace;&lbrace; " * prod(e * " " for e in p) * "&rbrace;&rbrace;"
+)
+_hfun_failed_latex(p::VS) = latex_failed(
     s = raw"\texttt{\{\{ " * prod(e * " " for e in p) * raw"\}\}}"
-    return latex_failed(s)
-end
+)
 
 
 """
@@ -45,9 +47,8 @@ end
 
 Write the value of variable `x` from either the local context or the context
 of the page at `from`.
-Note: identical output for html or latex.
 """
-function hfun_fill(p::VS; tohtml=true)::String
+function hfun_fill(p::VS)::String
     # check parameters
     np = length(p)
     if np ∉ [1, 2]
@@ -56,10 +57,10 @@ function hfun_fill(p::VS; tohtml=true)::String
             ------------
             Fill should get one or two parameters, $np given.
             """
-        return hfun_failed("fill", p; tohtml)
+        return hfun_failed("fill", p)
     end
-    np == 1 && return _hfun_fill_1(p)
-    return _hfun_fill_2(p)
+    out = (np == 1) ? _hfun_fill_1(p) : _hfun_fill_2(p)
+    return out
 end
 
 function _hfun_fill_1(p::VS)::String
@@ -109,7 +110,7 @@ Insert a file at `path(base)/p`. By default `base=path(:layout)` and so paths
 can be expressed relative to that or one can pass one of the other path names
 such as `folder`, `css`, `libs` or whatever (see `set_paths!`).
 """
-function hfun_insert(p::VS; tohtml=true)::String
+function hfun_insert(p::VS; tohtml::Bool=true)::String
     np = length(p)
     if np ∉ [1, 2]
         @warn """
@@ -117,7 +118,7 @@ function hfun_insert(p::VS; tohtml=true)::String
             --------------
             Insert should get one or two parameters, $np given.
             """
-        return hfun_failed("insert", p; tohtml)
+        return hfun_failed("insert", p)
     end
     np == 1 && return _hfun_insert(p[1], path(:layout); tohtml)
     bsym = Symbol(p[2])
@@ -125,14 +126,15 @@ function hfun_insert(p::VS; tohtml=true)::String
     return _hfun_insert(p[1], base; bsym, tohtml)
 end
 
-function _hfun_insert(p::String, base::String; bsym::Symbol=:layout, tohtml=true)
+function _hfun_insert(p::String, base::String;
+                      bsym::Symbol=:layout, tohtml::Bool=true)
     if isempty(base)
         @warn """
             {{insert $p $bsym}}
             -------------------
             There's no base path corresponding to '$bsym'.
             """
-        return hfun_failed(["insert", p, string(bsym)]; tohtml)
+        return hfun_failed(["insert", p, string(bsym)])
     end
     fpath = base / p
     if !isfile(fpath)
@@ -141,7 +143,7 @@ function _hfun_insert(p::String, base::String; bsym::Symbol=:layout, tohtml=true
             -------------------
             Couldn't find a file '$p' in the folder '$bsym'.
             """
-        return hfun_failed(["insert", p, string(bsym)]; tohtml)
+        return hfun_failed(["insert", p, string(bsym)])
     end
     if tohtml && endswith(p, ".html")
         io = IOBuffer()

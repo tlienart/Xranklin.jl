@@ -1,3 +1,4 @@
+
 """
     html2(s, c)
 
@@ -40,7 +41,7 @@ function html2(parts::Vector{Block}, c::Context)::String
         # Double Brace Block processing
         cb = strip(content(b))
         isempty(cb) && continue
-        split_cb = split(cb)
+        split_cb = string.(split(cb))
         fname    = Symbol(lowercase(first(split_cb)))
         if fname in INTERNAL_HENVS
             # look for the matching closing END then pass the scope
@@ -53,11 +54,9 @@ function html2(parts::Vector{Block}, c::Context)::String
             # internal functions
             Utils = cgc.nb_code.mdl
             args  = split_cb[2:end]
-            f     = getproperty(Utils, Symbol("hfun_$fname"))
-            # force the output to be a string to not risk the write to io
-            # being a bunch of gibberish
-            out  = (isempty(args) ? f() : f(string.(args))) |> string
-            write(io, out)
+            fsymb = Symbol("hfun_$fname")
+            f     = getproperty(Utils, fsymb)
+            write(io, outputof(f, args; tohtml=true))
 
             # re-set current local and global context, just in case these were
             # changed by the call to the hfun (e.g. by triggering a processing)
@@ -68,9 +67,7 @@ function html2(parts::Vector{Block}, c::Context)::String
             # 'internal' function like {{insert ...}} or {{fill ...}}
             args = split_cb[2:end]
             f    = getproperty(@__MODULE__, Symbol("hfun_$fname"))
-            # same as above
-            out = (isempty(args) ? f() : f(string.(args))) |> string
-            write(io, out)
+            write(io, outputof(f, args; tohtml=true))
 
             # see note above
             set_current_global_context(cgc)

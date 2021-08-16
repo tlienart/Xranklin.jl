@@ -92,6 +92,7 @@ include("convert/markdown/rules/headers.jl")
 include("convert/markdown/rules/code.jl")
 include("convert/markdown/rules/maths.jl")
 
+include("convert/postprocess/utils.jl")
 include("convert/postprocess/hfuns.jl")
 include("convert/postprocess/lxfuns.jl")
 include("convert/postprocess/html/html2.jl")

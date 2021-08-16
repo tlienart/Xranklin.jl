@@ -156,7 +156,7 @@ end
 @testset "cross var deps" begin
     d, gc = testdir(tag=false)
     write(d/"utils.jl", """
-        hfun_geta(params) = getvarfrom(:a, params[1])
+        hfun_geta(params) = string(getvarfrom(:a, params[1]))
         """)
     X.process_utils(gc)
     write(d/"pg1.md", raw"""

@@ -4,7 +4,7 @@ cm_parser = CM.Parser()
 # them or whether it should be CommonMark.
 
 # >> Block Defaults
-# XXX enable!(cm_parser, CM.TableRule()) XXX see https://github.com/MichaelHatherly/CommonMark.jl/issues/25
+enable!(cm_parser, CM.TableRule())
 disable!(cm_parser, CM.AtxHeadingRule())         # ### headings
 # -- BlockQuoteRule()
 disable!(cm_parser, CM.FencedCodeBlockRule())
