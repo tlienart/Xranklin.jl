@@ -83,8 +83,8 @@ end
     lc2 = X.LocalContext(gc, rpath="C2")
     X.setvar!(lc2, :b, 321)
     X.set_current_local_context(lc2)
-    @test getvarfrom("C1", :a, 0) == 123
-    @test getvarfrom("C2", :b, 0) == 321  # dumb but should work
+    @test getvarfrom(:a, "C1", 0) == 123
+    @test getvarfrom(:b, "C2", 0) == 321  # dumb but should work
 
     @test "C1" in keys(lc2.req_vars)
     @test lc2.req_vars["C1"] == Set([:a])

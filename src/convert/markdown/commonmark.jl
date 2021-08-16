@@ -2,7 +2,9 @@ cm_parser = CM.Parser()
 
 # Enable and disable block rules depending on whether Franklin processes
 # them or whether it should be CommonMark.
+
 # >> Block Defaults
+enable!(cm_parser, CM.TableRule())
 disable!(cm_parser, CM.AtxHeadingRule())         # ### headings
 # -- BlockQuoteRule()
 disable!(cm_parser, CM.FencedCodeBlockRule())
@@ -21,6 +23,7 @@ disable!(cm_parser, CM.HtmlInlineRule())
 disable!(cm_parser, CM.InlineCodeRule())
 # -- LinkRule()
 # -- UnderscoreEmphasisRule()
+
 
 # Special rule to skip indendented blocks
 struct SkipIndented end

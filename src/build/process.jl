@@ -89,7 +89,7 @@ function process_config(gc::GlobalContext=cur_gc(); initial_pass::Bool=false)
         @warn """
             Process config
             --------------
-            Config file $config not found.
+            Config file $config_path not found.
             """
     end
     return
@@ -226,16 +226,18 @@ end
 
 
 """
-    process_md_file(gc, fpath, opath)
+    process_md_file_io!(io, gc, fpath, opath)
 
 Process a markdown file located at `fpath` within global context `gc` and
-write the result at `opath`.
+write the result to the iostream `io`.
 """
-function process_md_file(
+function process_md_file_io!(
+            io::IO,
             gc::GlobalContext,
-            fpath::String,
-            opath::String;
-            initial_pass::Bool = false
+            fpath::String;
+            opath::String="",
+            initial_pass::Bool=false,
+            tohtml::Bool=true
             )::Nothing
 
     # usually not necessary apart if triggered from getvarfrom
@@ -257,7 +259,7 @@ function process_md_file(
     # create it if it doesn't
     ctx = in_gc ?
             gc.children_contexts[rpath] :
-            DefaultLocalContext(gc, rpath=rpath)
+            DefaultLocalContext(gc; rpath)
     # set it as current context in case it isn't
     set_current_local_context(ctx)
 
@@ -279,15 +281,40 @@ function process_md_file(
     setvar!(ctx, :_creation_time, s.ctime)
     setvar!(ctx, :_modification_time, s.mtime)
 
-    # get and convert markdown for the core
-    page_content_md   = read(fpath, String)
-    page_content_html = html(page_content_md, ctx)
+    # get and convert markdown
+    page_content_md = read(fpath, String)
+    output = (tohtml ?
+                _process_md_file_html(ctx, page_content_md) :
+                _process_md_file_latex(ctx, page_content_md))::String
 
+    write(io, output)
+    return
+end
+
+function process_md_file(
+            gc::GlobalContext,
+            fpath::String,
+            opath::String;
+            kw...)
+    open(opath, "w") do outf
+        process_md_file_io!(outf, gc, fpath; opath, kw...)
+    end
+    return
+end
+
+function process_md_file(gc::GlobalContext, rpath::String; kw...)
+    fpath = path(:folder) / rpath
+    d, f  = splitdir(fpath)
+    opath = form_output_path(d => f, :md)
+    process_md_file(gc, fpath, opath; kw...)
+end
+
+function _process_md_file_html(ctx::Context, page_content_md::String)
     # get and process html for the foot of the page
     page_foot_path = path(:folder) / getgvar(:layout_page_foot)::String
     page_foot_html = ""
     if !isempty(page_foot_path) && isfile(page_foot_path)
-        page_foot_html = read(page_foot_path, String)
+        page_foot_html = html2(read(page_foot_path, String), ctx)
     end
 
     # add the content tags if required
@@ -296,6 +323,7 @@ function process_md_file(
     c_id    = getvar(ctx, :content_id)::String
 
     # Assemble the body, wrap it in tags if required
+    page_content_html = html(page_content_md, ctx)
     body_html = ""
     if !isempty(c_tag)
         body_html = """
@@ -313,32 +341,33 @@ function process_md_file(
 
     # Assemble the full page
     full_page_html = ""
-
-    # head if it exists
+    # > head if it exists
     head_path = path(:folder) / getgvar(:layout_head)::String
     if !isempty(head_path) && isfile(head_path)
-        full_page_html = read(head_path, String)
+        full_page_html = html2(read(head_path, String), ctx)
     end
-
-    # attach the body
+    # > attach the body
     full_page_html *= body_html
-
-    # then the foot if it exists
+    # > then the foot if it exists
     foot_path = path(:folder) / getgvar(:layout_foot)::String
     if !isempty(foot_path) && isfile(foot_path)
-        full_page_html *= read(foot_path, String)
+        full_page_html *= html2(read(foot_path, String), ctx)
     end
-
-    # write to file
-    write(opath, full_page_html)
-    return
+    return full_page_html
 end
 
-function process_md_file(gc::GlobalContext, rpath::String; kw...)
-    fpath = path(:folder) / rpath
-    d, f = splitdir(fpath)
-    opath = form_output_path(d => f, :md)
-    process_md_file(gc, fpath, opath; kw...)
+function _process_md_file_latex(ctx::Context, page_content_md::String)
+    page_content_latex = latex(page_content_md, ctx)
+
+    full_page_latex = raw"\begin{document}" * "\n\n"
+    head_path = path(:folder) / getgvar(:layout_head_lx)::String
+    if !isempty(head_path) && isfile(head_path)
+        full_page_latex = read(head_path, String)
+    end
+    full_page_latex *= page_content_latex
+    full_page_latex *= "\n\n" * raw"\end{document}"
+
+    return full_page_latex
 end
 
 
@@ -353,5 +382,33 @@ function process_html_file(
             fpath::String,
             opath::String
             )
-    throw(ErrorException("Not Implemented Yet"))
+    open(opath, "w") do io
+        process_html_file_io!(io, gc, fpath)
+    end
+    return
+end
+
+"""
+    process_html_file_io!(io, gc, fpath)
+
+Process a html file located at `fpath` within global context `gc` and
+write the result to the io stream `io`.
+"""
+function process_html_file_io!(
+            io::Union{IOStream, IOBuffer},
+            gc::GlobalContext,
+            fpath::String
+            )
+    # The steps are fairly similar to the process_md except a bit simpler
+    # for instance we ignore the notebooks, we ignore meta parameters etc
+    rpath = get_rpath(fpath)
+    ctx = (rpath in keys(gc.children_contexts)) ?
+            gc.children_contexts[rpath] :
+            SimpleLocalContext(gc; rpath)
+
+    set_current_local_context(ctx)
+
+    # get html, postprocess it & write it
+    write(io, html2(read(fpath, String), ctx))
+    return
 end

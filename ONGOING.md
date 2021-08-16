@@ -21,6 +21,12 @@ dependencies are ok for markdown pages but if there's a page `foo/bar.html` whic
 --> there needs to be some thought in terms of what happens when processing a `.html`, whether we construct a simplified LocalContext for that HTML page and then have the `to_trigger` thing or not.
 Of course such a page should not have notebooks and vars.
 
+Test this (as well as dependencies in general)
+
+* gc modif --> page.md updated
+* page modif --> page2.md updated
+* gc modif --> page.html updated
+* page modif --> page.html updated
 
 ## GOTCHAS
 

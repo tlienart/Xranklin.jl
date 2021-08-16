@@ -1,3 +1,6 @@
+# useful for hfuns
+const VS = Vector{String}
+# used in default context
 const StringOrRegex = Union{String, Regex}
 
  """
