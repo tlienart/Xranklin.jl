@@ -51,7 +51,9 @@ function update_files_to_watch!(
                    startswith(fpath, path(:folder) / ".git") ||
                    should_ignore(fpath, f2i, d2i)
             if skip
-                @debug "🔺 skipping $(hl(str_fmt(get_rpath(fpath)), :cyan))"
+                @debug """
+                    🔺 skipping $(hl(str_fmt(get_rpath(fpath)), :cyan))
+                    """
                 continue
             end
 

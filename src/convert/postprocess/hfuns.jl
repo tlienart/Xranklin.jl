@@ -1,6 +1,12 @@
 # ---------------------------------------------------
 # NOTE
 # hfun must necessarily return a String; see outputof
+# hfun can *optionally* take one specific keyword
+# tohtml=(true|false). If a hfun doesn't have that
+# keyword then its output will be used in all cases;
+# If it does have the keyword, then it may behave
+# differently when the requested output is html or
+# latex.
 # ---------------------------------------------------
 
 const INTERNAL_HENVS = [

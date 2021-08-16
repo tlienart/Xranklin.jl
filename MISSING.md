@@ -30,6 +30,11 @@ a tick just means the feature is there not that it's properly tested
 * [x] LX_COM `markdown/latex_objects`
 * [ ] LX_BEGIN
 * [ ] LX_END
+* [ ] HTML entities?
+* [ ] INTERNAL LX
+  * [ ] `\tableofcontents` `\toc`
+  * [ ] `\label`, `\biblabel`, ...
+  * [ ] `\eqref`, `\citep`, `\citet`
 
 ### HTML
 

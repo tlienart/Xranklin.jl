@@ -310,13 +310,11 @@ function process_md_file(gc::GlobalContext, rpath::String; kw...)
 end
 
 function _process_md_file_html(ctx::Context, page_content_md::String)
-    page_content_html = html(page_content_md, ctx)
-
     # get and process html for the foot of the page
     page_foot_path = path(:folder) / getgvar(:layout_page_foot)::String
     page_foot_html = ""
     if !isempty(page_foot_path) && isfile(page_foot_path)
-        page_foot_html = read(page_foot_path, String)
+        page_foot_html = html2(read(page_foot_path, String), ctx)
     end
 
     # add the content tags if required
@@ -325,6 +323,7 @@ function _process_md_file_html(ctx::Context, page_content_md::String)
     c_id    = getvar(ctx, :content_id)::String
 
     # Assemble the body, wrap it in tags if required
+    page_content_html = html(page_content_md, ctx)
     body_html = ""
     if !isempty(c_tag)
         body_html = """
@@ -345,14 +344,14 @@ function _process_md_file_html(ctx::Context, page_content_md::String)
     # > head if it exists
     head_path = path(:folder) / getgvar(:layout_head)::String
     if !isempty(head_path) && isfile(head_path)
-        full_page_html = read(head_path, String)
+        full_page_html = html2(read(head_path, String), ctx)
     end
     # > attach the body
     full_page_html *= body_html
     # > then the foot if it exists
     foot_path = path(:folder) / getgvar(:layout_foot)::String
     if !isempty(foot_path) && isfile(foot_path)
-        full_page_html *= read(foot_path, String)
+        full_page_html *= html2(read(foot_path, String), ctx)
     end
     return full_page_html
 end
@@ -405,7 +404,7 @@ function process_html_file_io!(
     rpath = get_rpath(fpath)
     ctx = (rpath in keys(gc.children_contexts)) ?
             gc.children_contexts[rpath] :
-            SimpleLocalCntext(gc; rpath)
+            SimpleLocalContext(gc; rpath)
 
     set_current_local_context(ctx)
 
