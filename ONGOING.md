@@ -13,6 +13,10 @@
 - add a cache path
 - what is `code_out` / is it useful
 
+## weird
+
+- make lxdefs Symbol => LxDef otherwise there's an incoherence with pagevars also at hfun/lxfun level so annoying.
+
 
 ## HTML dependent pages
 

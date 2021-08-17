@@ -18,7 +18,7 @@ stop the procedure) or an error is thrown (if strict parsing is on).
 function process_latex_objects!(
             parts::Vector{Block},
             ctx::Context;
-            recursion::Function=html
+            tohtml::Bool=true
             )::Nothing
 
     index_to_remove = Int[]
@@ -29,12 +29,12 @@ function process_latex_objects!(
         if part.name in (:LX_NEWCOMMAND, :LX_NEWENVIRONMENT)
             parts[i], n = try_form_lxdef(part, i, parts, ctx)
         elseif part.name == :LX_COMMAND
-            parts[i], n = try_resolve_lxcom(i, parts, ctx; recursion=recursion)
+            parts[i], n = try_resolve_lxcom(i, parts, ctx; tohtml)
         elseif part.name == :LXB
             # stray braces
             parts[i], n = raw_inline_block(part), 0
         elseif part.name == :LX_BEGIN
-            parts[i], n = try_resolve_lxenv(i, parts, ctx; recursion=recursion)
+            parts[i], n = try_resolve_lxenv(i, parts, ctx; tohtml)
         elseif part.name == :LX_END
             if ctx.is_math[]
                 parts[i], n = raw_inline_block(part), 0
@@ -168,15 +168,18 @@ end
 When seeing an indicator of a command, try to resolve it with the appropriate definition
 from the context. If there's no definition, either fail or leave as is if we're in maths
 mode (in which case it might be something for the math engine to handle).
+
+Return a block + the number of additional blocks taken (# of braces taken).
 """
 function try_resolve_lxcom(
             i::Int,
             parts::Vector{Block},
             ctx::LocalContext;
-            recursion::Function=html
+            tohtml::Bool=true
             )::Tuple{Block,Int}
     # Process:
-    # 1. look for definition --> fail if none and not in math mode
+    # 1. look for definition --> fail if none + not in math mode + not lxfun
+    #       (if lxfun, greedily pass all subsequent braces and call the lxfun)
     # 2. extract nargs and take the next nargs blocks --> fail if not enough
     #      and if not all braces
     # 3. assemble into string and resolve via html(...)
@@ -187,10 +190,21 @@ function try_resolve_lxcom(
     # 1 -- look for definition
     cand = parts[i]
     name = lstrip(cand.ss, '\\') |> string
+
     if !hasdef(ctx, name)
-        if ctx.is_math[]
+        nsymb = Symbol(name)
+        if (u = nsymb in utils_lxfun_names()) || (nsymb in INTERNAL_LXFUNS)
+            mdl   = ifelse(u, ctx.glob.nb_code.mdl, @__MODULE__)
+            args  = next_adjacent_brackets(i, parts, ctx; tohtml)
+            fsymb = Symbol("lx_$name")
+            f     = getproperty(mdl, fsymb)
+            o     = outputof(f, args; tohtml)
+            return Block(:RAW_INLINE, subs(o)), length(args)
+
+        elseif ctx.is_math[]
             return raw_inline_block(cand), 0
         end
+
         m = "Command '$(cand.ss)' used before it was defined."
         return failed_block(cand, m), 0
     end
@@ -223,10 +237,11 @@ function try_resolve_lxcom(
         r = replace(r, "!#$k" => c)
         r = replace(r, "#$k"  => p * c)
     end
-    r2 = recursion(r, recursify(ctx))
+    recursion = ifelse(tohtml, recursive_html, recursive_latex)
+    r2 = recursion(r, ctx)
 
     # 4 -- in latex case, strip \\par
-    if recursion === latex
+    if !tohtml
         r3 = ifelse(endswith(r2, "\\par\n"),
                 chop(r2, head=0, tail=5),
                 subs(r2)
@@ -248,6 +263,29 @@ end
 
 
 """
+    next_adjacent_brackets(i, parts, ctx)
+
+Take parts `parts[i+1, ...]` as long as their name is `:LXB`, resolve what's
+inside them, and assemble them into a vector of raw strings that can be passed
+on to a lxfun.
+"""
+function next_adjacent_brackets(
+            i::Int, parts::Vector{Block}, ctx::LocalContext;
+            tohtml::Bool=true
+            )::Vector{String}
+
+    brackets = Block[]
+    c = i + 1
+    @inbounds while c <= length(parts) && parts[c].name == :LXB
+        push!(brackets, parts[c])
+        c += 1
+    end
+    recursion = ifelse(tohtml, recursive_html, recursive_latex)
+    return [recursion(b, ctx) for b in brackets]
+end
+
+
+"""
     try_resolve_lxenv(...)
 
 Same process as for a command except we need to find the matching `\\end` block.
@@ -256,7 +294,7 @@ function try_resolve_lxenv(
             i::Int,
             parts::Vector{Block},
             ctx::LocalContext;
-            recursion::Function=html
+            tohtml::Bool=true
             )::Tuple{Block,Int}
     # Process:
     # 0. find the matching closing \end{...}
@@ -331,7 +369,8 @@ function try_resolve_lxenv(
         pre  = replace(pre,  "#$j" => c)
         post = replace(post, "#$j" => c)
     end
-    r2 = recursion(pre * env_content * post, recursify(ctx))
+    recursion = ifelse(tohtml, recursive_html, recursive_latex)
+    r2 = recursion(pre * env_content * post, ctx)
 
     # 4 -- finalize
     default = Block(:RAW_BLOCK, subs(r2)), k - i

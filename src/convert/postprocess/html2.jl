@@ -48,28 +48,18 @@ function html2(parts::Vector{Block}, c::Context)::String
             # to a dedicated sub-processing which can recurse
             throw(ErrorException("NOT IMPLEMENTED YET"))
 
-        elseif fname in utils_hfun_names()
+        elseif (u = fname in utils_hfun_names()) || fname in INTERNAL_HFUNS
             # 'external' functions defined with `hfun_*`, they
             # take precedence so a user can overwrite the behaviour of
             # internal functions
-            Utils = cgc.nb_code.mdl
+            mdl = ifelse(u, cgc.nb_code.mdl, @__MODULE__)
             args  = split_cb[2:end]
             fsymb = Symbol("hfun_$fname")
-            f     = getproperty(Utils, fsymb)
+            f     = getproperty(mdl, fsymb)
             write(io, outputof(f, args; tohtml=true))
 
             # re-set current local and global context, just in case these were
             # changed by the call to the hfun (e.g. by triggering a processing)
-            set_current_global_context(cgc)
-            clc === nothing || set_current_local_context(clc)
-
-        elseif fname in INTERNAL_HFUNS
-            # 'internal' function like {{insert ...}} or {{fill ...}}
-            args = split_cb[2:end]
-            f    = getproperty(@__MODULE__, Symbol("hfun_$fname"))
-            write(io, outputof(f, args; tohtml=true))
-
-            # see note above
             set_current_global_context(cgc)
             clc === nothing || set_current_local_context(clc)
 

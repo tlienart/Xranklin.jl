@@ -114,6 +114,9 @@ const DefaultLocalVars = Vars(
     :_modification_time => 0.0,
     # mddefs related
     :_setvar            => Set{Symbol}(),
+    # references (note: headers are part of context, see ctx.headers)
+    :_eqrefs            => LittleDict{String, Int}("__cntr__" => 0),
+    :_bibrefs           => LittleDict{String, String}(),
 )
 const DefaultLocalVarsAlias = Alias(
     :fd_rpath     => :_relative_path,
@@ -122,18 +125,11 @@ const DefaultLocalVarsAlias = Alias(
     :fd_mtime     => :_modification_time,
 )
 
-
-const DefaultGlobalLxDefs = LxDefs(
-)
-
-const DefaultLocalLxDefs = LxDefs()
-
-
 ##############################################################################
 
 DefaultGlobalContext() = GlobalContext(
     deepcopy(DefaultGlobalVars),
-    deepcopy(DefaultGlobalLxDefs),
+    LxDefs(),
     alias=copy(DefaultGlobalVarsAlias)
 ) |> set_current_global_context
 
@@ -144,7 +140,7 @@ function DefaultLocalContext(
     LocalContext(
         gc,
         deepcopy(DefaultLocalVars),
-        deepcopy(DefaultLocalLxDefs),
+        LxDefs(),
         alias=copy(DefaultLocalVarsAlias),
         rpath=rpath
     ) |> set_current_local_context
@@ -153,3 +149,10 @@ end
 # for html pages
 SimpleLocalContext(gc::GlobalContext; rpath::String="") =
     LocalContext(gc; rpath)
+
+
+##############################################################################
+# These will fail for contexts that haven't been constructed out of Default
+
+eqrefs(c::LocalContext)  = c.vars[:_eqrefs]::LittleDict{String, Int}
+bibrefs(c::LocalContext) = c.vars[:_bibrefs]::LittleDict{String, String}

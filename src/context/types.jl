@@ -116,7 +116,18 @@ getdef(d::LxDefs, n::String)::LxDef = d[n]
 """
     PageHeaders
 
-Mapping `header_id => (n_occurrence, level)` where `n_occurrence` indicates
-which occurrence this header is of the same base anchor.
+Mapping `header_id => (n_occurrence, level, text)` where `n_occurrence`
+indicates which occurrence this header is of the same base anchor, `level`
+is the header level and `text` is the current text representation of the
+title. For instance when converting to HTML,
+
+    `### Foo **bar**`
+
+will given an entry
+
+    `foo_bar => (1, 3, "Foo <strong>bar</strong>")
 """
-const PageHeaders = LittleDict{String, NTuple{2, Int}}
+const PageHeaders = LittleDict{
+    String,
+    Tuple{Int, Int, String}
+}

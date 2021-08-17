@@ -118,6 +118,9 @@ end
 # No file check, we know the file exists
 # No emptying of the code pairs, it's assumed to be empty
 function load_vars_cache!(ctx::Context, fpath::String)
+    start = time(); @info """
+        ⏫ loading vars cache $(hl(str_fmt(get_rpath(fpath)), :cyan))
+        """
     nb = ctx.nb_vars
     open(fpath, "r") do inf
         json = JSON3.read(inf)
@@ -135,6 +138,9 @@ function load_vars_cache!(ctx::Context, fpath::String)
         end
     end
     stale_notebook!(nb)
+    @info """
+        ... [load vars] ✔ $(hl(time_fmt(time()-start)))
+        """
     return
 end
 
@@ -162,6 +168,9 @@ function serialize_notebook(nb::CodeNotebook, fpath::String)
 end
 
 function load_code_cache!(ctx::Context, fpath::String)
+    start = time(); @info """
+        ⏫ loading code cache $(hl(str_fmt(get_rpath(fpath)), :cyan))
+        """
     nb = ctx.nb_code
     open(fpath, "r") do inf
         json = JSON3.read(inf)
@@ -185,5 +194,8 @@ function load_code_cache!(ctx::Context, fpath::String)
         end
     end
     stale_notebook!(nb)
+    @info """
+        ... [load code] ✔ $(hl(time_fmt(time()-start)))
+        """
     return
 end

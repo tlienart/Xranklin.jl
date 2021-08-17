@@ -79,9 +79,17 @@ include("context/code/notebook_code.jl")
 
 include("convert/regex.jl")
 
+# ===> MARKDOWN
+
 include("convert/markdown/commonmark.jl")
 include("convert/markdown/utils.jl")
+
+# LxFuns
+include("convert/markdown/lxfuns/utils.jl")
+include("convert/markdown/lxfuns/hyperrefs.jl")
+
 include("convert/markdown/latex_objects.jl")
+
 include("convert/markdown/to_html.jl")
 include("convert/markdown/to_latex.jl")
 include("convert/markdown/to_math.jl")
@@ -92,11 +100,15 @@ include("convert/markdown/rules/headers.jl")
 include("convert/markdown/rules/code.jl")
 include("convert/markdown/rules/maths.jl")
 
+# ===> POSTPROCESSING
+
+include("convert/postprocess/hfuns/utils.jl")
+include("convert/postprocess/hfuns/input.jl")
+include("convert/postprocess/hfuns/hyperrefs.jl")
+
 include("convert/postprocess/utils.jl")
-include("convert/postprocess/hfuns.jl")
-include("convert/postprocess/lxfuns.jl")
-include("convert/postprocess/html/html2.jl")
-include("convert/postprocess/latex/latex2.jl")
+include("convert/postprocess/html2.jl")
+include("convert/postprocess/latex2.jl")
 
 # ------------------------------------------------------------------------
 

@@ -4,15 +4,33 @@
 Take a markdown string in a math context, segment it in blocks, and re-form the
 corresponding raw md-math string out of processing each segment recursively.
 """
-math(md::SS,     c::LocalContext) = math(FP.default_math_partition(md), c)
-math(md::String, c::LocalContext) = math(subs(md), c)
-math(b::Block,   c::LocalContext) = math(content(b), c)
+math(md::SS,     c::LocalContext; kw...) = math(FP.default_math_partition(md), c; kw...)
+math(md::String, c::LocalContext; kw...) = math(subs(md), c; kw...)
+math(b::Block,   c::LocalContext; kw...) = math(content(b), c; kw...)
 
-function math(parts::Vector{Block}, c::LocalContext)::String
-    process_latex_objects!(parts, mathify(c); recursion=math)
+function math(parts::Vector{Block}, c::LocalContext; tohtml::Bool=true)::String
+    c.is_recursive[] = c.is_math[] = true
+    process_latex_objects!(parts, c; tohtml)
+    c.is_recursive[] = c.is_math[] = false
     io = IOBuffer()
     for (i, part) in enumerate(parts)
         write(io, part.ss)
     end
     return String(take!(io))
+end
+
+function dmath(b::Block, c::LocalContext)
+    md = string(content(b))
+    # check if there's a \label{...}, if there is, process it
+    # then remove it & do the rest of the processing
+    anchor = ""
+    label_match = match(MATH_LABEL_PAT, md)
+    if label_match !== nothing
+        name   = string_to_anchor(string(label_match.captures[1]))
+        anchor = "\n<a id=\"$name\" class=\"anchor math-anchor\"></a>\n"
+        md     = replace(md, MATH_LABEL_PAT => "")
+        # keep track of the reference + numbering
+        eqrefs(c)[name] = (eqrefs(c)["__cntr__"] += 1)
+    end
+    return "$anchor\\[ $(math(FP.default_math_partition(md), c)) \\]\n"
 end

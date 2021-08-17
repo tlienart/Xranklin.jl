@@ -62,7 +62,7 @@ function resolve_inline(
             s::String,
             ib::Vector{Block},
             ctx::Context,
-            to_html::Bool=true
+            tohtml::Bool=true
             )::String
 
     # io is the buffer for the resulting 'injected' string
@@ -70,8 +70,8 @@ function resolve_inline(
     head_ib  = 1
     head_txt = 1
 
-    inline_finder = ifelse(to_html, INLINE_FINDER_HTML, INLINE_FINDER_LATEX)
-    convertor     = ifelse(to_html, html, latex)
+    inline_finder = ifelse(tohtml, INLINE_FINDER_HTML, INLINE_FINDER_LATEX)
+    convertor     = ifelse(tohtml, html, latex)
 
     @inbounds for m in eachmatch(inline_finder, s)
         o = m.offset
@@ -94,7 +94,7 @@ function resolve_inline(
         head_ib = k
         # form the string to inject then pass it to the final injector
         to_inject = String(take!(iio))
-        paragraph_injector!(io, to_inject, m; to_html=to_html)
+        paragraph_injector!(io, to_inject, m; tohtml)
     end
     # write tail of the text
     write(io, s[head_txt:end])
@@ -107,11 +107,11 @@ end
 
 Check what kind of situation we're in to figure out how to merge blocks.
 """
-function check_case(m::RegexMatch, to_html::Bool=true)::NTuple{3,String}
+function check_case(m::RegexMatch, tohtml::Bool=true)::NTuple{3,String}
     prev_closes_p = (m.captures[1] !== nothing)
     prev_lineskip = (m.captures[2] !== nothing)
     next_lineskip = (m.captures[4] !== nothing)
-    next_opens_p  = to_html ? (m.captures[5] !== nothing) : true
+    next_opens_p  = tohtml ? (m.captures[5] !== nothing) : true
 
     # check if there's a space to preserve before or after the injection
     space_before = ifelse(
@@ -119,7 +119,7 @@ function check_case(m::RegexMatch, to_html::Bool=true)::NTuple{3,String}
         " ", ""
     )
     space_after  = ifelse(
-        to_html && next_opens_p && startswith(m.captures[5], " "),
+        tohtml && next_opens_p && startswith(m.captures[5], " "),
         " ", ""
     )
 
@@ -132,7 +132,7 @@ end
 
 
 """
-    paragraph_injector!(io, to_inject, m; to_html)
+    paragraph_injector!(io, to_inject, m; tohtml)
 
 Add something to a buffer corresponding to an inline element; depending on the
 neighbouring objects, different `<p>`, `</p>` or `\\par ` tags will be used to
@@ -144,10 +144,10 @@ function paragraph_injector!(
             io::IOBuffer,
             to_inject::String,
             m::RegexMatch;
-            to_html::Bool=true
+            tohtml::Bool=true
             )::Nothing
 
-    case, space_before, space_after = check_case(m, to_html)
+    case, space_before, space_after = check_case(m, tohtml)
 
     # There are 2^4 = 16 cases corresponding to the 16 combinations of
     # - is the previous element a text block (T</p>) or not (B)
@@ -247,8 +247,8 @@ function paragraph_injector!(
         h = ("</p><p>", "</p><p>")
         l = ("\\par\n", "\\par\n")
     end
-    pre  = ifelse(to_html, h[1], l[1])
-    post = ifelse(to_html, h[2], l[2])
+    pre  = ifelse(tohtml, h[1], l[1])
+    post = ifelse(tohtml, h[2], l[2])
     write(io, pre, space_before, to_inject, space_after, post)
     return
 end

@@ -50,7 +50,6 @@ function process_config(
         if isempty(url)
             @warn """
                 Process config
-                --------------
                 When `generate_rss=true`, `rss_website_url` must be given.
                 Setting `generate_rss=false` in the meantime.
                 """
@@ -88,7 +87,6 @@ function process_config(gc::GlobalContext=cur_gc(); initial_pass::Bool=false)
     else
         @warn """
             Process config
-            --------------
             Config file $config_path not found.
             """
     end
@@ -197,7 +195,7 @@ function process_file(
     if case in (:md, :html)
         # ----------------------------------------------
         start = time(); @info """
-            ⌛ processing $(hl(get_rpath(fpath), :cyan))
+            ⌛ processing $(hl(str_fmt(get_rpath(fpath)), :cyan))
             """
         # ----------------------------------------------
 
@@ -210,7 +208,7 @@ function process_file(
 
         # ----------------------------------------------------------------------------
         @info """
-            ... ✔ $(hl(time_fmt(time()-start))), wrote $(hl(str_fmt(ropath), :cyan))
+            ... [process] ✔ $(hl(time_fmt(time()-start))), wrote $(hl(str_fmt(ropath), :cyan))
             """
         # ----------------------------------------------------------------------------
     else

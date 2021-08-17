@@ -15,7 +15,7 @@ finally post-process the resulting string to clear out any remaining html
 blocks such as double-brace blocks.
 """
 function html(parts::Vector{Block}, c::Context=DefaultLocalContext())::String
-    intermediate_html = md_core(parts, c; to_html=true)
+    intermediate_html = md_core(parts, c; tohtml=true)
     return html2(intermediate_html, c)
 end
 
@@ -40,5 +40,15 @@ end
 
 Recursively process a block making the context recursive.
 """
-recursive_html(b::Block, c::Context)::String =
-    html(content(b), recursify(c); tokens=b.inner_tokens)
+function recursive_html(b::Block, c::Context)
+    return recursive_html(content(b), c; tokens=b.inner_tokens)
+end
+
+function recursive_html(s::SS, c::Context; kw...)::String
+    was_recursive = c.is_recursive[]
+    c.is_recursive[] = true
+    h = html(s, c; kw...)
+    c.is_recursive[] = was_recursive
+    return h
+end
+recursive_html(s::String, c) = recursive_html(subs(s), c)

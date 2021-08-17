@@ -1,50 +1,9 @@
-# ---------------------------------------------------
-# NOTE
-# hfun must necessarily return a String; see outputof
-# hfun can *optionally* take one specific keyword
-# tohtml=(true|false). If a hfun doesn't have that
-# keyword then its output will be used in all cases;
-# If it does have the keyword, then it may behave
-# differently when the requested output is html or
-# latex.
-# ---------------------------------------------------
+#=
 
-const INTERNAL_HENVS = [
-    # :if,
-    # :ifdef, :isdef,
-    # :ifndef, :ifnotdef, :isndef, :isnotdef,
-    # :ifempty, :isempty,
-    # :ifnempty, :ifnotempty, :isnotempty,
-    # :ispage, :ifpage,
-    # :isnotpage, :ifnotpage,
-    # :for
-]
+FILL
+INSERT / INCLUDE
 
-const INTERNAL_HFUNS = [
-    :failed,
-    :fill,
-    :insert, # :include
-    # ...
-]
-
-
-"""
-    {{failed ...}}
-
-Hfun used for when other hfuns fail.
-"""
-function hfun_failed(p::VS; tohtml::Bool=true)::String
-    tohtml && return _hfun_failed_html(p)
-    return _hfun_failed_latex(p)
-end
-hfun_failed(s::String, p::VS) = hfun_failed([s, p...])
-
-_hfun_failed_html(p::VS) = html_failed(
-    "&lbrace;&lbrace; " * prod(e * " " for e in p) * "&rbrace;&rbrace;"
-)
-_hfun_failed_latex(p::VS) = latex_failed(
-    s = raw"\texttt{\{\{ " * prod(e * " " for e in p) * raw"\}\}}"
-)
+=#
 
 
 """
@@ -60,7 +19,6 @@ function hfun_fill(p::VS)::String
     if np ∉ [1, 2]
         @warn """
             {{fill ...}}
-            ------------
             Fill should get one or two parameters, $np given.
             """
         return hfun_failed("fill", p)
@@ -79,7 +37,6 @@ function _hfun_fill_1(p::VS)::String
     else
         @warn """
             {{fill $vname}}
-            ---------------
             The variable $vname does not match a variable in the context,
             inserting an empty string instead.
             """
@@ -99,7 +56,6 @@ function _hfun_fill_2(p::VS)::String
     else
         @warn """
             {{fill $vname $rpath}}
-            ----------------------
             The variable $vname could not be found in a local context matching
             $rpath (either that local context doesn't exist or doesn't set that
             variable), inserting an empty string instead.
@@ -121,7 +77,6 @@ function hfun_insert(p::VS; tohtml::Bool=true)::String
     if np ∉ [1, 2]
         @warn """
             {{insert ...}}
-            --------------
             Insert should get one or two parameters, $np given.
             """
         return hfun_failed("insert", p)
@@ -131,13 +86,13 @@ function hfun_insert(p::VS; tohtml::Bool=true)::String
     base = path(bsym)
     return _hfun_insert(p[1], base; bsym, tohtml)
 end
+hfun_include(a...; kw...) = hfun_insert(a...; kw...)
 
 function _hfun_insert(p::String, base::String;
                       bsym::Symbol=:layout, tohtml::Bool=true)
     if isempty(base)
         @warn """
             {{insert $p $bsym}}
-            -------------------
             There's no base path corresponding to '$bsym'.
             """
         return hfun_failed(["insert", p, string(bsym)])
@@ -146,7 +101,6 @@ function _hfun_insert(p::String, base::String;
     if !isfile(fpath)
         @warn """
             {{insert $p $bsym}}
-            -------------------
             Couldn't find a file '$p' in the folder '$bsym'.
             """
         return hfun_failed(["insert", p, string(bsym)])

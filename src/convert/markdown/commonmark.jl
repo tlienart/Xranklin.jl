@@ -32,15 +32,15 @@ enable!(cm_parser, SkipIndented())
 
 
 """
-    md2x(s::String, to_html::Bool)
+    md2x(s::String, tohtml::Bool)
 
 Wrapper around what CommonMark does to keep track of spaces etc which CM
 strips away but which are actually needed in order to adequately resolve
 inline inserts. Leads to either html or latex based on the case.
 """
-function md2x(s::String, to_html::Bool)::String
+function md2x(s::String, tohtml::Bool)::String
     isempty(s) && return ""
-    if to_html
+    if tohtml
         r = CM.html(cm_parser(s))
     else
         r = CM.latex(cm_parser(s))
@@ -72,7 +72,7 @@ md2latex(s::String) = md2x(s, false)
 
 
 """
-    md_core(parts, ctx; to_html)
+    md_core(parts, ctx; tohtml)
 
 Function processing blocks in sequence and assembling them while resolving
 possible balancing issues.
@@ -80,11 +80,11 @@ possible balancing issues.
 function md_core(
             parts::Vector{Block},
             c::Context;
-            to_html::Bool=true
+            tohtml::Bool=true
             )::String
 
-    transformer = ifelse(to_html, html, latex)
-    process_latex_objects!(parts, c; recursion=transformer)
+    transformer = ifelse(tohtml, html, latex)
+    process_latex_objects!(parts, c; tohtml)
 
     io = IOBuffer()
     inline_idx = Int[]
@@ -97,5 +97,5 @@ function md_core(
         end
     end
     interm = String(take!(io))
-    return resolve_inline(interm, parts[inline_idx], c, to_html)
+    return resolve_inline(interm, parts[inline_idx], c, tohtml)
 end
