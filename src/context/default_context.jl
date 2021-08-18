@@ -34,6 +34,13 @@ const DefaultGlobalVars = Vars(
     :header_class      => "",
     :header_link       => true,
     :header_link_class => "",
+    # General classes
+    :toc_class         => "toc",
+    :anchor_class      => "anchor",
+    :anchor_math_class => "anchor-math",
+    :anchor_bib_class  => "anchor-bib",
+    :eqref_class       => "eqref",
+    :bibref_class      => "bibref",
     # Dates
     :date_format      => "U dd, yyyy",
     :date_days        => String[],
@@ -59,6 +66,8 @@ const DefaultGlobalVars = Vars(
     :_utils_hfun_names  => Symbol[],
     :_utils_lxfun_names => Symbol[],
     :_utils_var_names   => Symbol[],
+    # Hyperrefs
+    :_anchors => LittleDict{String, String}(),
 )
 const DefaultGlobalVarsAlias = Alias(
     :prepath                => :base_url_prefix,
@@ -154,5 +163,14 @@ SimpleLocalContext(gc::GlobalContext; rpath::String="") =
 ##############################################################################
 # These will fail for contexts that haven't been constructed out of Default
 
-eqrefs(c::LocalContext)  = c.vars[:_eqrefs]::LittleDict{String, Int}
-bibrefs(c::LocalContext) = c.vars[:_bibrefs]::LittleDict{String, String}
+anchors(c::GlobalContext=cur_gc()) =
+    getvar(c, :_anchors, LittleDict{String, String}())
+
+eqrefs(c::LocalContext=cur_lc()) =
+    getvar(c, :_eqrefs, LittleDict{String, Int}())
+
+bibrefs(c::LocalContext=cur_lc()) =
+    getvar(c, :_bibrefs, LittleDict{String, String}())
+
+relative_url_curpage(c::LocalContext=cur_lc()) =
+    getvar(c, :_relative_url, "")

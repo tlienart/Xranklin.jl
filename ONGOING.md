@@ -6,6 +6,8 @@
 - Test autofig etc
 - when using clear, the cache should be removed otherwise it might point to assets that don't exist anymore (e.g figs)
 
+- add possibility to specify a location for the page's Project.toml activate an env when evaluating code in `nb_code`; maybe think a bit more about where user would put stuff etc; these would need to be folders and it would need to not be too painful, maybe can make this automatic so that when working on a page they can activate stuff and it goes directly somewhere?
+
 ## paths
 
 - output path should be either `site` or `pdf` this should be kwarg

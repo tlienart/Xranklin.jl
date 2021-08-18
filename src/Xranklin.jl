@@ -10,7 +10,7 @@ import Pkg
 import Serialization: serialize, deserialize
 
 # ------------------------------------------------------------------------
-# external
+# external dependencies part of the universe
 
 import FranklinParser
 const FP = FranklinParser
@@ -22,7 +22,7 @@ import FranklinTemplates: newsite, filecmp
 import LiveServer
 
 # ------------------------------------------------------------------------
-# External Dependencies
+# external dependencies not part of the universe
 
 import CommonMark
 import CommonMark: disable!, enable!, escape_xml
@@ -47,7 +47,7 @@ export locvar, globvar, pagevar  # LEGACY
 # ------------------------------------------------------------------------
 
 const FRANKLIN_ENV = LittleDict{Symbol, Any}(
-    :module_name       => "Xranklin",     # TODO: remove here and in newmodule
+    :module_name       => "Xranklin",     # TODO: remove here, in newmodule, in delay
     :strict_parsing    => false,          # if true, fail on any parsing issue
     :offset_lxdefs     => -typemax(Int),  # helps keep track of order in lxcoms/envs
     :cur_global_ctx    => nothing,        # current global context
@@ -56,9 +56,13 @@ const FRANKLIN_ENV = LittleDict{Symbol, Any}(
 env(s::Symbol)       = FRANKLIN_ENV[s]
 setenv(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
 
+# see 'macro delay'
+const DELAYED_PAGES = Set{String}()
+
 # ------------------------------------------------------------------------
 
 include("misc_utils.jl")
+include("html_utils.jl")
 
 # ------------------------------------------------------------------------
 

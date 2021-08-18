@@ -325,7 +325,7 @@ function _process_md_file_html(ctx::Context, page_content_md::String)
     body_html = ""
     if !isempty(c_tag)
         body_html = """
-            <$(c_tag)$(html_attr(:class, c_class))$(html_attr(:id, c_id))>
+            <$(c_tag) $(attr(:class, c_class)) $(attr(:id, c_id))>
               $page_content_html
               $page_foot_html
             </$(c_tag)>

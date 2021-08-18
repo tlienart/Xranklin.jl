@@ -19,6 +19,14 @@ function math(parts::Vector{Block}, c::LocalContext; tohtml::Bool=true)::String
     return String(take!(io))
 end
 
+
+"""
+    dmath
+
+Display math block on a page with HTML output and processing of possible
+label command. If a label command is found, the output is preceded with an
+anchor.
+"""
 function dmath(b::Block, c::LocalContext)
     md = string(content(b))
     # check if there's a \label{...}, if there is, process it
@@ -26,8 +34,10 @@ function dmath(b::Block, c::LocalContext)
     anchor = ""
     label_match = match(MATH_LABEL_PAT, md)
     if label_match !== nothing
-        name   = string_to_anchor(string(label_match.captures[1]))
-        anchor = "\n<a id=\"$name\" class=\"anchor math-anchor\"></a>\n"
+        id     = string_to_anchor(string(label_match.captures[1]))
+        class  = getvar(c, :anchor_class, "anchor") * " " *
+                 getvar(c, :anchor_math_class, "anchor-math")
+        anchor = html_a(; id, class)
         md     = replace(md, MATH_LABEL_PAT => "")
         # keep track of the reference + numbering
         eqrefs(c)[name] = (eqrefs(c)["__cntr__"] += 1)

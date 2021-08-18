@@ -14,15 +14,10 @@ Write the value of variable `x` from either the local context or the context
 of the page at `from`.
 """
 function hfun_fill(p::VS)::String
-    # check parameters
-    np = length(p)
-    if np ∉ [1, 2]
-        @warn """
-            {{fill ...}}
-            Fill should get one or two parameters, $np given.
-            """
-        return hfun_failed("fill", p)
-    end
+    c = _hfun_check_nargs(:fill, p; kmin=1, kmax=2)
+    isempty(c) || return c
+
+    np  = length(p)
     out = (np == 1) ? _hfun_fill_1(p) : _hfun_fill_2(p)
     return out
 end
@@ -73,14 +68,10 @@ can be expressed relative to that or one can pass one of the other path names
 such as `folder`, `css`, `libs` or whatever (see `set_paths!`).
 """
 function hfun_insert(p::VS; tohtml::Bool=true)::String
+    c = _hfun_check_nargs(:insert, p; kmin=1, kmax=2)
+    isempty(c) || return c
+
     np = length(p)
-    if np ∉ [1, 2]
-        @warn """
-            {{insert ...}}
-            Insert should get one or two parameters, $np given.
-            """
-        return hfun_failed("insert", p)
-    end
     np == 1 && return _hfun_insert(p[1], path(:layout); tohtml)
     bsym = Symbol(p[2])
     base = path(bsym)

@@ -54,14 +54,6 @@ Return `fpath` without extension `foo/bar.md` --> `foo/bar`.
 noext(fp::String) = first(splitext(fp))
 
 """
-    html_attr
-
-Convenience function to add an attribute to a html element.
-"""
-html_attr(n::Symbol, v::String) = ifelse(isempty(v), "", " $n=\"$v\"")
-
-
-"""
     anymatch(v1, v2)
 
 Check if there's any matching pairs of element in v1 and v2.

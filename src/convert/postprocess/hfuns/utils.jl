@@ -48,10 +48,15 @@ _hfun_failed_latex(p::VS) = latex_failed(
 )
 
 
-"""
-    {{href a b}}
-
-Primarily for internal use and constructed by lxfuns such as eqref, cite etc.
-They construct hfuns so that this is resolved at a secondary
-"""
-# function hfun_insert(p::VS; tohtml::Bool=true)::String
+function _hfun_check_nargs(n::Symbol, p::VS; kmin::Int=0, kmax::Int=kmin)
+    np = length(p)
+    if !(kmin ≤ np ≤ kmax)
+        rge = ifelse(kmin == kmax, "$k", "[$kmin, $kmax]")
+        @warn """
+            {{$n ...}}
+            $n expects $rge arg(s), $np given.
+            """
+        return hfun_failed(n, p)
+    end
+    return ""
+end
