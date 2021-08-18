@@ -163,14 +163,8 @@ SimpleLocalContext(gc::GlobalContext; rpath::String="") =
 ##############################################################################
 # These will fail for contexts that haven't been constructed out of Default
 
-anchors(c::GlobalContext=cur_gc()) =
-    getvar(c, :_anchors, LittleDict{String, String}())
+anchors(c=cur_gc()) = gegvar(c, :_anchors, LittleDict{String, String}())
+eqrefs(c=cur_lc())  = getvar(c, :_eqrefs,  LittleDict{String, Int}())
+bibrefs(c=cur_lc()) = getvar(c, :_bibrefs, LittleDict{String, String}())
 
-eqrefs(c::LocalContext=cur_lc()) =
-    getvar(c, :_eqrefs, LittleDict{String, Int}())
-
-bibrefs(c::LocalContext=cur_lc()) =
-    getvar(c, :_bibrefs, LittleDict{String, String}())
-
-relative_url_curpage(c::LocalContext=cur_lc()) =
-    getvar(c, :_relative_url, "")
+relative_url_curpage() = getlvar(:_relative_url, "")

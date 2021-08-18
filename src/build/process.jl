@@ -344,6 +344,7 @@ function _process_md_file_html(ctx::Context, page_content_md::String)
     if !isempty(head_path) && isfile(head_path)
         full_page_html = html2(read(head_path, String), ctx)
     end
+
     # > attach the body
     full_page_html *= body_html
     # > then the foot if it exists

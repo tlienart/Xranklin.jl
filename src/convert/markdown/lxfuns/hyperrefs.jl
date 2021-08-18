@@ -49,7 +49,7 @@ function lx_label(p::VS; tohtml::Bool=true)::String
     # keep track of the anchor, note that if there is already one with that
     # exact same id, then it will be overwritten!
     anchors()[id] = relative_url_curpage()
-    class = getvar(c, :anchor_class, "anchor")
+    class = getgvar(:anchor_class, "anchor")
     return html_a(; id, class)
 end
 
@@ -72,10 +72,10 @@ function lx_biblabel(p::VS; tohtml::Bool=true)::String
 
     if tohtml
         id  = string_to_anchor(p[1])
-        txt = html(p[2])
-        bibrefs()[id] = replace(txt, r"^<p>|</p>$" => "")
-        class = getvar(c, :anchor_class, "anchor") * " " *
-                getvar(c, :anchor_bib_class, "anchor-bib")
+        txt = replace(p[2], r"^<p>|</p>\n?$" => "")
+        bibrefs()[id] = txt
+        class = getgvar(:anchor_class, "anchor") * " " *
+                getgvar(:anchor_bib_class, "anchor-bib")
         return html_a(; id, class)
     end
 
@@ -111,7 +111,7 @@ function lx_eqref(p::VS; tohtml::Bool=true)::String
 
     tohtml || return "\\eqref{$(p[1])}"
 
-    ids   = string_to_anchor.(split(p[1], ','))
+    ids   = string_to_anchor.(string.(split(p[1], ',')))
     inner = prod("{{eqref $id}}$(ifelse(i < length(ids), ", ", ""))"
                  for (i, id) in enumerate(ids))
     return "(" * inner * ")"
@@ -129,7 +129,7 @@ function lx_cite(p::VS; tohtml::Bool=true, wp::Bool=false)::String
 
     tohtml || return ifelse(wp, "\\citep{$(p[1])}", "\\cite{$(p[1])}")
 
-    ids   = string_to_anchor.(split(p[1], ','))
+    ids   = string_to_anchor.(string.(split(p[1], ',')))
     inner = prod("{{cite $id}}$(ifelse(i < length(ids), ", ", ""))"
                  for (i, id) in enumerate(ids))
     return ifelse(wp, "($inner)", inner)

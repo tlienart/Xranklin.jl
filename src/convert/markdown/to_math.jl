@@ -40,7 +40,7 @@ function dmath(b::Block, c::LocalContext)
         anchor = html_a(; id, class)
         md     = replace(md, MATH_LABEL_PAT => "")
         # keep track of the reference + numbering
-        eqrefs(c)[name] = (eqrefs(c)["__cntr__"] += 1)
+        eqrefs(c)[id] = (eqrefs(c)["__cntr__"] += 1)
     end
     return "$anchor\\[ $(math(FP.default_math_partition(md), c)) \\]\n"
 end

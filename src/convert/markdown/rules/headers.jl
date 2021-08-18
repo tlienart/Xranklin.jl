@@ -26,7 +26,7 @@ function html_hk(b, c, hk::Symbol)
     if add_link
         header_text = "<a href=\"#$(id)\">$(header_text)</a>"
     end
-    return "<$(hk)$(attr(:id, id))$(attr(:class, class))>" *
+    return "<$(hk) $(attr(:id, id)) $(attr(:class, class))>" *
            header_text *
            "</$hk>"
 end

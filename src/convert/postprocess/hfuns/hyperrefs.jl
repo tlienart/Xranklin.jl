@@ -6,7 +6,7 @@ minimum level and maximum level of  the table of content.
 """
 function hfun_toc(p::VS)::String
     # check parameters
-    c = _hfun_check_nargs(:toc, p, 2)
+    c = _hfun_check_nargs(:toc, p; kmin=2)
     isempty(c) || return c
 
     # retrieve the headers of the local context
@@ -81,7 +81,7 @@ function hfun_eqref(p::VS)::String
     id ∈ keys(eqrefs_) || return "<b>??</b>"
     text  = eqrefs_[id]
     class = getgvar(:eqref_class, "eqref")
-    return html_a(text; src="#$(id)", class)
+    return html_a(text; href="#$(id)", class)
 end
 
 """
@@ -97,5 +97,5 @@ function hfun_cite(p::VS)::String
     id ∈ keys(bibrefs_) || return "<b>??</b>"
     text  = bibrefs_[id]
     class = getgvar(:bibref_class, "bibref")
-    return html_a(text; src="#$(id)", class)
+    return html_a(text; href="#$(id)", class)
 end

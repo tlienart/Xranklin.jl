@@ -26,6 +26,8 @@ const INTERNAL_HFUNS = [
     :insert, :include,
     # /hyperrefs.jl
     :toc,
+    :eqref,
+    :cite,
 ]
 
 

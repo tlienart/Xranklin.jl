@@ -2,3 +2,4 @@
 Manifest.toml
 test/_output
 basic.log
+test/_demo/__*
