@@ -2,9 +2,9 @@
 
 latex(md::SS,     a...; kw...) = latex(FP.default_md_partition(md; kw...), a...)
 latex(md::String, a...; kw...) = latex(subs(md), a...; kw...)
+latex(md::String)              = latex(subs(md), DefaultLocalContext())
 
-function latex(parts::Vector{Block}, c=cur_lc())::String
-    c === nothing && (c = DefaultLocalContext())
+function latex(parts::Vector{Block}, c::Context=cur_lc())::String
     intermediate_latex = md_core(parts, c; tohtml=false)
     return latex2(intermediate_latex, c)
 end

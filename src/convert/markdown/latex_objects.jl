@@ -118,6 +118,8 @@ function try_form_lxdef(
         the closing brace and the following opening brace should touch).
         """
 
+    # XXX FP2.0: LINK_A here instead of text
+
     # the next block should either be a brace or a text block with content [.\d.]
     # first we check if its a Text block and if it's a text block we try to parse
     # it or we fail.

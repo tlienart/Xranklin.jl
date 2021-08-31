@@ -4,8 +4,9 @@
 Take a markdown string, segment it in blocks, and re-form the corresponding
 HTML string out of processing each segment recursively.
 """
-html(md::SS,     a...; kw...) = html(FP.default_md_partition(md; kw...), a...)
-html(md::String, a...; kw...) = html(subs(md), a...;  kw...)
+html(md::SS,     c::Context; kw...) = html(FP.default_md_partition(md; kw...), c)
+html(md::String, c::Context; kw...) = html(subs(md), c;  kw...)
+html(md::String)                    = html(subs(md), DefaultLocalContext())
 
 """
     html(parts, ctx)
@@ -14,8 +15,7 @@ Take a partitioned markdown string, process and assemble all parts, and
 finally post-process the resulting string to clear out any remaining html
 blocks such as double-brace blocks.
 """
-function html(parts::Vector{Block}, c=cur_lc())::String
-    c === nothing && (c = DefaultLocalContext())
+function html(parts::Vector{Block}, c::Context=cur_lc())::String
     intermediate_html = md_core(parts, c; tohtml=true)
     return html2(intermediate_html, c)
 end
