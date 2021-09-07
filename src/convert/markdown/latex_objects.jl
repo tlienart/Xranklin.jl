@@ -1,5 +1,5 @@
 """
-    process_latex_objects!(parts::Vector{Block}, ctx::LocalContext)
+    process_latex_objects!(blocks::Vector{Block}, ctx::LocalContext)
 
 After the partitioning, latex objects are not quite formed; in particular they
 are not yet associated with the relevant braces.
@@ -9,45 +9,38 @@ definitions.
 
 The normal process is:
   * newcom/env: addition to context, replace by comment block (invisible).
-  * com/env: read from context, form intermediate text, recurse and replace
-             by a raw block.
+  * com:        read from context, form intermediate text, recurse and replace
+                 by a raw block.
+
+Environments are processed separately as they don't appear in the same group.
 
 If things fail, either a "failed block" is returned (shows up as read, doesn't
 stop the procedure) or an error is thrown (if strict parsing is on).
 """
 function process_latex_objects!(
-            parts::Vector{Block},
+            blocks::Vector{Block},
             ctx::Context;
             tohtml::Bool=true
             )::Nothing
 
     index_to_remove = Int[]
     i = 1
-    @inbounds while i <= lastindex(parts)
-        part = parts[i]
+    @inbounds while i <= lastindex(blocks)
+        block = blocks[i]
         n = 0
-        if part.name in (:LX_NEWCOMMAND, :LX_NEWENVIRONMENT)
-            parts[i], n = try_form_lxdef(part, i, parts, ctx)
-        elseif part.name == :LX_COMMAND
-            parts[i], n = try_resolve_lxcom(i, parts, ctx; tohtml)
-        elseif part.name == :LXB
+        if block.name in (:LX_NEWCOMMAND, :LX_NEWENVIRONMENT)
+            blocks[i], n = try_form_lxdef(block, i, blocks, ctx)
+        elseif block.name == :LX_COMMAND
+            blocks[i], n = try_resolve_lxcom(i, blocks, ctx; tohtml)
+        elseif block.name == :CU_BRACKETS
             # stray braces
-            parts[i], n = raw_inline_block(part), 0
-        elseif part.name == :LX_BEGIN
-            parts[i], n = try_resolve_lxenv(i, parts, ctx; tohtml)
-        elseif part.name == :LX_END
-            if ctx.is_math[]
-                parts[i], n = raw_inline_block(part), 0
-            else
-                m = "Found an orphaned \\end."
-                parts[i], n = failed_block(part, m), 0
-            end
+            blocks[i], n = Block(:RAW_INLINE, block.ss), 0
         end
         append!(index_to_remove, i+1:i+n)
         i += n + 1
     end
     # remove the blocks that have been merged
-    deleteat!(parts, index_to_remove)
+    deleteat!(blocks, index_to_remove)
     return
 end
 
@@ -84,16 +77,18 @@ Note the proper syntax for newcommand and newenvironment are respectively:
   * `\\newenvironment{naming}[narg]{pre}{post}`
 """
 function try_form_lxdef(
-            part::Block,
+            block::Block,
             i::Int,
-            parts::Vector{Block},
+            blocks::Vector{Block},
             ctx::Context
             )::Tuple{Block,Int}
 
     # command or env?
-    case = ifelse(part.name == :LX_NEWCOMMAND, :com, :env)
+    case = ifelse(block.name == :LX_NEWCOMMAND, :com, :env)
     # find all brace blocks
-    braces_idx = findall(p -> p.name == :LXB, @view parts[i+1:end])
+    braces_idx = findall(p -> p.name == :CU_BRACKETS, @view blocks[i+1:end])
+
+    n_blocks = length(blocks)
 
     # --------------------------------
     # CHECK if there are enough braces
@@ -101,10 +96,10 @@ function try_form_lxdef(
         m = """
             Not enough braces found after a \\newcommand or \\newenvironment.
             """
-        return failed_block(part, m), 0
+        return failed_block(block, m), 0
     end
     naming_idx = i + braces_idx[1]
-    naming = parts[naming_idx]
+    naming = blocks[naming_idx]
 
     # ----------------------------
     # CHECK the following brace(s)
@@ -117,49 +112,54 @@ function try_form_lxdef(
         For environments, the defining braces should not be separated (i.e.
         the closing brace and the following opening brace should touch).
         """
-
-    # XXX FP2.0: LINK_A here instead of text
-
-    # the next block should either be a brace or a text block with content [.\d.]
+    # the next block should either be a brace or a LINK_A block with content [.\d.]
     # first we check if its a Text block and if it's a text block we try to parse
     # it or we fail.
     nargs_block = false
     nargs = 0
-    if parts[naming_idx + 1].name == :TEXT
+    nextb = blocks[next_idx]
+    if nextb.name == :LINK_A
         # try parse it as [ . d . ]
-        c = content(parts[naming_idx + 1])
-        m = match(LX_NARGS_PAT, c)
-        m === nothing && return failed_block(part, next_bad), 0
+        m = match(LX_NARGS_PAT, nextb.ss)
+        m === nothing && return failed_block(block, next_bad), 0
         nargs = parse(Int, m.captures[1])
         nargs_block = true
-        next_idx += 1
+        if next_idx + 1 <= n_blocks
+            next_idx += 1
+            nextb     = blocks[next_idx]
+        else
+            return failed_block(block, next_bad), 0
+        end
     end
 
     # Now the next brace must be a brace otherwise fail
-    nextb = parts[next_idx]
-    if nextb.name != :LXB
-        return failed_block(part, next_bad), 0
+    if nextb.name != :CU_BRACKETS
+        return failed_block(block, next_bad), 0
     end
     def = content(nextb) |> dedent |> strip |> String
 
     # found a newcommand! push it to context and return a skipped block
     if case == :com
         name = lstrip(strip(content(naming)), '\\') |> string
-        setdef!(ctx, name, LxDef(nargs, def, from(part), to(nextb)))
+        setdef!(ctx, name, LxDef(nargs, def, from(block), to(nextb)))
         return Block(:COMMENT, subs("")), 2 + Int(nargs_block)
     end
 
     # if env, get one extra brace which also must be a brace
-    pre = def
-    nextb = parts[next_idx+1]
-    if nextb.name != :LXB
-        return failed_block(part, next_bad), 0
+    if next_idx + 1 <= n_blocks
+        nextb = blocks[next_idx + 1]
+    else
+        return failed_block(block, next_bad), 0
     end
+    if nextb.name != :CU_BRACKETS
+        return failed_block(block, next_bad), 0
+    end
+    pre  = def
     post = content(nextb) |> dedent |> strip |> String
 
     # found a newenvironment! push it to context and return a skipped block
     name = strip(content(naming)) |> string
-    setdef!(ctx, name, LxDef(nargs, pre => post, from(part), to(nextb)))
+    setdef!(ctx, name, LxDef(nargs, pre => post, from(block), to(nextb)))
     return Block(:COMMENT, subs("")), 3 + Int(nargs_block)
 end
 
@@ -175,7 +175,7 @@ Return a block + the number of additional blocks taken (# of braces taken).
 """
 function try_resolve_lxcom(
             i::Int,
-            parts::Vector{Block},
+            blocks::Vector{Block},
             ctx::LocalContext;
             tohtml::Bool=true
             )::Tuple{Block,Int}
@@ -184,27 +184,20 @@ function try_resolve_lxcom(
     #       (if lxfun, greedily pass all subsequent braces and call the lxfun)
     # 2. extract nargs and take the next nargs blocks --> fail if not enough
     #      and if not all braces
-    # 3. assemble into string and resolve via html(...)
-    # 4. if there's only a single set of `<p>...</p>`, remove it, otherwise
-    #      leave stuff as they are (with a potential risk of nested <p></p>
-    #      but they should at least remain balanced...
+    # 3. assemble into string and resolve
     # ------------------------------------------------------------------------
+    #
     # 1 -- look for definition
-    cand = parts[i]
+    #
+    cand = blocks[i]
     name = lstrip(cand.ss, '\\') |> string
 
     if !hasdef(ctx, name)
         nsymb = Symbol(name)
-        if (u = nsymb in utils_lxfun_names()) || (nsymb in INTERNAL_LXFUNS)
-            mdl   = ifelse(u, ctx.glob.nb_code.mdl, @__MODULE__)
-            args  = next_adjacent_brackets(i, parts, ctx; tohtml)
-            fsymb = Symbol("lx_$name")
-            f     = getproperty(mdl, fsymb)
-            o     = outputof(f, args; tohtml)
-            return Block(:RAW_INLINE, subs(o)), length(args)
-
+        if is_in_utils(nsymb)
+            return from_utils(nsymb, i, blocks, ctx; tohtml)
         elseif ctx.is_math[]
-            return raw_inline_block(cand), 0
+            return Block(:RAW_INLINE, cand.ss), 0
         end
 
         m = "Command '$(cand.ss)' used before it was defined."
@@ -212,7 +205,7 @@ function try_resolve_lxcom(
     end
     lxdef = getdef(ctx, name)
 
-    # runtime check; lxdef should be a LxDef{String} otherwise
+    # runtime check; lxdef should NOT be a LxDef{String=>String} otherwise
     # there's a clash in names with an environment
     if lxdef isa LxDef{Pair{String,String}}
         m = """
@@ -222,64 +215,82 @@ function try_resolve_lxcom(
         return failed_block(cand, m), 0
     end
 
+    #
     # 2 -- get nargs
+    #
     nargs = lxdef.nargs
-    if (i + nargs > lastindex(parts)) || any(e -> e.name != :LXB, @view parts[i+1:i+nargs])
+    if ( i + nargs > lastindex(blocks) ||
+         any(e -> e.name != :CU_BRACKETS, @view blocks[i+1:i+nargs])
+        )
+
         m = "Not enough braces to resolve '$(cand.ss)'."
         return failed_block(cand, m), 0
     end
 
+    #
     # 3 -- assemble into string and process
+    #
     r = lxdef.def::String
     # in math env, inject whitespace to avoid issues with chains; this can't happen
     # outside of maths envs as we force the use of braces
     p = ifelse(ctx.is_math[], " ", "")
     @inbounds for k in 1:nargs
-        c = content(parts[i+k])
+        c = content(blocks[i+k])
         r = replace(r, "!#$k" => c)
         r = replace(r, "#$k"  => p * c)
     end
-    recursion = ifelse(tohtml, recursive_html, recursive_latex)
-    r2 = recursion(r, ctx)
-
-    # 4 -- in latex case, strip \\par
-    if !tohtml
-        r3 = ifelse(endswith(r2, "\\par\n"),
-                chop(r2, head=0, tail=5),
-                subs(r2)
-             )
-        return Block(:RAW_INLINE, r3), nargs
-    end
-
-    # 4 -- try to match with exactly one <p>...</p>
-    default = (Block(:RAW_INLINE, subs(r2)), nargs)
-    m = match(r"^<p>(.*?)<\/p>\s*$", r2)
-    m === nothing && return default
-    c = m.captures[1]
-    if length(collect(eachmatch(r"<p>", c))) > 0
-        return default
-    end
-    # otherwise return "content" (so that properly merged)
-    return Block(:RAW_INLINE, subs(c)), nargs
+    recursion = ifelse(tohtml, rhtml, rlatex)
+    r2 = recursion(r, ctx; nop=true)
+    return Block(:RAW_INLINE, subs(r2)), nargs
 end
 
+"""
+    is_in_utils(n; isenv)
+
+Check if a symbol corresponds to a lx_ or env_ function in Utils.
+"""
+function is_in_utils(n::Symbol; isenv=false)
+    isenv && return (n in utils_envfun_names()) || (n in INTERNAL_ENVFUNS)
+    return (n in utils_lxfun_names()) || (n in INTERNAL_LXFUNS)
+end
 
 """
-    next_adjacent_brackets(i, parts, ctx)
+    from_utils(n, i, blocks, ctx; isenv, tohtml)
 
-Take parts `parts[i+1, ...]` as long as their name is `:LXB`, resolve what's
+Recover the lx_ or env_ function corresponding to `n`, find the relevant args,
+resolve and return.
+"""
+function from_utils(n::Symbol, i::Int, blocks::Vector{Block}, ctx::LocalContext;
+                    isenv=false, tohtml=true)
+    mdl   = ctx.glob.nb_code.mdl
+    args  = next_adjacent_brackets(i, blocks, ctx; tohtml)
+
+    fsymb, kind = ifelse(isenv,
+        "env_$n" => :RAW_BLOCK,
+        "lx_$n"  => :RAW_INLINE
+    )
+    f     = getproperty(mdl, fsymb)
+    o     = outputof(f, args; tohtml)
+
+    return Block(kind, subs(o)), length(args)
+end
+
+"""
+    next_adjacent_brackets(i, blocks, ctx)
+
+Take blocks `blocks[i+1, ...]` as long as their name is `:CU_BRACKETS`, resolve what's
 inside them, and assemble them into a vector of raw strings that can be passed
 on to a lxfun.
 """
 function next_adjacent_brackets(
-            i::Int, parts::Vector{Block}, ctx::LocalContext;
+            i::Int, blocks::Vector{Block}, ctx::LocalContext;
             tohtml::Bool=true
             )::Vector{String}
 
     brackets = Block[]
     c = i + 1
-    @inbounds while c <= length(parts) && parts[c].name == :LXB
-        push!(brackets, parts[c])
+    @inbounds while c <= length(blocks) && blocks[c].name == :CU_BRACKETS
+        push!(brackets, blocks[c])
         c += 1
     end
     recursion = ifelse(tohtml, recursive_html, recursive_latex)
@@ -290,71 +301,63 @@ end
 """
     try_resolve_lxenv(...)
 
-Same process as for a command except we need to find the matching `\\end` block.
+Here the blocks are within an ENV_* group. By index:
+    1.     '\\begin'
+    2.     '{env_name}'
+    3:n-2. content, the first block may be a brace (env args)
+    n-1.   '\\end'
+    n.     '{env_name}'
+
+So there's necessarily at least 4 blocks (begin, first brace, end, last brace).
 """
 function try_resolve_lxenv(
-            i::Int,
-            parts::Vector{Block},
+            blocks::Vector{Block},
             ctx::LocalContext;
             tohtml::Bool=true
-            )::Tuple{Block,Int}
+            )::Block
     # Process:
-    # 0. find the matching closing \end{...}
-    # 1-3 as for try_resolve_lxcom (no finalize, env is a block)
+    # 1. look for definition --> fail if none + not in math mode + not envfun
+    #       (if envfun, greedily pass all subsequent braces and call)
+    # 2. extract nargs and take the next nargs blocks --> fail if not enough
+    #       or not all braces
+    # 3. assemble into string, dedent and resolve
     # ------------------------------------------------------------------------
-    cand = parts[i]
-    m = "Not enough braces and elements after a \\begin for it to be valid."
-    i == lastindex(parts) && return failed_block(cand, m), 0
-    naming_brace = parts[i+1]
-    if naming_brace.name != :LXB
-        m = """
-            Expected a brace immediately after a \\begin with the name of the
-            environment.
-            """
+    name = strip(content(blocks[2])) |> string
+
+    if !hasdef(ctx, name)
+        nsymb = Symbol(name)
+        if is_in_utils(nsymb)
+            block, _ = from_utils(nsymb, 1, blocks, ctx; isenv=true, tohtml)
+            return block
+        elseif ctx.is_math[]
+            return Block(:RAW_BLOCK, cand.ss)
+        end
+
+        m = "Environment '$(name)' used before it was defined."
         return failed_block(cand, m), 0
     end
-    env_name = strip(content(naming_brace)) |> string
+    lxdef = getdef(ctx, name)
 
-    imbalance = 1
-    k = i + 1
-    @inbounds while (imbalance > 0) && (k < lastindex(parts))
-        if parts[k].name == :LX_END &&
-             parts[k+1].name == :LXB  &&
-               strip(content(parts[k+1])) == env_name
-           imbalance -= 1
-        end
-        k += 1
-    end
-    if imbalance > 0
-        m = "Couldn't close a \\begin{$env_name} with a valid \\end{$env_name}."
-        return failed_block(parts, m), 0
-    end
-
-    # 1 -- look for definition
-    if !hasdef(ctx, env_name)
-        if ctx.is_math[]
-            return raw_inline_block(cand), 0
-        end
-        m = "Environment '$env_name' used before it was defined."
-        return failed_block(cand, m), 0
-    end
-    lxdef = getdef(ctx, env_name)
-
-    # runtime check; lxdef should be a LxDef{Pair{String,String}} otherwise
-    # there's a clash in names with an environment
+    # runtime check; lxdef should NOT be a LxDef{String} otherwise
+    # there's a clash in names with a command
     if lxdef isa LxDef{String}
         m = """
             There is a clashing definition of a command with name '$name'.
             This is not allowed; use unique names for environments and commands.
             """
-        return failed_block(cand, m), 0
+        return failed_block(cand, m)
     end
 
+    #
     # 2 -- get nargs
+    #
     nargs = lxdef.nargs
-    if (i+1+nargs > lastindex(parts)) || any(e -> e.name != :LXB, @view parts[i+2:i+1+nargs])
+    if ( 2+nargs > lastindex(blocks) ||
+         any(e -> e.name != :CU_BRACKETS, @view blocks[3:2+nargs])
+        )
+
         m = "Not enough braces to resolve environment '$env_name'."
-        return failed_block(cand, m), 0
+        return failed_block(cand, m)
     end
 
     # 3 -- assemble into string and process
@@ -362,26 +365,16 @@ function try_resolve_lxenv(
     pre  = def.first
     post = def.second
 
-    s = parent_string(cand)
-    env_content = subs(s, next_index(parts[i+1+nargs]), previous_index(parts[k-1]))
-    env_content = strip(dedent(env_content))
+    s = parent_string(blocks[1])
+    r = subs(s, next_index(blocks[2+nargs]), prev_index(blocks[end-1]))
+    r = strip(dedent(r))
 
     @inbounds for j in 1:nargs
-        c    = content(parts[i+1+j])
+        c    = content(blocks[2+j])
         pre  = replace(pre,  "#$j" => c)
         post = replace(post, "#$j" => c)
     end
-    recursion = ifelse(tohtml, recursive_html, recursive_latex)
-    r2 = recursion(pre * env_content * post, ctx)
-
-    # 4 -- finalize
-    default = Block(:RAW_BLOCK, subs(r2)), k - i
-    m = match(r"^<p>(.*?)<\/p>\s*$", r2)
-    m === nothing && return default
-    c = m.captures[1]
-    if length(collect(eachmatch(r"<p>", c))) > 0
-        return default
-    end
-    # otherwise return "content" (so that properly merged)
-    return Block(:RAW_BLOCK, subs(c)), k - i
+    recursion = ifelse(tohtml, rhtml, rlatex)
+    r2 = recursion(pre * r * post, ctx)
+    return Block(:RAW_BLOCK, subs(r2))
 end

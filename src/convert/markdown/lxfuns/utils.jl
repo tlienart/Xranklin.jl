@@ -1,4 +1,4 @@
-const INTERNAL_LXFUNS = [
+const INTERNAL_LXFUNS = Symbol[
     # .
     :failed,
     # /hyperrefs.jl
@@ -8,6 +8,11 @@ const INTERNAL_LXFUNS = [
     :label, :biblabel,
     :reflink,
 ]
+
+const INTERNAL_ENVFUNS = Symbol[
+
+]
+
 
 """
     \\failed{command name}{arg1}{arg2}

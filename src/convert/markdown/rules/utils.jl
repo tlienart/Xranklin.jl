@@ -1,3 +1,16 @@
+_prepost(b, pre, post) = pre * content(b) * post
+
+function html_prepost(b, pre; kw...)
+   tmp = pre
+   for (k, v) in kw
+      tmp = replace(tmp, ">" => " " * attr(k, v) * " >")
+   end
+   _prepost(b, " " * replace(tmp, " >"=>">"), replace(pre, "<"=>"</"))
+end
+
+latex_prepost(b, pre)  = _prepost(b, "\\$pre{", "}")
+
+
 """
     string_to_anchor(s)
 
@@ -8,7 +21,7 @@ will be `"aa_bb"`
 """
 function string_to_anchor(s::String)
     # remove html tags
-    st = replace(strip(s), r"<[a-z\/]+>" => "")
+    st = replace(strip(s), r"<[a-zA-Z\/]+>" => "")
     # remove non-word characters
     st = replace(st, r"&#[0-9]+;" => "")
     st = replace(st, r"[^\p{L}0-9_\-\s]" => "")

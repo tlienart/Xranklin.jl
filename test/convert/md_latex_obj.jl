@@ -6,27 +6,27 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         \foo\foo
         """
         h = html(s)
-        l = latex(s)
+        # l = latex(s)
         @test h // "<p>barbar</p>"
-        @test l // "barbar"
+        # @test l // "barbar"
     end
     let s = raw"""
         \newcommand{\foo}[1]{bar:#1}
         \foo{hello}
         """
         h = html(s)
-        l = latex(s)
+        # l = latex(s)
         @test h // "<p>bar:hello</p>"
-        @test l // "bar:hello"
+        # @test l // "bar:hello"
     end
     let s = raw"""
         \newcommand{\foo}[2]{bar:#1#2}
         \foo{hello}{!}
         """
         h = html(s)
-        l = latex(s)
+        # l = latex(s)
         @test h // "<p>bar:hello!</p>"
-        @test l // "bar:hello!"
+        # @test l // "bar:hello!"
     end
 end
 
@@ -39,9 +39,9 @@ end
         \ext{!}
         """
         h = html(s)
-        l = latex(s)
+        # l = latex(s)
         @test h // "<p>bar:hello!</p>"
-        @test l // "bar:hello!"
+        # @test l // "bar:hello!"
     end
 end
 
@@ -54,9 +54,9 @@ end
         ABC
         """
         h = html(s)
-        l = latex(s)
-        @test h // "bar:abc:baz<p>ABC</p>"
-        @test l // "bar:abc:baz\\par\nABC\\par"
+        # l = latex(s)
+        @test h // "<p>bar:abc:baz</p>\n<p>ABC</p>"
+        # @test l // "bar:abc:baz\\par\nABC\\par"
     end
 end
 
@@ -73,8 +73,8 @@ end
         \end{foo}
         """
         h = html(s)
-        l = latex(s)
-        @test h // "<p>bar-abc</p>\nzar-def-zaz<p>ghi-baz</p>"
-        @test l // "bar-abc\\par\nzar-def-zaz\\par\nghi-baz\\par"
+        # l = latex(s)
+        @test h // "<p>bar-abc</p>\n<p>zar-def-zaz</p>\n<p>ghi-baz</p>"
+        # @test l // "bar-abc\\par\nzar-def-zaz\\par\nghi-baz\\par"
     end
 end

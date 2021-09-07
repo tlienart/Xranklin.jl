@@ -4,7 +4,7 @@
 Take a markdown string in a math context, segment it in blocks, and re-form the
 corresponding raw md-math string out of processing each segment recursively.
 """
-math(md::SS,     c::LocalContext; kw...) = math(FP.default_math_partition(md), c; kw...)
+math(md::SS,     c::LocalContext; kw...) = math(FP.math_partition(md), c; kw...)
 math(md::String, c::LocalContext; kw...) = math(subs(md), c; kw...)
 math(b::Block,   c::LocalContext; kw...) = math(content(b), c; kw...)
 

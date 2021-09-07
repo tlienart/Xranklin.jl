@@ -28,10 +28,13 @@ end
 end
 
 @testset "LaTeX" begin
+    # XXX latex tests currently disabled
     p = "convert/"
     include(p/"md_latex_newobj.jl")
     include(p/"md_latex_obj.jl")
 end
+
+# XXX XXX XXX XXX XXX XXX XXX
 
 @testset "MD2x" begin
     p = "convert/md2x"

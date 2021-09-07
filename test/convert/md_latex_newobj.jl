@@ -6,7 +6,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         """
     c = X.LocalContext()
     h = html(s, c)
-    @test isapproxstr(h, "<p>abc</p>\n  <p>def</p>")
+    @test isapproxstr(h, "<p>abc def</p>")
     @test length(c.lxdefs.keys) == 1
     d = c.lxdefs["foo"]
     @test d isa X.LxDef{String}
@@ -20,7 +20,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         """
     c = X.LocalContext()
     h = html(s, c)
-    @test isapproxstr(h, "<p>abc</p>\n  <p>def</p>")
+    @test isapproxstr(h, "<p>abc def</p>")
     @test length(c.lxdefs.keys) == 1
     d = c.lxdefs["foo"]
     @test d.nargs == 1
@@ -30,7 +30,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         """
     c = X.LocalContext()
     h = html(s, c)
-    @test isapproxstr(h, "<p>abc</p>\n  <p>def</p>")
+    @test isapproxstr(h, "<p>abc def</p>")
     @test length(c.lxdefs.keys) == 1
     d = c.lxdefs["foo"]
     @test d.nargs == 1
@@ -47,7 +47,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         """
     c = X.LocalContext()
     h = html(s, c)
-    @test isapproxstr(h, "<p>abc</p>\n  <p>def</p>")
+    @test isapproxstr(h, "<p>abc def</p>")
     d = c.lxdefs["foo"]
     @test d.def == "bar\n  biz\n    boz\nbaz"
 end
@@ -58,7 +58,7 @@ end
         """
     c = X.LocalContext()
     h = html(s, c)
-    @test isapproxstr(h, "<p>abc</p>\n  <p>def</p>")
+    @test isapproxstr(h, "<p>abc def</p>")
     d = c.lxdefs["foo"]
     @test d isa X.LxDef{Pair{String,String}}
     @test d.def == ("bar" => "baz")
@@ -73,7 +73,6 @@ end
     @test d.nargs == 1
 end
 
-
 @testset "new* issues" begin
     nowarn()
     # not enough braces
@@ -83,9 +82,7 @@ end
     c = X.LocalContext(); h = html(s, c)
     @test isempty(c.lxdefs)
     @test isapproxstr(h, """
-        <p>a</p>
-        <span style="color:red">[FAILED:]&gt;\\newcommand&lt;</span>
-        <p>{foo}</p>
+        <p>a <span style="color:red;" >[FAILED:]&gt;\\newcommand&lt;</span>{foo}</p>
         """)
 
     s = raw"""
@@ -94,9 +91,7 @@ end
     c = X.LocalContext(); h = html(s, c)
     @test isempty(c.lxdefs)
     @test isapproxstr(h, """
-        <p>a</p>
-        <span style="color:red">[FAILED:]&gt;\\newenvironment&lt;</span>
-        <p>{foo}{bar} b</p>
+        <p>a <span style="color:red;">[FAILED:]&gt;\\newenvironment&lt;</span>{foo}{bar}b</p>
         """)
 
     # nargs block incorrect
@@ -104,8 +99,7 @@ end
     c = X.LocalContext(); h = html(s, c)
     @test isempty(c.lxdefs)
     @test isapproxstr(h, """
-        <span style="color:red">[FAILED:]&gt;\\newcommand&lt;</span>
-        <p>{\\bar} 2{hello}</p>
+        <p><span style="color:red;">[FAILED:]&gt;\\newcommand&lt;</span>{\\bar} 2{hello}</p>
         """)
     logall()
 end

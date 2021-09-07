@@ -12,11 +12,12 @@ import Serialization: serialize, deserialize
 # ------------------------------------------------------------------------
 # external dependencies part of the Franklin universe
 
+import FranklinParser
+const FP = FranklinParser
 import FranklinParser: SS, Token, Block, Group,
                        subs, content, dedent, parent_string,
-                       from, to, prev_index, next_index,
-                       md_partition, html_partition, html_partition,
-                       md_grouper
+                       from, to, prev_index, next_index
+
 
 import FranklinTemplates: newsite, filecmp
 import LiveServer
@@ -71,19 +72,19 @@ include("html_utils.jl")
 # the ordering here is a bit awkard but we want contexts to point
 # to 'Notebook' objects which are tied to code environment.
 
-# include("context/types.jl")
-# include("context/context.jl")
-# include("context/default_context.jl")
-#
-# include("context/code/modules.jl")
-# include("context/code/notebook.jl")
-# include("context/code/serialize.jl")
-# include("context/code/notebook_vars.jl")
-# include("context/code/notebook_code.jl")
+include("context/types.jl")
+include("context/context.jl")
+include("context/default_context.jl")
+
+include("context/code/modules.jl")
+include("context/code/notebook.jl")
+include("context/code/serialize.jl")
+include("context/code/notebook_vars.jl")
+include("context/code/notebook_code.jl")
 
 # ------------------------------------------------------------------------
 
-# include("convert/regex.jl")
+include("convert/regex.jl")
 
 # ===> MARKDOWN
 
@@ -94,14 +95,15 @@ include("html_utils.jl")
 # include("convert/markdown/lxfuns/utils.jl")
 # include("convert/markdown/lxfuns/hyperrefs.jl")
 #
-# include("convert/markdown/latex_objects.jl")
+include("convert/markdown/latex_objects.jl")
 #
-# include("convert/markdown/to_html.jl")
-# include("convert/markdown/to_latex.jl")
+include("convert/markdown/md_core.jl")
+include("convert/markdown/to_html.jl")
+include("convert/markdown/to_latex.jl")
 # include("convert/markdown/to_math.jl")
 #
-# include("convert/markdown/rules/utils.jl")
-# include("convert/markdown/rules/text.jl")
+include("convert/markdown/rules/utils.jl")
+include("convert/markdown/rules/text.jl")
 # include("convert/markdown/rules/headers.jl")
 # include("convert/markdown/rules/code.jl")
 # include("convert/markdown/rules/maths.jl")
@@ -113,12 +115,12 @@ include("html_utils.jl")
 # include("convert/postprocess/hfuns/hyperrefs.jl")
 #
 # include("convert/postprocess/utils.jl")
-# include("convert/postprocess/html2.jl")
-# include("convert/postprocess/latex2.jl")
+include("convert/postprocess/html2.jl")
+include("convert/postprocess/latex2.jl")
 
 # ------------------------------------------------------------------------
 
-# include("build/paths.jl")
+include("build/paths.jl")
 # include("build/watch.jl")
 # include("build/process.jl")
 # include("build/serve.jl")

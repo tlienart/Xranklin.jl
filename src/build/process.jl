@@ -158,9 +158,10 @@ function process_utils(gc::GlobalContext=cur_gc(); initial_pass::Bool=false)
     return
 end
 
-utils_hfun_names()  = getgvar(:_utils_hfun_names)::Vector{Symbol}
-utils_lxfun_names() = getgvar(:_utils_lxfun_names)::Vector{Symbol}
-utils_var_names()   = getgvar(:_utils_var_names)::Vector{Symbol}
+utils_hfun_names()   = getgvar(:_utils_hfun_names)::Vector{Symbol}
+utils_lxfun_names()  = getgvar(:_utils_lxfun_names)::Vector{Symbol}
+utils_envfun_names() = getgvar(:_utils_envfun_names)::Vector{Symbol}
+utils_var_names()    = getgvar(:_utils_var_names)::Vector{Symbol}
 
 
 

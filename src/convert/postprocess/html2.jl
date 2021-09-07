@@ -5,7 +5,7 @@
 Postprocess a html string `s` in the context `c` (e.g. find and process double
 brace blocks).
 """
-html2(s::String, c::Context) = html2(FP.default_html_partition(s), c)
+html2(s::String, c::Context) = html2(FP.html_partition(s), c)
 
 
 # there's currently 3 types of html blocks (see FranklinParser):
@@ -41,7 +41,7 @@ function html2(parts::Vector{Block}, c::Context)::String
         # Double Brace Block processing
         cb = strip(content(b))
         isempty(cb) && continue
-        split_cb = string.(split(cb))
+        split_cb = FP.split_args(cb)
         fname    = Symbol(lowercase(first(split_cb)))
         if fname in INTERNAL_HENVS
             # look for the matching closing END then pass the scope
