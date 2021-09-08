@@ -8,6 +8,7 @@ latex_failed(s::String) = latex_prepost(">$(b.ss)<", "textcolor{crimson}")
 html_failed(b, _)  = html_failed(string(b.ss))
 latex_failed(b, _) = latex_failed(string(b.ss))
 
+
 #
 # INLINE
 #

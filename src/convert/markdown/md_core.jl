@@ -1,8 +1,3 @@
-form_groups(md::SS; kw...)     = FP.md_partition(md; kw...) |> FP.md_grouper
-form_groups(md::String; kw...) = form_groups(subs(md))
-
-prepare_md(md; kw...) = form_groups(md; kw...)
-
 # possible inline blocks
 # * TEXT                    | rules/text    ✓
 # * COMMENT                 | skipped       ✓
@@ -31,15 +26,34 @@ prepare_md(md; kw...) = form_groups(md; kw...)
 # * LX_ENV
 # * RAW
 
+"""
+    convert_md(md, c; tohtml, nop, kw...)
 
-function convert_md(md, c::Context; tohtml::Bool=true, nop::Bool=false, kw...)
-    groups = prepare_md(md; kw...)
-    io = IOBuffer()
+Take a markdown string `md` and convert it either to html or latex in a given
+context `c`.
+
+## Kwargs
+
+    * tohtml=true: whether to convert to html or to latex (if false).
+    * nop=false:   whether to delimit paragraphs (e.g. with `<p>...</p>`) or
+                    not. Specifically in resolving a lx command from
+                    definition (i.e. not a lxfun) we assume the command will
+                    not break the current paragraph. See `try_resolve_lxcom`.
+    * kw...:       kwargs passed to `form_groups` and, through it, to the
+                    `md_partition` function. An important one is `disable`
+                    which allows the user to specify a number of tokens that
+                    should be ignored in the partitioning.
+"""
+function convert_md(md::SS, c::Context;
+                    tohtml::Bool=true, nop::Bool=false, kw...)
+    # partition the markdown and form groups (paragraphs)
+    groups = FP.md_partition(md; kw...) |> FP.md_grouper
+    # stream to which the converted text will be written
+    io     = IOBuffer()
 
     convert    = html
     before_par = "<p>"
     after_par  = "</p>\n"
-
     if !tohtml
         convert    = latex
         before_par = ""
@@ -48,12 +62,11 @@ function convert_md(md, c::Context; tohtml::Bool=true, nop::Bool=false, kw...)
 
     # in some recursive contexts like the resolution of a lx command, we
     # don't want to set a paragraph
-    if nop
-        before_par = after_par = ""
-    end
+    nop && (before_par = after_par = "")
 
+    # go over each group, if it's a paragraph add the paragraph separators
+    # around it, then convert each block in the group and write that to stream
     for g in groups
-
         if g.role == :PARAGRAPH
             process_latex_objects!(g.blocks, c; tohtml)
             if !all(isempty, g.blocks)
@@ -66,88 +79,28 @@ function convert_md(md, c::Context; tohtml::Bool=true, nop::Bool=false, kw...)
                 write(io, after_par)
             end
 
+        # environment groups (begin...end)
         elseif startswith(string(g.role), "ENV_")
             b = try_resolve_lxenv(g.blocks, c; tohtml)
             write(io, convert(b, c))
 
+        # all other groups are constituted of a single block
         else
             write(io, convert(first(g.blocks), c))
         end
     end
-
     return String(take!(io))
 end
+convert_md(md::String, c::Context; kw...) = convert_md(subs(md), c; kw...)
 
-html(md, c::Context=DefaultLocalContext(); kw...) =
-    (r = convert_md(md, c; kw...); html2(r, c))
-latex(md, c::Context=DefaultLocalContext(); kw...) =
-    (r = convert_md(md, c; tohtml=false, kw...); latex2(r, c))
+function html(md::SS, c::Context=DefaultLocalContext(); kw...)
+    r = convert_md(md, c; kw...)
+    return html2(r, c)
+end
+html(md::String, c...; kw...)  = html(subs(md), c...; kw...)
 
-# """
-#     md2x(s::String, tohtml::Bool)
-#
-# Wrapper around what CommonMark does to keep track of spaces etc which CM
-# strips away but which are actually needed in order to adequately resolve
-# inline inserts. Leads to either html or latex based on the case.
-# """
-# function md2x(s::String, tohtml::Bool)::String
-#     isempty(s) && return ""
-#     if tohtml
-#         r = CM.html(cm_parser(s))
-#     else
-#         r = CM.latex(cm_parser(s))
-#     end
-#     # if there was only r"\s*" in s, preserve that unless it's a lineskip
-#     if isempty(r)
-#         return ifelse(occursin("\n\n", s), LINESKIP_PH, s)
-#     end
-#     # check if the block is preceded or followed by a lineskip (\n\n)
-#     # or, by a space that we might have to preserve (e.g. inline)
-#     # if that's the case, either inject an indicator or a space
-#     pre  = ""
-#     post = ""
-#     if startswith(s, LINESKIP_PAT)
-#         pre = LINESKIP_PH
-#     elseif startswith(s, WHITESPACE_PAT)
-#         pre = " "
-#     end
-#     if endswith(s, LINESKIP_PAT)
-#         post = LINESKIP_PH
-#     elseif endswith(s, WHITESPACE_PAT)
-#         post = " "
-#     end
-#     return pre * r * post
-# end
-#
-# md2html(s::String)  = md2x(s, true)
-# md2latex(s::String) = md2x(s, false)
-
-#
-# """
-#     md_core(parts, ctx; tohtml)
-#
-# Function processing blocks in sequence and assembling them while resolving
-# possible balancing issues.
-# """
-# function md_core(
-#             parts::Vector{Block},
-#             c::Context;
-#             tohtml::Bool=true
-#             )::String
-#
-#     transformer = ifelse(tohtml, html, latex)
-#     process_latex_objects!(parts, c; tohtml)
-#
-#     io = IOBuffer()
-#     inline_idx = Int[]
-#     for (i, part) in enumerate(parts)
-#         if part.name in INLINE_BLOCKS
-#             write(io, INLINE_PH)
-#             push!(inline_idx, i)
-#         else
-#             write(io, transformer(part, c))
-#         end
-#     end
-#     interm = String(take!(io))
-#     return resolve_inline(interm, parts[inline_idx], c, tohtml)
-# end
+function latex(md::SS, c::Context=DefaultLocalContext(); kw...)
+    r = convert_md(md, c; tohtml=false, kw...)
+    return latex2(r, c)
+end
+latex(md::String, c...; kw...) = latex(subs(md), c...; kw...)
