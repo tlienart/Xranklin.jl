@@ -15,8 +15,8 @@ end
     let s = """
         A <!-- B --> C
         """
-        @test html(s) // "<p>A</p>\n  <p>C</p>\n"
-        @test latex(s) // "A\\par\n  C\\par"
+        @test html(s) // "<p>A  C</p>\n"
+        @test latex(s) // "A  C\\par"
     end
 end
 
@@ -24,8 +24,8 @@ end
     let s = raw"""
         &#42; &plusmn; &ndash; \{ \} \`
         """
-        @test html(s) // "<p>* ± – { } `</p>"
-        @test latex(s) // "* ± – \\{ \\} `\\par"
+        @test html(s) // "<p>&#42; &plusmn; &ndash; &#123; &#125; &#96;</p>"
+        @test latex(s) // "&#42; &plusmn; &ndash; \\{ \\} \\`\\par"
     end
     # emojis (note, lualatex will skip those chars)
     let s = raw"""
@@ -95,13 +95,15 @@ end
         @test isapproxstr(h, """
             <p>ABC</p>
             <div class="DEF">
-              <p>*<br>{ #</p>
+              <p>   &#42;
+              <br>
+               &#123; &#35;</p>
             </div>
             <p>GHI</p>
             """)
         @test isapproxstr(l, raw"""
             ABC\par
-            * \\ \{ \#\par
+                \* \\ \{ \#\par
             GHI\par
             """)
     end

@@ -28,19 +28,18 @@ end
 end
 
 @testset "LaTeX" begin
-    # XXX latex tests currently disabled
     p = "convert/"
     include(p/"md_latex_newobj.jl")
     include(p/"md_latex_obj.jl")
 end
 
-# XXX XXX XXX XXX XXX XXX XXX
-
 @testset "MD2x" begin
     p = "convert/md2x"
-    include(p/"resolve_inline.jl")
     # rules
     include(p/"rules_text.jl")
+
+    # XXX XXX XXX XXX XXX XXX XXX
+
     include(p/"rules_headers.jl")
     include(p/"rules_maths.jl")
     include(p/"rules_defs.jl")

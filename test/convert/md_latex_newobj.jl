@@ -4,7 +4,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     s = raw"""
         abc \newcommand{\foo}{bar} def
         """
-    c = X.LocalContext()
+    c = X.DefaultLocalContext()
     h = html(s, c)
     @test isapproxstr(h, "<p>abc def</p>")
     @test length(c.lxdefs.keys) == 1
@@ -18,7 +18,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     s = raw"""
         abc \newcommand{\foo}[1]{bar} def
         """
-    c = X.LocalContext()
+    c = X.DefaultLocalContext()
     h = html(s, c)
     @test isapproxstr(h, "<p>abc def</p>")
     @test length(c.lxdefs.keys) == 1
@@ -28,7 +28,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     s = raw"""
         abc \newcommand{\foo}[ 1] {bar} def
         """
-    c = X.LocalContext()
+    c = X.DefaultLocalContext()
     h = html(s, c)
     @test isapproxstr(h, "<p>abc def</p>")
     @test length(c.lxdefs.keys) == 1
@@ -45,9 +45,9 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         }
         def
         """
-    c = X.LocalContext()
+    c = X.DefaultLocalContext()
     h = html(s, c)
-    @test isapproxstr(h, "<p>abc def</p>")
+    @test isapproxstr(h, "<p>abc\n\ndef</p>")
     d = c.lxdefs["foo"]
     @test d.def == "bar\n  biz\n    boz\nbaz"
 end
@@ -56,9 +56,9 @@ end
     s = raw"""
         abc \newenvironment{foo}{bar}{baz} def
         """
-    c = X.LocalContext()
+    c = X.DefaultLocalContext()
     h = html(s, c)
-    @test isapproxstr(h, "<p>abc def</p>")
+    @test h // "<p>abc  def</p>"
     d = c.lxdefs["foo"]
     @test d isa X.LxDef{Pair{String,String}}
     @test d.def == ("bar" => "baz")
@@ -67,7 +67,7 @@ end
     s = raw"""
         abc \newenvironment{foo}[1]{bar}{baz} def
         """
-    c = X.LocalContext()
+    c = X.DefaultLocalContext()
     h = html(s, c)
     d = c.lxdefs["foo"]
     @test d.nargs == 1

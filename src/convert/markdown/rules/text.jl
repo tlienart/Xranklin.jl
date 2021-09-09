@@ -15,15 +15,15 @@ latex_failed(b, _) = latex_failed(string(b.ss))
 
 # plain text
 html_text(b, _)  = FP.prepare_text(b)
-latex_text(b, _) = FP.prepare_text(b)
+latex_text(b, _) = FP.prepare_text(b; tohtml=false)
 
 # emphasis
-html_emph_em(b, _)         = html_prepost(b, "<em>")
-html_emph_strong(b, _)     = html_prepost(b, "<strong>")
-html_emph_em_strong(b, _)  = html_prepost(b, "<em><strong>")
-latex_emph_em(b, _)        = latex_prepost(b, "textit")
-latex_emph_strong(b, _)    = latex_prepost(b, "textbf")
-latex_emph_em_strong(b, _) = _prepost(b, "\\textbf{\\textit{", "}}")
+html_emph_em(b, c)         = html_prepost(rhtml(b, c; nop=true), "<em>")
+html_emph_strong(b, c)     = html_prepost(rhtml(b, c; nop=true), "<strong>")
+html_emph_em_strong(b, c)  = html_prepost(rhtml(b, c; nop=true), "<em><strong>")
+latex_emph_em(b, c)        = latex_prepost(rlatex(b, c; nop=true), "textit")
+latex_emph_strong(b, c)    = latex_prepost(rlatex(b, c; nop=true), "textbf")
+latex_emph_em_strong(b, c) = "\\textbf{\\textit{" * rlatex(b, c; nop=true) * "}}"
 
 # hard line breaks \\
 html_linebreak(b, _)  = "\n<br>\n"

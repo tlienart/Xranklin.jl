@@ -96,12 +96,9 @@ include("convert/regex.jl")
 # include("convert/markdown/lxfuns/hyperrefs.jl")
 #
 include("convert/markdown/latex_objects.jl")
-#
+
 include("convert/markdown/md_core.jl")
-include("convert/markdown/to_html.jl")
-include("convert/markdown/to_latex.jl")
-# include("convert/markdown/to_math.jl")
-#
+
 include("convert/markdown/rules/utils.jl")
 include("convert/markdown/rules/text.jl")
 # include("convert/markdown/rules/headers.jl")

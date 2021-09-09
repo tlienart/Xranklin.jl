@@ -83,15 +83,16 @@ function try_form_lxdef(
             ctx::Context
             )::Tuple{Block,Int}
 
+    n_blocks = length(blocks)
     # command or env?
     case = ifelse(block.name == :LX_NEWCOMMAND, :com, :env)
     # find all brace blocks
     braces_idx = findall(p -> p.name == :CU_BRACKETS, @view blocks[i+1:end])
 
-    n_blocks = length(blocks)
-
     # --------------------------------
     # CHECK if there are enough braces
+    # > in the com case there should be at least two (name + def)
+    # > in the env case there should be at least three (name + pre + post)
     if length(braces_idx) < 2 || (case == :env && length(braces_idx) < 3)
         m = """
             Not enough braces found after a \\newcommand or \\newenvironment.
@@ -99,11 +100,10 @@ function try_form_lxdef(
         return failed_block(block, m), 0
     end
     naming_idx = i + braces_idx[1]
-    naming = blocks[naming_idx]
+    naming     = blocks[naming_idx]
 
     # ----------------------------
     # CHECK the following brace(s)
-    next_idx = naming_idx + 1
     next_bad = """
         The block(s) following the naming brace of a \\newcommand or
         \\newenvironment is/are incorrect, Franklin expected another brace or
@@ -112,21 +112,50 @@ function try_form_lxdef(
         For environments, the defining braces should not be separated (i.e.
         the closing brace and the following opening brace should touch).
         """
-    # the next block should either be a brace or a LINK_A block with content [.\d.]
-    # first we check if its a Text block and if it's a text block we try to parse
-    # it or we fail.
-    nargs_block = false
+    # Note that since we allow spaces like \newcommand{\foo}  [1 ] {bar}
+    # we should expect that after the naming brace there may be
+    #   * [0/1] TEXT block with empty content
+    #   * [0/1] LINK_A block with a number
+    #   * [0/1] TEXT block with empty content
+    #   * [1] CU_BRACKETS with the definition
+    # anything else will lead to an error message
+    next_idx = naming_idx + 1
+    nextb    = blocks[next_idx]
+
+    pre_space  = false
+    post_space = false
+
+    # skip if the next block is an empty text block
+    if nextb.name == :TEXT
+        if isempty(nextb)
+            next_idx  = naming_idx + 1
+            nextb     = blocks[next_idx]
+            pre_space = true
+        else
+            return failed_block(block, next_bad), 0
+        end
+    end
+
+    # now it should either be a [...] or a CU_BRACKETS
     nargs = 0
-    nextb = blocks[next_idx]
+    has_nargs = false
     if nextb.name == :LINK_A
         # try parse it as [ . d . ]
         m = match(LX_NARGS_PAT, nextb.ss)
         m === nothing && return failed_block(block, next_bad), 0
-        nargs = parse(Int, m.captures[1])
-        nargs_block = true
-        if next_idx + 1 <= n_blocks
-            next_idx += 1
-            nextb     = blocks[next_idx]
+        has_nargs = true
+        nargs     = parse(Int, m.captures[1])
+        # there's necessarily another brace block so can increment
+        next_idx += 1
+        nextb     = blocks[next_idx]
+    end
+
+    # if there was [...] then the next may be an empty TEXT
+    if has_nargs && nextb.name == :TEXT
+        if isempty(nextb)
+            next_idx  += 1
+            nextb      = blocks[next_idx]
+            post_space = true
         else
             return failed_block(block, next_bad), 0
         end
@@ -142,10 +171,17 @@ function try_form_lxdef(
     if case == :com
         name = lstrip(strip(content(naming)), '\\') |> string
         setdef!(ctx, name, LxDef(nargs, def, from(block), to(nextb)))
-        return Block(:COMMENT, subs("")), 2 + Int(nargs_block)
+        # skip the naming brace, the def brace and then optionally
+        # the pre-space if any, the nargs block if any, and the post space
+        # so between 2 and 5 blocks taken here
+        skips = 2 + pre_space + has_nargs + post_space
+        return Block(:COMMENT, subs("")), skips
     end
 
     # if env, get one extra brace which also must be a brace
+    # here we do not allow anything between the pre and post brace
+    # so it must be \newenvironment{\foo} [1] {PRE}{POST}
+    # with no space between PRE and POST braces
     if next_idx + 1 <= n_blocks
         nextb = blocks[next_idx + 1]
     else
@@ -160,7 +196,9 @@ function try_form_lxdef(
     # found a newenvironment! push it to context and return a skipped block
     name = strip(content(naming)) |> string
     setdef!(ctx, name, LxDef(nargs, pre => post, from(block), to(nextb)))
-    return Block(:COMMENT, subs("")), 3 + Int(nargs_block)
+    # see skips earlier for command, one more brace here
+    skips = 3 + pre_space + has_nargs + post_space
+    return Block(:COMMENT, subs("")), skips
 end
 
 

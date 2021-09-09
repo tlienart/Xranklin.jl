@@ -1,14 +1,18 @@
-_prepost(b, pre, post) = pre * content(b) * post
-
-function html_prepost(b, pre; kw...)
+function html_prepost(s, pre; kw...)
    tmp = pre
    for (k, v) in kw
       tmp = replace(tmp, ">" => " " * attr(k, v) * " >")
    end
-   _prepost(b, " " * replace(tmp, " >"=>">"), replace(pre, "<"=>"</"))
+   post = replace(pre, "<"=>"</")
+   pre  = replace(tmp, " >"=>">")
+   return pre * s * post
 end
 
-latex_prepost(b, pre)  = _prepost(b, "\\$pre{", "}")
+function latex_prepost(s, pre)
+    pre  = "\\$pre{"
+    post = "}"
+    return pre * s * post
+end
 
 
 """
