@@ -91,4 +91,7 @@ end
     @test getvar(lc, :a) == getvar(lc2, :a)
     @test getvar(lc, :d) == getvar(lc2, :d)
     @test X.isstale(lc2.nb_vars)
+    X.eval_vars_cell!(lc, X.subs(v1))
+    @test getvar(lc, :a) == 5
+    @test !X.isstale(lc.nb_vars)
 end
