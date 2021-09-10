@@ -1,2 +1,6 @@
+test/integration/assets/katex/* linguist-vendored
+test/_demo/_libs/katex/* linguist-vendored
+test/_demo/_libs/highlight/* linguist-vendored
+test/_demo/_css/* linguist-vendored
+test/_demo/_layout/* linguist-vendored
 test/integration/assets/* linguist-vendored
-test/_demo/* linguist-vendored
