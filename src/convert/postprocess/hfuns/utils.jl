@@ -43,10 +43,10 @@ end
 hfun_failed(s::String, p::VS) = hfun_failed([s, p...])
 
 _hfun_failed_html(p::VS) = html_failed(
-    "&lbrace;&lbrace; " * prod(e * " " for e in p) * "&rbrace;&rbrace;"
+    "&lbrace;&lbrace; " * join(p, " ") * "&rbrace;&rbrace;"
 )
 _hfun_failed_latex(p::VS) = latex_failed(
-    s = raw"\texttt{\{\{ " * prod(e * " " for e in p) * raw"\}\}}"
+    s = raw"\texttt{\{\{ " * join(p, " ") * raw"\}\}}"
 )
 
 

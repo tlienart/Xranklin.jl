@@ -10,27 +10,30 @@ import Pkg
 import Serialization: serialize, deserialize
 
 # ------------------------------------------------------------------------
-# external dependencies part of the universe
+# external dependencies part of the Franklin universe
 
 import FranklinParser
 const FP = FranklinParser
-import FranklinParser: SS, Token, Block,
+import FranklinParser: SS, Token, Block, Group,
                        subs, content, dedent, parent_string,
-                       from, to, previous_index, next_index
+                       from, to, prev_index, next_index
+
 
 import FranklinTemplates: newsite, filecmp
 import LiveServer
 
 # ------------------------------------------------------------------------
-# external dependencies not part of the universe
+# external dependencies not part of the Franklin universe
 
-import CommonMark
-import CommonMark: disable!, enable!, escape_xml
-const CM = CommonMark
-
+import URIs
 import IOCapture
 import JSON3
 import OrderedCollections: LittleDict
+
+# copied from CommonMark.jl, used in dealing with autolink
+@inline issafe(c::Char) = c in "?:/,-+@._()#=*&%" ||
+                          (isascii(c) && (isletter(c) || isnumeric(c)))
+normalize_uri(s::SS)    = URIs.escapeuri(s, issafe)
 
 # ------------------------------------------------------------------------
 
@@ -85,19 +88,17 @@ include("convert/regex.jl")
 
 # ===> MARKDOWN
 
-include("convert/markdown/commonmark.jl")
-include("convert/markdown/utils.jl")
-
-# LxFuns
+# >> LxFuns
 include("convert/markdown/lxfuns/utils.jl")
 include("convert/markdown/lxfuns/hyperrefs.jl")
 
+# >> LxObjects
 include("convert/markdown/latex_objects.jl")
 
-include("convert/markdown/to_html.jl")
-include("convert/markdown/to_latex.jl")
-include("convert/markdown/to_math.jl")
+# >> Core
+include("convert/markdown/md_core.jl")
 
+# >> Rules
 include("convert/markdown/rules/utils.jl")
 include("convert/markdown/rules/text.jl")
 include("convert/markdown/rules/headers.jl")

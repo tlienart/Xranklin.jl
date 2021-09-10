@@ -1,5 +1,5 @@
 using Xranklin
-using LiveServer
+import LiveServer
 using Logging
 using Test
 X = Xranklin;
@@ -35,7 +35,6 @@ end
 
 @testset "MD2x" begin
     p = "convert/md2x"
-    include(p/"resolve_inline.jl")
     # rules
     include(p/"rules_text.jl")
     include(p/"rules_headers.jl")

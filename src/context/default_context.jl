@@ -63,9 +63,10 @@ const DefaultGlobalVars = Vars(
     :_idx_rpath     => 1,
     :_idx_ropath    => 1,
     # Utils related
-    :_utils_hfun_names  => Symbol[],
-    :_utils_lxfun_names => Symbol[],
-    :_utils_var_names   => Symbol[],
+    :_utils_hfun_names   => Symbol[],
+    :_utils_lxfun_names  => Symbol[],
+    :_utils_envfun_names => Symbol[],
+    :_utils_var_names    => Symbol[],
     # Hyperrefs
     :_anchors => LittleDict{String, String}(),
 )

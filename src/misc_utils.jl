@@ -7,7 +7,7 @@ const StringOrRegex = Union{String, Regex}
     hl(s, c)
 
 Make a string coloured and printable within a macro such as `@info`.
-Courtesy of Andrey Oskin.
+Courtesy of Andrey Oskin on discourse.
 """
 function hl(o, c::Symbol=:light_magenta)
     io = IOBuffer()

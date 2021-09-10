@@ -1,5 +1,9 @@
 # ONGOING
 
+## Sept 10
+
+* `_list` should be there (table as well), this means also adding validation.
+
 ## Code NB
 
 - Test custom show defined in utils (for mime)
