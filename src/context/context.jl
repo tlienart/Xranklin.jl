@@ -159,6 +159,9 @@ getid(c::LocalContext)::String = c.rpath
 getglob(c::GlobalContext)::GlobalContext = c
 getglob(c::LocalContext)::GlobalContext  = c.glob
 
+is_math(c::GlobalContext) = false
+is_math(c::LocalContext)  = c.is_math[]
+
 
 # --------------------------------------- #
 # GLOBAL CONTEXT CONSTRUCTORS AND METHODS #
@@ -231,9 +234,6 @@ function LocalContext(g=GlobalContext(), v=Vars(), d=LxDefs();
                       rpath="", alias=Alias())
     return LocalContext(g, v, d, PageHeaders(), rpath, alias)
 end
-
-recursify(c::LocalContext) = (c.is_recursive[] = true; c)
-mathify(c::LocalContext)   = (c.is_recursive[] = c.is_math[] = true; c)
 
 # when trying to retrieve a variable from a local context, we first check
 # whether the local context contains the variable, if it doesn't but the

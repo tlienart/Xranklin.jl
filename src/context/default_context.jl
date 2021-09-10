@@ -34,6 +34,13 @@ const DefaultGlobalVars = Vars(
     :header_class      => "",
     :header_link       => true,
     :header_link_class => "",
+    # General classes
+    :toc_class         => "toc",
+    :anchor_class      => "anchor",
+    :anchor_math_class => "anchor-math",
+    :anchor_bib_class  => "anchor-bib",
+    :eqref_class       => "eqref",
+    :bibref_class      => "bibref",
     # Dates
     :date_format      => "U dd, yyyy",
     :date_days        => String[],
@@ -56,9 +63,12 @@ const DefaultGlobalVars = Vars(
     :_idx_rpath     => 1,
     :_idx_ropath    => 1,
     # Utils related
-    :_utils_hfun_names  => Symbol[],
-    :_utils_lxfun_names => Symbol[],
-    :_utils_var_names   => Symbol[],
+    :_utils_hfun_names   => Symbol[],
+    :_utils_lxfun_names  => Symbol[],
+    :_utils_envfun_names => Symbol[],
+    :_utils_var_names    => Symbol[],
+    # Hyperrefs
+    :_anchors => LittleDict{String, String}(),
 )
 const DefaultGlobalVarsAlias = Alias(
     :prepath                => :base_url_prefix,
@@ -114,6 +124,9 @@ const DefaultLocalVars = Vars(
     :_modification_time => 0.0,
     # mddefs related
     :_setvar            => Set{Symbol}(),
+    # references (note: headers are part of context, see ctx.headers)
+    :_eqrefs            => LittleDict{String, Int}("__cntr__" => 0),
+    :_bibrefs           => LittleDict{String, String}(),
 )
 const DefaultLocalVarsAlias = Alias(
     :fd_rpath     => :_relative_path,
@@ -122,18 +135,11 @@ const DefaultLocalVarsAlias = Alias(
     :fd_mtime     => :_modification_time,
 )
 
-
-const DefaultGlobalLxDefs = LxDefs(
-)
-
-const DefaultLocalLxDefs = LxDefs()
-
-
 ##############################################################################
 
 DefaultGlobalContext() = GlobalContext(
     deepcopy(DefaultGlobalVars),
-    deepcopy(DefaultGlobalLxDefs),
+    LxDefs(),
     alias=copy(DefaultGlobalVarsAlias)
 ) |> set_current_global_context
 
@@ -144,7 +150,7 @@ function DefaultLocalContext(
     LocalContext(
         gc,
         deepcopy(DefaultLocalVars),
-        deepcopy(DefaultLocalLxDefs),
+        LxDefs(),
         alias=copy(DefaultLocalVarsAlias),
         rpath=rpath
     ) |> set_current_local_context
@@ -153,3 +159,13 @@ end
 # for html pages
 SimpleLocalContext(gc::GlobalContext; rpath::String="") =
     LocalContext(gc; rpath)
+
+
+##############################################################################
+# These will fail for contexts that haven't been constructed out of Default
+
+anchors(c=cur_gc()) = gegvar(c, :_anchors, LittleDict{String, String}())
+eqrefs(c=cur_lc())  = getvar(c, :_eqrefs,  LittleDict{String, Int}())
+bibrefs(c=cur_lc()) = getvar(c, :_bibrefs, LittleDict{String, String}())
+
+relative_url_curpage() = getlvar(:_relative_url, "")

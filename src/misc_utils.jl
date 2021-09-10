@@ -7,7 +7,7 @@ const StringOrRegex = Union{String, Regex}
     hl(s, c)
 
 Make a string coloured and printable within a macro such as `@info`.
-Courtesy of Andrey Oskin.
+Courtesy of Andrey Oskin on discourse.
 """
 function hl(o, c::Symbol=:light_magenta)
     io = IOBuffer()
@@ -52,14 +52,6 @@ change_ext(fn, ext=".html") = splitext(fn)[1] * ext
 Return `fpath` without extension `foo/bar.md` --> `foo/bar`.
 """
 noext(fp::String) = first(splitext(fp))
-
-"""
-    html_attr
-
-Convenience function to add an attribute to a html element.
-"""
-html_attr(n::Symbol, v::String) = ifelse(isempty(v), "", " $n=\"$v\"")
-
 
 """
     anymatch(v1, v2)

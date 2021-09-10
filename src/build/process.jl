@@ -50,7 +50,6 @@ function process_config(
         if isempty(url)
             @warn """
                 Process config
-                --------------
                 When `generate_rss=true`, `rss_website_url` must be given.
                 Setting `generate_rss=false` in the meantime.
                 """
@@ -88,7 +87,6 @@ function process_config(gc::GlobalContext=cur_gc(); initial_pass::Bool=false)
     else
         @warn """
             Process config
-            --------------
             Config file $config_path not found.
             """
     end
@@ -160,9 +158,10 @@ function process_utils(gc::GlobalContext=cur_gc(); initial_pass::Bool=false)
     return
 end
 
-utils_hfun_names()  = getgvar(:_utils_hfun_names)::Vector{Symbol}
-utils_lxfun_names() = getgvar(:_utils_lxfun_names)::Vector{Symbol}
-utils_var_names()   = getgvar(:_utils_var_names)::Vector{Symbol}
+utils_hfun_names()   = getgvar(:_utils_hfun_names)::Vector{Symbol}
+utils_lxfun_names()  = getgvar(:_utils_lxfun_names)::Vector{Symbol}
+utils_envfun_names() = getgvar(:_utils_envfun_names)::Vector{Symbol}
+utils_var_names()    = getgvar(:_utils_var_names)::Vector{Symbol}
 
 
 
@@ -197,7 +196,7 @@ function process_file(
     if case in (:md, :html)
         # ----------------------------------------------
         start = time(); @info """
-            ⌛ processing $(hl(get_rpath(fpath), :cyan))
+            ⌛ processing $(hl(str_fmt(get_rpath(fpath)), :cyan))
             """
         # ----------------------------------------------
 
@@ -210,7 +209,7 @@ function process_file(
 
         # ----------------------------------------------------------------------------
         @info """
-            ... ✔ $(hl(time_fmt(time()-start))), wrote $(hl(str_fmt(ropath), :cyan))
+            ... [process] ✔ $(hl(time_fmt(time()-start))), wrote $(hl(str_fmt(ropath), :cyan))
             """
         # ----------------------------------------------------------------------------
     else
@@ -327,7 +326,7 @@ function _process_md_file_html(ctx::Context, page_content_md::String)
     body_html = ""
     if !isempty(c_tag)
         body_html = """
-            <$(c_tag)$(html_attr(:class, c_class))$(html_attr(:id, c_id))>
+            <$(c_tag) $(attr(:class, c_class)) $(attr(:id, c_id))>
               $page_content_html
               $page_foot_html
             </$(c_tag)>
@@ -346,6 +345,7 @@ function _process_md_file_html(ctx::Context, page_content_md::String)
     if !isempty(head_path) && isfile(head_path)
         full_page_html = html2(read(head_path, String), ctx)
     end
+
     # > attach the body
     full_page_html *= body_html
     # > then the foot if it exists

@@ -1,21 +1,31 @@
-"""
-    attr(name, val)
+function html_prepost(s, pre; kw...)
+   tmp = pre
+   for (k, v) in kw
+      tmp = replace(tmp, ">" => " " * attr(k, v) * " >")
+   end
+   post = replace(pre, "<"=>"</")
+   pre  = replace(tmp, " >"=>">")
+   return pre * s * post
+end
 
-Convenience function to add an attribute to a HTML element.
-"""
-attr(name::Symbol, val::String) =
-    ifelse(isempty(val), val, " $name=\"$val\"")
+function latex_prepost(s, pre)
+    pre  = "\\$pre{"
+    post = "}"
+    return pre * s * post
+end
+
 
 """
     string_to_anchor(s)
 
-Takes a string `s` and replace spaces by underscores so that that we can use it
-for hyper-references. So for instance `"aa  bb"` will become `aa_bb`.
-It also defensively removes any non-word character so for instance `"aa bb !"` will be `"aa_bb"`
+Takes a string `s` and replace spaces by underscores so that that we can use
+it for hyper-references. So for instance `"aa  bb"` will become `aa_bb`.
+It also defensively removes any non-word character so for instance `"aa bb !"`
+will be `"aa_bb"`
 """
 function string_to_anchor(s::String)
     # remove html tags
-    st = replace(s, r"<[a-z\/]+>" => "")
+    st = replace(strip(s), r"<[a-zA-Z\/]+>" => "")
     # remove non-word characters
     st = replace(st, r"&#[0-9]+;" => "")
     st = replace(st, r"[^\p{L}0-9_\-\s]" => "")
@@ -28,3 +38,22 @@ function string_to_anchor(s::String)
     # of the original string
     return ifelse(isempty(st), string(hash(s)), st)
 end
+
+
+"""
+    escape_xml(s)
+
+Take a (sub)string (typically from code) and escape XML characters that could
+otherwise lead to html tags.
+"""
+escape_xml(s::SS) = occursin(XML_SPECIAL, s) ?
+    replace(s, XML_SPECIAL => replace_unsafe_char) : s
+
+const XML_SPECIAL = Regex("[&<>\"]")
+const UNSAFE_MAP  = LittleDict(
+    "&"  => "&amp;",
+    "<"  => "&lt;",
+    ">"  => "&gt;",
+    "\"" => "&quot;",
+)
+replace_unsafe_char(s::AbstractString) = get(UNSAFE_MAP, s, s)

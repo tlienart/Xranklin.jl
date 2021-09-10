@@ -8,7 +8,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         h = html(s)
         l = latex(s)
         @test h // "<p>barbar</p>"
-        @test l // "barbar"
+        @test l // "barbar\\par"
     end
     let s = raw"""
         \newcommand{\foo}[1]{bar:#1}
@@ -17,7 +17,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         h = html(s)
         l = latex(s)
         @test h // "<p>bar:hello</p>"
-        @test l // "bar:hello"
+        @test l // "bar:hello\\par"
     end
     let s = raw"""
         \newcommand{\foo}[2]{bar:#1#2}
@@ -26,7 +26,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         h = html(s)
         l = latex(s)
         @test h // "<p>bar:hello!</p>"
-        @test l // "bar:hello!"
+        @test l // "bar:hello!\\par"
     end
 end
 
@@ -41,7 +41,7 @@ end
         h = html(s)
         l = latex(s)
         @test h // "<p>bar:hello!</p>"
-        @test l // "bar:hello!"
+        @test l // "bar:hello!\\par"
     end
 end
 
@@ -55,7 +55,7 @@ end
         """
         h = html(s)
         l = latex(s)
-        @test h // "bar:abc:baz<p>ABC</p>"
+        @test h // "<p>bar:abc:baz</p>\n<p>ABC</p>"
         @test l // "bar:abc:baz\\par\nABC\\par"
     end
 end
@@ -74,7 +74,7 @@ end
         """
         h = html(s)
         l = latex(s)
-        @test h // "<p>bar-abc</p>\nzar-def-zaz<p>ghi-baz</p>"
+        @test h // "<p>bar-abc</p>\n<p>zar-def-zaz</p>\n<p>ghi-baz</p>"
         @test l // "bar-abc\\par\nzar-def-zaz\\par\nghi-baz\\par"
     end
 end

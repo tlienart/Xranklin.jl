@@ -82,3 +82,25 @@ Mixed
 ## Page variables
 
 **Note**: the `@def ...` is still supported but the `+++...+++` should be preferred to it.
+
+
+## Hfuns
+
+Evaluated last (and so have access to full page context though maybe not full site context)
+
+## LxFuns
+
+Evaluated during `try_resolve_lxcom` and so only have access to the context up to the calling point.
+
+If a lxcom corresponds to something defined with a newcommand in either the local or global environment, then this is used, with its specific number of args.
+
+If a lxcom corresponds to something defined in Utils or Xranklin (lxfun), then this is used and it will greedily take every braces it can (0 to x) and pass all that as arguments. It's then on the user to have the function check
+
+```
+\foo --> calls lx_foo([])
+\foo{arg1} --> calls lx_foo([arg1])
+\foo{arg1}{arg2} --> calls lx_foo([arg1, arg2])
+
+# careful (though this shouldn't happen...)
+\foo{arg1}{arg2}{{arg3}} --> calls lx_foo([arg1, arg2, "{arg3}"])
+```

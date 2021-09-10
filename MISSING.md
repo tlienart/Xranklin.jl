@@ -16,6 +16,7 @@ a tick just means the feature is there not that it's properly tested
 * [x] MATH_A `rules/maths`
 * [x] MATH_B `rules/maths`
 * [x] MATH_C `rules/maths`
+* [x] Math with label command `to_maths`
 * [ ] MATH_I
 * [x] MD_DEF `rules/text`
 * [x] DIV `rules/text`

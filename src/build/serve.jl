@@ -92,9 +92,11 @@ function serve(;
     serialize_notebook(gc.nb_vars, path(:cache) / "gnbv.json")
     serialize_notebook(gc.nb_code, path(:cache) / "gnbc.json")
     for (rp, ctx) in gc.children_contexts
+        # ignore .html pages
+        endswith(rp, ".md") || continue
         @info "📓 serializing $(hl(str_fmt(rp), :cyan))..."
-        serialize_notebook(gc.nb_vars, path(:cache) / noext(rp) / "nbv.json")
-        serialize_notebook(gc.nb_code, path(:cache) / noext(rp) / "nbc.json")
+        serialize_notebook(ctx.nb_vars, path(:cache) / noext(rp) / "nbv.json")
+        serialize_notebook(ctx.nb_code, path(:cache) / noext(rp) / "nbc.json")
     end
     δt = time() - start; @info """
         💡 $(hl("serializing done", :yellow)) $(hl(time_fmt(δt)))
@@ -153,7 +155,6 @@ function full_pass(
     if !hasindex
         @warn """
             Full pass
-            ---------
             No 'index.md' or 'index.html' found in the base folder.
             There should be one though this won't block the build.
             """
@@ -188,6 +189,7 @@ function full_pass(
         union!(re_process, c.to_trigger)
         empty!(c.to_trigger)
     end
+
     for rpath in re_process
         # ------------------------------------------------------------------------
         start = time(); @info """
