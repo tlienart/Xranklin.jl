@@ -199,5 +199,5 @@ function dmath(b::Block, c::LocalContext)
         # keep track of the reference + numbering
         eqrefs(c)[id] = (eqrefs(c)["__cntr__"] += 1)
     end
-    return "$anchor\\[ $(convert_md(math_str, c; math=true)) \\]\n"
+    return "$anchor\\[ $(math(math_str, c)) \\]\n"
 end

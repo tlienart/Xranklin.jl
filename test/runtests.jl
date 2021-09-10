@@ -1,5 +1,5 @@
 using Xranklin
-using LiveServer
+import LiveServer
 using Logging
 using Test
 X = Xranklin;

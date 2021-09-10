@@ -25,7 +25,7 @@ end
         &#42; &plusmn; &ndash; \{ \} \`
         """
         @test html(s) // "<p>&#42; &plusmn; &ndash; &#123; &#125; &#96;</p>"
-        @test latex(s) // "&#42; &plusmn; &ndash; \\{ \\} \\`\\par"
+        @test latex(s) // "\\&#42; \\&plusmn; \\&ndash; \\{ \\} \\`\\par"
     end
     # emojis (note, lualatex will skip those chars)
     let s = raw"""
