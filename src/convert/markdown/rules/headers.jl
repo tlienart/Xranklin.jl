@@ -13,7 +13,7 @@ latex_h5(b, c) = latex_hk(b, c, :h5)
 latex_h6(b, c) = latex_hk(b, c, :h6)
 
 function html_hk(b, c, hk::Symbol)
-    header_text = recursive_html(b, c)
+    header_text = rhtml(b, c)
     # strip <p> / </p>
     header_text = replace(header_text, r"(?:^\s*<p>\s*)|(?:</p>\s*$)" => "")
     # header id
@@ -32,7 +32,7 @@ function html_hk(b, c, hk::Symbol)
 end
 
 function latex_hk(b, c, hk::Symbol)
-    header_text = recursive_latex(b, c)
+    header_text = rlatex(b, c)
     # strip \\par
     header_text = replace(header_text, r"(?:\\par\s*$)" => "")
     id = header_id(c, header_text, hk)

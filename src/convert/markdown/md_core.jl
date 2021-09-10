@@ -47,15 +47,13 @@ context `c`.
 """
 function convert_md(md::SS, c::Context;
                     tohtml=true, nop=false,
-                    math=false, recursive=false, kw...)
+                    recursive=false, kw...)
     # stream to which the converted text will be written
     io = IOBuffer()
 
-    if math
+    if is_math(c)
         blocks = FP.math_partition(md; kw...)
-        c.is_recursive[] = c.is_math[] = true
         process_latex_objects!(blocks, c; tohtml)
-        c.is_recursive[] = c.is_math[] = false
         for b in blocks
             write(io, b.ss)
         end
@@ -107,7 +105,15 @@ function convert_md(md::SS, c::Context;
 end
 convert_md(md::String, c::Context; kw...) = convert_md(subs(md), c; kw...)
 
-math(md, c...; kw...) = convert_md(md, c...; math=true, kw...)
+
+function math(md::SS, c::LocalContext; kw...)
+    c.is_recursive[] = c.is_math[] = true
+    r = convert_md(md, c; kw...)
+    c.is_recursive[] = c.is_math[] = false
+    return r
+end
+math(md::String, c; kw...) = math(subs(md), c; kw...)
+math(b::Block, c; kw...)   = math(content(b), c; kw...)
 
 
 function html(md::SS, c::Context=DefaultLocalContext(); kw...)

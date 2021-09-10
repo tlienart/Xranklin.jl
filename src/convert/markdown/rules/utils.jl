@@ -38,3 +38,22 @@ function string_to_anchor(s::String)
     # of the original string
     return ifelse(isempty(st), string(hash(s)), st)
 end
+
+
+"""
+    escape_xml(s)
+
+Take a (sub)string (typically from code) and escape XML characters that could
+otherwise lead to html tags.
+"""
+escape_xml(s::SS) = occursin(XML_SPECIAL, s) ?
+    replace(s, XML_SPECIAL => replace_unsafe_char) : s
+
+const XML_SPECIAL = Regex("[&<>\"]")
+const UNSAFE_MAP  = LittleDict(
+    "&"  => "&amp;",
+    "<"  => "&lt;",
+    ">"  => "&gt;",
+    "\"" => "&quot;",
+)
+replace_unsafe_char(s::AbstractString) = get(UNSAFE_MAP, s, s)

@@ -88,38 +88,38 @@ include("convert/regex.jl")
 
 # ===> MARKDOWN
 
-# include("convert/markdown/commonmark.jl")
-# include("convert/markdown/utils.jl")
-
 # >> LxFuns
-# include("convert/markdown/lxfuns/utils.jl")
-# include("convert/markdown/lxfuns/hyperrefs.jl")
-#
+include("convert/markdown/lxfuns/utils.jl")
+include("convert/markdown/lxfuns/hyperrefs.jl")
+
+# >> LxObjects
 include("convert/markdown/latex_objects.jl")
 
+# >> Core
 include("convert/markdown/md_core.jl")
 
+# >> Rules
 include("convert/markdown/rules/utils.jl")
 include("convert/markdown/rules/text.jl")
-# include("convert/markdown/rules/headers.jl")
-# include("convert/markdown/rules/code.jl")
-# include("convert/markdown/rules/maths.jl")
+include("convert/markdown/rules/headers.jl")
+include("convert/markdown/rules/code.jl")
+include("convert/markdown/rules/maths.jl")
 
 # ===> POSTPROCESSING
 
-# include("convert/postprocess/hfuns/utils.jl")
-# include("convert/postprocess/hfuns/input.jl")
-# include("convert/postprocess/hfuns/hyperrefs.jl")
-#
-# include("convert/postprocess/utils.jl")
+include("convert/postprocess/hfuns/utils.jl")
+include("convert/postprocess/hfuns/input.jl")
+include("convert/postprocess/hfuns/hyperrefs.jl")
+
+include("convert/postprocess/utils.jl")
 include("convert/postprocess/html2.jl")
 include("convert/postprocess/latex2.jl")
 
 # ------------------------------------------------------------------------
 
 include("build/paths.jl")
-# include("build/watch.jl")
-# include("build/process.jl")
-# include("build/serve.jl")
+include("build/watch.jl")
+include("build/process.jl")
+include("build/serve.jl")
 
 end # module

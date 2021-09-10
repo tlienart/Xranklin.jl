@@ -37,9 +37,6 @@ end
     p = "convert/md2x"
     # rules
     include(p/"rules_text.jl")
-
-    # XXX XXX XXX XXX XXX XXX XXX
-
     include(p/"rules_headers.jl")
     include(p/"rules_maths.jl")
     include(p/"rules_defs.jl")
