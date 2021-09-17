@@ -101,6 +101,8 @@ include("convert/markdown/md_core.jl")
 # >> Rules
 include("convert/markdown/rules/utils.jl")
 include("convert/markdown/rules/text.jl")
+include("convert/markdown/rules/list.jl")
+include("convert/markdown/rules/table.jl")
 include("convert/markdown/rules/headers.jl")
 include("convert/markdown/rules/code.jl")
 include("convert/markdown/rules/maths.jl")
