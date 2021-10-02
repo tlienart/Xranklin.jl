@@ -254,3 +254,25 @@ end
         </ul>
         """)
 end
+
+@testset "ol-start" begin
+    s = """
+        2. abc
+        1. def
+        0. ghi
+        """
+    h = s |> html
+    l = s |> latex
+    @test isapproxstr(h, """
+        <ol start="2">
+          <li>
+            abc
+          </li>
+          <li>
+            def
+          </li>
+          <li>
+            ghi
+          </li>
+        </ol>""")
+end
