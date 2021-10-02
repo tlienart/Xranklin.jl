@@ -40,6 +40,8 @@ end
     include(p/"rules_headers.jl")
     include(p/"rules_maths.jl")
     include(p/"rules_defs.jl")
+    include(p/"rules_list.jl")
+    # include(p/"rules_table.jl")
 end
 
 @testset "build" begin

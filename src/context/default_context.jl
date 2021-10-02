@@ -57,6 +57,8 @@ const DefaultGlobalVars = Vars(
     :rss_full_content  => false,
     # Tags
     :tag_page_path => "tag",
+    # Misc
+    :tabs_to_spaces => 2,   # \t -> ' ' conversion
     # Paths related
     :_offset_lxdefs => -typemax(Int),
     :_paths         => LittleDict{Symbol, String}(),
@@ -68,7 +70,7 @@ const DefaultGlobalVars = Vars(
     :_utils_envfun_names => Symbol[],
     :_utils_var_names    => Symbol[],
     # Hyperrefs
-    :_anchors => LittleDict{String, String}(),
+    :_anchors => LittleDict{String, String}()
 )
 const DefaultGlobalVarsAlias = Alias(
     :prepath                => :base_url_prefix,

@@ -18,3 +18,6 @@ const HIDE_FINAL_OUTPUT_PATTERN = r";\s*(:?#.*)?\n?"
 
 "Trim the non-relevant part of a stacktrace when evaluating code."
 const STACKTRACE_TRIM_PATTERN = r"\[\d+\]\stop-level\sscope"
+
+"Indicator for a list item. Group 1 = indentation, Group 2 = marker."
+const LIST_MARKER_PAT = r"(?:^|\n)([ \t]*)([+\-*][ \t]|[0-9]{1,9}[\.\)][ \t])"
