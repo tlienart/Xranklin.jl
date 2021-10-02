@@ -1,24 +1,19 @@
-#= XXX
-26 sept
-nested list should close li so it should be
+"""
+    convert_list(io, g, ctx; tohtml, kw...)
 
-<ul>
- <li>A
-  <ul>
-   <li>A1</li>
-  </ul>
- </li>
-</ul>
+The group `g` corresponds to a substring which is expected to be list-like.
+This parses it, extracts the relevant element and writes the converted list
+to `io`.
 
-(important to e.g. indicate "ul > li > ul > li")
----
-=#
+# Rules
 
-
+    * indent with either two whitespaces (or more) or one tab (or more) from
+        the previous level; extra indentation is ignored.
+"""
 function convert_list(io::IOBuffer, g::Group, ctx::LocalContext;
                       tohtml=true, kw...)::Nothing
-
-    # g is just a wrapper around a block of text
+    # ---------------------------------------------------------------------------------
+    # g is just a wrapper around a block of text (g.ss)
     #
     #   > UNORDERED ITEM
     #       generic processing
@@ -71,9 +66,9 @@ function convert_list(io::IOBuffer, g::Group, ctx::LocalContext;
     init_ind    = Ref{Int}(0)
 
     # convenience function
-    _process_item!(item_mrk, item_str) = process_item!(
+    _process_item!(mrk, item_str) = process_item!(
         prev_levels, init_ind, io, ctx,
-        item_str, item_mrk, tohtml
+        item_str, mrk, tohtml
     )
 
     nxt_mrk = first(markers)
@@ -116,6 +111,13 @@ function convert_list(io::IOBuffer, g::Group, ctx::LocalContext;
     return
 end
 
+
+"""
+    process_item!(prev_levels, init_ind, io, ctx, item_str, cur_marker, tohtml)
+
+Helper function to process a new item in a previously existing list context
+(as per `prev_levels`). This is the function that is called on each item.
+"""
 function process_item!(
         prev_levels::Vector{Symbol},
         init_ind::Ref{Int},
@@ -148,6 +150,16 @@ function process_item!(
     # --------------------------------------------------------
     # check type
     is_ol = first(item_mrk) |> isdigit
+    if is_ol && (init_num = parse(Int, chop(strip(item_mrk)))) > 1
+        if tohtml
+            open_ol = "<ol start=\"$init_num\">\n"
+        else
+            depth   = sum(prev_levels .== :ol)
+            cidx    = ifelse(depth > 3, 1, depth + 1)
+            counter = ["enumi", "enumii", "enumiii", "enumiv"][cidx]
+            open_ol = "\\begin{enumerate}\\setcounter{$counter}{$(init_num-1)}\n"
+        end
+    end
     # level of indentation
     nlvls = length(prev_levels)    # number of openings
     # check raw indentation of current item
