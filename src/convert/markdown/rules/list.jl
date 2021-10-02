@@ -7,8 +7,20 @@ to `io`.
 
 # Rules
 
-    * indent with either two whitespaces (or more) or one tab (or more) from
-        the previous level; extra indentation is ignored.
+    * indent with either two whitespace characters (or more) or one tab
+        character (or more), taken from the previous level of indentation.
+        Extra indentation is ignored (also for subsequent levels).
+    * if a numbered list starts with a number other than 1, the list will
+        start at that number and increment by one starting from that number
+        so for instance 10, 11, 12. This is useful when a list is interrupted
+        by a paragraph for instance. In LaTeX this won't work well beyond
+        4th level of nesting.
+    * an item will be continued with any inline blocks (so can be on multiple
+        lines).
+    * lists are always expected to be tight so a new item for the same list
+        must be immediately on the next line following the previous item.
+        If a line skip (empty line) is present; the new item will be in a new
+        list.
 """
 function convert_list(io::IOBuffer, g::Group, ctx::LocalContext;
                       tohtml=true, kw...)::Nothing
@@ -37,14 +49,6 @@ function convert_list(io::IOBuffer, g::Group, ctx::LocalContext;
     #
     # 'Enough indentation'
     #    \t is counted as globvar(tabs_to_spaces) number of whitespaces
-    #
-    # NOTE invalid is not a good idea because they won't be merged with previous
-    # paragraph if any, so for instance if someone is writing
-    #
-    # ABC
-    # 1.foo
-    #
-    # this will lead to <p>ABC</p><p>1.foo</p>
     # ---------------------------------------------------------------------------------
 
     # this may be empty e.g. if it's an invalid OL item
