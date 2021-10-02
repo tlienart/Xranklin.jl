@@ -46,8 +46,7 @@ context `c`.
                     `tokens` which allows to pass tokens from a previous pass.
 """
 function convert_md(md::SS, c::Context;
-                    tohtml=true, nop=false,
-                    recursive=false, kw...)
+                    tohtml=true, nop=false, kw...)
     # stream to which the converted text will be written
     io = IOBuffer()
 
@@ -91,6 +90,12 @@ function convert_md(md::SS, c::Context;
                 write(io, after_par)
             end
 
+        elseif g.role == :LIST
+            convert_list(io, g, c; tohtml, kw...)
+
+        elseif g.role == :TABLE
+            convert_table(io, g, c; tohtml, kw...)
+
         # environment groups (begin...end)
         elseif startswith(string(g.role), "ENV_")
             b = try_resolve_lxenv(g.blocks, c; tohtml)
@@ -103,7 +108,6 @@ function convert_md(md::SS, c::Context;
     end
     return String(take!(io))
 end
-convert_md(md::String, c::Context; kw...) = convert_md(subs(md), c; kw...)
 
 
 function math(md::SS, c::LocalContext; kw...)
@@ -112,7 +116,6 @@ function math(md::SS, c::LocalContext; kw...)
     c.is_recursive[] = c.is_math[] = false
     return r
 end
-math(md::String, c; kw...) = math(subs(md), c; kw...)
 math(b::Block, c; kw...)   = math(content(b), c; kw...)
 
 
@@ -163,7 +166,7 @@ function recurse(s::SS, c::Context; tohtml=true, kw...)::String
     converter = ifelse(tohtml, html, latex)
     was_recursive = c.is_recursive[]
     c.is_recursive[] = true
-    r = converter(s, c; recursive=true, kw...)
+    r = converter(s, c; kw...)
     c.is_recursive[] = was_recursive
     return r
 end
