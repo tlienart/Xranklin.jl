@@ -130,7 +130,7 @@ function _eval_code_cell(mdl::Module, code::String, cell_name::String)::NamedTup
             """
 
     # Check what should be displayed at the end if anything
-    if endswith(code, HIDE_FINAL_OUTPUT_PATTERN)
+    if endswith(code, HIDE_FINAL_OUTPUT_PAT)
         return (value=nothing, output=captured.output)
     end
 
@@ -156,7 +156,7 @@ the format is unrecognised.
 """
 function trim_stacktrace(s::String)
     try
-        first_match_start = first(findfirst(STACKTRACE_TRIM_PATTERN, s))
+        first_match_start = first(findfirst(STACKTRACE_TRIM_PAT, s))
         # Keep only everything before the regex match.
         return s[1:first_match_start-3]
     catch err
