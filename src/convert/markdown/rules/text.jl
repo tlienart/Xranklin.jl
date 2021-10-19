@@ -29,9 +29,17 @@ latex_emph_em_strong(b, c) = "\\textbf{\\textit{" * rlatex(b, c; nop=true) * "}}
 html_linebreak(b, _)  = "\n<br>\n"
 latex_linebreak(b, _) = "\\\\"
 
-# ~~~...~~~
+#  ???...???
+html_raw(b, _)  = content(b)
+latex_raw(b, _) = content(b)
+
+#  ~~~...~~~
 html_raw_html(b, _)  = content(b)
 latex_raw_html(b, _) = ""
+
+#  %%%...%%%
+html_raw_latex(b, _)  = ""
+latex_raw_latex(b, _) = content(b)
 
 # {{...}}
 html_dbb(b, _)  = string(b.ss)  # will be post-processed in html2
