@@ -65,6 +65,7 @@ function convert_table(io::IOBuffer, g::Group, c::Context;
     all_cells = row_partition.(rows)
     max_cols  = maximum(length.(all_cells))
 
+    # Lambdas for html/latex
     if tohtml
         get_align   = i -> begin
             a = i <= length(alignment) ? alignment[i] : ALIGN_NONE
@@ -105,13 +106,17 @@ function convert_table(io::IOBuffer, g::Group, c::Context;
         row_cell    = head_cell
     end
 
-
+    #=
+    TABLE WRITING
+    . note that cells are re-converted without <p>.
+    =#
     write(io, table_open)
     # HEADER
     write(io, head_open)
     n = 0
     for (i, hc) in enumerate(all_cells[1])
-        write(io, head_cell(i, hc))
+        chc = convert_md(hc, c; tohtml, nop=true)
+        write(io, head_cell(i, chc))
         n = i
     end
     for i in 1:(max_cols-length(all_cells[1]))
@@ -124,7 +129,8 @@ function convert_table(io::IOBuffer, g::Group, c::Context;
     for k in 2:length(rows)
         n = 0
         for (i, hc) in enumerate(all_cells[k])
-            write(io, row_cell(i, hc))
+            chc = convert_md(hc, c; tohtml, nop=true)
+            write(io, row_cell(i, chc))
             n = i
         end
         for i in 1:(max_cols-length(all_cells[k]))
