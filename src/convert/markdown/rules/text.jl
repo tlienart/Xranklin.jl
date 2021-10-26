@@ -45,7 +45,6 @@ latex_raw_latex(b, _) = content(b)
 html_dbb(b, _)  = string(b.ss)  # will be post-processed in html2
 latex_dbb(b, _) = string(b.ss)  # will be post-processed in latex2
 
-
 #
 # BLOCK (not inline)
 #

@@ -304,11 +304,11 @@ function from_utils(n::Symbol, i::Int, blocks::Vector{Block}, ctx::LocalContext;
     args  = next_adjacent_brackets(i, blocks, ctx; tohtml)
 
     fsymb, kind = ifelse(isenv,
-        "env_$n" => :RAW_BLOCK,
-        "lx_$n"  => :RAW_INLINE
+        Symbol("env_$n") => :RAW_BLOCK,
+        Symbol("lx_$n")  => :RAW_INLINE
     )
-    f     = getproperty(mdl, fsymb)
-    o     = outputof(f, args; tohtml)
+    f = getproperty(mdl, fsymb)
+    o = outputof(f, args; tohtml)
 
     return Block(kind, subs(o)), length(args)
 end
@@ -331,7 +331,7 @@ function next_adjacent_brackets(
         push!(brackets, blocks[c])
         c += 1
     end
-    recursion = ifelse(tohtml, recursive_html, recursive_latex)
+    recursion = ifelse(tohtml, rhtml, rlatex)
     return [recursion(b, ctx) for b in brackets]
 end
 

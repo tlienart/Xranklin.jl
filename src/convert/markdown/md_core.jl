@@ -73,7 +73,7 @@ function convert_md(md::SS, c::Context;
 
     # in some recursive contexts like the resolution of a lx command, we
     # don't want to set a paragraph
-    nop && (before_par = after_par = "")
+    (nop || is_recursive(c)) && (before_par = after_par = "")
 
     # go over each group, if it's a paragraph add the paragraph separators
     # around it, then convert each block in the group and write that to stream

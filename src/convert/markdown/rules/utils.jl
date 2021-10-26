@@ -23,7 +23,7 @@ it for hyper-references. So for instance `"aa  bb"` will become `aa_bb`.
 It also defensively removes any non-word character so for instance `"aa bb !"`
 will be `"aa_bb"`
 """
-function string_to_anchor(s::String)
+function string_to_anchor(s::AbstractString)
     # remove html tags
     st = replace(strip(s), r"<[a-zA-Z\/]+>" => "")
     # remove non-word characters
@@ -38,6 +38,7 @@ function string_to_anchor(s::String)
     # of the original string
     return ifelse(isempty(st), string(hash(s)), st)
 end
+string_to_anchor(ss::SS) = string_to_anchor(string(ss))
 
 
 """

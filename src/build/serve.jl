@@ -5,7 +5,7 @@ Runs Franklin in the current directory.
 
 ## Keyword Arguments
 
-    folder (String): website folder, this is the folder which is expected to
+    dir (String): website folder, this is the folder which is expected to
                      contain the config.md as well as the index.(md|html).
     clear (Bool): whether to clear everything and start from scratch, this
                   will clear the `__site`, `__cache` and `__pdf` directories.
@@ -25,8 +25,8 @@ Runs Franklin in the current directory.
                    already have a browser tab pointing to a page of interest.
 
 """
-function serve(;
-            folder::String = pwd(),
+function serve(dir::String = pwd();
+            folder::String = dir,
             clear::Bool    = false,
             single::Bool   = false,
             # LiveServer options

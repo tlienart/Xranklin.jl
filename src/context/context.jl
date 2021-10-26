@@ -116,6 +116,7 @@ Fields:
     vars:             a dictionary of the local variables
     lxdefs:           a dictionary of the local lx-definitions
     headers:          a dictionary of the current page headers
+    refs:             a dictionary of the current page refs
     rpath:            relative path to the page with this local context.
     is_recursive:     whether we're in a recursive context
     is_math:          whether we're recursing in a math environment
@@ -135,6 +136,7 @@ struct LocalContext <: Context
     vars::Vars
     lxdefs::LxDefs
     headers::PageHeaders
+    refs::PageRefs
     rpath::String
     # chars
     is_recursive::Ref{Bool}
@@ -159,9 +161,11 @@ getid(c::LocalContext)::String = c.rpath
 getglob(c::GlobalContext)::GlobalContext = c
 getglob(c::LocalContext)::GlobalContext  = c.glob
 
+is_recursive(c::GlobalContext) = false
+is_recursive(c::LocalContext)  = c.is_recursive[]
+
 is_math(c::GlobalContext) = false
 is_math(c::LocalContext)  = c.is_math[]
-
 
 # --------------------------------------- #
 # GLOBAL CONTEXT CONSTRUCTORS AND METHODS #
