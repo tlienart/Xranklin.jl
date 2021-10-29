@@ -332,7 +332,7 @@ function next_adjacent_brackets(
         c += 1
     end
     recursion = ifelse(tohtml, rhtml, rlatex)
-    return [recursion(b, ctx) for b in brackets]
+    return [recursion(b, ctx; nop=true) for b in brackets]
 end
 
 

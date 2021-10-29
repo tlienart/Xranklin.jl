@@ -210,7 +210,7 @@ setdef!(gc::GlobalContext, n::String, d) = setdef!(gc.lxdefs, n, d)
 
 # Note that when a local context is created it is automatically
 # attached to its global context via the children_contexts
-function LocalContext(glob, vars, defs, headers, rpath="", alias=Alias())
+function LocalContext(glob, vars, defs, headers, refs, rpath="", alias=Alias())
     # vars notebook
     mdl = submodule(modulename("$(rpath)_vars", true), wipe=true)
     nv  = VarsNotebook(mdl, Ref(1), VarsCodePairs(), Ref(false))
@@ -226,7 +226,7 @@ function LocalContext(glob, vars, defs, headers, rpath="", alias=Alias())
     )
     tt = Set{String}()
     # form the object
-    lc = LocalContext(glob, vars, defs, headers,
+    lc = LocalContext(glob, vars, defs, headers, refs,
                       rpath, Ref(false), Ref(false),
                       rv, rl, alias, nv, nc, tt)
     # attach it to global
@@ -236,7 +236,7 @@ end
 
 function LocalContext(g=GlobalContext(), v=Vars(), d=LxDefs();
                       rpath="", alias=Alias())
-    return LocalContext(g, v, d, PageHeaders(), rpath, alias)
+    return LocalContext(g, v, d, PageHeaders(), PageRefs(), rpath, alias)
 end
 
 # when trying to retrieve a variable from a local context, we first check

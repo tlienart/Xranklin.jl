@@ -78,7 +78,6 @@ function lx_biblabel(p::VS; tohtml::Bool=true)::String
                 getgvar(:anchor_bib_class, "anchor-bib")
         return html_a(; id, class)
     end
-
 end
 
 
