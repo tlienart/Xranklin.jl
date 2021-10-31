@@ -16,7 +16,7 @@ import FranklinParser
 const FP = FranklinParser
 import FranklinParser: SS, Token, Block, Group,
                        subs, content, dedent, parent_string,
-                       from, to, prev_index, next_index
+                       from, to, prev_index, next_index, next_chars
 
 import FranklinTemplates: newsite, filecmp
 import LiveServer

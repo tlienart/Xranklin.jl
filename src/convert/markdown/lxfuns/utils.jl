@@ -6,7 +6,7 @@ const INTERNAL_LXFUNS = Symbol[
     :eqref,
     :cite, :citet, :citep,
     :label, :biblabel,
-    :reflink,
+    :reflink
 ]
 
 const INTERNAL_ENVFUNS = Symbol[

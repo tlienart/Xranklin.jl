@@ -116,7 +116,6 @@ Fields:
     vars:             a dictionary of the local variables
     lxdefs:           a dictionary of the local lx-definitions
     headers:          a dictionary of the current page headers
-    refs:             a dictionary of the current page refs
     rpath:            relative path to the page with this local context.
     is_recursive:     whether we're in a recursive context
     is_math:          whether we're recursing in a math environment
@@ -136,7 +135,6 @@ struct LocalContext <: Context
     vars::Vars
     lxdefs::LxDefs
     headers::PageHeaders
-    refs::PageRefs
     rpath::String
     # chars
     is_recursive::Ref{Bool}
@@ -210,7 +208,7 @@ setdef!(gc::GlobalContext, n::String, d) = setdef!(gc.lxdefs, n, d)
 
 # Note that when a local context is created it is automatically
 # attached to its global context via the children_contexts
-function LocalContext(glob, vars, defs, headers, refs, rpath="", alias=Alias())
+function LocalContext(glob, vars, defs, headers, rpath="", alias=Alias())
     # vars notebook
     mdl = submodule(modulename("$(rpath)_vars", true), wipe=true)
     nv  = VarsNotebook(mdl, Ref(1), VarsCodePairs(), Ref(false))
@@ -226,7 +224,7 @@ function LocalContext(glob, vars, defs, headers, refs, rpath="", alias=Alias())
     )
     tt = Set{String}()
     # form the object
-    lc = LocalContext(glob, vars, defs, headers, refs,
+    lc = LocalContext(glob, vars, defs, headers,
                       rpath, Ref(false), Ref(false),
                       rv, rl, alias, nv, nc, tt)
     # attach it to global
@@ -236,7 +234,7 @@ end
 
 function LocalContext(g=GlobalContext(), v=Vars(), d=LxDefs();
                       rpath="", alias=Alias())
-    return LocalContext(g, v, d, PageHeaders(), PageRefs(), rpath, alias)
+    return LocalContext(g, v, d, PageHeaders(), rpath, alias)
 end
 
 # when trying to retrieve a variable from a local context, we first check

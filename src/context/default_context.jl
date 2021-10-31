@@ -119,6 +119,8 @@ const DefaultLocalVars = Vars(
     :sitemap_exclude    => false,
     # robots
     :robots_disallow    => false,
+    # latex config
+    :latex_img_opts     => "width=0.5\\textwidth",
     # meta
     :_relative_path     => "",
     :_relative_url      => "",
@@ -127,6 +129,7 @@ const DefaultLocalVars = Vars(
     # mddefs related
     :_setvar            => Set{Symbol}(),
     # references (note: headers are part of context, see ctx.headers)
+    :_refrefs           => LittleDict{String, String}(),
     :_eqrefs            => LittleDict{String, Int}("__cntr__" => 0),
     :_bibrefs           => LittleDict{String, String}(),
 )
@@ -165,9 +168,11 @@ SimpleLocalContext(gc::GlobalContext; rpath::String="") =
 
 ##############################################################################
 # These will fail for contexts that haven't been constructed out of Default
+# NOTE: anchors is GC so that anchors can be used across pages.
 
 anchors(c=cur_gc()) = gegvar(c, :_anchors, LittleDict{String, String}())
 eqrefs(c=cur_lc())  = getvar(c, :_eqrefs,  LittleDict{String, Int}())
 bibrefs(c=cur_lc()) = getvar(c, :_bibrefs, LittleDict{String, String}())
+refrefs(c=cur_lc()) = getvar(c, :_refrefs, LittleDict{String, String}())
 
 relative_url_curpage() = getlvar(:_relative_url, "")

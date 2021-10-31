@@ -99,3 +99,29 @@ function hfun_cite(p::VS)::String
     class = getgvar(:bibref_class, "bibref")
     return html_a(text; href="#$(id)", class)
 end
+
+"""
+    {{link_a ref title}}
+
+Insert a link if the reference exists otherwise just insert `[title]`.
+"""
+function hfun_link_a(p::VS)::String
+    ref, title = p
+    title      = strip(title, '\"') |> string
+    refrefs_   = refrefs()
+    ref ∈ keys(refrefs_) || return "[$title]"
+    return html_a(title; href="$(refrefs_[ref])")
+end
+
+"""
+    {{img_a ref title}}
+
+Insert an img if the reference exists otherwise just insert `![title]`.
+"""
+function hfun_img_a(p::VS)::String
+    ref, alt   = p
+    alt        = strip(alt, '\"') |> string
+    refrefs_   = refrefs()
+    ref ∈ keys(refrefs_) || return "![$title]"
+    return html_img(refrefs_[ref]; alt)
+end
