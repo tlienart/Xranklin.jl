@@ -14,7 +14,7 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
     s = "![abc](def)"
     h = html(s; nop=true)
     @test isapproxstr(h, """
-        <img src="def" alt="abc" >
+        <img src="def" alt="abc">
         """)
     l = latex(s; nop=true)
     @test isapproxstr(l, raw"""
@@ -44,19 +44,47 @@ end
     h = html(s, nop=true)
     l = latex(s, nop=true)
     @test isapproxstr(h, """
-        <a href="D">A <em>B</em> <code>C[]</code></a>
+        <a href="D">
+          A <em>B</em> <code>C[]</code>
+        </a>
         """)
     @test isapproxstr(l, raw"""
-        \href{D}{A \textit{B} \texttt{C[]}}
+        \href{D}{
+          A \textit{B} \texttt{C[]}
+        }
         """)
 end
 
-# s = "[abc]"
-# h = html(s; nop=true)
-# @test isapproxstr(h, """
-#     <a href="abc">abc</a>
-#     """)
-# l = latex(s; nop=true)
-# @test isapproxstr(l, """
-#     \\href{abc}{abc}
-#     """)
+@testset "img ref" begin
+    s = """
+        ![A]
+        [A]: B
+        """
+    h = html(s, nop=true)
+    l = latex(s, nop=true)
+    @test isapproxstr(h, """
+        <img src="B" alt="A">
+        """)
+
+    # XXX should be post-processed in latex2 in some way
+    @test isapproxstr(l, """
+        {{img_a a "A"}}
+        """)
+end
+
+@testset "link ref with conv" begin
+    s = """
+        [A **B** `[C]`]
+        [A **B** `[C]`]: foo
+        """
+    h = html(s, nop=true)
+    @test isapproxstr(h, """
+        <a href="foo">A <strong>B</strong> <code>[C]</code></a>
+        """)
+end
+
+@testset "ref with no ref" begin
+    s = "[A] ![B]"
+    h = html(s, nop=true)
+    @test isapproxstr(h, s)
+end

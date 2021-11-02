@@ -168,8 +168,8 @@ end
 
 html_link_a(b::Block, c::LocalContext)  = _link_a(b, c; tohtml=true)
 latex_link_a(b::Block, c::LocalContext) = _link_a(b, c; tohtml=false)
-html_img_a(b::Block, c::LocalContext)   = _link_a(b, c; tothml=true, img=true)
-latex_img_a(b::Block, c::LocalContext)  = _link_a(b, c; tothml=false, img=true)
+html_img_a(b::Block, c::LocalContext)   = _link_a(b, c; tohtml=true, img=true)
+latex_img_a(b::Block, c::LocalContext)  = _link_a(b, c; tohtml=false, img=true)
 
 html_link_ab(b::Block, c::LocalContext)  = _link_ab(b, c; tohtml=true)
 latex_link_ab(b::Block, c::LocalContext) = _link_ab(b, c; tohtml=false)
