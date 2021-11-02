@@ -39,6 +39,17 @@ end
             """)
 end
 
+@testset "link with conv" begin
+    s = "[A *B* `C[]`](D)"
+    h = html(s, nop=true)
+    l = latex(s, nop=true)
+    @test isapproxstr(h, """
+        <a href="D">A <em>B</em> <code>C[]</code></a>
+        """)
+    @test isapproxstr(l, raw"""
+        \href{D}{A \textit{B} \texttt{C[]}}
+        """)
+end
 
 # s = "[abc]"
 # h = html(s; nop=true)

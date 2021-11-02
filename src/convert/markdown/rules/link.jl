@@ -34,14 +34,18 @@ with one of the following form:
 The goal of this function is to extract the bracketed components (A, B).
 """
 function _link_blocks(ss::SS)
-    blocks = Block[]
-    tokens = FP.subv(FP.default_md_tokenizer(ss))
+    blocks    = Block[]
+    tokens    = FP.subv(FP.default_md_tokenizer(ss))
     is_active = ones(Bool, length(tokens))
     # find priority containers and deactivate stuff in it (e.g. code)
     FP._find_blocks!(blocks, tokens, FP.MD_PASS1_TEMPLATES, is_active,
                      process_linereturn=false)
     # go through tokens and pick the relevant ones for the link
-    tokens = [t for t in tokens if t.name ∉ (:SOS, :EOS)]
+    tokens = [t
+        for (i, t) in enumerate(tokens)
+        if t.name ∉ (:SOS, :EOS) && is_active[i]
+    ]
+
     i = 1
     n = length(tokens)
     link_a_open   = FP.EMPTY_TOKEN
@@ -50,33 +54,31 @@ function _link_blocks(ss::SS)
     link_ab_close = FP.EMPTY_TOKEN
     ref_mid       = FP.EMPTY_TOKEN
     while i <= n
-        if is_active[i]
-            t = tokens[i]
-            # if it's the first [ --> link_a_open
-            if t.name == :SQ_BRACKET_OPEN && isempty(link_a_open)
-                link_a_open = t
-            # if it's the last token and ] --> link_a_close
-            # if it's not the last token and ] and the next token is ( --> link_ab_mid
-            # (note that this second one will overwrite so it should take the last one
-            # corner case is if there's ]( in the URL itself...)
-            elseif t.name == :SQ_BRACKET_CLOSE
-                if next_chars(t) == [':']
-                    ref_mid = FP.Token(
-                        :REF_MID,
-                        subs(parent_string(ss), from(t), next_index(t))
-                    )
-                elseif i == n
-                    link_a_close = t
-                elseif tokens[i+1].name == :BRACKET_OPEN
-                    link_ab_mid = FP.Token(
-                        :LINK_AB_MID,
-                        subs(parent_string(ss), from(t), to(tokens[i+1]))
-                    )
-                end
-            # if it's the last token and ) --> link_ab_close
-            elseif t.name == :BRACKET_CLOSE && i == n
-                link_ab_close = t
+        t = tokens[i]
+        # if it's the first [ --> link_a_open
+        if t.name == :SQ_BRACKET_OPEN && isempty(link_a_open)
+            link_a_open = t
+        # if it's the last token and ] --> link_a_close
+        # if it's not the last token and ] and the next token is ( --> link_ab_mid
+        # (note that this second one will overwrite so it should take the last one
+        # corner case is if there's ]( in the URL itself...)
+        elseif t.name == :SQ_BRACKET_CLOSE
+            if next_chars(t) == [':']
+                ref_mid = FP.Token(
+                    :REF_MID,
+                    subs(parent_string(ss), from(t), next_index(t))
+                )
+            elseif i == n
+                link_a_close = t
+            elseif tokens[i+1].name == :BRACKET_OPEN
+                link_ab_mid = FP.Token(
+                    :LINK_AB_MID,
+                    subs(parent_string(ss), from(t), to(tokens[i+1]))
+                )
             end
+        # if it's the last token and ) --> link_ab_close
+        elseif t.name == :BRACKET_CLOSE && i == n
+            link_ab_close = t
         end
         i += 1
     end

@@ -5,7 +5,10 @@ Convenience function to add an attribute to an html element.
 """
 attr(name::Symbol, val::String) = ifelse(isempty(val), "", "$name=\"$val\"")
 attr(p::Pair{Symbol,String})    = attr(p.first, p.second)
-attr(; kw...)                   = join((attr(p) for p in kw), " ")
+function attr(; kw...)
+    attrs = [attr(p) for p in kw]
+    join(filter!(!isempty, attrs), " ")
+end
 
 """<a href=..."""
 html_a(text::String=""; href::String="", id::String="", class::String="") =
