@@ -28,6 +28,7 @@ const INTERNAL_HFUNS = [
     :toc,
     :eqref,
     :cite,
+    :link_a, :img_a,
 ]
 
 

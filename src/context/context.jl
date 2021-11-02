@@ -159,9 +159,11 @@ getid(c::LocalContext)::String = c.rpath
 getglob(c::GlobalContext)::GlobalContext = c
 getglob(c::LocalContext)::GlobalContext  = c.glob
 
+is_recursive(c::GlobalContext) = false
+is_recursive(c::LocalContext)  = c.is_recursive[]
+
 is_math(c::GlobalContext) = false
 is_math(c::LocalContext)  = c.is_math[]
-
 
 # --------------------------------------- #
 # GLOBAL CONTEXT CONSTRUCTORS AND METHODS #

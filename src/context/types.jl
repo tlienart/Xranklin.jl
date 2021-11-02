@@ -131,3 +131,14 @@ const PageHeaders = LittleDict{
     String,
     Tuple{Int, Int, String}
 }
+
+
+"""
+    PageRefs
+
+Mapping `anchor => target`.
+"""
+const PageRefs = LittleDict{
+    String,  # e.g. from '[the link]' to 'the_link'
+    String   # e.g. 'https://example.com' or '#the_note'
+}

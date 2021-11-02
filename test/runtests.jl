@@ -37,11 +37,12 @@ end
     p = "convert/md2x"
     # rules
     include(p/"rules_text.jl")
-    include(p/"rules_headers.jl")
-    include(p/"rules_maths.jl")
-    include(p/"rules_defs.jl")
+    include(p/"rules_header.jl")
+    include(p/"rules_math.jl")
+    include(p/"rules_def.jl")
     include(p/"rules_list.jl")
     include(p/"rules_table.jl")
+    include(p/"rules_link.jl")
 end
 
 @testset "build" begin

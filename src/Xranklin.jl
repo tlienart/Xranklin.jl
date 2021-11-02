@@ -16,8 +16,7 @@ import FranklinParser
 const FP = FranklinParser
 import FranklinParser: SS, Token, Block, Group,
                        subs, content, dedent, parent_string,
-                       from, to, prev_index, next_index
-
+                       from, to, prev_index, next_index, next_chars
 
 import FranklinTemplates: newsite, filecmp
 import LiveServer
@@ -58,9 +57,6 @@ const FRANKLIN_ENV = LittleDict{Symbol, Any}(
 )
 env(s::Symbol)       = FRANKLIN_ENV[s]
 setenv(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
-
-# see 'macro delay'
-const DELAYED_PAGES = Set{String}()
 
 # ------------------------------------------------------------------------
 
@@ -103,9 +99,10 @@ include("convert/markdown/rules/utils.jl")
 include("convert/markdown/rules/text.jl")
 include("convert/markdown/rules/list.jl")
 include("convert/markdown/rules/table.jl")
-include("convert/markdown/rules/headers.jl")
+include("convert/markdown/rules/header.jl")
 include("convert/markdown/rules/code.jl")
-include("convert/markdown/rules/maths.jl")
+include("convert/markdown/rules/math.jl")
+include("convert/markdown/rules/link.jl")
 
 # ===> POSTPROCESSING
 

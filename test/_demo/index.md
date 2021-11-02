@@ -1,9 +1,8 @@
-@def title = "Franklin Example"
-@def tags = ["syntax", "code"]
++++
+title = "Franklin Example"
++++
 
 # How to use Franklin
-
-\tableofcontents <!-- you can use \toc as well -->
 
 This section is meant as a refresher if you're new to Franklin.
 Have a look at both how the website renders and the corresponding markdown (`index.md`).
