@@ -5,7 +5,7 @@ Runs Franklin in the current directory.
 
 ## Keyword Arguments
 
-    dir (String): website folder, this is the folder which is expected to
+    folder (String): website folder, this is the folder which is expected to
                      contain the config.md as well as the index.(md|html).
     clear (Bool): whether to clear everything and start from scratch, this
                   will clear the `__site`, `__cache` and `__pdf` directories.
@@ -25,7 +25,8 @@ Runs Franklin in the current directory.
                    already have a browser tab pointing to a page of interest.
 
 """
-function serve(dir::String = pwd();
+function serve(d::String = pwd();
+            dir::String    = d,
             folder::String = dir,
             clear::Bool    = false,
             single::Bool   = false,
@@ -253,12 +254,16 @@ function build_loop(
     # if so, trigger the appropriate file processing mechanism
     # ---------------------------------------------------------------
     else
-        for (case, d) ∈ watched_files, (fp, t) in d
+        for (case, d) in watched_files, (fp, t) in d
             fpath = joinpath(fp...)
             rpath = get_rpath(fpath)
             # was there a modification to the file? otherwise skip
             cur_t = mtime(fpath)
             cur_t <= t && continue
+
+            @show case
+            @show fp
+            @show t
 
             # update the modif time of that file & mark it for reprocessing
             @info """

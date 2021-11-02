@@ -170,7 +170,7 @@ SimpleLocalContext(gc::GlobalContext; rpath::String="") =
 # These will fail for contexts that haven't been constructed out of Default
 # NOTE: anchors is GC so that anchors can be used across pages.
 
-anchors(c=cur_gc()) = gegvar(c, :_anchors, LittleDict{String, String}())
+anchors(c=cur_gc()) = getvar(c, :_anchors, LittleDict{String, String}())
 eqrefs(c=cur_lc())  = getvar(c, :_eqrefs,  LittleDict{String, Int}())
 bibrefs(c=cur_lc()) = getvar(c, :_bibrefs, LittleDict{String, String}())
 refrefs(c=cur_lc()) = getvar(c, :_refrefs, LittleDict{String, String}())

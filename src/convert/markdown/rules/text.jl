@@ -57,6 +57,10 @@ latex_hrule(b, _) = raw"\par\noindent\rule{\textwidth}{0.1pt}\par"
 html_div(b, c)  = html_prepost(rhtml(b, c), "<div>"; class=FP.get_classes(b))
 latex_div(b, c) = rlatex(b, c)
 
+# >
+html_blockquote(b, c)  = html_prepost(rhtml(b, c), "<blockquote>")
+latex_blockquote(b, c) = "\\begin{displayquote}" * rlatex(b, c) * "\\end{displayquote}"
+
 #
 # PAGE VAR CODE
 #

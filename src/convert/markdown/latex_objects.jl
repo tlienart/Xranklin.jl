@@ -297,19 +297,24 @@ end
 
 Recover the lx_ or env_ function corresponding to `n`, find the relevant args,
 resolve and return.
+Note that if we're here we've already been through is_in_utils though either
+the definition is in the utils module or it's internal but it exists.
 """
 function from_utils(n::Symbol, i::Int, blocks::Vector{Block}, ctx::LocalContext;
                     isenv=false, tohtml=true)
-    mdl   = ctx.glob.nb_code.mdl
     args  = next_adjacent_brackets(i, blocks, ctx; tohtml)
-
-    fsymb, kind = ifelse(isenv,
-        Symbol("env_$n") => :RAW_BLOCK,
-        Symbol("lx_$n")  => :RAW_INLINE
-    )
-    f = getproperty(mdl, fsymb)
-    o = outputof(f, args; tohtml)
-
+    if isenv
+        fsymb    = Symbol("env_$n")
+        kind     = :RAW_BLOCK
+        internal = n in INTERNAL_ENVFUNS
+    else
+        fsymb    = Symbol("lx_$n")
+        kind     = :RAW_INLINE
+        internal = n in INTERNAL_LXFUNS
+    end
+    mdl = ifelse(internal, @__MODULE__, ctx.glob.nb_code.mdl)
+    f   = getproperty(mdl, fsymb)
+    o   = outputof(f, args; tohtml)
     return Block(kind, subs(o)), length(args)
 end
 

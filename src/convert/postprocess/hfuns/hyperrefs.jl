@@ -79,7 +79,7 @@ function hfun_eqref(p::VS)::String
     id      = p[1]
     eqrefs_ = eqrefs()
     id ∈ keys(eqrefs_) || return "<b>??</b>"
-    text  = eqrefs_[id]
+    text  = eqrefs_[id] |> string
     class = getgvar(:eqref_class, "eqref")
     return html_a(text; href="#$(id)", class)
 end
