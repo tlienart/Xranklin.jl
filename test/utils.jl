@@ -53,3 +53,5 @@ function readpg(rpath)
     opath = X.form_output_path(d => f, :md)
     read(opath, String)
 end
+
+estr(s) = Xranklin._eval_str(Xranklin.subs(s))

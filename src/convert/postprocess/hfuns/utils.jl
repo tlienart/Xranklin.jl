@@ -7,15 +7,25 @@
     requested output is html or latex.
  -------------------------------------------------------------------------- =#
 
-const INTERNAL_HENVS = [
-    # :if,
-    # :ifdef, :isdef,
-    # :ifndef, :ifnotdef, :isndef, :isnotdef,
-    # :ifempty, :isempty,
-    # :ifnempty, :ifnotempty, :isnotempty,
-    # :ispage, :ifpage,
-    # :isnotpage, :ifnotpage,
-    # :for
+const INTERNAL_HENV_IF = [
+    # PRIMARY
+    :if,
+    # SECONDARY
+    :ifdef, :isdef,
+    :ifndef, :ifnotdef, :isndef, :isnotdef,
+    :ifempty, :isempty,
+    :ifnempty, :ifnotempty, :isnotempty,
+    :ispage, :ifpage,
+    :isnotpage, :ifnotpage,
+]
+const INTERNAL_HENV_FOR = [
+    :for
+]
+const INTERNAL_HENVS = vcat(INTERNAL_HENV_IF, INTERNAL_HENV_FOR)
+
+# if seen on their own --> hfunfailed
+const INTERNAL_HORPHAN = [
+    :elseif, :else, :end
 ]
 
 const INTERNAL_HFUNS = [
@@ -51,6 +61,9 @@ _hfun_failed_latex(p::VS) = latex_failed(
 )
 
 
+"""
+Helper function to check the number of arguments in a hfun.
+"""
 function _hfun_check_nargs(n::Symbol, p::VS; kmin::Int=0, kmax::Int=kmin)
     np = length(p)
     if !(kmin ≤ np ≤ kmax)

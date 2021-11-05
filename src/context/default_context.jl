@@ -20,6 +20,7 @@ const DefaultGlobalVars = Vars(
     :layout_page_foot    => "_layout/page_foot.html",
     :layout_foot         => "_layout/foot.html",
     :layout_head_lx      => "_layout/latex/head.tex",
+    :parse_script_blocks => true,  # see html2; possibly disable DBB in <script>
     # File management
     :ignore_base      => StringOrRegex[
                                ".DS_Store", ".gitignore", "node_modules/",
@@ -58,7 +59,7 @@ const DefaultGlobalVars = Vars(
     # Tags
     :tag_page_path => "tag",
     # Misc
-    :tabs_to_spaces => 2,   # \t -> ' ' conversion
+    :tabs_to_spaces => 2,   # \t -> ' ' conversion (see convert_list)
     # Paths related
     :_offset_lxdefs => -typemax(Int),
     :_paths         => LittleDict{Symbol, String}(),

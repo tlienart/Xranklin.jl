@@ -24,7 +24,8 @@ to `io`.
 """
 function convert_list(io::IOBuffer, g::Group, ctx::LocalContext;
                       tohtml=true, kw...)::Nothing
-    # ---------------------------------------------------------------------------------
+    # DEV NOTES
+    # ---------
     # g is just a wrapper around a block of text (g.ss)
     #
     #   > UNORDERED ITEM

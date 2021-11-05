@@ -4,6 +4,7 @@ module Xranklin
 # stdlib
 
 import Dates
+import Dates: Date
 import Base.(/)
 import REPL: softscope
 import Pkg
@@ -108,7 +109,9 @@ include("convert/markdown/rules/link.jl")
 
 include("convert/postprocess/hfuns/utils.jl")
 include("convert/postprocess/hfuns/input.jl")
-include("convert/postprocess/hfuns/hyperrefs.jl")
+include("convert/postprocess/hfuns/hyperref.jl")
+include("convert/postprocess/hfuns/evalstr.jl")
+include("convert/postprocess/hfuns/henv.jl")
 
 include("convert/postprocess/utils.jl")
 include("convert/postprocess/html2.jl")

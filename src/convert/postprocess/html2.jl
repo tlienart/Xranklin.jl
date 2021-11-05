@@ -1,53 +1,75 @@
-
 """
     html2(s, c)
 
 Postprocess a html string `s` in the context `c` (e.g. find and process double
 brace blocks).
+
+## Notes on resolving hfun
+
+* case doesn't matter (so `{{FOO}}` is the same as `{{fOo}}` etc)
+* globvar `parse_script_blocks` whether to parse `{{...}}` blocks in <script>
+   blocks or not.
 """
 html2(s::String, c::Context) = html2(FP.html_partition(s), c)
 
-
-# there's currently 3 types of html blocks (see FranklinParser):
-# * comment
-# * script
-# * DBB --> these are the ones we hunt for and re-process
-# NOTE: the fact that we isolate script blocks also means that we do
-# not get caught by DBB that happen within them. This, on the other hand,
-# means that a user cannot use hfun or page var within a script.
-#
-# NOTE: since the hfuns might call a process_file function which, itself
-# sets a cur_local_ctx, it's important to re-set the cur_local_ctx after
-# calling any hfun.
-#
 function html2(parts::Vector{Block}, c::Context)::String
+    # DEV NOTES
+    # ---------
+    # * since the hfuns might call a process_file function which, itself
+    # sets a cur_local_ctx, it's important to re-set the cur_local_ctx after
+    # calling any hfun.
+    # -----------------------------------------------------------------
     # Keep track of the current gc and lc, these may be changed
     # by the call to hfuns but should be re-set afterwards
     # we use the direct `env/setenv` for local since it may be nothing!
     cgc = cur_gc()
     clc = env(:cur_local_ctx)
 
-    io = IOBuffer()
-    idx = 0
-    while idx < length(parts)
+    io     = IOBuffer()
+    idx    = 0
+    nparts = length(parts)
+    while idx < nparts
         idx += 1
         b    = parts[idx]
         if b.name == :COMMENT
             continue
-        elseif b.name in (:TEXT, :SCRIPT)
+        elseif b.name == :TEXT
+            write(io, string(b.ss))
+            continue
+        elseif b.name == :SCRIPT && !getvar(cgc, :parse_script_blocks, true)
             write(io, string(b.ss))
             continue
         end
+
+        # -----------------------------
         # Double Brace Block processing
+        # A. internal HCOND (if, and derived like ispage)
+        # B. internal HFOR  (for)
+        # C. orphan elseif/else/end
+        # D. internal HFUNS (fill, insert, ...) or external ones
+        # E. default to fill attempt
+
         cb = strip(content(b))
         isempty(cb) && continue
         split_cb = FP.split_args(cb)
         fname    = Symbol(lowercase(first(split_cb)))
-        if fname in INTERNAL_HENVS
-            # look for the matching closing END then pass the scope
-            # to a dedicated sub-processing which can recurse
-            throw(ErrorException("NOT IMPLEMENTED YET"))
 
+        # A - internal HENV
+        if fname in INTERNAL_HENVS
+            henv = find_henv(parts, idx)
+            resolve_henv(henv, io, c)
+            idx += length(henv)
+
+        # found a dangling {{elseif}} or {{else}} or whatever
+        elseif fname in INTERNAL_HORPHAN
+            @warn """
+                {{ $fname ... }}
+                ----------------
+                A block '{{$fname ...}}' was found out of a relevant context.
+                """
+            write(io, hfun_failed(split_cb))
+
+        # B - internal or external HFUNS
         elseif (u = fname in utils_hfun_names()) || fname in INTERNAL_HFUNS
             # 'external' functions defined with `hfun_*`, they
             # take precedence so a user can overwrite the behaviour of
@@ -63,6 +85,7 @@ function html2(parts::Vector{Block}, c::Context)::String
             set_current_global_context(cgc)
             clc === nothing || set_current_local_context(clc)
 
+        # C - try fill
         else
             # try to see if it could be an implicit fill {{vname}}
             if (length(split_cb) == 1) && ((v = getvar(clc, fname)) !== nothing)
@@ -79,11 +102,9 @@ function html2(parts::Vector{Block}, c::Context)::String
                     match anything defined in `utils.jl`. It might have been
                     misspelled.
                     """
+                write(io, hfun_failed(split_cb))
             end
         end
-
-        # ensure the cu
-
     end
     return String(take!(io))
 end
