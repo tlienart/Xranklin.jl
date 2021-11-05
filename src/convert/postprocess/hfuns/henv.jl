@@ -63,7 +63,7 @@ function find_henv(parts::Vector{Block}, idx::Int)
     branch   = fname in INTERNAL_HENV_IF
     has_else = false
 
-    closing_index  = -1
+    closing_index  = idx+1
     henv_depth     = 1
     # look at blocks ahead until the environment is closed with {{end}}
     for j in idx+1:length(parts)
@@ -79,6 +79,7 @@ function find_henv(parts::Vector{Block}, idx::Int)
         elseif (cname == :end)
             henv_depth -= 1
             if henv_depth == 0
+                closing_index = j
                 push!(henv, HEnvPart(cname, candb, cargs))
                 break
             end
@@ -96,9 +97,9 @@ function find_henv(parts::Vector{Block}, idx::Int)
     end
     # check
     if henv_depth > 0
-        return HEnvPart[]
+        return (HEnvPart[], closing_index)
     end
-    return henv
+    return (henv, closing_index)
 end
 
 estr(s)  = "e\"$s\""

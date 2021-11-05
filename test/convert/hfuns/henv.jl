@@ -30,5 +30,35 @@ end
 
 
 @testset "if branch" begin
+    s = raw"""
+        +++
+        a = true
+        b = false
+        +++
+        {{if b}}
+        foo
+        {{elseif a}}
+        bar
+        {{end}}
+        """
+    h = html(s, nop=true)
+    @test isapproxstr(h, "bar")
+end
 
+@testset "if nesting" begin
+    s = raw"""
+        +++
+        a = true
+        b = false
+        +++
+        {{if a}}
+          {{if b}}
+          foo
+          {{else}}
+          bar
+          {{end}}
+        {{end}}
+        """
+    h = html(s, nop=true)
+    @test isapproxstr(h, "bar")
 end
