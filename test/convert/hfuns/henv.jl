@@ -62,3 +62,30 @@ end
     h = html(s, nop=true)
     @test isapproxstr(h, "bar")
 end
+
+
+# =============================================
+@testset "for basic" begin
+    s = raw"""
+        +++
+        a = [1,2,3]
+        +++
+        {{for x in a}}
+            {{fill x}}
+        {{end}}
+        """
+    h = html(s, nop=true)
+    @test isapproxstr(h, """1 2 3""")
+    s = raw"""
+        +++
+        a = [1,2,3]
+        b = [3,4,5]
+        z = zip(a, b)
+        +++
+        {{for (x, y) in z}}
+            {{x}} - {{y}}
+        {{end}}
+        """
+    h = html(s, nop=true)
+    @test isapproxstr(h, """1 - 3 2 - 4 3 - 5""")
+end

@@ -73,10 +73,26 @@ const Alias  = LittleDict{Symbol, Symbol}
 
 abstract type Context end
 
+
+"""
+    localize(c)
+
+Shallow copy of a context with a deep copy of the vars dictionary.
+This is used in h-env which need a local variable (e.g. {{for x in ...}}).
+"""
+localize(ctx::C) where {C <: Context} = C(
+    (
+        k == :vars ? deepcopy(ctx.vars) : getproperty(ctx, k)
+        for k in propertynames(ctx)
+    )...
+)
+
+
+
 """
     GlobalContext
 
-Typically instantiated at config level, the global context keeps track of the
+Typically instantiated at config level, the global context keeps track of the""
 global variables and definitions of a session. There's usually just one for
 the whole site. It also keeps track of who requests a variable or definition
 to keep track of what needs to be updated upon modification.
