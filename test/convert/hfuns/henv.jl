@@ -89,3 +89,32 @@ end
     h = html(s, nop=true)
     @test isapproxstr(h, """1 - 3 2 - 4 3 - 5""")
 end
+
+@testset "for scope" begin
+    s = """
+        +++
+        i = 5
+        a = [1,2,3]
+        +++
+        {{for i in a}} {{i}} {{end}}
+        final: {{i}}
+        """
+    h = html(s, nop=true)
+    @test isapproxstr(h, """
+        1 2 3 final: 5
+        """)
+end
+
+@testset "for estr" begin
+    s = raw"""
+        +++
+        a = [1, 2, 3]
+        b = ['a', 'b', 'c']
+        +++
+        {{for (a, b) in e"zip($a, $b)"}} {{a}} : {{b}} ; {{end}}
+        """
+    h = html(s, nop=true)
+    @test isapproxstr(h, """
+        1 : a ; 2 : b ; 3 : c ;
+        """)
+end

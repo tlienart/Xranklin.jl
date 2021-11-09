@@ -163,9 +163,6 @@ function resolve_henv(henv::Vector{HEnvPart}, io::IOBuffer, c::Context)
     # > resolve the scope with a context in which the
     #    variable(s) from the iterator are inserted
     elseif env_name in INTERNAL_HENV_FOR
-        localized_ctx = localize(c)
-        set_current_local_context(localized_ctx)
-
         # scope of the loop
         scope = subs(
             parent_string(henv[1].block),
@@ -177,19 +174,41 @@ function resolve_henv(henv::Vector{HEnvPart}, io::IOBuffer, c::Context)
         # {{for (x, y) in iter}}
         argiter    = join(henv[1].args, " ")
         vars, iter = strip.(split(argiter, "in"))
+
+        if is_estr(iter)
+            iter = eval_str(iter)
+        else
+            iter = getlvar(Symbol(iter))
+        end
+
         # (x, y, z) => [:x, :y, :z]
         vars = strip.(split(strip(vars, ['(', ')']), ",")) .|> Symbol
-        iter = Symbol(iter)
+
+        # check if there are vars with the same name in local context, if
+        # so, save them, note that we filter to see if the var is in the
+        # direct context (so not the global context associated with loc)
+        cvars    = union(keys(c.vars), keys(c.vars_aliases))
+        saved_vars = [
+            v => getlvar(v)
+            for v in vars if v in cvars
+        ]
 
         # XXX lots of things to check here
-        for vals in getlvar(iter)                     # loop over iterator
+        for vals in iter                              # loop over iterator values
             for (name, value) in zip(vars, vals)      # loop over variables and set
-                setvar!(localized_ctx, name, value)
+                setvar!(c, name, value)
             end
-            write(io, html2(scope, localized_ctx))
+            write(io, html2(scope, c))
         end
-        # return to the original context
-        set_current_local_context(c)
+
+        # reinstate or destroy bindings
+        for (name, value) in saved_vars
+            if value === nothing
+                delete!(c.vars, name)
+            else
+                c.vars[name] = value
+            end
+        end
     end
 end
 

@@ -1,5 +1,7 @@
 struct EvalStrError end
 
+is_estr(s::SS) = startswith(s, "e\"")
+
 """
     eval_str(estr)
 

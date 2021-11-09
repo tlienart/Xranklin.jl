@@ -1,3 +1,4 @@
+# Vars --> LittleDict{Symbol, Any} (see types.jl)
 const VarPair      = NamedTuple{(:var,  :value), Tuple{Symbol, Any}}
 const VarsCodePair = NamedTuple{(:code, :vars),  Tuple{String, Vector{VarPair}}}
 const CodeRepr     = NamedTuple{(:html, :latex), Tuple{String, String}}
@@ -72,21 +73,6 @@ fresh_notebook!(nb::Notebook) = (nb.is_stale_ref[] = false;)
 const Alias  = LittleDict{Symbol, Symbol}
 
 abstract type Context end
-
-
-"""
-    localize(c)
-
-Shallow copy of a context with a deep copy of the vars dictionary.
-This is used in h-env which need a local variable (e.g. {{for x in ...}}).
-"""
-localize(ctx::C) where {C <: Context} = C(
-    (
-        k == :vars ? deepcopy(ctx.vars) : getproperty(ctx, k)
-        for k in propertynames(ctx)
-    )...
-)
-
 
 
 """
