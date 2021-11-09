@@ -1,3 +1,4 @@
+# Vars --> LittleDict{Symbol, Any} (see types.jl)
 const VarPair      = NamedTuple{(:var,  :value), Tuple{Symbol, Any}}
 const VarsCodePair = NamedTuple{(:code, :vars),  Tuple{String, Vector{VarPair}}}
 const CodeRepr     = NamedTuple{(:html, :latex), Tuple{String, String}}
@@ -73,10 +74,11 @@ const Alias  = LittleDict{Symbol, Symbol}
 
 abstract type Context end
 
+
 """
     GlobalContext
 
-Typically instantiated at config level, the global context keeps track of the
+Typically instantiated at config level, the global context keeps track of the""
 global variables and definitions of a session. There's usually just one for
 the whole site. It also keeps track of who requests a variable or definition
 to keep track of what needs to be updated upon modification.

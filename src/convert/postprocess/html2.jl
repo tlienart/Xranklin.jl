@@ -31,6 +31,7 @@ function html2(parts::Vector{Block}, c::Context)::String
     while idx < nparts
         idx += 1
         b    = parts[idx]
+
         if b.name == :COMMENT
             continue
         elseif b.name == :TEXT
@@ -56,9 +57,9 @@ function html2(parts::Vector{Block}, c::Context)::String
 
         # A - internal HENV
         if fname in INTERNAL_HENVS
-            henv = find_henv(parts, idx)
+            henv, ci = find_henv(parts, idx)
             resolve_henv(henv, io, c)
-            idx += length(henv)
+            idx = ci
 
         # found a dangling {{elseif}} or {{else}} or whatever
         elseif fname in INTERNAL_HORPHAN
