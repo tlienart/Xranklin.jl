@@ -261,10 +261,6 @@ function build_loop(
             cur_t = mtime(fpath)
             cur_t <= t && continue
 
-            @show case
-            @show fp
-            @show t
-
             # update the modif time of that file & mark it for reprocessing
             @info """
                   💥 file $(hl(str_fmt(rpath), :cyan)) changed

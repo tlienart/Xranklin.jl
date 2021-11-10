@@ -64,6 +64,14 @@ Once returned the blocks need to be validated.
     {{if ...}}  ... {{end}}              --> [IF, ELSE, END]
     {{if ...}}  ... {{elseif ...}} ...   --> [IF, ELSEIF, ELSEIF, ..., ELSE, END]
     {{for ...}} ... {{end}}              --> [FOR, END]
+
+## Errors (see XXX)
+
+    * environment not closed properly >> handled in html2
+    * one of the henv part is ill formed
+    * e-string error
+    * reference to a variable that doesn't exist
+    * reference to a variable that doesn't have the right type
 """
 function find_henv(parts::Vector{Block}, idx::Int)::Tuple{Vector{HEnvPart},Int}
     # first block (if/for)

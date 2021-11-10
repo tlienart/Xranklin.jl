@@ -58,3 +58,19 @@ const UNSAFE_MAP  = LittleDict(
     "\"" => "&quot;",
 )
 replace_unsafe_char(s::AbstractString) = get(UNSAFE_MAP, s, s)
+
+
+"""
+    hascode!(c)
+
+Set the context as having code.
+"""
+hascode!(c::LocalContext) = setvar!(c, :hascode, true)
+
+
+"""
+    hasmath!(c)
+
+Set the context as having math
+"""
+hasmath!(c::LocalContext) = setvar!(c, :hasmath, true)

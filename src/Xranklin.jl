@@ -55,6 +55,7 @@ const FRANKLIN_ENV = LittleDict{Symbol, Any}(
     :offset_lxdefs     => -typemax(Int),  # helps keep track of order in lxcoms/envs
     :cur_global_ctx    => nothing,        # current global context
     :cur_local_ctx     => nothing,        # current local context
+    :skipped_files     => Set{String}(),
 )
 env(s::Symbol)       = FRANKLIN_ENV[s]
 setenv(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)

@@ -9,8 +9,10 @@ brace blocks).
 * case doesn't matter (so `{{FOO}}` is the same as `{{fOo}}` etc)
 * globvar `parse_script_blocks` whether to parse `{{...}}` blocks in <script>
    blocks or not.
+
+## Errors (see XXX)
 """
-html2(s::String, c::Context) = html2(FP.html_partition(s), c)
+html2(s::String, c::Context; kw...) = html2(FP.html_partition(s; kw...), c)
 
 function html2(parts::Vector{Block}, c::Context)::String
     # DEV NOTES
@@ -37,8 +39,12 @@ function html2(parts::Vector{Block}, c::Context)::String
         elseif b.name == :TEXT
             write(io, string(b.ss))
             continue
-        elseif b.name == :SCRIPT && !getvar(cgc, :parse_script_blocks, true)
-            write(io, string(b.ss))
+        elseif b.name == :SCRIPT
+            if getvar(cgc, :parse_script_blocks, true)
+                write(io, html2(string(b.ss), c; disable=[:SCRIPT_OPEN,  :SCRIPT_CLOSE]))
+            else
+                write(io, string(b.ss))
+            end
             continue
         end
 
@@ -58,6 +64,16 @@ function html2(parts::Vector{Block}, c::Context)::String
         # A - internal HENV
         if fname in INTERNAL_HENVS
             henv, ci = find_henv(parts, idx)
+
+            if isempty(henv)
+                @warn """
+                    {{ $fname ... }}
+                    ----------------
+                    An environment '{{$fname ...}}' was not closed properly.
+                    """
+                write(io, hfun_failed(split_cb))
+            end
+
             resolve_henv(henv, io, c)
             idx = ci
 
