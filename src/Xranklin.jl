@@ -4,6 +4,7 @@ module Xranklin
 # stdlib
 
 import Dates
+import Dates: Date
 import Base.(/)
 import REPL: softscope
 import Pkg
@@ -54,6 +55,7 @@ const FRANKLIN_ENV = LittleDict{Symbol, Any}(
     :offset_lxdefs     => -typemax(Int),  # helps keep track of order in lxcoms/envs
     :cur_global_ctx    => nothing,        # current global context
     :cur_local_ctx     => nothing,        # current local context
+    :skipped_files     => Set{String}(),
 )
 env(s::Symbol)       = FRANKLIN_ENV[s]
 setenv(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
@@ -108,7 +110,9 @@ include("convert/markdown/rules/link.jl")
 
 include("convert/postprocess/hfuns/utils.jl")
 include("convert/postprocess/hfuns/input.jl")
-include("convert/postprocess/hfuns/hyperrefs.jl")
+include("convert/postprocess/hfuns/hyperref.jl")
+include("convert/postprocess/hfuns/evalstr.jl")
+include("convert/postprocess/hfuns/henv.jl")
 
 include("convert/postprocess/utils.jl")
 include("convert/postprocess/html2.jl")

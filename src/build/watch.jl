@@ -50,10 +50,15 @@ function update_files_to_watch!(
                    startswith(fpath, path(:cache)) ||
                    startswith(fpath, path(:folder) / ".git") ||
                    should_ignore(fpath, f2i, d2i)
+
             if skip
-                @debug """
-                    🔺 skipping $(hl(str_fmt(get_rpath(fpath)), :cyan))
-                    """
+                rp = get_rpath(fpath)
+                if rp ∉ FRANKLIN_ENV[:skipped_files]
+                    union!(FRANKLIN_ENV[:skipped_files], [rp])
+                    startswith(fpath, path(:site)) || @debug """
+                        🔺 skipping $(hl(str_fmt(rp), :cyan))
+                        """
+                end
                 continue
             end
 

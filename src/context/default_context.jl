@@ -20,6 +20,7 @@ const DefaultGlobalVars = Vars(
     :layout_page_foot    => "_layout/page_foot.html",
     :layout_foot         => "_layout/foot.html",
     :layout_head_lx      => "_layout/latex/head.tex",
+    :parse_script_blocks => true,  # see html2; possibly disable DBB in <script>
     # File management
     :ignore_base      => StringOrRegex[
                                ".DS_Store", ".gitignore", "node_modules/",
@@ -58,7 +59,7 @@ const DefaultGlobalVars = Vars(
     # Tags
     :tag_page_path => "tag",
     # Misc
-    :tabs_to_spaces => 2,   # \t -> ' ' conversion
+    :tabs_to_spaces => 2,   # \t -> ' ' conversion (see convert_list)
     # Paths related
     :_offset_lxdefs => -typemax(Int),
     :_paths         => LittleDict{Symbol, String}(),
@@ -170,7 +171,7 @@ SimpleLocalContext(gc::GlobalContext; rpath::String="") =
 # These will fail for contexts that haven't been constructed out of Default
 # NOTE: anchors is GC so that anchors can be used across pages.
 
-anchors(c=cur_gc()) = gegvar(c, :_anchors, LittleDict{String, String}())
+anchors(c=cur_gc()) = getvar(c, :_anchors, LittleDict{String, String}())
 eqrefs(c=cur_lc())  = getvar(c, :_eqrefs,  LittleDict{String, Int}())
 bibrefs(c=cur_lc()) = getvar(c, :_bibrefs, LittleDict{String, String}())
 refrefs(c=cur_lc()) = getvar(c, :_refrefs, LittleDict{String, String}())

@@ -1,3 +1,15 @@
 <!-- CONTENT ENDS HERE -->
+
+    {{if hasmath}}
+      <script src="/libs/katex/katex.min.js"></script>
+      <script src="/libs/katex/auto-render.min.js"></script>
+      <script>renderMathInElement(document.body)</script>
+    {{end}}
+
+    {{if hascode}}
+      <script src="/libs/highlight/highlight.pack.js"></script>
+      <script>hljs.initHighlightingOnLoad();hljs.configure({tabReplace: '    '});</script>
+    {{end}}
+
   </body>
 </html>

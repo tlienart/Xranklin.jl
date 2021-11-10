@@ -32,7 +32,7 @@ end
 Simple shortening of long strings to a string of max `l` characters
 preceding the string with `[...]` if it's been shortened.
 """
-function str_fmt(s::String, l=40)
+function str_fmt(s::String, l=65)
     ss = last(s, l)
     ss == s && return "$s"
     return "[...]$ss"
@@ -59,3 +59,21 @@ noext(fp::String) = first(splitext(fp))
 Check if there's any matching pairs of element in v1 and v2.
 """
 anymatch(v1, v2) = any(a == b for a in v1, b in v2)
+
+
+"""
+    match_url(base, cand)
+
+Try to match two url indicators.
+"""
+function match_url(base::AbstractString, cand::AbstractString)
+    sbase = first(base) === '/' ? base[2:end] : base
+    scand = first(cand) === '/' ? cand[2:end] : cand
+    # joker-style syntax
+    if endswith(scand, "/*")
+        return startswith(sbase, scand[1:prevind(scand, lastindex(scand), 2)])
+    elseif endswith(scand, "/")
+        scand = scand[1:prevind(scand, lastindex(scand))]
+    end
+    return splitext(scand)[1] == sbase
+end

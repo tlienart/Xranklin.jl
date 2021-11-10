@@ -4,17 +4,17 @@
 # * RAW_HTML                | rules/text    ✓
 # * EMPH*                   | rules/text    ✓
 # * LINEBREAK               | rules/text    ✓
-# * CODE_INLINE
-# * MATH_INLINE
-# * AUTOLINK
-# * LINK*
-# * CU_BR, LX_COM
-# * LX_NEW*
-# * DBB
-# * RAW_INLINE
+# * CODE_INLINE             | rules/code    ✓
+# * MATH_INLINE             | rules/math    ✓
+# * AUTOLINK                | XXX
+# * LINK*                   | rules/link    ✓
+# * CU_BR, LX_COM           | latex_objects
+# * LX_NEW*                 | latex_objects
+# * DBB                     | hfuns/*
+# * RAW_INLINE              | rules/text
 
 # possible blocks (single)
-# * BLOCKQUOTE
+# * BLOCKQUOTE              |
 # * TABLE
 # * LIST
 # * MD_DEF_BLOCK, MD_DEF    | rules/text
@@ -188,19 +188,22 @@ label command. If a labelcommand is found, the output is preceded with
 an anchor.
 """
 function dmath(b::Block, c::LocalContext)
+    hasmath!(c)
     math_str = content(b)
     anchor   = ""
     # check if there's a \label{...}, if there is, process it
     # then remove it & do the rest of the processing
     label_match = match(MATH_LABEL_PAT, math_str)
     if label_match !== nothing
-        id     = string_to_anchor(string(label_match.captures[1]))
-        class  = getvar(c, :anchor_class, "anchor") * " " *
-                 getvar(c, :anchor_math_class, "anchor-math")
-        anchor = html_a(; id, class)
-        md     = replace(math_str, MATH_LABEL_PAT => "")
+        id       = string_to_anchor(string(label_match.captures[1]))
+        class    = getvar(c, :anchor_class, "anchor") * " " *
+                   getvar(c, :anchor_math_class, "anchor-math")
+        anchor   = html_a(; id, class)
+        math_str = replace(math_str, MATH_LABEL_PAT => "") |> subs
         # keep track of the reference + numbering
         eqrefs(c)[id] = (eqrefs(c)["__cntr__"] += 1)
+    else
+        eqrefs(c)["__cntr__"] += 1
     end
     return "$anchor\\[ $(math(math_str, c)) \\]\n"
 end

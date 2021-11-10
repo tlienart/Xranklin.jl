@@ -45,6 +45,12 @@ end
     include(p/"rules_link.jl")
 end
 
+@testset "HFuns" begin
+    p = "convert/hfuns"
+    include(p/"evalstr.jl")
+    include(p/"henv.jl")
+end
+
 @testset "build" begin
     p = "build"
     include(p/"paths.jl")

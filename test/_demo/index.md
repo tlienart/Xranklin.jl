@@ -76,6 +76,8 @@ Here we go! (this is styled in the css sheet with name "colbox-blue").
 
 Since it's just a `<div>` block, you can put this construction wherever you like and locally style your text.
 
+$$ x + 1 = 3 $$
+
 ### LaTeX and Maths
 
 Essentially three things are imitated from LaTeX
@@ -89,9 +91,17 @@ For instance, the commands `\scal` and `\R` are defined in the config file (see 
 
 \newcommand{\E}[1]{\mathbb E\left[#1\right]}
 
+$$ \E{X} = 5 $$
+
 Now we can write something like
 
-$$  \varphi(\E{X}) \le \E{\varphi(X)}. \label{equation blah} $$
+$$ \varphi(\E{X}) \le \E{\pi(x)\varphi(y)} $$
+
+$$ \varphi(\E{X}) \le \E{\varphi(X)} $$
+
+$$  \varphi( \E{X} ) \le \E{ \varphi(X) }. $$
+
+$$  \varphi( \E{X} ) \le \E{ \varphi(X) }. \label{equation blah} $$
 
 since we've given it the label `\label{equation blah}`, we can refer it like so: \eqref{equation blah} which can be convenient for pages that are math-heavy.
 
