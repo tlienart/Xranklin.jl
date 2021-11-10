@@ -4,17 +4,17 @@
 # * RAW_HTML                | rules/text    ✓
 # * EMPH*                   | rules/text    ✓
 # * LINEBREAK               | rules/text    ✓
-# * CODE_INLINE
-# * MATH_INLINE
-# * AUTOLINK
-# * LINK*
-# * CU_BR, LX_COM
-# * LX_NEW*
-# * DBB
-# * RAW_INLINE
+# * CODE_INLINE             | rules/code    ✓
+# * MATH_INLINE             | rules/math    ✓
+# * AUTOLINK                | XXX
+# * LINK*                   | rules/link    ✓
+# * CU_BR, LX_COM           | latex_objects
+# * LX_NEW*                 | latex_objects
+# * DBB                     | hfuns/*
+# * RAW_INLINE              | rules/text
 
 # possible blocks (single)
-# * BLOCKQUOTE
+# * BLOCKQUOTE              |
 # * TABLE
 # * LIST
 # * MD_DEF_BLOCK, MD_DEF    | rules/text
