@@ -273,7 +273,7 @@ function try_resolve_lxcom(
     # outside of maths envs as we force the use of braces
     p = ifelse(ctx.is_math[], " ", "")
     @inbounds for k in 1:nargs
-        c = content(blocks[i+k])
+        c = content(blocks[i+k]) |> dedent |> strip
         r = replace(r, "!#$k" => c)
         r = replace(r, "#$k"  => p * c)
     end
@@ -410,7 +410,7 @@ function try_resolve_lxenv(
 
     s = parent_string(blocks[1])
     r = subs(s, next_index(blocks[2+nargs]), prev_index(blocks[end-1]))
-    r = strip(dedent(r))
+    r = r |> dedent |> strip
 
     @inbounds for j in 1:nargs
         c    = content(blocks[2+j])
