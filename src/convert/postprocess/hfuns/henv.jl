@@ -237,14 +237,14 @@ function _resolve_henv_cond(henv::HEnvPart)
 
     # IS DEF
     elseif env_name in (:ifdef, :isdef, :ifndef, :ifnotdef, :isndef, :isnotdef)
-        cond_str = _estr("(getlvar(\$$arg) !== nothing)")
+        cond_str = _estr("(getlvar(\$$(args[1])) !== nothing)")
         if env_name in (:ifndef, :ifnotdef, :isndef, :isnotdef)
             cond_str = _nestr(cond_str)
         end
 
     # IS EMPTY
     elseif env_name in (:ifempty, :isempty, :ifnempty, :ifnotempty, :isnotempty)
-        cond_str = _estr("Xranklin._isemptyvar(\$$arg)")
+        cond_str = _estr("Xranklin._isemptyvar(\$$(args[1]))")
         if env_name in (:ifnempty, :ifnotempty, :isnotempty)
             cond_str = _nestr(cond_str)
         end
