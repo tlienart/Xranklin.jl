@@ -50,10 +50,12 @@ function serve(d::String = pwd();
         end
     end
 
-    # check if there's a config file and process it, this must happen prior
-    # to everything as it defines 'ignore' for instance which is needed in
-    # the watched_files step
+    # check if there's a utils/config file and process, this must happen
+    # prior to everything as it defines 'ignore' for instance which is
+    # needed in the watched_files step
+    process_utils(gc;  initial_pass=true)
     process_config(gc; initial_pass=true)
+
 
     # scrape the folder to collect all files that should be watched for
     # changes; this set will be updated in the loop if new files get
@@ -123,7 +125,7 @@ processed in the `gc` context.
 ## KW-Args
 
     gc:           global context in which to do the full pass
-    skip:         list of file pairs to ignore in the pass
+    skip_files:   list of file pairs to ignore in the pass
     initial_pass: whether it's the first pass, in that case there can be
                    situations where we want to avoid double-processing some
                    md files. E.g. if A requests a var from B, then A will
@@ -145,9 +147,14 @@ function full_pass(
     # non-initial passes; if they haven't changed (usually the case) this
     # will not do anything
     if !initial_pass
-        process_config(gc)
         process_utils(gc)
+        process_config(gc)
     end
+    append!(skip_files, [
+        path(:folder) => "config.md",
+        path(:folder) => "utils.jl"
+        ]
+    )
 
     # check that there's an index page (this is what the server will
     # expect to point to)
@@ -181,42 +188,15 @@ function full_pass(
         """
     # ---------------------------------------------------------
 
-    # Collect the pages that may need re-processing if they depend on definitions
-    # that got updated in the meantime.
+    # Collect the pages that may need re-processing if they depend on
+    # definitions that got updated in the meantime.
     # We can ignore gc because we just did a full pass
     empty!(gc.to_trigger)
-    re_process = gc.to_trigger
-    for c in values(gc.children_contexts)
-        union!(re_process, c.to_trigger)
-        empty!(c.to_trigger)
-    end
-
-    for rpath in re_process
-        # ------------------------------------------------------------------------
-        start = time(); @info """
-        ⌛ re-proc $(hl(str_fmt(rpath), :cyan)) as it depends on updated vars...
-        """
-        # ------------------------------------------------------------------------
-
-        process_md_file(gc, rpath)
-
-        # ------------------------------------
-        δt = time() - start; @info """
-        ... ✔ [reproc] $(hl(time_fmt(δt)))
-        """
-        # ------------------------------------
-    end
+    process_triggers(gc)
     return
 end
 
 
-#=
-NOTE
-
-loop
-- use prune_children!
-
-=#
 """
 """
 function build_loop(
@@ -262,9 +242,7 @@ function build_loop(
             cur_t <= t && continue
 
             # update the modif time of that file & mark it for reprocessing
-            @info """
-                  💥 file $(hl(str_fmt(rpath), :cyan)) changed
-                  """
+            msg   = "💥 file $(hl(str_fmt(rpath), :cyan)) changed"
             d[fp] = cur_t
 
             # if it's a `_layout` file that was changed, then we need to process
@@ -275,7 +253,12 @@ function build_loop(
                     k for k in keys(d)
                     for (case, d) ∈ watched_files if case ∉ (:md, :html)
                 ]
+                msg *= " → triggering full pass"; @info msg
                 full_pass(watched_files; gc, skip_files)
+
+            elseif (fpath in (path(:folder)/"config.md", path(:folder)/"utils.jl"))
+                msg *= " → triggering full pass"; @info msg
+                full_pass(watched_files; gc)
 
             # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
             # TODO
@@ -285,6 +268,7 @@ function build_loop(
 
             # it's a standard file, process just that one
             else
+                @info msg
                 process_file(fp, case, cur_t; gc)
             end
         end

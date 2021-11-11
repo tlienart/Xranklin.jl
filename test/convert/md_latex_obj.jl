@@ -78,3 +78,19 @@ end
         @test l // "bar-abc\\par\nzar-def-zaz\\par\nghi-baz\\par"
     end
 end
+
+@testset "dedenting braces" begin # issue #29
+    s = raw"""
+        \newcommand{\foo}[1]{
+          ```julia
+          #1
+          ```
+       }
+       \foo{
+            a = 1+1
+            println(a)
+        }
+        """
+    h = html(s, nop=true)
+    @test strip(h) == "<pre><code class=\"julia\">a = 1+1\nprintln(a)</code></pre>"
+end

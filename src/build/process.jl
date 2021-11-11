@@ -21,8 +21,9 @@ function process_config(
         isfile(fpv) && load_vars_cache!(gc, fpv)
     end
 
-    # keep track of current lxdefs to see if they change during the pass
-    # and if they change, update all pages dependent on them later.
+    # keep track of current lxdefs to see if the config.md redefines
+    # them; if that's the case (either changed or removed) update all
+    # pages dependent on these defs later.
     old_lxdefs = LittleDict{String, UInt64}(
         n => hash(lxd.def)
         for (n, lxd) in gc.lxdefs
@@ -64,10 +65,11 @@ function process_config(
     # go over the old lxdefs and check the ones that either have been
     # removed or updated
     updated_lxdefs = [
-        n
+        (@debug "✋ lxdef $n has changed"; n)
         for (n, h) in old_lxdefs
         if n ∉ keys(gc.lxdefs) || h != hash(gc.lxdefs[n].def)
     ]
+
     # if there are updated lxdefs, find the pages which this might affect
     # and mark them for re-processing
     if !isempty(updated_lxdefs)
@@ -112,7 +114,7 @@ function process_utils(
     # try to load from cache if relevant
     if initial_pass
         fpc = path(:cache) / "gnbc.json"
-        isfile(fpc) && load_vars_cache!(gc, fpc)
+        isfile(fpc) && load_code_cache!(gc, fpc)
     end
 
     # -----------------------
@@ -184,15 +186,13 @@ function process_file(
 
     # there's things we don't want to copy over or (re)process
     fpath = joinpath(fpair...)
-    skip = startswith(fpath, path(:layout)) ||
-           startswith(fpath, path(:literate)) ||
-           startswith(fpath, path(:rss)) ||
-           fpair.second in ("config.md", "utils.jl") ||
-           fpair in skip_files
+    skip  = startswith(fpath, path(:layout))    ||  # no copy
+            startswith(fpath, path(:literate))  ||  # no copy
+            startswith(fpath, path(:rss))       ||  # no copy
+            fpair in skip_files                     # skip
     skip && return
 
     opath = form_output_path(fpair, case)
-
     if case in (:md, :html)
         # ----------------------------------------------
         start = time(); @info """
@@ -202,8 +202,11 @@ function process_file(
 
         if case == :md
             process_md_file(gc, fpath, opath; initial_pass=initial_pass)
+            initial_pass || process_triggers(gc)
+
         elseif case == :html
             process_html_file(gc, fpath, opath)
+
         end
         ropath = "__site"/get_ropath(opath)
 
@@ -212,6 +215,7 @@ function process_file(
             ... [process] ✔ $(hl(time_fmt(time()-start))), wrote $(hl(str_fmt(ropath), :cyan))
             """
         # ----------------------------------------------------------------------------
+
     else
         # copy the file over if
         # - it's not already there
@@ -411,4 +415,30 @@ function process_html_file_io!(
     # get html, postprocess it & write it
     write(io, html2(read(fpath, String), ctx))
     return
+end
+
+
+"""
+    process_triggers(gc)
+
+See if earlier processing incurred any dependent processing by having modified
+some page variables. The typical case is when definitions change in the config
+file and all pages that use those definitions should be re-processed.
+"""
+function process_triggers(gc::GlobalContext)
+    # see if it incurred re-triggers
+    re_process = gc.to_trigger
+    for c in values(gc.children_contexts)
+        union!(re_process, c.to_trigger)
+        empty!(c.to_trigger)
+    end
+    for rpath in re_process
+        start = time(); @info """
+            ⌛ re-proc $(hl(str_fmt(rpath), :cyan)) (depends on updated vars)
+            """
+        process_md_file(gc, rpath)
+        δt = time() - start; @info """
+            ... ✔ [reproc] $(hl(time_fmt(δt)))
+            """
+    end
 end
