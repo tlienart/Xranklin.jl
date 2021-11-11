@@ -22,6 +22,8 @@ layout_page_foot = ""
   <fieldset class="md-result">
     <legend class="md-result-legend">result</legend>
   ~~~
+
   #1
+
   ~~~</fieldset>~~~
 }

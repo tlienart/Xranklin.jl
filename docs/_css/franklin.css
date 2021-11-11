@@ -174,7 +174,8 @@ td {
 }
 
 .franklin-content blockquote p {
-  display: inline;
+  margin-top: .5em;
+  margin-bottom: .5em;
 }
 
 /* ==================================================================

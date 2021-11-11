@@ -67,24 +67,44 @@ Headings are automatically made into anchors (including the ones above).
 This allows to easily link on a page (and also across pages).
 For instance [this is a link to the Headings section](#headings).
 
-## (XXX) Blockquotes
+## Blockquotes
 
-A set of lines prefixed with `>` will form a blockquote:
+A set of lines prefixed with `>` will form a blockquote as well as continuation lines after those:
 
 \showmd{
+
   > ABC
   > DEF
+  GHI (continuation, still part of quote)
+  JKL (also)
+
+  Here it's separate as there's a line skip.
+
 }
+
+there can be any formatting in the blockquote:
 
 \showmd{
   > ABC
   > DEF **GHI**
 }
 
+you can also skip lines which will act as a paragraph break _within_ the blockquote:
+
 \showmd{
   > ABC
   >
   > GHI
+}
+
+you can also nest blockquotes (make sure you skip a line after the nested block as shown below to separate between the inner nested quote and the outer one):
+
+\showmd{
+  > ABC
+  > > DEF
+  > > GHI
+  >
+  > JKL
 }
 
 
