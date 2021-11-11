@@ -71,12 +71,22 @@ For instance [this is a link to the Headings section](#headings).
 
 A set of lines prefixed with `>` will form a blockquote:
 
-<!-- \showmd{
+\showmd{
   > ABC
   > DEF
+}
+
+\showmd{
+  > ABC
+  > DEF **GHI**
+}
+
+\showmd{
+  > ABC
   >
-  > GHI **JKL**
-} -->
+  > GHI
+}
+
 
 ## (XXX) Lists
 
