@@ -180,8 +180,6 @@ latex_img_ab(b::Block, c::LocalContext)  = _link_ab(b, c; tohtml=false, img=true
 html_ref(b::Block, c::Context)  = _refref(b, c)
 latex_ref = html_ref
 
-# html_img_ab(b::Block, _) = ...
-# latex_link_ab()
-
-#function img_a(ss::SS)
-# end
+# autolink
+html_autolink(b::Block, _)  = (c = content(b) |> string; html_a(c; href=c))
+latex_autolink(b::Block, _) = (c = content(b) |> string; "\\href{$c}{$c}")

@@ -88,3 +88,10 @@ end
     h = html(s, nop=true)
     @test isapproxstr(h, s)
 end
+
+@testset "autolink" begin
+    l = "https://example.com"
+    s = "<$l>"
+    @test html(s, nop=true) // "<a href=\"$l\">$l</a>"
+    @test latex(s, nop=true) // raw"\href{https://example.com}{https://example.com}"
+end
