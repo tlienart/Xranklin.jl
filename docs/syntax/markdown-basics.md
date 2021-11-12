@@ -1,6 +1,7 @@
 # Markdown basics
 
-<!-- \toc -->
+{{rm_headers level_1 level_2 level_3}}
+\toc
 
 ## TO MENTION
 
