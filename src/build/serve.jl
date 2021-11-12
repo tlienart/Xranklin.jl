@@ -89,11 +89,12 @@ function serve(d::String = pwd();
     # ---------------------------------------------------------------
     # Finalize
     # > go through every page and serialize them; this only needs
-    # to be done at the end
+    # to be done at the end. For the global setting, we don't
+    # serialize the code notebook (utils) since it always needs to be
+    # re-evaluated at the start.
     start = time()
     @info "📓 serializing $(hl("config", :cyan))..."
     serialize_notebook(gc.nb_vars, path(:cache) / "gnbv.json")
-    serialize_notebook(gc.nb_code, path(:cache) / "gnbc.json")
     for (rp, ctx) in gc.children_contexts
         # ignore .html pages
         endswith(rp, ".md") || continue

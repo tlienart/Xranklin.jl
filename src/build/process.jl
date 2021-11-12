@@ -111,12 +111,6 @@ function process_utils(
     # set the notebooks at the top
     reset_notebook_counters!(gc)
 
-    # try to load from cache if relevant
-    if initial_pass
-        fpc = path(:cache) / "gnbc.json"
-        isfile(fpc) && load_code_cache!(gc, fpc)
-    end
-
     # -----------------------
     start = time(); @info """
         ⌛ processing utils
@@ -134,7 +128,7 @@ function process_utils(
     # check names of hfun, lx and vars; since we wiped the module before the
     # include_string, all the proper names recuperated here are 'fresh'.
     mdl = gc.nb_code.mdl
-    ns = String.(names(mdl, all=true))
+    ns  = String.(names(mdl, all=true))
     filter!(
         n -> n[1] != '#' &&
              n ∉ ("eval", "include", string(nameof(mdl))),
@@ -174,6 +168,11 @@ Take a file (markdown, html, ...) and process it appropriately:
 
 * copy it "as is" in `__site`
 * generate a derived file into `__site`
+
+## Paths
+
+* process_file -> process_md_file   -> process_md_file_io!
+* process_file -> process_html_file -> process_html_file_io!
 """
 function process_file(
             fpair::Pair{String,String},
@@ -265,6 +264,8 @@ function process_md_file_io!(
             DefaultLocalContext(gc; rpath)
     # set it as current context in case it isn't
     set_current_local_context(ctx)
+    # reset the headers
+    empty!(ctx.headers)
 
     if initial_pass
         # try to load notebooks from serialized
