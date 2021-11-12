@@ -272,10 +272,19 @@ function try_resolve_lxcom(
     # in math env, inject whitespace to avoid issues with chains; this can't happen
     # outside of maths envs as we force the use of braces
     p = ifelse(ctx.is_math[], " ", "")
+    # find the indicators for replacement (e.g. '#1') and replace
     @inbounds for k in 1:nargs
         c = content(blocks[i+k]) |> dedent |> strip
-        r = replace(r, "!#$k" => c)
-        r = replace(r, "#$k"  => p * c)
+        # this replacement where we keep track of whitespaces before
+        # the #1 is to account for cases where the injected block has new
+        # lines which should be aligned with the first injected line. See
+        # issue Xranklin#34
+        for w in ("!", "")
+            sp = ifelse(isempty(w), p, "")
+            for m in eachmatch(Regex("([ \t]*)$w#$k"), r)
+                r = replace(r, "$w#$k" => sp * replace(c, "\n" => "\n" * m.captures[1]))
+            end
+        end
     end
     recursion = ifelse(tohtml, rhtml, rlatex)
     r2 = recursion(r, ctx; nop=true)

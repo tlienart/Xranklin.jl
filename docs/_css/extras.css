@@ -1,3 +1,42 @@
+/*
+LIST, NUMBERD LIST, NESTING
+ */
+
+ ol {
+   counter-reset: item;
+ }
+ ol > li {
+   display: block;
+ }
+
+ ol>li:before{
+   content: counters(item, ".") ". ";
+   counter-increment: item;
+ }
+
+/*
+≂̸ CommonMark
+ */
+.cm-diff {
+  background-color: #FCD8D8;
+  border: 0px;
+  border-radius: 5px;
+  font-size: 85%;
+}
+.cm-diff-legend{
+  color: white;
+  background-color: #BC1919;
+  padding-left: 1em;
+  padding-right: 1em;
+  border-radius: 10px;
+  font-variant: small-caps;
+  font-size: var(--small);
+}
+
+/*
+SHOW MD
+*/
+
 .md-input {
   border-width: 0;
   margin-bottom: 1em;
@@ -26,8 +65,8 @@
   border-color: blue;
   border-width: 1px;
   margin-left: 1.5em;
-  border-left: 3px solid blue;
-  border-radius: 10px;
+  border-left: 3px solid navy;
+  border-radius: 5px;
   font-size: var(--small);
 }
 .md-result img {

@@ -3,27 +3,48 @@
 
 author = "Thibaut Lienart"
 
-# Layout
+# General Layout
 layout_page_foot = ""
+
+# Page layout
+mintoclevel = 2
 
 
 +++
 
-\newcommand{\showmd}[1]{
+\newcommand{\fieldset}[3]{
   ~~~
-  <fieldset class="md-input">
-    <legend class="md-input-legend">markdown</legend>
+  <fieldset class="#1"><legend class="#1-legend">#2</legend>
   ~~~
-  `````markdown
-  #1
-  `````
+  #3
   ~~~
   </fieldset>
-  <fieldset class="md-result">
-    <legend class="md-result-legend">result</legend>
   ~~~
+}
 
-  #1
+<!--
+  Show markdown + what it looks like in a box
+-->
+\newcommand{\showmd}[1]{
+  \fieldset{md-input}{markdown}{
+    `````markdown
+    #1
+    `````
+  }
+  \fieldset{md-result}{result}{
+    ~~~~~~
 
-  ~~~</fieldset>~~~
+    #1
+
+    ~~~~~~
+  }
+}
+
+<!--
+  Note about difference with CommonMark
+-->
+\newcommand{\cmdiff}[1]{
+  \fieldset{cm-diff}{&ne; CommonMark}{
+    #1
+  }
 }

@@ -94,3 +94,49 @@ end
     h = html(s, nop=true)
     @test strip(h) == "<pre><code class=\"julia\">a = 1+1\nprintln(a)</code></pre>"
 end
+
+@testset "more dedenting" begin
+    lc = X.DefaultLocalContext()
+    s = raw"""
+        \newcommand{\coma}[2]{
+            ~~~
+            ABC class=#1
+            ~~~
+            #2
+            ~~~
+            DEF
+            ~~~
+        }
+        \newcommand{\comb}[1]{
+            \coma{foo}{
+                ```markdown
+                #1
+                ```
+            }
+        }
+
+        \comb{XXX}
+        """
+    h = html(s, nop=true)
+    @test h // "ABC class=foo<pre><code class=\"markdown\">XXX</code></pre>DEF"
+
+    s = raw"""
+        \newcommand{\coma}[1]{
+            #1
+        }
+        \newcommand{\comb}[1]{
+            \coma{
+                ```markdown
+                #1
+                ```
+            }
+        }
+
+        \comb{
+            X1
+            X2
+        }
+        """
+    h = html(s, nop=true)
+    @test h // "<pre><code class=\"markdown\">X1\nX2</code></pre>"
+end

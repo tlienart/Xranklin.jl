@@ -3,10 +3,6 @@
 {{rm_headers level_1 level_2 level_3}}
 \toc
 
-## TO MENTION
-
-* headings with `---` are not supported
-
 ## Emphasis
 
 You can surround words with `*` to change the emphasis:
@@ -67,6 +63,10 @@ There can be up to 6 `#` indicating the depth of the title though note that only
 Headings are automatically made into anchors (including the ones above).
 This allows to easily link on a page (and also across pages).
 For instance [this is a link to the Headings section](#headings).
+
+\cmdiff{
+  CommonMark supports indicating level 1 and 2 headings by underlying them with `===` or `---`; this is not supported in Franklin.  
+}
 
 ## Blockquotes
 
@@ -170,3 +170,10 @@ you can also nest blockquotes (make sure you skip a line after the nested block 
 }
 
 **TODO** link to executable code blocks
+
+## (XXX) Priorities
+
+When parsing text and faced with ambiguities, Franklin will stick to the following priority order (whichever matches first is kept):
+
+* raw blocks
+*
