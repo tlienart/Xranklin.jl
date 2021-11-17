@@ -40,7 +40,7 @@ function update_files_to_watch!(
         for file in files
             # assemble full path
             fpair = root => file
-            fpath = fpair.first / fpair.second
+            fpath = joinpath(fpair...)
             fext  = splitext(file)[2]
 
             # early skip of irrelevant fpaths

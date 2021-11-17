@@ -34,7 +34,13 @@ function serve(d::String = pwd();
             port::Int    = 8000,
             host::String = "127.0.0.1",
             launch::Bool = true,
+            debug::Bool  = false
             )
+
+    if debug
+        Logging.disable_logging(Logging.Debug - 100)
+        ENV["JULIA_DEBUG"] = "all"
+    end
 
     # Instantiate the global context, this also creates a global vars and code
     # notebooks which each have their module. The first creation of a module
@@ -193,7 +199,7 @@ function full_pass(
     # definitions that got updated in the meantime.
     # We can ignore gc because we just did a full pass
     empty!(gc.to_trigger)
-    process_triggers(gc)
+    process_triggers(gc, skip_files)
     return
 end
 

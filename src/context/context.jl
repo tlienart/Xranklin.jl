@@ -361,6 +361,13 @@ end
 cur_gc() = env(:cur_global_ctx)::GlobalContext
 cur_lc() = env(:cur_local_ctx)::LocalContext
 
+# cur_ctx to resolve insertions
+cur_ctx()::Context = begin
+    lc = env(:cur_local_ctx)
+    isnothing(lc) && return cur_gc()
+    lc
+end
+
 # helper functions to set var in current local/global context
 setgvar!(n::Symbol, v) = setvar!(cur_gc(), n, v)
 setlvar!(n::Symbol, v) = setvar!(cur_lc(), n, v)
