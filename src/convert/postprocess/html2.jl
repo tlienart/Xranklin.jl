@@ -15,6 +15,7 @@ brace blocks).
 html2(s::String, c::Context; kw...) = html2(FP.html_partition(s; kw...), c)
 
 function html2(parts::Vector{Block}, c::Context)::String
+    crumbs("html2")
     # DEV NOTES
     # ---------
     # * since the hfuns might call a process_file function which, itself
@@ -73,7 +74,6 @@ function html2(parts::Vector{Block}, c::Context)::String
                     """
                 write(io, hfun_failed(split_cb))
             end
-
             resolve_henv(henv, io, c)
             idx = ci
 

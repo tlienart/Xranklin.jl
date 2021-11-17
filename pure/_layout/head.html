@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{{meta_description}}">
+
+  {{if hasmath}}
+    <link rel="stylesheet" href="/libs/katex/katex.min.css">
+  {{end}}
+
+  {{if hascode}}
+    <link rel="stylesheet" href="/libs/highlight/github.min.css">
+  {{end}}
+
+  <!-- PURE.CSS -->
+  <link rel="stylesheet" href="/css/pure.css">
+  <link rel="stylesheet" href="/css/extras.css">
+
+  <!-- <link rel="icon" href="/assets/favicon.png"> -->
+  <!-- {{isdef title}} <title>{{fill title}}</title>  {{end}} -->
+
+</head>
+<body>
+
+<div id="layout">
+
+  {{insert menu.html}}
+
+  <div class="content" id="main">

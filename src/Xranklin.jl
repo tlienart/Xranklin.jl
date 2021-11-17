@@ -9,6 +9,7 @@ import Base.(/)
 import REPL: softscope
 import Pkg
 import Serialization: serialize, deserialize
+import Logging
 
 # ------------------------------------------------------------------------
 # external dependencies part of the Franklin universe

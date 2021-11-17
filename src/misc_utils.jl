@@ -32,7 +32,7 @@ end
 Simple shortening of long strings to a string of max `l` characters
 preceding the string with `[...]` if it's been shortened.
 """
-function str_fmt(s::String, l=65)
+function str_fmt(s::AbstractString, l=65)
     ss = last(s, l)
     ss == s && return "$s"
     return "[...]$ss"
@@ -77,3 +77,6 @@ function match_url(base::AbstractString, cand::AbstractString)
     end
     return splitext(scand)[1] == sbase
 end
+
+
+crumbs(s) = @debug "🚧 ... $(hl(s, :yellow))..."

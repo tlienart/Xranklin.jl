@@ -21,12 +21,12 @@ end
 
 html_code_inline(b::Block, c::LocalContext) = (
     hascode!(c);
-    "<code>" * (b |> content |> _hescape) * "</code>"
+    "<code>" * (b |> content |> strip |> _hescape) * "</code>"
 )
 
 latex_code_inline(b::Block, c::LocalContext) = (
     hascode!(c);
-    "\\texttt{" * (b |> content |> _lescape) * "}"
+    "\\texttt{" * (b |> content |> strip |> _lescape) * "}"
 )
 
 #

@@ -3,9 +3,9 @@
 {{rm_headers level_1 level_2 level_3}}
 \toc
 
-## Emphasis
+## Text Emphasis
 
-You can surround words with `*` to change the emphasis:
+You can surround words with `*` to change the text emphasis (bold, italic):
 
 \showmd{
   *italic* **bold** ***bold+italic***
@@ -17,13 +17,13 @@ this also works with `_`:
     _italic_ __bold__ ___bold+italic___
 }
 
-these can be nested:
+and you can nest emphasis styles:
 
 \showmd{
   _italic **bold+italic**_
 }
 
-If you want to show the characters `*` or `_` (or other special characters which have a meaning in Franklin), you should escape them with a `\\`:
+If you want to show the characters `*` or `_` (or other special characters which have a meaning in Franklin), you should escape them with a `\ `:
 
 \showmd{
   \* \_ \$ \` \@ \# \{ \} \~ \! \% \& \' \+ \, \- \. \/ \: \; \< \= \> \? \^ \|
@@ -31,7 +31,7 @@ If you want to show the characters `*` or `_` (or other special characters which
 
 ## Paragraphs
 
-When converting markdown, a set of consecutive "inline" blocks will be converted and placed within a paragraph (`<p>...</p>`).
+When converting text (to HTML or LaTeX), sets of consecutive "inline" blocks will be grouped and placed within a paragraph (in HTML: `<p>...</p>`).
 Inline blocks can be:
 
 * text not separated by an empty line
@@ -41,9 +41,13 @@ Inline blocks can be:
 * latex-like commands
 * ...
 
-In the basic case skipping a line will create a paragraph. For instance this sentence is in a different paragraph than the next one.
+A paragraph will be interrupted by:
 
-If you want to introduce a line return without breaking a paragraph, you can use a double backslash `\\` (similar to LaTeX):
+* a line skip,
+* a "non-inline" block (for instance a heading or a code block),
+* the end of the text.
+
+If you want to introduce a line return without interrupting a paragraph, you can use a double backslash `\\` (similar to LaTeX):
 
 \showmd{
   ABC \\ DEF
@@ -61,8 +65,8 @@ There can be up to 6 `#` indicating the depth of the title though note that only
 }
 
 Headings are automatically made into anchors (including the ones above).
-This allows to easily link on a page (and also across pages).
-For instance [this is a link to the Headings section](#headings).
+This allows to easily link to parts of a page (and also across pages).
+For instance `[link](#headings)` will give: [link](#headings).
 
 \cmdiff{
   CommonMark supports indicating level 1 and 2 headings by underlying them with `===` or `---`; this is not supported in Franklin.  
@@ -70,7 +74,7 @@ For instance [this is a link to the Headings section](#headings).
 
 ## Blockquotes
 
-A set of lines prefixed with `>` will form a blockquote as well as continuation lines after those:
+A set of lines prefixed with `>` will form a blockquote as well as lines immediately after not separated by an empty line (continuation lines):
 
 \showmd{
 
@@ -171,9 +175,10 @@ you can also nest blockquotes (make sure you skip a line after the nested block 
 
 **TODO** link to executable code blocks
 
-## (XXX) Priorities
+## (XXX) Horizontal rules
 
-When parsing text and faced with ambiguities, Franklin will stick to the following priority order (whichever matches first is kept):
+## (XXX) HTML
 
-* raw blocks
-*
+### Raw HTML
+
+### HTML entities
