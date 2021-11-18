@@ -1,0 +1,80 @@
+/*
+  LEFT SIDE
+*/
+
+#menu {
+  background-color: var(--xlight);
+  width: var(--menu-width);
+  /* margin-left: calc(-1 * var(--pure-menu-width)); */
+}
+
+#menu .pure-menu {
+  width: var(--pure-menu-width);
+  border: 1px solid red;
+  float: right;
+}
+
+#menu .pure-menu-heading {
+  font-size: var(--xlarge);
+  font-weight: bold;
+  border: 2px dashed navy;
+}
+
+#menu .pure-menu ul {
+  border: none;
+}
+
+#menu .pure-menu ul li {
+  border: 1px dotted orange;
+}
+
+
+/*
+  RIGHT SIDE / TOC
+*/
+
+#right-side {
+	/* visibility: var(--right-side-hidden); */
+	width: var(--right-side-width);
+	float: var(--right-side-float);
+	padding-left: var(--right-side-padding-left);
+	position: var(--right-side-position);
+	top: var(--right-side-top);
+	margin-top: var(--right-side-margin-top);
+}
+
+#toc-legend {
+	width: var(--toc-width);
+	margin-left: var(--toc-margin-left);
+	padding-bottom: .8em;
+	padding-top: 2em;
+	font-weight: 500;
+	color: var(--gray);
+}
+
+#right-side .toc {
+	padding-top: .3em;
+	border-top: 1px solid var(--lgray);
+	margin-left: var(--toc-margin-left);
+	font-size: var(--small);
+	line-height: var(--toc-line-height);
+	width: var(--toc-width);
+}
+
+#right-side .toc a {
+	color: var(--gray);
+	text-decoration: none;
+}
+
+#right-side .toc a:hover {
+	text-decoration: underline;
+}
+
+#right-side .toc ol {
+	list-style: none;
+	padding-left: 0.5em;
+}
+
+#right-side .toc ol li ol {
+	padding-left: 1.5em;
+}

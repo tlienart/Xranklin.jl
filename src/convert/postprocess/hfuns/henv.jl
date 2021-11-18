@@ -140,7 +140,7 @@ within the context `c`.
 """
 function resolve_henv(henv::Vector{HEnvPart}, io::IOBuffer, c::Context)
     env_name = first(henv).name
-    crumbs("resolve_henv $env_name")
+    crumbs("resolve_henv", env_name)
     # ------------------------------------------------
     # IF-style h-env
     # > find the scope corresponding to the validated

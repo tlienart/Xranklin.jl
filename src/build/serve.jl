@@ -189,17 +189,17 @@ function full_pass(
         )
     end
 
-    # ---------------------------------------------------------
-    δt = time() - start; @info """
-        💡 $(hl("full pass done", :yellow)) $(hl(time_fmt(δt)))
-        """
-    # ---------------------------------------------------------
-
     # Collect the pages that may need re-processing if they depend on
     # definitions that got updated in the meantime.
     # We can ignore gc because we just did a full pass
     empty!(gc.to_trigger)
     process_triggers(gc, skip_files)
+
+    # ---------------------------------------------------------
+    δt = time() - start; @info """
+        💡 $(hl("full pass done", :yellow)) $(hl(time_fmt(δt)))
+        """
+    # ---------------------------------------------------------
     return
 end
 
@@ -278,6 +278,8 @@ function build_loop(
                 @info msg
                 process_file(fp, case, cur_t; gc)
             end
+
+            @info "✅  Website updated and ready to view"
         end
     end
     return

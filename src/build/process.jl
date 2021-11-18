@@ -186,7 +186,7 @@ function process_file(
             skip_files::Vector{Pair{String, String}}=Pair{String, String}[],
             initial_pass::Bool=false
             )
-    crumbs("process_file $(fpair.first) => $(fpair.second)")
+    crumbs("process_file", "$(fpair.first) => $(fpair.second)")
 
     # there's things we don't want to copy over or (re)process
     fpath = joinpath(fpair...)
@@ -246,7 +246,7 @@ function process_md_file_io!(
             initial_pass::Bool=false,
             tohtml::Bool=true
             )::Nothing
-    crumbs("process_md_file_io! '$fpath'")
+    crumbs("process_md_file_io!", fpath)
 
     # usually not necessary apart if triggered from getvarfrom
     isfile(fpath) || return
@@ -315,7 +315,7 @@ function process_md_file(
 end
 
 function process_md_file(gc::GlobalContext, rpath::String; kw...)
-    crumbs("process_md_file '$rpath'")
+    crumbs("process_md_file", rpath)
 
     fpath = path(:folder) / rpath
     d, f  = splitdir(fpath)
@@ -358,12 +358,6 @@ function _process_md_file_html(ctx::Context, page_content_md::String)
     # > head if it exists
     head_path = path(:folder) / getgvar(:layout_head)::String
     if !isempty(head_path) && isfile(head_path)
-
-        @show getid(ctx)
-
-        @show getvar(ctx, :hasmath)
-        @show getvar(ctx, :hascode)
-
         full_page_html = html2(read(head_path, String), ctx)
     end
 
@@ -407,7 +401,7 @@ function process_html_file(
             fpath::String,
             opath::String
             )
-    crumbs("process_html_file '$fpath'")
+    crumbs("process_html_file", fpath)
 
     open(opath, "w") do io
         process_html_file_io!(io, ctx, fpath)

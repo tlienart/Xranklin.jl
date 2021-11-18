@@ -7,23 +7,18 @@ author = "Thibaut Lienart"
 layout_page_foot = ""
 content_tag = ""
 menu = [
-  "Syntax" => "/syntax/",
-  "Layout" => "/layout/",
-  "FAQs"    => "/faq/"
+  "Overview"  => "/overview/",
+  "Syntax"    => "/syntax/",
+  "Layout"    => "/layout/",
+  "Context"   => "/context/",
+  "FAQs"      => "/faq/"
 ]
 
 # Page layout
-mintoclevel = 2
+showtoc = false
 
 # Misc
 meta_description = "Franklin"
 
 
 +++
-
-\newcommand{\header}[1]{
-  @@header
-   # #1
-   \\
-  @@ \\
-}

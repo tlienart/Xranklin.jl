@@ -79,4 +79,4 @@ function match_url(base::AbstractString, cand::AbstractString)
 end
 
 
-crumbs(s) = @debug "🚧 ... $(hl(s, :yellow))..."
+crumbs(s1, s2="") = @debug "🚧 ... $(hl(s1, :yellow)) $(s2 === "" ? "" : "> $(hl(s2, :red))")"

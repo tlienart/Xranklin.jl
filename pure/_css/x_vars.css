@@ -1,0 +1,166 @@
+:root {
+  /*
+		FONT
+	*/
+
+	--small:       90%;
+  --large:       120%;
+	--xlarge:			 140%;
+	--h2-size: 		 2em;
+	--h3-size: 		 1.5em;
+	--h4-size: 		 1.2em;
+  --text-color:  hsl(0, 0%, 20%);
+  --line-height: 1.5;
+	/* NOTE see 'native font stack' also for mono later */
+	--font-ss: 		 system-ui,-apple-system,"Segoe UI",Roboto,
+							   "Helvetica Neue",Arial,"Noto Sans",
+								 "Liberation Sans",sans-serif,"Apple Color Emoji",
+								 "Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+
+	/*
+		LAYOUT | LEFT
+	*/
+
+	--menu-width: 		 	    15em;
+	--pure-menu-width:      75%;
+
+	/*
+		LAYOUT | TOC / RIGHT
+	*/
+
+	--right-side-width: 		   0;
+	--right-side-float: 		   none;
+	--right-side-position: 	   relative;
+	--right-side-top:			 	   0;
+	--right-side-margin-top:   0;
+	--right-side-padding-left: 0;
+
+	--toc-width: 					  13em;
+	--toc-line-height: 			1.75em;
+	--toc-margin-left: 			0;
+
+	/*
+		LAYOUT | CENTER
+	*/
+
+	--body-height: 					100%;
+	--layout-padding-left:  var(--menu-width);
+	--main-max-width-0:  	  52em;
+	--main-max-width: 		  var(--main-max-width-0);
+	--content-margin-left:  auto;
+	--content-margin-right: auto;
+
+	--header-padding-bottom: 1em;
+	--header-margin-bottom:  1em;
+
+	/*
+		COLOR PALETTE
+	*/
+
+	--xlight: #e7eaf6;
+	--light:  #a2a8d3;
+	--dark:   #38598b;
+	--xdark:  #113f67;
+	--lgray:  #eee;
+	--gray:   gray;
+
+	/* Code Inline */
+	--font-mono:  	 		 		 SFMono-Regular,Menlo,Monaco,Consolas,
+								 			 		 "Liberation Mono","Courier New",monospace;
+	--inline-code-font-size: .875em;
+	--inline-code-color: 		 #d63384;
+}
+
+
+/* SMALL */
+@media screen and (max-width: 48em) {
+	:root {
+		--layout-padding-left: 0;
+		--menu-width: 0;
+	}
+}
+
+/* MORE THAN LARGE */
+@media screen and (min-width: 75em) {
+	:root {
+		--content-margin-left: 3em;
+	}
+}
+
+/* LESS THAN XLARGE */
+@media screen and (min-width: 75em) {
+	:root {
+		--content-margin-left: 3em;
+	}
+}
+
+/* MORE THAN XLARGE + 15 em for right menu */
+@media screen and (min-width: 90em) {
+	:root {
+		--right-side-float: 			 right;
+  	--right-side-width: 			 calc(100% - var(--main-max-width-0));
+		--right-side-position:	   sticky;
+		--right-side-top: 			   10em;
+		--right-side-margin-top:   .75em;
+		--right-side-padding-left: 2em;
+		--toc-margin-left: 			   3em;
+		--header-padding-bottom:   3em;
+		--header-margin-bottom:    4em;
+	}
+}
+
+/*
+	CORE
+*/
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+	height: var(--body-height);
+  font-family: var(--font-ss);
+  color: var(--text-color);
+  line-height: var(--line-height);
+}
+
+code {
+	font-family: var(--font-mono);
+	color: var(--inline-code-color);
+	font-size: var(--inline-code-font-size);
+	word-wrap: break-word;
+}
+
+:is(h1, h2, h3) a {
+	text-decoration: none;
+	color: var(--dark);
+	font-weight: 500;
+}
+:is(h1, h2, h3) {
+	margin-bottom: 0;
+}
+
+h2 {font-size: var(--h2-size); padding-top: 1.2em;}
+h3 {font-size: var(--h3-size); padding-top: .5em;}
+
+
+#layout {
+	padding-left: var(--layout-padding-left);
+}
+
+#main {
+  line-height: inherit;
+	max-width: var(--main-max-width);
+}
+
+.content {
+	margin-left:  var(--content-margin-left);
+	margin-right: var(--content-margin-right);
+}
+
+.header {
+	padding-bottom: var(--header-padding-bottom);
+	margin-bottom:  var(--header-margin-bottom);
+}

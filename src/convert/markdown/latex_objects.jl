@@ -82,7 +82,7 @@ function try_form_lxdef(
             blocks::Vector{Block},
             ctx::Context
             )::Tuple{Block,Int}
-    crumbs("try_form_lxdef $(str_fmt(block.ss, 30))")
+    crumbs("try_form_lxdef", str_fmt(block.ss, 30))
 
     n_blocks = length(blocks)
     # command or env?
@@ -218,7 +218,7 @@ function try_resolve_lxcom(
             ctx::LocalContext;
             tohtml::Bool=true
             )::Tuple{Block,Int}
-    crumbs("try_resolve_lxcom $(str_fmt(blocks[i].ss, 30))")
+    crumbs("try_resolve_lxcom", str_fmt(blocks[i].ss, 30))
 
     # Process:
     # 1. look for definition --> fail if none + not in math mode + not lxfun
