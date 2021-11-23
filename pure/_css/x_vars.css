@@ -1,3 +1,33 @@
+/*
+
+NOTE
+
+with defaults:
+- 48em is 768px
+- 75em is 1200px
+- 90em is 1440px
+
+👀 0 - 768 (48): folded menu
+
+👀 768 - 1200: fixed menu on left
+
+👀 1200 transition point:
+	🔺 space between menu and content jump
+
+👀 1200 - 1440
+	🔺 space between menu and content increases, it shouldnt
+	🔺 right space should increase until transition where right toc can appear
+
+👀 1440 transition point:
+	🔺 right toc appears but is too far to the right and there's too much space on the left
+	🔺 layout should have a sensible fixed width
+
+----
+🔺 back to top button is digusting
+
+
+ */
+
 :root {
   /*
 		FONT
@@ -21,8 +51,11 @@
 		LAYOUT | LEFT
 	*/
 
-	--menu-width: 		 	    15em;
-	--pure-menu-width:      75%;
+	--menu-width-0: 		 	  16em;
+	--menu-width: 					var(--menu-width-0);
+	--pure-menu-width:      12em;
+	--menu-left: 						9em;
+	--menu-margin-left: 		-9em;
 
 	/*
 		LAYOUT | TOC / RIGHT
@@ -43,12 +76,11 @@
 		LAYOUT | CENTER
 	*/
 
-	--body-height: 					100%;
-	--layout-padding-left:  var(--menu-width);
-	--main-max-width-0:  	  52em;
-	--main-max-width: 		  var(--main-max-width-0);
-	--content-margin-left:  auto;
-	--content-margin-right: auto;
+	--body-height: 						100%;
+	--layout-padding-left:  	var(--menu-width);
+	--content-padding-side-0: 1.5em;
+	--content-padding-left:   var(--content-padding-side-0);
+	--content-padding-right:  var(--content-padding-side-0);
 
 	--header-padding-bottom: 1em;
 	--header-margin-bottom:  1em;
@@ -72,7 +104,11 @@
 }
 
 
-/* SMALL */
+/*
+	NARROW
+	[0, 768px]
+	- menu folded
+*/
 @media screen and (max-width: 48em) {
 	:root {
 		--layout-padding-left: 0;
@@ -80,21 +116,40 @@
 	}
 }
 
-/* MORE THAN LARGE */
-@media screen and (min-width: 75em) {
+/*
+	MEDIUM and LARGE
+	[768px, ∞[
+	- menu fixed, stuck to left
+*/
+@media screen and (min-width: 48em) {
 	:root {
-		--content-margin-left: 3em;
+		/* pad to account for menu width */
+		--content-padding-left: calc(
+				var(--menu-width) + var(--content-padding-side-0));
 	}
 }
 
-/* LESS THAN XLARGE */
+/*
+	LARGE
+	[1200px, 1440px]
+	- menu fixed, layout max width
+*/
 @media screen and (min-width: 75em) {
 	:root {
-		--content-margin-left: 3em;
+		--layout-margin-left: auto;
+		--layout-margin-right: auto;
+
+		/* --menu-left: 20vw;
+		--content-padding-left: calc(var(--menu-left) + 9em); */
 	}
 }
 
-/* MORE THAN XLARGE + 15 em for right menu */
+/*
+	XLARGE
+	[1440, ∞[
+	- menu fixed
+	- layout max width including right side
+*/
 @media screen and (min-width: 90em) {
 	:root {
 		--right-side-float: 			 right;
@@ -106,6 +161,7 @@
 		--toc-margin-left: 			   3em;
 		--header-padding-bottom:   3em;
 		--header-margin-bottom:    4em;
+		--menu-left:					 		 auto;
 	}
 }
 
@@ -139,6 +195,7 @@ code {
 	font-weight: 500;
 }
 :is(h1, h2, h3) {
+	margin-top: 0;
 	margin-bottom: 0;
 }
 
@@ -147,17 +204,22 @@ h3 {font-size: var(--h3-size); padding-top: .5em;}
 
 
 #layout {
-	padding-left: var(--layout-padding-left);
+	padding-left: 0;
+	margin-left: var(--layout-margin-left);
+	margin-right: var(--layout-margin-right);
 }
 
 #main {
   line-height: inherit;
-	max-width: var(--main-max-width);
 }
 
 .content {
-	margin-left:  var(--content-margin-left);
-	margin-right: var(--content-margin-right);
+	padding-left:  var(--content-padding-left);
+	padding-right: var(--content-padding-right);
+	margin: 0;
+	/* margin-left: 5em; */
+	/* margin-left:  var(--content-margin-left);
+	margin-right: var(--content-margin-right); */
 }
 
 .header {

@@ -5,8 +5,21 @@
 #menu {
   background-color: var(--xlight);
   width: var(--menu-width);
-  /* margin-left: calc(-1 * var(--pure-menu-width)); */
+	left: var(--menu-left);
+	margin-left: var(--menu-margin-left);
 }
+
+/* Click to display (narrow) */
+#layout.active #menu {
+	width: var(--menu-width-0);
+	left: var(--menu-left);
+}
+#layout.active .menu-link {
+	left: calc(var(--menu-width-0) + 8.75em);
+}
+
+
+/* pure menu within */
 
 #menu .pure-menu {
   width: var(--pure-menu-width);
