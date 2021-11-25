@@ -71,7 +71,9 @@ const DefaultGlobalVars = Vars(
     :_utils_envfun_names => Symbol[],
     :_utils_var_names    => Symbol[],
     # Hyperrefs
-    :_anchors => LittleDict{String, String}()
+    :_anchors => LittleDict{String, String}(),
+    :_refrefs => LittleDict{String, String}(),
+    :_bibrefs => LittleDict{String, String}(),
 )
 const DefaultGlobalVarsAlias = Alias(
     :prepath                => :base_url_prefix,
@@ -174,6 +176,8 @@ SimpleLocalContext(gc::GlobalContext; rpath::String="") =
 anchors(c=cur_gc()) = getvar(c, :_anchors, LittleDict{String, String}())
 eqrefs(c=cur_lc())  = getvar(c, :_eqrefs,  LittleDict{String, Int}())
 bibrefs(c=cur_lc()) = getvar(c, :_bibrefs, LittleDict{String, String}())
-refrefs(c=cur_lc()) = getvar(c, :_refrefs, LittleDict{String, String}())
+
+refrefs(c::Context) = getvar(c, :_refrefs, LittleDict{String, String}())
+refrefs()           = merge(refrefs(cur_gc()), refrefs(cur_lc()))
 
 relative_url_curpage() = getlvar(:_relative_url, "")

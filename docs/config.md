@@ -5,12 +5,24 @@ author = "Thibaut Lienart"
 
 # General Layout
 layout_page_foot = ""
+content_tag = ""
+menu = [
+  "Overview"  => "/overview/",
+  "Syntax"    => "/syntax/",
+  "Layout"    => "/layout/",
+  "Context"   => "/context/",
+  "FAQs"      => "/faq/"
+]
 
 # Page layout
-mintoclevel = 2
+showtoc = false
+
+# Misc
+meta_description = "Franklin"
 
 
 +++
+
 
 \newcommand{\fieldset}[3]{
   ~~~
@@ -31,6 +43,10 @@ mintoclevel = 2
     #1
     `````
   }
+  <!--
+  XXX keep extra line skip otherwise the blockquote and the
+  showmd environment blend and it's ugly!
+   -->
   \fieldset{md-result}{result}{
     ~~~~~~
 
@@ -48,3 +64,15 @@ mintoclevel = 2
     #1
   }
 }
+
+<!--
+  Tip
+-->
+\newcommand{\tip}[1]{
+  \fieldset{tip}{🚀 Tip}{
+    #1
+  }
+}
+
+
+[juliaweb]: https://julialang.org

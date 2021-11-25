@@ -12,6 +12,10 @@ include("integration_convert.jl")  # itest function
 
 logall()
 
+@testset "Misc" begin
+    include("misc.jl")
+end
+
 @testset "Context" begin
     p = "context"
     include(p/"types.jl")
@@ -38,7 +42,7 @@ end
     # rules
     include(p/"rules_text.jl")
     include(p/"rules_header.jl")
-    include(p/"rules_math.jl")
+    include(p/"rules_maths.jl")
     include(p/"rules_def.jl")
     include(p/"rules_list.jl")
     include(p/"rules_table.jl")

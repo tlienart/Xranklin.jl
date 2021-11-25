@@ -14,6 +14,9 @@ Runs Franklin in the current directory.
                   or if somehow a lot of stale files accumulated in one of
                   these folders.
     single (Bool): do a single build pass and stop.
+    debug (Bool): whether to display debugging messages.
+    cleanup (Bool): whether to destroy the context objects, when debugging this
+                    can be useful to explore local and global variables.
 
 ### LiveServer arguments
 
@@ -25,21 +28,25 @@ Runs Franklin in the current directory.
                    already have a browser tab pointing to a page of interest.
 
 """
-function serve(d::String = pwd();
+function serve(d::String   = pwd();
             dir::String    = d,
             folder::String = dir,
             clear::Bool    = false,
             single::Bool   = false,
+            # Debugging options
+            debug::Bool   = false,
+            cleanup::Bool = true,
             # LiveServer options
             port::Int    = 8000,
             host::String = "127.0.0.1",
             launch::Bool = true,
-            debug::Bool  = false
             )
 
     if debug
         Logging.disable_logging(Logging.Debug - 100)
         ENV["JULIA_DEBUG"] = "all"
+    else
+        ENV["JULIA_DEBUG"] = ""
     end
 
     # Instantiate the global context, this also creates a global vars and code
@@ -116,9 +123,20 @@ function serve(d::String = pwd();
     # Cleanup:
     # > wipe parent module (make all children modules inaccessible
     #   so that the garbage collector should be able to destroy them)
-    parent_module(wipe=true)
+    # > unlink global and local context so that the gc can destroy them.
+    if cleanup
+        start = time()
+        @info "❌ cleaning up all objects"
+        parent_module(wipe=true)
+        setenv(:cur_global_ctx, nothing)
+        setenv(:cur_local_ctx,  nothing)
+        δt = time() - start; @info """
+            💡 $(hl("cleaning up done", :yellow)) $(hl(time_fmt(δt)))
+            """
+    end
     # > deactivate env
     Pkg.activate()
+    ENV["JULIA_DEBUG"] = ""
     return
 end
 

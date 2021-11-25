@@ -110,6 +110,9 @@ function hfun_link_a(p::VS)::String
     title      = strip(title, '\"') |> string
     refrefs_   = refrefs()
     ref ∈ keys(refrefs_) || return "[$title]"
+    if first(ref) == '^'
+        return html_fn("$(refrefs_[ref])")
+    end
     return html_a(title; href="$(refrefs_[ref])")
 end
 
@@ -122,6 +125,6 @@ function hfun_img_a(p::VS)::String
     ref, alt   = p
     alt        = strip(alt, '\"') |> string
     refrefs_   = refrefs()
-    ref ∈ keys(refrefs_) || return "![$title]"
+    ref ∈ keys(refrefs_) || return "![$alt]"
     return html_img(refrefs_[ref]; alt)
 end

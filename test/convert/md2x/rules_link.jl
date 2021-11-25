@@ -95,3 +95,28 @@ end
     @test html(s, nop=true) // "<a href=\"$l\">$l</a>"
     @test latex(s, nop=true) // raw"\href{https://example.com}{https://example.com}"
 end
+
+@testset "AR links/img" begin
+    s = """
+        [A]: https://example.com
+
+        Ref to [ABC][A] and [A].
+        """
+    h = html(s, nop=true)
+    @test isapproxstr(h, """
+        Ref to
+        <a href="https://example.com">ABC</a>
+        and
+        <a href="https://example.com">A</a>.
+        """)
+
+    s = """
+        [A]: /foo/bar.jpg
+
+        ![ABC][A]
+        """
+    h = html(s, nop=true)
+    @test isapproxstr(h, """
+        <img src="/foo/bar.jpg" alt="ABC">
+        """)
+end

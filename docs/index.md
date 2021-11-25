@@ -1,3 +1,8 @@
-# Franklin
++++
+header = "foo"
++++
 
-* [Syntax - markdown basics](/syntax/markdown-basics/)
+* [basics](/syntax/basics/)
+* [extensions](/syntax/extensions/)
+* [code cells](/syntax/code/)
+* [variables and functions](/vars+funs/)

@@ -1,0 +1,56 @@
+<div id="menu-content">
+
+    <a class="pure-menu-heading" href="/">
+        Franklin
+    </a>
+
+    <ul class="pure-menu-list">
+        {{for (name, link) in menu}}
+            <li class="pure-menu-item">
+                <a href="{{link}}" class="pure-menu-link">
+                    {{name}}
+                </a>
+            </li>
+        {{end}}
+    </ul>
+
+    <!-- XXX -->
+
+    <strong style="color:red; font-size: var(--large);">SYNTAX</strong>
+
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item">
+            <a href="/syntax/" class="pure-menu-link">
+                Overview
+            </a>
+        </li>
+        <li class="pure-menu-item">
+            <a href="/syntax/markdown-basics/" class="pure-menu-link">
+                Markdown Basics <!-- plain markdown -->
+            </a>
+        </li>
+        <li class="pure-menu-item">
+            <a href="/syntax/markdown-extensions/" class="pure-menu-link">
+                Markdown Extensions <!-- div, math, refs, tags, defs, commands -->
+            </a>
+        </li>
+        <li class="pure-menu-item">
+            <a href="/syntax/hfuns+lxfuns/" class="pure-menu-link">
+                H-Funs &amp; Lx-Funs
+            </a>
+        </li>
+
+    </ul>
+
+    <!-- XXX -->
+
+    <strong style="color:red; font-size: var(--large);">LAYOUT</strong>
+
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item">
+            <a href="/layout/" class="pure-menu-link">
+                Overview
+            </a>
+        </li>
+    </ul>
+</div>

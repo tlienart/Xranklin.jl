@@ -14,6 +14,9 @@ end
 html_a(text::String=""; href::String="", id::String="", class::String="") =
     """<a $(attr(; href, id, class))>$text</a>"""
 
+html_fn(href::String="") =
+    """<sup>[$(html_a("FOOTNOTE"; href))]</sup>"""
+
 """<div class=..."""
 html_div(content::String=""; id::String="", class::String="") =
     """<div $(attr(; id, class))>$content</div>"""

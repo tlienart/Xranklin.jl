@@ -104,7 +104,7 @@ include("convert/markdown/rules/list.jl")
 include("convert/markdown/rules/table.jl")
 include("convert/markdown/rules/header.jl")
 include("convert/markdown/rules/code.jl")
-include("convert/markdown/rules/math.jl")
+include("convert/markdown/rules/maths.jl")
 include("convert/markdown/rules/link.jl")
 
 # ===> POSTPROCESSING
