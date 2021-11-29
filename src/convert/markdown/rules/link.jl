@@ -229,6 +229,7 @@ function _refref(b::Block, c::Context; tohtml=true)
 
     refrefs_ = refrefs(c)
     refrefs_[ref_A] = ref_B
+
     return ""
 end
 

@@ -338,6 +338,7 @@ function _process_md_file_html(ctx::Context, page_content_md::String)
 
     # Assemble the body, wrap it in tags if required
     page_content_html = html(page_content_md, ctx)
+
     body_html = ""
     if !isempty(c_tag)
         body_html = """

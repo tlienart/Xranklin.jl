@@ -80,3 +80,7 @@ end
         @test X.change_ext("foo.md") == "foo.html"
     end
 end
+
+@testset "bug fixes" begin
+    include("bugs/latex.jl")
+end

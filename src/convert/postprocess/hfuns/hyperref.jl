@@ -109,9 +109,22 @@ function hfun_link_a(p::VS)::String
     ref, title = p
     title      = strip(title, '\"') |> string
     refrefs_   = refrefs()
-    ref ∈ keys(refrefs_) || return "[$title]"
+    keysrefs   = keys(refrefs_)
+    ref ∈ keysrefs || return "[$title]"
     if first(ref) == '^'
-        return html_fn("$(refrefs_[ref])")
+        # get the index of the footnote
+        i = 0
+        for k in keysrefs
+            i += ifelse(first(k) == '^', 1, 0)
+            k == ref && break
+        end
+        id      = chop(ref, head=1, tail=0)
+        id_to   = "#fn_$id"
+        id_from = "fnref_$id"
+        return """
+            <sup>[$(html_a("$i"; href=id_to))]</sup>
+            <a id="$id_from"></a>
+            """
     end
     return html_a(title; href="$(refrefs_[ref])")
 end
@@ -122,9 +135,48 @@ end
 Insert an img if the reference exists otherwise just insert `![title]`.
 """
 function hfun_img_a(p::VS)::String
-    ref, alt   = p
-    alt        = strip(alt, '\"') |> string
-    refrefs_   = refrefs()
+    ref, alt = p
+    alt      = strip(alt, '\"') |> string
+    refrefs_ = refrefs()
     ref ∈ keys(refrefs_) || return "![$alt]"
     return html_img(refrefs_[ref]; alt)
+end
+
+"""
+    {{footnotes}}
+"""
+function hfun_footnotes()::String
+    ctx = cur_ctx()
+    isglob(ctx) && return ""
+    refs  = refrefs(ctx)
+    fns   = [k for k in keys(refs) if first(k) == '^']
+    fn_io = IOBuffer()
+    if !isempty(fns)
+        write(fn_io, """
+            <div id=\"fn-defs\">
+            """)
+        write(fn_io, """
+              <a id="fn-defs"></a>
+              <div class="fn-title">
+                $(getvar(ctx, :fn_title, ""))
+              </div>
+              <ol>
+              """)
+        for fn in fns
+            id = chop(fn, head=1, tail=0)
+            # see hfun_link_a
+            write(fn_io, """
+              <li>
+                <a id="fn_$(id)"></a>
+                <a href="#fnref_$(id)" class="fn-hook-btn">&ldca;</a>
+                $(refs[fn])
+              </li>
+              """)
+        end
+        write(fn_io, """
+              </ol>
+            </div>
+            """)
+    end
+    return String(take!(fn_io))
 end

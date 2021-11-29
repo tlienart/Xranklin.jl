@@ -124,6 +124,8 @@ const DefaultLocalVars = Vars(
     :robots_disallow    => false,
     # latex config
     :latex_img_opts     => "width=0.5\\textwidth",
+    # footnotes
+    :fn_title           => "Notes",
     # meta
     :_relative_path     => "",
     :_relative_url      => "",
@@ -177,7 +179,7 @@ anchors(c=cur_gc()) = getvar(c, :_anchors, LittleDict{String, String}())
 eqrefs(c=cur_lc())  = getvar(c, :_eqrefs,  LittleDict{String, Int}())
 bibrefs(c=cur_lc()) = getvar(c, :_bibrefs, LittleDict{String, String}())
 
-refrefs(c::Context) = getvar(c, :_refrefs, LittleDict{String, String}())
+refrefs(c::Context) = c.vars[:_refrefs]::LittleDict{String, String}
 refrefs()           = merge(refrefs(cur_gc()), refrefs(cur_lc()))
 
 relative_url_curpage() = getlvar(:_relative_url, "")

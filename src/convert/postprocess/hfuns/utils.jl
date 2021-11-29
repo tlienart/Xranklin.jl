@@ -39,6 +39,7 @@ const INTERNAL_HFUNS = [
     :eqref,
     :cite,
     :link_a, :img_a,
+    :footnotes
 ]
 
 

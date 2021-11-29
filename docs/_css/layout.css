@@ -134,6 +134,8 @@
   /* ---------------
     LAYOUT VARIABLES
     ---------------- */
+	--html-overflow-x:      hidden;
+
   --layout-width:         100%;
   --layout-margin-left:   0em;
   --layout-margin-right:  .5em;
@@ -151,7 +153,7 @@
   --left-menu-margin-left:   calc(-1 * var(--menu-burger-width));
   --left-menu-margin-right:  .25em;   /* next to main */
   --left-menu-margin-top:    0em;
-	--left-menu-content-top:   10em;
+	--left-menu-content-top:   5em;
 
 	--menu-content-border-right:  1px solid var(--col-chalk);
 
@@ -207,9 +209,22 @@
 }
 
 
+/*
+XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX
+XXX here need to hack something proper otherwise page goes to shit
+at the moment  only hiding the burger which  is not great.
+XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX
+ */
+@media (max-width: 36em) {
+	:root {
+		--menu-burger-width:  0em;
+		--html-overflow-x: 		scroll;
+	}
+}
+
 @media (max-width: 52em) {
   :root {
-    --menu-burger-visibility: visible;
+    --menu-burger-visibility:     visible;
     --left-menu-width:            0em;
     --left-menu-margin-right:     0em;
 		--left-content-padding-left:  .5em;
@@ -262,11 +277,11 @@ FONT
 =====================================================================
  */
 
-html {
-	scroll-behavior: smooth;
-	max-width: 100%;
-	overflow-x: hidden;
-}
+ html {
+ 	scroll-behavior: smooth;
+ 	max-width: 100%;
+ 	overflow-x: var(--html-overflow-x);
+ }
 
 body {
 	font-family: 			 var(--text-font);
@@ -462,4 +477,42 @@ RIGHT PANEL / MAIN
 	font-weight:    500;
 	letter-spacing: 0.0375em;
 	padding-left: 	1.6em;
+}
+
+#fn-defs {
+	width: 75%;
+	margin-top: 5em;
+	padding-top: 1em;
+	border-top: 1px solid var(--col-gray);
+	padding-bottom: 3em;
+}
+.fn-title {
+	font-size: var(--text-h2);
+	width: 100%;
+	display: block;
+	margin-bottom: .5em;
+}
+
+a.fn-hook-btn {
+	color: var(--col-light);
+	text-decoration: none;
+}
+a.fn-hook-btn:hover {
+	color: var(--col-dark);
+}
+
+/*
+PAGE FOOT
+ */
+
+#pg-foot {
+	width: 65%;
+	margin-top: 3em;
+	padding-top: 1em;
+	margin-bottom: 3em;
+	color: var(--col-gray);
+	font-size: var(--text-sm);
+}
+#pg-foot a {
+	color: inherit;
 }

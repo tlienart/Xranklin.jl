@@ -26,9 +26,12 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 end
 
 @testset "ref" begin
-    s = "[A]: https://example.com"
-    h = html(s, nop=true)
-    @test locvar(:_refrefs)["a"] == "https://example.com"
+    c = X.DefaultLocalContext()
+    s = """
+      [A]: https://example.com
+      """
+    h = html(s, c, nop=true)
+    @test c.vars[:_refrefs]["a"] == "https://example.com"
     s = """
         [A]
         [A]: https://foo.bar
@@ -118,5 +121,26 @@ end
     h = html(s, nop=true)
     @test isapproxstr(h, """
         <img src="/foo/bar.jpg" alt="ABC">
+        """)
+end
+
+@testset "A and FN link" begin
+    s = """
+        [A] and[^1] but[^foo bar] and[^1] and[^bar] [B] [NOT]
+
+        [A]: https://example.com
+        [^1]: first footnote
+        [^foo bar]: foo bar footnote
+        [^bar]: bar footnote
+        [B]: https://julialang.org
+        """
+    h = html(s, nop=true)
+    @test isapproxstr(h, """
+        <a href="https://example.com">A</a>
+        and<sup>[<a href="#fn_1">1</a>]</sup><a id="fnref_1"></a>
+        but<sup>[<a href="#fn_foo_bar">2</a>]</sup><a id="fnref_foo_bar"></a>
+        and<sup>[<a href="#fn_1">1</a>]</sup><a id="fnref_1"></a>
+        and<sup>[<a href="#fn_bar">3</a>]</sup><a id="fnref_bar"></a>
+        <a href="https://julialang.org">B</a> [NOT]
         """)
 end

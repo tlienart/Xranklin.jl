@@ -40,7 +40,6 @@ function string_to_anchor(s::AbstractString; keep_first_caret::Bool=false)
     # to avoid clashes with numbering of repeated headers, replace
     # double underscores by a single one
     st = replace(st, r"__" => "_")
-    @show st
     # in the unlikely event we don't have anything here, return the hash
     # of the original string
     return ifelse(isempty(st), string(hash(s)), st)
