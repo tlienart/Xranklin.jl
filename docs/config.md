@@ -39,7 +39,7 @@ meta_description = "Franklin"
 -->
 \newcommand{\showmd}[1]{
   \fieldset{md-input}{markdown}{
-    `````markdown
+    `````plaintext
     #1
     `````
   }
