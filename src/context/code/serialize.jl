@@ -50,8 +50,11 @@ is_easily_serializable(::Ptr)      = false
 # and that notebook will not be cached (which is not a problem)
 # ------------------------------------------------------------------------
 
-const VarPair_sz      = NamedTuple{(:var,  :value), Tuple{Symbol, String}}
-const VarsCodePair_sz = NamedTuple{(:code, :vars),  Tuple{String, Vector{VarPair_sz}}}
+const VarPair_sz      = NamedTuple{(:var,   :value),
+                             Tuple{ Symbol, String}}
+
+const VarsCodePair_sz = NamedTuple{(:code,  :vars),
+                             Tuple{ String, Vector{VarPair_sz}}}
 
 """
     serialize_vars_code_pairs(nb)

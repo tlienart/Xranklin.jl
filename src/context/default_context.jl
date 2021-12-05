@@ -107,7 +107,7 @@ const DefaultLocalVars = Vars(
     :maxtoclevel        => 10,
     # code
     :reeval             => false,
-    :showall            => false,
+    :showall            => true,
     # rss
     :rss_descr          => "",
     :rss_title          => "",
@@ -137,6 +137,8 @@ const DefaultLocalVars = Vars(
     :_refrefs           => LittleDict{String, String}(),
     :_eqrefs            => LittleDict{String, Int}("__cntr__" => 0),
     :_bibrefs           => LittleDict{String, String}(),
+    # cell counter
+    :_auto_cell_counter => 0,
 )
 const DefaultLocalVarsAlias = Alias(
     :fd_rpath     => :_relative_path,

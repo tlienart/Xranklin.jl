@@ -274,6 +274,8 @@ function process_md_file_io!(
     set_current_local_context(ctx)
     # reset the headers
     empty!(ctx.headers)
+    # reset code counter
+    setvar!(ctx, :_auto_cell_counter, 1)
 
     if initial_pass
         # try to load notebooks from serialized

@@ -62,7 +62,10 @@ function eval_code_cell!(
     fig_html  = (save=autosavefigs, show=autoshowfigs, fpath=fpath_html)
     fig_latex = (save=autosavefigs, show=autoshowfigs, fpath=fpath_latex)
 
-    # form the string representation of the cell (output + show of value)
+    # form the string representation of the cell. This is in  two  parts
+    # (1) the stdout (output) if there's a println for instance
+    # (2) the show(result) which can be overwritten by the user if they
+    #     want specific objects to have a specific HTML or LaTeX repr
     io_html  = IOBuffer()
     io_latex = IOBuffer()
     write(io_html,  output)
@@ -84,6 +87,12 @@ end
 Helper function to `eval_code_cell!`. Returns the output string corresponding
 to the captured stdout+stderr and the value (or nothing if nothing is to be
 shown).
+
+# Return
+
+NamedTuple
+    * value
+    * output
 """
 function _eval_code_cell(mdl::Module, code::String, cell_name::String)::NamedTuple
 
@@ -92,7 +101,10 @@ function _eval_code_cell(mdl::Module, code::String, cell_name::String)::NamedTup
         hl(isempty(cell_name) ? "" : "($cell_name)", :light_green))
     """
 
-    captured = (value=nothing, output="")
+    captured = (
+        value=nothing,
+        output=""
+    )
     try
         captured = IOCapture.capture() do
             include_string(softscope, mdl, code)
