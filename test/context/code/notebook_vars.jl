@@ -80,10 +80,6 @@ end
 
     fp = tempname()
     X.serialize_notebook(lc.nb_vars, fp)
-    json = JSON3.read(read(fp, String))
-    @test length(json) == 2
-    @test json[1]["code"] // v1
-    @test json[2]["code"] // v2
 
     # Loading from cache
     lc2 = X.DefaultLocalContext()

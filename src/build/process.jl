@@ -19,7 +19,7 @@ function process_config(
 
     # try to load from cache if relevant
     if initial_pass
-        fpv = path(:cache) / "gnbv.json"
+        fpv = path(:cache) / "gnbv.cache"
         isfile(fpv) && load_vars_cache!(gc, fpv)
     end
 
@@ -279,8 +279,8 @@ function process_md_file_io!(
 
     if initial_pass
         # try to load notebooks from serialized
-        fpv = path(:cache) / noext(rpath) / "nbv.json"
-        fpc = path(:cache) / noext(rpath) / "nbc.json"
+        fpv = path(:cache) / noext(rpath) / "nbv.cache"
+        fpc = path(:cache) / noext(rpath) / "nbc.cache"
         isfile(fpv) && load_vars_cache!(ctx, fpv)
         isfile(fpc) && load_code_cache!(ctx, fpc)
     else
