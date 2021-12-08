@@ -107,13 +107,13 @@ function serve(d::String   = pwd();
     # re-evaluated at the start.
     start = time()
     @info "📓 serializing $(hl("config", :cyan))..."
-    serialize_notebook(gc.nb_vars, path(:cache) / "gnbv.json")
+    serialize_notebook(gc.nb_vars, path(:cache) / "gnbv.cache")
     for (rp, ctx) in gc.children_contexts
         # ignore .html pages
         endswith(rp, ".md") || continue
         @info "📓 serializing $(hl(str_fmt(rp), :cyan))..."
-        serialize_notebook(ctx.nb_vars, path(:cache) / noext(rp) / "nbv.json")
-        serialize_notebook(ctx.nb_code, path(:cache) / noext(rp) / "nbc.json")
+        serialize_notebook(ctx.nb_vars, path(:cache) / noext(rp) / "nbv.cache")
+        serialize_notebook(ctx.nb_code, path(:cache) / noext(rp) / "nbc.cache")
     end
     δt = time() - start; @info """
         💡 $(hl("serializing done", :yellow)) $(hl(time_fmt(δt)))
