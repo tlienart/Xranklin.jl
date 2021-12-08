@@ -61,7 +61,7 @@ end
 
 html_code_block(b::Block, c::LocalContext) = (
     hascode!(c);
-    "<pre><code class=\"plaintext\">" *
+    "<pre><code class=\"{{lang}}\">" *
       (b |> content |> _strip |> _hescape ) *
     "</code></pre>"
 )

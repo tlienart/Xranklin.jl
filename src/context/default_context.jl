@@ -42,6 +42,7 @@ const DefaultGlobalVars = Vars(
     :anchor_bib_class  => "anchor-bib",
     :eqref_class       => "eqref",
     :bibref_class      => "bibref",
+    :table_class        => "",
     # Dates
     :date_format      => "U dd, yyyy",
     :date_days        => String[],
@@ -98,13 +99,12 @@ const DefaultLocalVars = Vars(
     :hascode            => false,
     :date               => Dates.Date(1),
     :lang               => "julia",
-    :reflinks           => true,
     :tags               => String[],
     :prerender          => true,
     :slug               => "",
     # toc
     :mintoclevel        => 1,
-    :maxtoclevel        => 10,
+    :maxtoclevel        => 6,
     # code
     :reeval             => false,
     :showall            => true,

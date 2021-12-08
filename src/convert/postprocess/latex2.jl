@@ -9,4 +9,7 @@ not do anything).
 * handle reference links (see `_link_a` and `_img_a`).
 
 """
-latex2(s::String, ::Context) = s
+latex2(s::String, ::Context) = begin
+    set_postprocess!(c, true)
+    s
+end

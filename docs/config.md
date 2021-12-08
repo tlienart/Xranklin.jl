@@ -17,12 +17,23 @@ menu = [
 # Page layout
 showtoc = false
 
+# Tables
+table_class = "pure-table-striped"
+
 # Misc
 meta_description = "Franklin"
 
 
 +++
 
+
+<!-- GLOBAL REFERENCES -->
+
+[juliaweb]: https://julialang.org
+[Pure.css]: https://purecss.io/
+
+
+<!-- GLOBAL COMMANDS -->
 
 \newcommand{\fieldset}[3]{
   ~~~
@@ -73,6 +84,3 @@ meta_description = "Franklin"
     #1
   }
 }
-
-
-[juliaweb]: https://julialang.org

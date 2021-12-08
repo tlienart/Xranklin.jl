@@ -290,6 +290,11 @@ body {
   background-color:  var(--col-cream);
 }
 
+a {
+	color: var(--blue30);
+	text-decoration: none;
+}
+
 code {
 	font-family: var(--code-font);
 	font-size:   var(--code-size);

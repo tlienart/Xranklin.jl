@@ -226,8 +226,8 @@ function LocalContext(glob, vars, defs, headers, rpath="", alias=Alias())
     )
     tt = Set{String}()
     # form the object
-    lc = LocalContext(glob, vars, defs, headers,
-                      rpath, Ref(false), Ref(false),
+    lc = LocalContext(glob, vars, defs, headers, rpath,
+                      Ref(false), Ref(false),
                       rv, rl, alias, nv, nc, tt)
     # attach it to global
     glob.children_contexts[rpath] = lc

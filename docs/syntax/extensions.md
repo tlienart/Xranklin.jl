@@ -3,16 +3,17 @@ showtoc = true
 header = "Markdown extensions"
 +++
 
-## Maths
+## Equations
 
-In Franklin maths is handled by [KaTeX](https://katex.org) by default (though you could set things up so that it's handled by MathJax instead).
-For _inline_ maths, use single `$`:
+In Franklin math is handled by [KaTeX](https://katex.org) by default (though you could set things
+up so that it's handled by MathJax instead).
+For _inline_ math, use single `$`:
 
 \showmd{
   The variables $x, y \in \mathbb R$ are  such that $x^2+y^2 = 1$.
 }
 
-For _display_ maths, use double `$$`:
+For _display_ math, use double `$$`:
 
 \showmd{
   Here's a nice equation:
@@ -36,7 +37,8 @@ equations can span multiple lines and use multi-line environments
 
 }
 
-Like in LaTeX, you can define [commands](#latex_commands) and use them in a math environment too (like in LaTeX, commands have to be defined before they're used):
+Like in LaTeX, you can define [commands](#latex_commands) and use them in a math
+environment too (like in LaTeX, commands have to be defined before they're used):
 
 \showmd{
   \newcommand{\E}[1]{\mathbb E\left\{#1\right\}}
@@ -160,6 +162,11 @@ without whitespace on the left of the `X`.
   Generally you should not have to bother about this and can just ignore the `!#` case (in fact KaTeX does some processing of its own to avoid issues with whitespaces).
 }
 
+### Defining commands with Julia
+
+You can also define the behaviour of a LaTeX-like command with Julia code.
+This can be useful for more advanced processing and is
+covered on [a dedicated page](/syntax/utils/).
 
 
 ## LaTeX-like environments
@@ -187,6 +194,11 @@ Here's an example styling a block and using [raw HTML](#raw_html).
   Here some text
   \end{style}
 }
+
+### Defining environments with Julia
+
+Same as with commands, you can also define the behaviour of a LaTeX-like environment
+with Julia code. See [here](/syntax/utils/).
 
 ## Footnotes
 
@@ -225,7 +237,8 @@ Click on  one  of the footnote  link or check the [bottom of this page](#fn-defs
 }
 
 \cmdiff{
-  Franklin is stricter than  most Markdown-flavours in how it supports tables: valid table rows **must** start and end with a `|` and must be entirely defined  on a  single line.
+  For tables, Franklin is stricter than  most Markdown-flavours: valid table rows **must** start
+  and end with a `|` and must be entirely defined on a  single line.
 }
 
 Any **inline** element is allowed within table cells:
@@ -237,8 +250,56 @@ Any **inline** element is allowed within table cells:
   | `y` | $1$ |
 }
 
+\showmd{
+  | Language | Logo |
+  | -------- | ---- |
+  | Julia | ![](/assets/julia_icon_small.png) |
+  | Python | ![](/assets/python_icon_small.png) |
+}
 
-### Styling (XXX)
+By default content is left-aligned in columns, you can change this by adding a colon (`:`)
+on a side to indicate left or right alignment or two colons to indicate centered content:
+
+\showmd{
+  | Left (implicit) | Left (explicit) | Center | Right |
+  | --------------- | :-------------- | :----: | ----: |
+  | ABC | ABC | ABC | ABC |
+  | DEF | DEF | DEF | DEF |
+  | GHI | GHI | GHI | GHI |
+}
+
+### Styling
+
+A generated table will have the following HTML structure:
+
+```html
+<table class="{{table_class}}">
+  <thead>
+    <th> Header column 1 </th>
+    <th> Header column 2 </th>
+    ...
+  </thead>
+  <tbody>
+    <tr>                  <!-- first row -->
+      <td> content </td>  <!-- first column -->
+      <td> ... </td>
+      ...
+    </tr>
+    ...
+  </tbody>
+</table>
+```
+
+The `table_class` is a page variable that you can specify and which is empty by default.
+This can be useful if you're using a CSS framework like [Pure][pure.css] which have specific
+classes for tables with good defaults (here, for instance, we're using
+[`pure-table`](https://purecss.io/tables/) as the class).
+
+If you're not using a framework, you will want to style the elements `table`, `thead`, `th`,
+`tbody`, `tr` and `td` as desired.
+CSS tricks has a [nice article](https://css-tricks.com/complete-guide-table-element/) on
+styling tables.
+
 
 ## Raw HTML
 
