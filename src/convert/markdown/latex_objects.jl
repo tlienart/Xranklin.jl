@@ -82,7 +82,7 @@ function try_form_lxdef(
             blocks::Vector{Block},
             ctx::Context
             )::Tuple{Block,Int}
-    crumbs("try_form_lxdef $(str_fmt(block.ss, 30))")
+    crumbs("try_form_lxdef", str_fmt(block.ss, 30))
 
     n_blocks = length(blocks)
     # command or env?
@@ -218,7 +218,7 @@ function try_resolve_lxcom(
             ctx::LocalContext;
             tohtml::Bool=true
             )::Tuple{Block,Int}
-    crumbs("try_resolve_lxcom $(str_fmt(blocks[i].ss, 30))")
+    crumbs("try_resolve_lxcom", str_fmt(blocks[i].ss, 30))
 
     # Process:
     # 1. look for definition --> fail if none + not in math mode + not lxfun
@@ -278,6 +278,9 @@ function try_resolve_lxcom(
     # find the indicators for replacement (e.g. '#1') and replace
     @inbounds for k in 1:nargs
         c = content(blocks[i+k]) |> dedent |> strip
+        # this avoids stackoverflows if the inserted content itself
+        # has # (e.g. showmd with commands in the docs)
+        c = replace(c, r"\#(\d)" => s"%%HASH%%\1")
         # this replacement where we keep track of whitespaces before
         # the #1 is to account for cases where the injected block has new
         # lines which should be aligned with the first injected line. See
@@ -285,10 +288,18 @@ function try_resolve_lxcom(
         for w in ("!", "")
             sp = ifelse(isempty(w), p, "")
             for m in eachmatch(Regex("([ \t]*)$w#$k"), r)
-                r = replace(r, "$w#$k" => sp * replace(c, "\n" => "\n" * m.captures[1]))
+                r = replace(r,
+                        # either # or !#
+                        "$w#$k" => sp * replace(c,
+                            # preserve front spacing
+                            "\n" => "\n" * m.captures[1]
+                            )
+                        )
             end
         end
     end
+    r = replace(r, "%%HASH%%" => "#")
+
     recursion = ifelse(tohtml, rhtml, rlatex)
     r2 = recursion(r, ctx; nop=true)
     return Block(:RAW_INLINE, subs(r2)), nargs

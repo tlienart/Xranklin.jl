@@ -1,4 +1,6 @@
 #=
+(See list of internal commands in ./utils.jl)
+
 NOTE
 
 IMPORTANT to understand the order.

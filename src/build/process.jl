@@ -19,7 +19,7 @@ function process_config(
 
     # try to load from cache if relevant
     if initial_pass
-        fpv = path(:cache) / "gnbv.json"
+        fpv = path(:cache) / "gnbv.cache"
         isfile(fpv) && load_vars_cache!(gc, fpv)
     end
 
@@ -186,7 +186,7 @@ function process_file(
             skip_files::Vector{Pair{String, String}}=Pair{String, String}[],
             initial_pass::Bool=false
             )
-    crumbs("process_file $(fpair.first) => $(fpair.second)")
+    crumbs("process_file", "$(fpair.first) => $(fpair.second)")
 
     # there's things we don't want to copy over or (re)process
     fpath = joinpath(fpair...)
@@ -246,7 +246,7 @@ function process_md_file_io!(
             initial_pass::Bool=false,
             tohtml::Bool=true
             )::Nothing
-    crumbs("process_md_file_io! '$fpath'")
+    crumbs("process_md_file_io!", fpath)
 
     # usually not necessary apart if triggered from getvarfrom
     isfile(fpath) || return
@@ -274,11 +274,13 @@ function process_md_file_io!(
     set_current_local_context(ctx)
     # reset the headers
     empty!(ctx.headers)
+    # reset code counter
+    setvar!(ctx, :_auto_cell_counter, 1)
 
     if initial_pass
         # try to load notebooks from serialized
-        fpv = path(:cache) / noext(rpath) / "nbv.json"
-        fpc = path(:cache) / noext(rpath) / "nbc.json"
+        fpv = path(:cache) / noext(rpath) / "nbv.cache"
+        fpc = path(:cache) / noext(rpath) / "nbc.cache"
         isfile(fpv) && load_vars_cache!(ctx, fpv)
         isfile(fpc) && load_code_cache!(ctx, fpc)
     else
@@ -315,7 +317,7 @@ function process_md_file(
 end
 
 function process_md_file(gc::GlobalContext, rpath::String; kw...)
-    crumbs("process_md_file '$rpath'")
+    crumbs("process_md_file", rpath)
 
     fpath = path(:folder) / rpath
     d, f  = splitdir(fpath)
@@ -338,6 +340,7 @@ function _process_md_file_html(ctx::Context, page_content_md::String)
 
     # Assemble the body, wrap it in tags if required
     page_content_html = html(page_content_md, ctx)
+
     body_html = ""
     if !isempty(c_tag)
         body_html = """
@@ -358,12 +361,6 @@ function _process_md_file_html(ctx::Context, page_content_md::String)
     # > head if it exists
     head_path = path(:folder) / getgvar(:layout_head)::String
     if !isempty(head_path) && isfile(head_path)
-
-        @show getid(ctx)
-
-        @show getvar(ctx, :hasmath)
-        @show getvar(ctx, :hascode)
-
         full_page_html = html2(read(head_path, String), ctx)
     end
 
@@ -407,7 +404,7 @@ function process_html_file(
             fpath::String,
             opath::String
             )
-    crumbs("process_html_file '$fpath'")
+    crumbs("process_html_file", fpath)
 
     open(opath, "w") do io
         process_html_file_io!(io, ctx, fpath)

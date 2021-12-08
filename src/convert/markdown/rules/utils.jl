@@ -23,14 +23,20 @@ it for hyper-references. So for instance `"aa  bb"` will become `aa_bb`.
 It also defensively removes any non-word character so for instance `"aa bb !"`
 will be `"aa_bb"`
 """
-function string_to_anchor(s::AbstractString)
+function string_to_anchor(s::AbstractString; keep_first_caret::Bool=false)
     # remove html tags
     st = replace(strip(s), r"<[a-zA-Z\/]+>" => "")
-    # remove non-word characters
+    # remove non-word characters or non-ascii
     st = replace(st, r"&#[0-9]+;" => "")
-    st = replace(st, r"[^\p{L}0-9_\-\s]" => "")
+    if keep_first_caret
+        st = replace(st, r"(?!^)\^" => "")
+    else
+        st = replace(st, r"\^" => "")
+    end
+    # non-ascii
+    st = replace(st, r"[^\x00-\x7F]" => "")
     # replace spaces by underscores
-    st = replace(lowercase(strip(st)), r"\s+" => "_")
+    st = replace(lowercase(strip(st)), r"\s+|\-+" => "_")
     # to avoid clashes with numbering of repeated headers, replace
     # double underscores by a single one
     st = replace(st, r"__" => "_")
@@ -63,7 +69,8 @@ replace_unsafe_char(s::AbstractString) = get(UNSAFE_MAP, s, s)
 """
     hascode!(c)
 
-Set the context as having code.
+Set the context as having code to display (used to indicate whether
+highlight.js should be loaded).
 """
 hascode!(c::LocalContext) = setvar!(c, :hascode, true)
 

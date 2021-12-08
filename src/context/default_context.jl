@@ -71,7 +71,9 @@ const DefaultGlobalVars = Vars(
     :_utils_envfun_names => Symbol[],
     :_utils_var_names    => Symbol[],
     # Hyperrefs
-    :_anchors => LittleDict{String, String}()
+    :_anchors => LittleDict{String, String}(),
+    :_refrefs => LittleDict{String, String}(),
+    :_bibrefs => LittleDict{String, String}(),
 )
 const DefaultGlobalVarsAlias = Alias(
     :prepath                => :base_url_prefix,
@@ -105,7 +107,7 @@ const DefaultLocalVars = Vars(
     :maxtoclevel        => 10,
     # code
     :reeval             => false,
-    :showall            => false,
+    :showall            => true,
     # rss
     :rss_descr          => "",
     :rss_title          => "",
@@ -122,6 +124,8 @@ const DefaultLocalVars = Vars(
     :robots_disallow    => false,
     # latex config
     :latex_img_opts     => "width=0.5\\textwidth",
+    # footnotes
+    :fn_title           => "Notes",
     # meta
     :_relative_path     => "",
     :_relative_url      => "",
@@ -133,6 +137,8 @@ const DefaultLocalVars = Vars(
     :_refrefs           => LittleDict{String, String}(),
     :_eqrefs            => LittleDict{String, Int}("__cntr__" => 0),
     :_bibrefs           => LittleDict{String, String}(),
+    # cell counter
+    :_auto_cell_counter => 0,
 )
 const DefaultLocalVarsAlias = Alias(
     :fd_rpath     => :_relative_path,
@@ -174,6 +180,8 @@ SimpleLocalContext(gc::GlobalContext; rpath::String="") =
 anchors(c=cur_gc()) = getvar(c, :_anchors, LittleDict{String, String}())
 eqrefs(c=cur_lc())  = getvar(c, :_eqrefs,  LittleDict{String, Int}())
 bibrefs(c=cur_lc()) = getvar(c, :_bibrefs, LittleDict{String, String}())
-refrefs(c=cur_lc()) = getvar(c, :_refrefs, LittleDict{String, String}())
+
+refrefs(c::Context) = c.vars[:_refrefs]::LittleDict{String, String}
+refrefs()           = merge(refrefs(cur_gc()), refrefs(cur_lc()))
 
 relative_url_curpage() = getlvar(:_relative_url, "")
