@@ -82,6 +82,7 @@ function try_form_lxdef(
             blocks::Vector{Block},
             ctx::Context
             )::Tuple{Block,Int}
+    crumbs("try_form_lxdef", str_fmt(block.ss, 30))
 
     n_blocks = length(blocks)
     # command or env?
@@ -217,6 +218,8 @@ function try_resolve_lxcom(
             ctx::LocalContext;
             tohtml::Bool=true
             )::Tuple{Block,Int}
+    crumbs("try_resolve_lxcom", str_fmt(blocks[i].ss, 30))
+
     # Process:
     # 1. look for definition --> fail if none + not in math mode + not lxfun
     #       (if lxfun, greedily pass all subsequent braces and call the lxfun)
@@ -272,11 +275,31 @@ function try_resolve_lxcom(
     # in math env, inject whitespace to avoid issues with chains; this can't happen
     # outside of maths envs as we force the use of braces
     p = ifelse(ctx.is_math[], " ", "")
+    # find the indicators for replacement (e.g. '#1') and replace
     @inbounds for k in 1:nargs
         c = content(blocks[i+k]) |> dedent |> strip
-        r = replace(r, "!#$k" => c)
-        r = replace(r, "#$k"  => p * c)
+        # this avoids stackoverflows if the inserted content itself
+        # has # (e.g. showmd with commands in the docs)
+        c = replace(c, r"\#(\d)" => s"%%HASH%%\1")
+        # this replacement where we keep track of whitespaces before
+        # the #1 is to account for cases where the injected block has new
+        # lines which should be aligned with the first injected line. See
+        # issue Xranklin#34
+        for w in ("!", "")
+            sp = ifelse(isempty(w), p, "")
+            for m in eachmatch(Regex("([ \t]*)$w#$k"), r)
+                r = replace(r,
+                        # either # or !#
+                        "$w#$k" => sp * replace(c,
+                            # preserve front spacing
+                            "\n" => "\n" * m.captures[1]
+                            )
+                        )
+            end
+        end
     end
+    r = replace(r, "%%HASH%%" => "#")
+
     recursion = ifelse(tohtml, rhtml, rlatex)
     r2 = recursion(r, ctx; nop=true)
     return Block(:RAW_INLINE, subs(r2)), nargs
@@ -358,6 +381,7 @@ function try_resolve_lxenv(
             ctx::LocalContext;
             tohtml::Bool=true
             )::Block
+    crumbs("try_resolve_lxenv")
     # Process:
     # 1. look for definition --> fail if none + not in math mode + not envfun
     #       (if envfun, greedily pass all subsequent braces and call)

@@ -4,3 +4,4 @@ test/_output
 basic.log
 test/_demo/__*
 docs/__site/
+docs/__cache/

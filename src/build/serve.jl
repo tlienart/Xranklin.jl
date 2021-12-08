@@ -14,6 +14,9 @@ Runs Franklin in the current directory.
                   or if somehow a lot of stale files accumulated in one of
                   these folders.
     single (Bool): do a single build pass and stop.
+    debug (Bool): whether to display debugging messages.
+    cleanup (Bool): whether to destroy the context objects, when debugging this
+                    can be useful to explore local and global variables.
 
 ### LiveServer arguments
 
@@ -25,16 +28,26 @@ Runs Franklin in the current directory.
                    already have a browser tab pointing to a page of interest.
 
 """
-function serve(d::String = pwd();
+function serve(d::String   = pwd();
             dir::String    = d,
             folder::String = dir,
             clear::Bool    = false,
             single::Bool   = false,
+            # Debugging options
+            debug::Bool   = false,
+            cleanup::Bool = true,
             # LiveServer options
             port::Int    = 8000,
             host::String = "127.0.0.1",
             launch::Bool = true,
             )
+
+    if debug
+        Logging.disable_logging(Logging.Debug - 100)
+        ENV["JULIA_DEBUG"] = "all"
+    else
+        ENV["JULIA_DEBUG"] = ""
+    end
 
     # Instantiate the global context, this also creates a global vars and code
     # notebooks which each have their module. The first creation of a module
@@ -89,17 +102,18 @@ function serve(d::String = pwd();
     # ---------------------------------------------------------------
     # Finalize
     # > go through every page and serialize them; this only needs
-    # to be done at the end
+    # to be done at the end. For the global setting, we don't
+    # serialize the code notebook (utils) since it always needs to be
+    # re-evaluated at the start.
     start = time()
     @info "📓 serializing $(hl("config", :cyan))..."
-    serialize_notebook(gc.nb_vars, path(:cache) / "gnbv.json")
-    serialize_notebook(gc.nb_code, path(:cache) / "gnbc.json")
+    serialize_notebook(gc.nb_vars, path(:cache) / "gnbv.cache")
     for (rp, ctx) in gc.children_contexts
         # ignore .html pages
         endswith(rp, ".md") || continue
         @info "📓 serializing $(hl(str_fmt(rp), :cyan))..."
-        serialize_notebook(ctx.nb_vars, path(:cache) / noext(rp) / "nbv.json")
-        serialize_notebook(ctx.nb_code, path(:cache) / noext(rp) / "nbc.json")
+        serialize_notebook(ctx.nb_vars, path(:cache) / noext(rp) / "nbv.cache")
+        serialize_notebook(ctx.nb_code, path(:cache) / noext(rp) / "nbc.cache")
     end
     δt = time() - start; @info """
         💡 $(hl("serializing done", :yellow)) $(hl(time_fmt(δt)))
@@ -109,9 +123,20 @@ function serve(d::String = pwd();
     # Cleanup:
     # > wipe parent module (make all children modules inaccessible
     #   so that the garbage collector should be able to destroy them)
-    parent_module(wipe=true)
+    # > unlink global and local context so that the gc can destroy them.
+    if cleanup
+        start = time()
+        @info "❌ cleaning up all objects"
+        parent_module(wipe=true)
+        setenv(:cur_global_ctx, nothing)
+        setenv(:cur_local_ctx,  nothing)
+        δt = time() - start; @info """
+            💡 $(hl("cleaning up done", :yellow)) $(hl(time_fmt(δt)))
+            """
+    end
     # > deactivate env
     Pkg.activate()
+    ENV["JULIA_DEBUG"] = ""
     return
 end
 
@@ -182,17 +207,17 @@ function full_pass(
         )
     end
 
+    # Collect the pages that may need re-processing if they depend on
+    # definitions that got updated in the meantime.
+    # We can ignore gc because we just did a full pass
+    empty!(gc.to_trigger)
+    process_triggers(gc, skip_files)
+
     # ---------------------------------------------------------
     δt = time() - start; @info """
         💡 $(hl("full pass done", :yellow)) $(hl(time_fmt(δt)))
         """
     # ---------------------------------------------------------
-
-    # Collect the pages that may need re-processing if they depend on
-    # definitions that got updated in the meantime.
-    # We can ignore gc because we just did a full pass
-    empty!(gc.to_trigger)
-    process_triggers(gc)
     return
 end
 
@@ -271,6 +296,8 @@ function build_loop(
                 @info msg
                 process_file(fp, case, cur_t; gc)
             end
+
+            @info "✅  Website updated and ready to view"
         end
     end
     return

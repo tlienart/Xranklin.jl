@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{{meta_description}}">
 
   {{if hasmath}}
     <link rel="stylesheet" href="/libs/katex/katex.min.css">
@@ -12,9 +13,16 @@
     <link rel="stylesheet" href="/libs/highlight/github.min.css">
   {{end}}
 
-  <link rel="stylesheet" href="/css/franklin.css">
-  <link rel="stylesheet" href="/css/basic.css">
+
+  <link rel="stylesheet" href="/css/pure.css">
+  <link rel="stylesheet" href="/css/layout.css">
   <link rel="stylesheet" href="/css/extras.css">
+
+  <!-- XXX <link rel="stylesheet" href="/css/side_menu.css"> -->
+
+  <!-- Our own -->
+  <!-- XXX <link rel="stylesheet" href="/css/x_vars.css"> -->
+  <!-- XXX <link rel="stylesheet" href="/css/x_sides.css"> -->
 
   <!-- <link rel="icon" href="/assets/favicon.png"> -->
   <!-- {{isdef title}} <title>{{fill title}}</title>  {{end}} -->
@@ -22,4 +30,101 @@
 </head>
 <body>
 
-<!-- Content appended here -->
+<div id="layout">
+
+  <!-- button for menu in narrow mode -->
+  <a id="menu-burger" href="#menu"></a>
+
+  <!-- LAYOUT | LEFT MENU -->
+  <div id="layout-left-menu">
+    {{insert menu.html}}
+  </div>
+
+  <!-- LAYOUT | (RIGHT) MAIN -->
+  <div id="layout-main">
+
+    <!-- MAIN | TOP HEADER -->
+    <div id="main-top-header">
+      <div id="main-top-header-content">
+        <!-- {{isdef header}} -->
+          <h1>{{header}}</h1>
+        <!-- {{end}} -->
+      </div>
+    </div>
+
+    <!-- MAIN | RIGHT MARGIN (TOC) -->
+    <div id="main-right-margin">
+        <div id="margin-toc">
+          {{if showtoc}}
+            <div id="margin-toc-legend">Contents</div>
+            {{toc 2 3}}
+          {{end}}
+      </div>
+    </div>
+
+    <!-- MAIN | LEFT CONTENT (PAGE) -->
+    <div id="main-left-content">
+      <!--
+          Here is where the content resulting from the conversion of
+          Markdown to HTML is placed.
+       -->
+
+
+
+
+  <!-- {{insert menu.html}}
+
+  <div class="content" id="main">
+
+    <div class="header">
+      <h1>{{header}}</h1>
+    </div>
+
+    <a name="top"></a>
+
+    <div id="right-side">
+      {{if showtoc}}
+        <div id="toc-legend">Contents</div>
+        {{toc 2 3}}
+      {{end}}
+    </div> -->
+
+    <!-- <style>
+    .back-to-top-wrapper {
+      position: absolute;
+      top: 100vh;
+      right: 1rem;
+      bottom: -5em;
+      width: 3em;
+      pointer-events: none;
+    }
+
+    .back-to-top-link {
+      position: sticky;
+      pointer-events: all;
+      top: calc(100vh - 5rem);
+      display: inline-block;
+      text-decoration: none;
+      font-size: 2rem;
+      line-height: 3rem;
+      text-align: center;
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      padding: 0.25rem;
+
+      border: 1px solid gray;
+      background-color: cornflowerblue;
+      transition: transform 80ms ease-in;
+    }
+    @media screen and (min-width: 77em) {
+      .back-to-top-wrapper {
+        right: auto;
+        left:  73em;
+      }
+    }
+    </style>
+
+    <div class="back-to-top-wrapper">
+      <a href="#top" class="back-to-top-link" aria-label="Scroll to Top">🔝</a>
+    </div> -->

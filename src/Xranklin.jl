@@ -9,6 +9,7 @@ import Base.(/)
 import REPL: softscope
 import Pkg
 import Serialization: serialize, deserialize
+import Logging
 
 # ------------------------------------------------------------------------
 # external dependencies part of the Franklin universe
@@ -89,6 +90,7 @@ include("convert/regex.jl")
 # >> LxFuns
 include("convert/markdown/lxfuns/utils.jl")
 include("convert/markdown/lxfuns/hyperrefs.jl")
+include("convert/markdown/lxfuns/show.jl")
 
 # >> LxObjects
 include("convert/markdown/latex_objects.jl")
@@ -103,7 +105,7 @@ include("convert/markdown/rules/list.jl")
 include("convert/markdown/rules/table.jl")
 include("convert/markdown/rules/header.jl")
 include("convert/markdown/rules/code.jl")
-include("convert/markdown/rules/math.jl")
+include("convert/markdown/rules/maths.jl")
 include("convert/markdown/rules/link.jl")
 
 # ===> POSTPROCESSING

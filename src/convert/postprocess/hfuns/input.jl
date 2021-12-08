@@ -66,6 +66,10 @@ end
 Insert a file at `path(base)/p`. By default `base=path(:layout)` and so paths
 can be expressed relative to that or one can pass one of the other path names
 such as `folder`, `css`, `libs` or whatever (see `set_paths!`).
+
+The inserted element is resolved in the current active context. Usually it
+will be a local context except if the insert is called from within an original
+non-layout '.html' file in which case the context is the global one.
 """
 function hfun_insert(p::VS; tohtml::Bool=true)::String
     c = _hfun_check_nargs(:insert, p; kmin=1, kmax=2)
@@ -98,11 +102,11 @@ function _hfun_insert(p::String, base::String;
     end
     if tohtml && endswith(p, ".html")
         io = IOBuffer()
-        process_html_file_io!(io, cur_gc(), fpath)
+        process_html_file_io!(io, cur_ctx(), fpath)
         return String(take!(io))
     elseif endswith(p, ".md")
         io = IOBuffer()
-        process_md_file_io!(io, cur_gc(), fpath; tohtml)
+        process_md_file_io!(io, cur_ctx(), fpath; tohtml)
         return String(take!(io))
     end
     # for anything else, just dump the file as is

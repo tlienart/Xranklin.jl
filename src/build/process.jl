@@ -10,6 +10,8 @@ function process_config(
             gc::GlobalContext=cur_gc();
             initial_pass::Bool=false
             )
+    crumbs("process_config")
+
     # ensure we're in the relevant gc
     set_current_global_context(gc)
     # set the notebook counters at the top
@@ -17,7 +19,7 @@ function process_config(
 
     # try to load from cache if relevant
     if initial_pass
-        fpv = path(:cache) / "gnbv.json"
+        fpv = path(:cache) / "gnbv.cache"
         isfile(fpv) && load_vars_cache!(gc, fpv)
     end
 
@@ -106,16 +108,12 @@ function process_utils(
             gc::GlobalContext=cur_gc();
             initial_pass::Bool=false
             )
+    crumbs("process_utils")
+
     # ensure we're in the relevant gc
     set_current_global_context(gc)
     # set the notebooks at the top
     reset_notebook_counters!(gc)
-
-    # try to load from cache if relevant
-    if initial_pass
-        fpc = path(:cache) / "gnbc.json"
-        isfile(fpc) && load_code_cache!(gc, fpc)
-    end
 
     # -----------------------
     start = time(); @info """
@@ -134,7 +132,7 @@ function process_utils(
     # check names of hfun, lx and vars; since we wiped the module before the
     # include_string, all the proper names recuperated here are 'fresh'.
     mdl = gc.nb_code.mdl
-    ns = String.(names(mdl, all=true))
+    ns  = String.(names(mdl, all=true))
     filter!(
         n -> n[1] != '#' &&
              n ∉ ("eval", "include", string(nameof(mdl))),
@@ -174,15 +172,21 @@ Take a file (markdown, html, ...) and process it appropriately:
 
 * copy it "as is" in `__site`
 * generate a derived file into `__site`
+
+## Paths
+
+* process_file -> process_md_file   -> process_md_file_io!
+* process_file -> process_html_file -> process_html_file_io!
 """
 function process_file(
             fpair::Pair{String,String},
             case::Symbol,
-            t::Float64=0.0;     # compare modif time
+            t::Float64=0.0;             # compare modif time
             gc::GlobalContext=cur_gc(),
             skip_files::Vector{Pair{String, String}}=Pair{String, String}[],
             initial_pass::Bool=false
             )
+    crumbs("process_file", "$(fpair.first) => $(fpair.second)")
 
     # there's things we don't want to copy over or (re)process
     fpath = joinpath(fpair...)
@@ -202,7 +206,7 @@ function process_file(
 
         if case == :md
             process_md_file(gc, fpath, opath; initial_pass=initial_pass)
-            initial_pass || process_triggers(gc)
+            initial_pass || process_triggers(gc, skip_files)
 
         elseif case == :html
             process_html_file(gc, fpath, opath)
@@ -242,6 +246,7 @@ function process_md_file_io!(
             initial_pass::Bool=false,
             tohtml::Bool=true
             )::Nothing
+    crumbs("process_md_file_io!", fpath)
 
     # usually not necessary apart if triggered from getvarfrom
     isfile(fpath) || return
@@ -258,6 +263,8 @@ function process_md_file_io!(
         return
     end
 
+    # CONTEXT
+    # -------
     # retrieve the context from gc's children if it exists or
     # create it if it doesn't
     ctx = in_gc ?
@@ -265,11 +272,15 @@ function process_md_file_io!(
             DefaultLocalContext(gc; rpath)
     # set it as current context in case it isn't
     set_current_local_context(ctx)
+    # reset the headers
+    empty!(ctx.headers)
+    # reset code counter
+    setvar!(ctx, :_auto_cell_counter, 1)
 
     if initial_pass
         # try to load notebooks from serialized
-        fpv = path(:cache) / noext(rpath) / "nbv.json"
-        fpc = path(:cache) / noext(rpath) / "nbc.json"
+        fpv = path(:cache) / noext(rpath) / "nbv.cache"
+        fpc = path(:cache) / noext(rpath) / "nbc.cache"
         isfile(fpv) && load_vars_cache!(ctx, fpv)
         isfile(fpc) && load_code_cache!(ctx, fpc)
     else
@@ -306,6 +317,8 @@ function process_md_file(
 end
 
 function process_md_file(gc::GlobalContext, rpath::String; kw...)
+    crumbs("process_md_file", rpath)
+
     fpath = path(:folder) / rpath
     d, f  = splitdir(fpath)
     opath = form_output_path(d => f, :md)
@@ -327,6 +340,7 @@ function _process_md_file_html(ctx::Context, page_content_md::String)
 
     # Assemble the body, wrap it in tags if required
     page_content_html = html(page_content_md, ctx)
+
     body_html = ""
     if !isempty(c_tag)
         body_html = """
@@ -357,6 +371,7 @@ function _process_md_file_html(ctx::Context, page_content_md::String)
     if !isempty(foot_path) && isfile(foot_path)
         full_page_html *= html2(read(foot_path, String), ctx)
     end
+
     return full_page_html
 end
 
@@ -376,41 +391,46 @@ end
 
 
 """
-    process_html_file(gc, fpath, opath)
+    process_html_file(ctx, fpath, opath)
 
-Process a html file located at `fpath` within global context `gc` and
-write the result at `opath`.
+Process a html file located at `fpath` within context `ctx` and write
+the result at `opath`.
+Note: in general the context is a global one apart from when it's
+triggered from an insert in which case it will be the current active
+context (see `cur_ctx`).
 """
 function process_html_file(
-            gc::GlobalContext,
+            ctx::Context,
             fpath::String,
             opath::String
             )
+    crumbs("process_html_file", fpath)
+
     open(opath, "w") do io
-        process_html_file_io!(io, gc, fpath)
+        process_html_file_io!(io, ctx, fpath)
     end
     return
 end
 
 """
-    process_html_file_io!(io, gc, fpath)
+    process_html_file_io!(io, ctx, fpath)
 
-Process a html file located at `fpath` within global context `gc` and
-write the result to the io stream `io`.
+Process a html file located at `fpath` within context `ctx` and write
+the result to the io stream `io`.
+
+See note for process_html_file about current context.
 """
 function process_html_file_io!(
             io::Union{IOStream, IOBuffer},
-            gc::GlobalContext,
+            ctx::Context,
             fpath::String
             )
-    # The steps are fairly similar to the process_md except a bit simpler
-    # for instance we ignore the notebooks, we ignore meta parameters etc
-    rpath = get_rpath(fpath)
-    ctx = (rpath in keys(gc.children_contexts)) ?
-            gc.children_contexts[rpath] :
-            SimpleLocalContext(gc; rpath)
-
-    set_current_local_context(ctx)
+    # ensure we're in the relevant context
+    if isglob(ctx)
+        set_current_global_context(gc)
+    else
+        set_current_local_context(ctx)
+    end
 
     # get html, postprocess it & write it
     write(io, html2(read(fpath, String), ctx))
@@ -425,18 +445,27 @@ See if earlier processing incurred any dependent processing by having modified
 some page variables. The typical case is when definitions change in the config
 file and all pages that use those definitions should be re-processed.
 """
-function process_triggers(gc::GlobalContext)
+function process_triggers(gc::GlobalContext, skip_files::Vector{Pair{String, String}})
+    crumbs("process_triggers")
+
     # see if it incurred re-triggers
     re_process = gc.to_trigger
+    empty!(gc.to_trigger)
     for c in values(gc.children_contexts)
         union!(re_process, c.to_trigger)
         empty!(c.to_trigger)
     end
+
     for rpath in re_process
         start = time(); @info """
             ⌛ re-proc $(hl(str_fmt(rpath), :cyan)) (depends on updated vars)
             """
-        process_md_file(gc, rpath)
+        fpair = path(:folder) => rpath
+        process_file(
+            path(:folder) => rpath,
+            ifelse(splitext(rpath)[2] == ".html", :html, :md);
+            gc, skip_files, initial_pass=false
+        )
         δt = time() - start; @info """
             ... ✔ [reproc] $(hl(time_fmt(δt)))
             """

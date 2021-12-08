@@ -88,6 +88,7 @@ function find_henv(parts::Vector{Block}, idx::Int)::Tuple{Vector{HEnvPart},Int}
     # look at blocks ahead until the environment is closed with {{end}}
     for j in idx+1:length(parts)
         candb        = parts[j]
+        candb.name  == :DBB || continue
         cand         = strip(content(candb))
         isempty(cand) && continue
         cn, cargs... = FP.split_args(cand)
@@ -139,6 +140,7 @@ within the context `c`.
 """
 function resolve_henv(henv::Vector{HEnvPart}, io::IOBuffer, c::Context)
     env_name = first(henv).name
+    crumbs("resolve_henv", env_name)
     # ------------------------------------------------
     # IF-style h-env
     # > find the scope corresponding to the validated
@@ -181,7 +183,7 @@ function resolve_henv(henv::Vector{HEnvPart}, io::IOBuffer, c::Context)
         # {{for x in iter}}       --> {{for (x) in iter}}
         # {{for (x, y) in iter}}
         argiter    = join(henv[1].args, " ")
-        vars, iter = strip.(split(argiter, "in"))
+        vars, iter = strip.(split(argiter, " in "))
 
         if is_estr(iter)
             iter = eval_str(iter)
@@ -195,7 +197,7 @@ function resolve_henv(henv::Vector{HEnvPart}, io::IOBuffer, c::Context)
         # check if there are vars with the same name in local context, if
         # so, save them, note that we filter to see if the var is in the
         # direct context (so not the global context associated with loc)
-        cvars    = union(keys(c.vars), keys(c.vars_aliases))
+        cvars = union(keys(c.vars), keys(c.vars_aliases))
         saved_vars = [
             v => getlvar(v)
             for v in vars if v in cvars
@@ -222,6 +224,7 @@ end
 
 
 function _resolve_henv_cond(henv::HEnvPart)
+    crumbs("_resolve_henv_cond")
     # XXX assumptions about the number of arguments
     env_name = henv.name
     env_name == :else && return true
