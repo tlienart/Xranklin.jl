@@ -45,7 +45,7 @@ export newsite
 export html, latex
 
 # Access contexts
-export getvar, getvarfrom, getlvar, getgvar, setlvar!, setgvar!
+export getvar, getvarfrom, getlvar, getgvar, setlvar!, setgvar!, assetpath
 export locvar, globvar, pagevar  # LEGACY
 
 # ------------------------------------------------------------------------

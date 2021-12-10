@@ -112,15 +112,12 @@ at the end but it's not required.
 
 ### Default Local Variables
 
-Franklin defines a number of local page variables with default values that
+Franklin defines a number of page variables with default values that
 you can use and overwrite.
-Variables with a 🚨 should typically not be set though you may want to use them.
 
 | Variable name | Default value | Purpose / comment |
 | ------------- | ------------- | ------- |
 | `title` | `nothing` | title of the page |
-| 🚨 `hasmath` | `false` | whether the page has math, set automatically |
-| 🚨 `hascode` | `false` | whether the page has code, set automatically |
 | `date` | `Dates.Date(1)` | publication date of the page |
 | `lang` | `"julia"` | default language of executed code blocks |
 | `tags` | `String[]` | tags for the page |
@@ -128,20 +125,34 @@ Variables with a 🚨 should typically not be set though you may want to use the
 | `maxtoclevel` | `6` | maximum heading level to add to the table of contents |
 | `showall` | `true` | show the output of each executed code blocks |
 | `fn_title` | `"Notes"` | header of the footnotes section |
-| 🚨 `_relative_path`  | `""` | relative path to the current page, set automatically (e.g. `/foo/bar.md`) |
-| 🚨 `_relative_url`  | `""` | relative url to the current page, set automatically (e.g. `/foo/bar/`) |
-| 🚨 `_creation_time`  | `0.0` | timestamp at page creation |
-| 🚨 `_modification_time`  | `0.0` | timestamp at last page modification |
-| 🚨 `_setvar`  | `Set{Symbol}()` | set of variables assigned on the page |
-| 🚨 `_refrefs`  | `LittleDict()` | reference links |
-| 🚨 `_eqrefs`  | `LittleDict()` | equation references |
-| 🚨 `_bibrefs` | `LittleDict()` | bibliography references |
-| 🚨 `_auto_cell_counter`  | `0` | counter for executed code cells for automatic naming |
 
+There's also a number of "internal" page variables that are set and used by Franklin,
+you might sometimes find those useful to use to build more advanced functionalities but
+you should typically not set those yourself.
+
+| Variable name | Default value | Purpose / comment |
+| ------------- | ------------- | ------- |
+| `hasmath`  | `false` | whether the page has math, set automatically |
+| `hascode`  | `false` | whether the page has code, set automatically |
+| `_relative_path` | `""` | relative path to the current page, set automatically (e.g. `/foo/bar.md`) |
+| `_relative_url`  | `""` | relative url to the current page, set automatically (e.g. `/foo/bar/`) |
+| `_creation_time` | `0.0` | timestamp at page creation |
+| `_modification_time`  | `0.0` | timestamp at last page modification |
+| `_setvar`        | `Set{Symbol}()` | set of variables assigned on the page |
+| `_refrefs`       | `LittleDict()` | reference links |
+| `_eqrefs`        | `LittleDict()` | equation references |
+| `_bibrefs`       | `LittleDict()` | bibliography references |
+| `_auto_cell_counter`  | `0` | counter for executed code cells for automatic naming |
+
+<!-- -->
 
 ### (XXX) Not used, need to check
 
 `prerender`, `slug`, `reeval`, `rss*`, `sitemap*`, `robots*`, `latex*`, `fn_title`
+
+\todo{
+  `reeval` is useful to clear a single page and re-evaluate it
+}
 
 ## Global variables
 
@@ -165,7 +176,7 @@ By now you should already have an idea
 
 ### Default functions
 
-### Environments: conditionals (XXX)
+### (XXX) Environments: conditionals
 
 \showmd{
   +++
@@ -213,7 +224,7 @@ There are some standard conditionals that can be particularly useful in layout.
 **etc** + check
 
 
-### Environments: loops (XXX)
+### (XXX) Environments: loops
 
 \showmd{
   +++
@@ -243,7 +254,8 @@ There are some standard conditionals that can be particularly useful in layout.
 
 ### E-strings
 
-E-strings are a trick that can be used in two useful ways:
+E-strings allow you to run simple Julia code to define the parameters of a `{{...}}` block.
+This can be useful to
 
 1. insert some value derived from some page variables easily,
 1. have a conditional or a loop environment depend on a derivative of some page variables.
@@ -261,21 +273,27 @@ The first case is best illustrated with a simple example:
   * {{e"round(sqrt($foo), digits=1)"}}
 }
 
-The code in the e-string (`e"..."`) is evaluated inside the [utils module](/syntax/utils/)
+More generally the syntax is `{{ e"..." }}` where the `...` is valid Julia code
+where page variables are prefixed with a `$`.
+
+The code in the e-string is evaluated inside the [utils module](/syntax/utils/)
 and so could leverage any package it imports or any function it defines.
-For instance let's say that there's a function
+For we added a function
 
 ```julia
 bar(x) = "hello from foo <$x>"
 ```
 
-defined in `utils.jl` then
+to `utils.jl` and can call it from here in a e-string as:
 
 \showmd{
   {{e"bar($foo)"}}
 }
 
-As noted earlier, these e-strings can also be useful for conditional and loop environments.
+As noted earlier, these e-strings can also be useful for conditional and loop environments:
+
+* `{{if e"..."}}`
+* `{{for ... in e"..."}}`
 
 For the first, let's consider the case where you'd like to have some part of your layout
 depend on whether either one of two page variables is true.
@@ -294,7 +312,7 @@ For this you can use an e-string and write `{{if e"$flag1 || $flag2"}}`:
 }
 
 More generally you can use an e-string for any kind of condition written in Julia
-as long as it evaluates to a boolean value (true/false).
+as long as it evaluates to a boolean value (`true` or `false`).
 
 For loop environments, you can likewise use an e-string that would give you some
 derived iterator that you'd wish to go over:

@@ -11,7 +11,7 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
     X.eval_code_cell!(lc, X.subs(c), cell_name="abc")
     @test X.counter(nb) == 2
     @test length(nb) == 1
-    @test nb.code_pairs[1].repr.html == "25"
+    @test nb.code_pairs[1].repr.html == "<pre><code class=\"code-output\">25</code></pre>"
     @test nb.code_pairs[1].repr.latex == "25"
 
     # - simulating modification of the samecell
@@ -24,7 +24,7 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
     X.eval_code_cell!(lc, X.subs("a^3"), cell_name="def")
     @test X.counter(nb) == 3
     @test length(nb) == 2
-    @test nb.code_pairs[2].repr.html == "125"
+    @test nb.code_pairs[2].repr.html == "<pre><code class=\"code-output\">125</code></pre>"
     @test nb.code_map["def"] == 2
 
     X.eval_code_cell!(lc, X.subs("@show a"), cell_name="sss")

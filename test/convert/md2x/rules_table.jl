@@ -9,7 +9,7 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
         h = html(s)
         l = latex(s)
         @test isapproxstr(h, """
-            <table>
+            <table class="">
              <thead>
               <th > a </th>
               <th > b </th>
@@ -34,6 +34,9 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
     end
 
     let s = """
+        +++
+        table_class="foo"
+        +++
         | a | b | c |
         | :- | -: | :-: |
         | 1 | 0 | 2 |
@@ -41,7 +44,7 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
         """
         h = html(s)
         @test isapproxstr(h, """
-            <table>
+            <table class="foo">
              <thead>
               <th style="text-align:left;"> a </th>
               <th style="text-align:right;"> b </th>
@@ -85,7 +88,7 @@ end
         """
         h = html(s)
         @test isapproxstr(h, """
-            <table>
+            <table class="">
              <thead>
               <th > a </th>
               <th > b </th>
@@ -124,7 +127,7 @@ end
         """
         h = html(s)
         @test isapproxstr(h, """
-            <table>
+            <table class="">
              <thead>
               <th style="text-align:left;">a</th>
               <th style="text-align:left;">b</th>
@@ -164,7 +167,7 @@ end
         """
         h = html(s)
         @test isapproxstr(h, raw"""
-            <table>
+            <table class="">
              <thead>
               <th > a </th>
               <th > <em>b</em> </th>

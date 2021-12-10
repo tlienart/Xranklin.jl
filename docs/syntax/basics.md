@@ -6,7 +6,9 @@ header = "Markdown basics"
 <!-- avoid having the dummy example headers in the toc -->
 {{rm_headers level_1 level_2 level_3}}
 
-## Text Emphasis
+## Text
+
+### Emphasis
 
 You can surround words with `*` to change the text emphasis (bold, italic):
 
@@ -26,15 +28,22 @@ and you can nest emphasis styles:
   _italic **bold+italic**_
 }
 
-If you want to show the characters `*` or `_` (or other special characters which have a meaning in Franklin), you should escape them with a `\ `:
+### Special characters
 
+If you want to show the characters `*` or `_` (or other special characters which have a meaning in Franklin), you should escape them with a `\ `:
 
 \showmd{
   \* \_ \$ \` \@ \# \{ \} \~ \! \% \& \'    \\
   \+ \, \- \. \/ \: \; \< \= \> \? \^ \|
 }
 
-The double backslash, like in LaTeX, works as a line break as clarified below.
+The double backslash, like in LaTeX, works as a line break (see [next section](#paragraphs)).
+
+You can also insert emojis or HTML-entities:
+
+\showmd{
+  ❌ 🐂 🔦 &amp; &pi; &#42;
+}
 
 ## Paragraphs
 
@@ -158,8 +167,8 @@ and so we can use the same number multiple times):
     + Bartlett
 }
 
-the number of the first item of an ordered list indicates the starting number
-which can be different than 1:
+the number of the first item of an ordered list indicates the starting number.
+So if you want an ordered list starting from 2 for instance you could do:
 
 \showmd{
   2. Foo
@@ -167,7 +176,9 @@ which can be different than 1:
   1. Baz
 }
 
-List items can contain any "inline" item (e.g. emphasised text or maths):
+Note again that the numbers after the one of the first item are irrelevant.
+
+List items can contain any "inline" element (e.g. emphasised text or maths):
 
 \showmd{
   * variables $x, y$ and $z$ are _reals_,
@@ -243,22 +254,73 @@ For this, you can use the _autolink_ syntax `<location>`:
   These are not supported in Franklin.
 }
 
-## (XXX) Images
+### (XXX) Internal links
 
-<!-- XXX -->
-
-<!-- \showmd{
-  ![alt](/assets/rndimg.jpg)
-  ![iguana]
-
-  [iguana]: /assets/rndimg.jpg
-} -->
-
-## (XXX) Code
+Every header in Franklin automatically has an anchor attached to it which
+allows to refer to them easily.
+For instance the current header corresponds to the anchor id `internal_links`.
+To link to such an anchor, the same syntax as for links can be used except the path is `#id`
+so for instance
 
 \showmd{
-  Inline code: `abc`
+  [internal links](#internal_links)
 }
+
+If you wish to link to an anchor across pages you can use `\reflink{id}`:
+
+\todo{
+  this doesn't quite work, need to check anchors + need to resolve the link otherwise it
+  will just try to link to `\reflink` which is dumb.
+}
+
+
+## Images
+
+Inserting images is very similar to inserting links except there's an additional
+exclamation mark to distinguish the two.
+The allowed syntax for images are:
+
+* `![](path)` inserts image at `path` without `alt`
+* `![alt](path)` inserts image at `path` with `alt`
+* `![id]` inserts reference image `id`
+* `![alt][id]` inserts reference image `id` with `alt`
+
+The path can be a relative path to the site root or a valid URL to a file.
+All images below are taken from Wikimedia Commons.
+
+\showmd{
+  ![](/assets/eximg/zebra.svg)
+  ![camel](/assets/eximg/camel.svg)
+}
+
+For reference images the syntax is the same as for link references. You can also
+add these references in your `config.md` to make them globally available.
+
+\showmd{
+  [frog]: https://upload.wikimedia.org/wikipedia/commons/0/08/Creative-Tail-Animal-frog.svg
+  [flamingo]: /assets/eximg/flamingo.svg
+
+  ![frog]
+  ![a flamingo][flamingo]
+}
+
+## Code
+
+To show code, you can use one or two backticks for _inline_ code
+and three to five backticks for _block_ code.
+Let's see the inline case:
+
+\showmd{
+  Inline code: `abc` or ``a`bc``
+}
+
+Observe that the code doesn't break the paragraph, also in the second case you can
+have code with a backtick without it closing the code environment (this is the main
+motivation for ever using two backticks instead of just one).
+
+For blocks (three to five backticks) you can optionally indicate the language of the code
+which is useful if you use a library for code highlighting (Franklin templates
+use [highlight.js](hljs) by default).
 
 \showmd{
   ```julia
@@ -268,6 +330,10 @@ For this, you can use the _autolink_ syntax `<location>`:
   ```
 }
 
+If you want to show a code block within a code block, increase the number of ticks.
+For instance in the example below we show a triple-tick code block within a markdown code block
+which has 4 ticks.
+
 \showmd{
   ````markdown
   ```julia
@@ -276,9 +342,14 @@ For this, you can use the _autolink_ syntax `<location>`:
   ````
 }
 
-**TODO** link to executable code blocks
+Franklin supports running Julia code blocks and showing or using the output
+of such code blocks. This can be very useful in tutorials for instance.
+See [the page on executed code blocks](/syntax/code/) for more on the topic.
+Note also that you can even execute Python or R code blocks by leveraging
+[PyCall.jl](pycall) or [RCall.jl](rcall).
 
-## (XXX) Horizontal rules
+
+## Horizontal rules
 
 If a line contains exclusively 3 or more consecutive of either `-`, `*` or `_`, a
 horizontal rule will be inserted:
@@ -299,9 +370,3 @@ if the same character (e.g. `-`) is present after that on the line, the effect w
   **** *
   ___________________________
 }
-
-## (XXX) HTML
-
-### Raw HTML
-
-### HTML entities

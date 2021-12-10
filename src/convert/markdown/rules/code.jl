@@ -23,7 +23,7 @@ function _lescape(s)
     return s
 end
 
-
+# ============================================================================
 #
 # INLINE, not executed
 #
@@ -38,122 +38,119 @@ latex_code_inline(b::Block, c::LocalContext) = (
     "\\texttt{" * (b |> content |> strip |> _lescape) * "}"
 )
 
+# ============================================================================
 #
-# BLOCK, not executed
+# BLOCK
 #
 
-_isspace2(c) = (c != ' ') && isspace(c)
-_strip(s)    = strip(_isspace2, s)
-_lang(b)     = lstrip(b.open.ss, '`') |> lowercase
+"""
+    _strip(s)
 
-function _cell_name_code(b)::Pair{String, SS}
-    c = content(b)
-    startswith(c, ":") || return ("" => c)
-    # first whitespace after lang(:name)?
-    w = findfirst(r"\s", c)
-    isnothing(w) && return ("" => c)  # should not happen, malformed cell
-    w = first(w)::Int
-    cell_name = subs(c, 2, prevind(c, w)) |> string
-    code      = subs(c, nextind(c, w), lastindex(c))
-    return (cell_name => code)
+Strip `s` from spaces that are not whitespaces (usually line returns).
+"""
+_strip(s) = strip(c -> (c != ' ') && isspace(c), s)
+
+struct CodeInfo
+    name::String
+    lang::String
+    code::SS
+    exec::Bool
+    auto::Bool
 end
+CodeInfo(; name="", lang="", code=subs(""), exec=false, auto=false) =
+    CodeInfo(name, lang, code, exec, auto)
 
+"""
+    _code_info(b)
 
-html_code_block(b::Block, c::LocalContext) = (
-    hascode!(c);
-    "<pre><code class=\"{{lang}}\">" *
-      (b |> content |> _strip |> _hescape ) *
-    "</code></pre>"
-)
+Extract the language, name, code and an execution flag for a code block.
+The different cases are:
 
-latex_code_block(b::Block, c::LocalContext) = (
-    hascode!(c);
-    "\\begin{lstlisting}\n" *
-      (b |> content |> _strip |> _lescape) *
-    "\\end{lstlisting}"
-)
+*                    - non-executed, un-named, implicit language
+* lang               - non-executed, un-named, explicit language
+* !       | :        - executed, auto-named, implicit language
+* !ex     | :ex      - executed, named, implicit language
+* lang!   | lang:    - executed, auto-named, explicit language
+* lang!ex | lang:ex  - executed, named, explicit language (with colon is for legacy)
 
-#
-# BLOCK, not executed unless language is known
-# -> Julia (native)
-# -> XXX Python (via PyCall in some dedicated environment?)
-# -> XXX R (via RCall)
-#
+Return a CodeInfo.
+"""
+function _code_info(b::Block, ctx::LocalContext)
+    info = match(CODE_INFO_PAT, b.ss).captures[1]
+    lang = getvar(ctx, :lang, "")
+    info === nothing && return CodeInfo(; lang, code=_strip(content(b)))
 
-html_code_block_lang(b::Block, ctx::LocalContext; lang=_lang(b), auto_name=false) = begin
-    hascode!(ctx)
-    cell_name, code = _cell_name_code(b)
-    if !isempty(cell_name) || auto_name
-        if lang == "julia"
-            eval_julia_code(code, ctx; cell_name)
+    info = string(info)
+    cb   = content(b)
+    code = subs(cb, nextind(cb, lastindex(info)), lastindex(cb)) |> _strip
+
+    name = ""
+    exec = false
+    auto = false
+
+    l, e, n = match(CODE_LANG_PAT, info)
+
+    if !isnothing(l)
+        lang = l
+    end
+    if !isnothing(e)
+        exec = true
+    end
+    if exec
+        if !isnothing(n)
+            name = n
+        else
+            name = _auto_cell_name(ctx)
+            auto = true
         end
     end
-    "<pre><code class=\"$lang\">" *
-      (code |> _strip |> _hescape) *
-    "</code></pre>"
+    return CodeInfo(; name, lang, code, exec, auto)
 end
 
-latex_code_block_lang(b::Block, _) = begin
-    # XXX see  above
-    hascode!(c)
-    lang = _lang(b)
-    "\\begin{lstlisting}[language=$lang]\n" *
-      (b |> content |> _strip |> _lescape) *
-    "\\end{lstlisting}"
-end
+"""
+    _auto_cell_name(ctx)
 
-#
-# BLOCK, auto executed if locvar(:lang) is known
-#
-
-html_code_block!(b::Block, ctx::LocalContext) = begin
-    html_code = html_code_block_lang(
-        b, ctx;
-        lang=getvar(ctx, :lang), auto_name=true
-        )
-    html_out  = ""
-    #
-    # XXX should be given by previous stuff
-    cntr      = getvar(ctx, :_auto_cell_counter, 1)
-    cell_name = "auto_cell_$cntr"
-    # XXX
-    if getvar(ctx, :showall, true)
-        html_out = lx_show([cell_name])
-    end
-    return html_code * html_out
-end
-
-latex_code_block!(b::Block, ctx::LocalContext) = begin
-end
-
-# XXX
-# Name splitting must happen within some more elaborate  _lang otherwise
-# the name gets shown which is dumb
-
-# ----
-
-function auto_cell_name(ctx)
-    cntr = getvar(ctx, :_auto_cell_counter, 1)
+Assign a name to a code cell based on the notebook counter (and increment
+the notebook counter).
+"""
+function _auto_cell_name(ctx::LocalContext)
+    cntr  = getvar(ctx, :_auto_cell_counter, 1)
     cntr += 1
     setvar!(ctx, :_auto_cell_counter, cntr)
     cell_name = "auto_cell_$cntr"
     return cell_name
 end
 
-function eval_julia_code(
-            code::SubString, ctx::LocalContext;
-            cell_name::String=""
-        )
-    if isempty(cell_name)
-        cell_name = auto_cell_name(ctx)
+
+html_code_block(b::Block, c::LocalContext) = begin
+    hascode!(c)
+    ci   = _code_info(b, c)
+    post = ""
+    if ci.exec
+        if ci.lang == "julia"
+            eval_code_cell!(c, ci.code; cell_name=ci.name)
+        end
+        if ci.auto
+            post = lx_show([ci.name])
+        end
     end
-    # ----------------------------------
-    # XXX autofig stuffs (see eval_code)
-    # ----------------------------------
-    eval_code_cell!(
-        ctx, code;
-        cell_name
-        # imgdir_html / imgdir_latex
-    )
-    return
+
+    return "<pre><code class=\"$(ci.lang)\">"  *
+             (ci.code |> _hescape ) *
+           "</code></pre>" * post
+end
+
+latex_code_block(b::Block, c::LocalContext) = begin
+    ci = _code_info(b, c)
+    if ci.exec
+        if ci.lang == "julia"
+            eval_code_cell!(c, ci.code; cell_name=ci.name)
+        end
+        if ci.auto
+            post = lx_show([ci.name]; tohtml=false)
+        end
+    end
+    return "\\begin{lstlisting}\n" *
+             (ci.code |> _lescape) *
+           "\\end{lstlisting}" * post
 end

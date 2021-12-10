@@ -31,7 +31,11 @@ meta_description = "Franklin"
 
 [juliaweb]: https://julialang.org
 [Pure.css]: https://purecss.io/
-
+[hljs]: https://highlightjs.org/
+[katex]: https://katex.org/
+[pycall]: https://github.com/JuliaPy/PyCall.jl
+[rcall]: https://github.com/JuliaInterop/RCall.jl
+[dataframes]: https://github.com/JuliaData/DataFrames.jl
 
 <!-- GLOBAL COMMANDS -->
 
@@ -81,6 +85,15 @@ meta_description = "Franklin"
 -->
 \newcommand{\tip}[1]{
   \fieldset{tip}{🚀 Tip}{
+    #1
+  }
+}
+
+<!--
+ Todo
+-->
+\newcommand{\todo}[1]{
+  \fieldset{todo}{🚧 To Do}{
     #1
   }
 }

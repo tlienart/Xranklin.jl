@@ -3,6 +3,19 @@
   --output-background: hsl(0, 0%, 98%);
 }
 
+.code-output {
+  background-color: var(--output-background);
+  padding: .5em;
+}
+
+.code-output table {
+  border-collapse: collapse;
+}
+.code-output td, th {
+  border: 1px solid #999;
+  padding: 0.5rem;
+}
+
 /*
 ≂̸ CommonMark
  */
@@ -34,6 +47,25 @@ TIP
 .tip-legend {
   color: white;
   background-color: var(--green20);
+  padding-left: .5em;
+  padding-right: .5em;
+  padding-bottom: .1em;
+  border-radius: 5px;
+  font-variant: small-caps;
+  font-size: var(--text-sm);
+}
+
+/*
+TO DO
+*/
+.todo {
+  background-color: var(--red90);
+  border: 0px;
+  font-size: var(--text-sm);
+}
+.todo-legend {
+  color: white;
+  background-color: var(--red10);
   padding-left: .5em;
   padding-right: .5em;
   padding-bottom: .1em;
@@ -119,3 +151,9 @@ SHOW MD
 
 .md-result ul ul {padding-left: 1.5em;}
 .md-result ol ul {padding-left: 1.5em;}
+
+
+.center {text-align: center;}
+.center img {
+  width: 75%;
+  min-width: 300px;}

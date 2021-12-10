@@ -15,9 +15,5 @@ function lx_show(p::VS; tohtml::Bool=true)::String
     nb  = ctx.nb_code
     id  = nb.code_map[p[1]]
     re  = nb.code_pairs[id].repr.html
-    return """
-        <pre><code class="code-output">
-        $re
-        </code></pre>
-        """
+    return re
 end

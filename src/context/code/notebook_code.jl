@@ -28,8 +28,21 @@ function eval_code_cell!(
     cntr = counter(nb)
     code = cell_code |> strip |> string
 
-    # skip cell if previously seen and unchanged
-    isunchanged(nb, cntr, code) && (increment!(nb); return)
+    # skip cell if previously seen and unchanged though check in case the
+    # cell name changed and if so, adjust
+    if isunchanged(nb, cntr, code)
+        for (name, i) in nb.code_map
+            if i == cntr
+                if name != cell_name
+                    pop!(nb.code_map, name)
+                    nb.code_map[cell_name] = cntr
+                end
+                break
+            end
+        end
+        increment!(nb)
+        return
+    end
 
     if isstale(nb)
         # reeval all previous cells, we don't need to
@@ -70,9 +83,14 @@ function eval_code_cell!(
     io_latex = IOBuffer()
     write(io_html,  output)
     write(io_latex, output)
+
+    crumbs("eval_code_cell!", "[output to io]")
+
     append_result_html!(io_html, result, fig_html)
     append_result_latex!(io_latex, result, fig_latex)
     repr = CodeRepr((String(take!(io_html)), String(take!(io_latex))))
+
+    crumbs("eval_code_cell!", "[formed repr]")
 
     # if an id was given, keep track (if none was given, the empty string
     # links to lots of stuff, like "ans" in a way)
@@ -152,10 +170,12 @@ function _eval_code_cell(mdl::Module, code::String, cell_name::String)::NamedTup
     is_show = isa(lex, Expr) &&
                 length(lex.args) > 1 &&
                 lex.args[1] == Symbol("@show")
+
+    crumbs("_eval_code_cell", "[done]")
+
     if is_show
         return (value=nothing, output=captured.output)
     end
-
     return captured
 end
 
@@ -194,7 +214,7 @@ HTML mime show or writing their own code in the cell.
 function append_result_html!(io::IOBuffer, result::R, fig::NamedTuple) where R
     Utils = cur_utils_module()
     if hasmethod(Utils.show, (IO, MIME"text/html", R))
-        Utils.show(io, MIME("text/html"), result)
+        Base.@invokelatest Utils.show(io, MIME("text/html"), result)
 
     elseif fig.save && hasmethod(Base.show, (IO, MIME"image/svg+xml", R))
         _write_img(result, fig.fpath * ".svg", MIME("image/svg+xml"))
@@ -209,7 +229,9 @@ function append_result_html!(io::IOBuffer, result::R, fig::NamedTuple) where R
                 """)
 
     else
+        write(io, """<pre><code class="code-output">""")
         Base.show(io, result)
+        write(io, """</code></pre>""")
     end
     return
 end
