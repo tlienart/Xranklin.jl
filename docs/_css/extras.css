@@ -157,3 +157,15 @@ SHOW MD
 .center img {
   width: 75%;
   min-width: 300px;}
+
+
+.code-output {
+  margin-top: 1em;
+  margin-left: 1em;
+  border: 3px solid var(--blue90);
+}
+
+.code-output .code-figure {
+  padding-top: 1em;
+  padding-bottom: .75em;
+}

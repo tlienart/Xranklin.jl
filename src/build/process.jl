@@ -148,14 +148,17 @@ function process_utils(
     return
 end
 
-function process_utils(gc::GlobalContext=cur_gc(); initial_pass::Bool=false)
+function process_utils(gc::GlobalContext=cur_gc(); initial_pass::Bool=false)::GlobalContext
     utils_path = path(:folder) / "utils.jl"
     if isfile(utils_path)
+        cache_utils = path(:cache) / "utils.jl"
+        identical   = filecmp(utils_path, cache_utils)
+        identical || (gc = clear_everything(gc, utils=true))
         process_utils(read(utils_path, String), gc; initial_pass)
     else
         @info "❎ no utils file found."
     end
-    return
+    return gc
 end
 
 utils_hfun_names()   = getgvar(:_utils_hfun_names)::Vector{Symbol}
@@ -270,6 +273,7 @@ function process_md_file_io!(
     ctx = in_gc ?
             gc.children_contexts[rpath] :
             DefaultLocalContext(gc; rpath)
+
     # set it as current context in case it isn't
     set_current_local_context(ctx)
     # reset the headers

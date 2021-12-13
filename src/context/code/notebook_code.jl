@@ -64,16 +64,15 @@ function eval_code_cell!(
     end
 
     # eval cell
-    result, output = _eval_code_cell(nb.mdl, code, cell_name)
+    std_out, std_err, result = _eval_code_cell(nb.mdl, code, cell_name)
 
     autosavefigs = getvar(ctx, :autosavefigs, true)
     autoshowfigs = getvar(ctx, :autoshowfigs, true)
     file_prefix  = "__$(cntr)_$(cell_name)"
     fpath_html   = imgdir_html / file_prefix
     fpath_latex  = imgdir_latex / file_prefix
-
-    fig_html  = (save=autosavefigs, show=autoshowfigs, fpath=fpath_html)
-    fig_latex = (save=autosavefigs, show=autoshowfigs, fpath=fpath_latex)
+    fig_html     = (save=autosavefigs, show=autoshowfigs, fpath=fpath_html)
+    fig_latex    = (save=autosavefigs, show=autoshowfigs, fpath=fpath_latex)
 
     # form the string representation of the cell. This is in  two  parts
     # (1) the stdout (output) if there's a println for instance
@@ -81,13 +80,28 @@ function eval_code_cell!(
     #     want specific objects to have a specific HTML or LaTeX repr
     io_html  = IOBuffer()
     io_latex = IOBuffer()
-    write(io_html,  output)
-    write(io_latex, output)
+    if !isempty(std_out)
+        write(io_html,
+            "<pre><code class=\"code-stdout\">",
+            std_out,
+            "</code></pre>"
+        )
+        write(io_latex, std_out)
+    end
+    if !isempty(std_err)
+        write(io_html,
+            "<pre><code class=\"code-stderr\">",
+            std_err,
+            "</code></pre>"
+        )
+        write(io_latex, std_out)
+    end
 
     crumbs("eval_code_cell!", "[output to io]")
 
     append_result_html!(io_html, result, fig_html)
     append_result_latex!(io_latex, result, fig_latex)
+
     repr = CodeRepr((String(take!(io_html)), String(take!(io_latex))))
 
     crumbs("eval_code_cell!", "[formed repr]")
@@ -98,6 +112,11 @@ function eval_code_cell!(
 
     return finish_cell_eval!(nb, CodeCodePair((code, repr)))
 end
+
+
+const Captured = NamedTuple{     (:std_out, :std_err, :result),
+                            Tuple{ String,    String,  T} where T }
+
 
 """
     _eval_code_cell(mdl, code, cell_name)
@@ -112,28 +131,27 @@ NamedTuple
     * value
     * output
 """
-function _eval_code_cell(mdl::Module, code::String, cell_name::String)::NamedTuple
+function _eval_code_cell(mdl::Module, code::String, cell_name::String)::Captured
 
     start = time(); @debug """
     ⏳ evaluating code cell... $(
         hl(isempty(cell_name) ? "" : "($cell_name)", :light_green))
     """
-
-    captured = (
-        value=nothing,
-        output=""
-    )
+    std_out = ""
+    std_err = ""
+    result  = nothing
     try
         captured = IOCapture.capture() do
             include_string(softscope, mdl, code)
         end
-    catch e
-        # keep the string of the error so it can be displayed
-        io = IOBuffer()
-        showerror(io, e)
-        err_out = String(take!(io))
+        # if we're here then 'output' and 'value' are set
+        std_out = captured.output
+        result  = captured.value
 
-        # also process & write to REPL
+    catch e
+        # also write to REPL so the user is doubly aware
+        # if we're in 'strict_parsing' mode then this will throw
+        # and interrupt the server
         err = typeof(e)
         if VERSION >= v"1.7.0-"
             exc, bt = last(Base.current_exceptions())
@@ -141,42 +159,41 @@ function _eval_code_cell(mdl::Module, code::String, cell_name::String)::NamedTup
             exc, bt = last(Base.catch_stack())
         end
         # retrieve the stacktrace string so it can be shown in repl
-        stacktrace = sprint(showerror, exc, bt)
+        stacktrace = sprint(showerror, exc, bt) |> trim_stacktrace
+        std_err    = stacktrace
 
         msg = """
               Code evaluation
               ---------------
               There was an error of type '$err' when running code '$(cell_name)'
               Details:
-              $(trim_stacktrace(stacktrace))
+              $stacktrace
               """
         @warn msg
         env(:strict_parsing)::Bool && throw(msg)
-        return (value=nothing, output=err_out)
+
+        return (; std_out, std_err, result)
     end
 
     δt = time() - start; @debug """
             ... [code cell] ✔ $(hl(time_fmt(δt)))
             """
 
-    # Check what should be displayed at the end if anything
+    # if the end of the cell is a ';' or a `@show` then
+    # suppress the result
     if endswith(code, HIDE_FINAL_OUTPUT_PAT)
-        return (value=nothing, output=captured.output)
+        result = nothing
+    else
+        # Check if the last expression is a show and if so set the returned
+        # value to nothing to avoid double shows
+        lex = last(parse_code(code))
+        is_show = isa(lex, Expr) &&
+                    length(lex.args) > 1 &&
+                    lex.args[1] == Symbol("@show")
+
+        is_show && (result = nothing)
     end
-
-    # Check if the last expression is a show and if so set the returned
-    # value to nothing to avoid double shows
-    lex = last(parse_code(code))
-    is_show = isa(lex, Expr) &&
-                length(lex.args) > 1 &&
-                lex.args[1] == Symbol("@show")
-
-    crumbs("_eval_code_cell", "[done]")
-
-    if is_show
-        return (value=nothing, output=captured.output)
-    end
-    return captured
+    return (; std_out, std_err, result)
 end
 
 """
@@ -212,24 +229,26 @@ Users can also overwrite this default saving of files by overloading the
 HTML mime show or writing their own code in the cell.
 """
 function append_result_html!(io::IOBuffer, result::R, fig::NamedTuple) where R
+    R === Nothing && return
     Utils = cur_utils_module()
-    if hasmethod(Utils.show, (IO, MIME"text/html", R))
-        Base.@invokelatest Utils.show(io, MIME("text/html"), result)
+
+    if isdefined(Utils, :fshow) && hasmethod(Utils.fshow, (IO, MIME"text/html", R))
+        Utils.fshow(io, MIME("text/html"), result)
 
     elseif fig.save && hasmethod(Base.show, (IO, MIME"image/svg+xml", R))
         _write_img(result, fig.fpath * ".svg", MIME("image/svg+xml"))
         fig.show && write(io, """
-                <img class="code-output fig" src="/$(get_ropath(fig.fpath)).svg">
+                <img class="code-figure" src="/$(get_ropath(fig.fpath)).svg">
                 """)
 
     elseif fig.save && hasmethod(Base.show, (IO, MIME"image/png", R))
         _write_img(result, fig.fpath * ".png", MIME("image/png"))
         fig.show && write(io, """
-                <img class="code-output fig" src="/$(get_ropath(fig.fpath)).png">
+                <img class="code-figure" src="/$(get_ropath(fig.fpath)).png">
                 """)
 
     else
-        write(io, """<pre><code class="code-output">""")
+        write(io, """<pre><code class="code-result">""")
         Base.show(io, result)
         write(io, """</code></pre>""")
     end
@@ -244,10 +263,10 @@ Same as the one for HTML but for LaTeX.
 Note: SVG support in LaTeX is not straightforward (depends on other tools).
 """
 function append_result_latex!(io::IOBuffer, result::R, fig::NamedTuple) where R
+    R === Nothing && return
     Utils = cur_utils_module()
-
-    if hasmethod(Utils.show, (IO, MIME"text/latex", R))
-        Utils.show(io, MIME("text/latex"), result)
+    if isdefined(Utils, :fshow) && hasmethod(Utils.fshow, (IO, MIME"text/latex", R))
+        Utils.fshow(io, MIME("text/latex"), result)
 
     elseif fig.save && hasmethod(Base.show, (IO, MIME"application/pdf", R))
         _write_img(result, fig.fpath * ".pdf", MIME("application/pdf"))
@@ -260,7 +279,6 @@ function append_result_latex!(io::IOBuffer, result::R, fig::NamedTuple) where R
         fig.show && write(io, """
                 \\includegraphics{$(fig.fpath).png}">
                 """)
-
     else
         Base.show(io, result)
     end

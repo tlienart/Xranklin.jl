@@ -1,5 +1,3 @@
-const USING_FRANKLIN = Meta.parse("using $(env(:module_name))")
-
 """
     modulename(id, h)
 
@@ -50,8 +48,10 @@ module in Main.
         :__FRANKLIN_...
 """
 function parent_module(; wipe::Bool=false)::Module
-    n = modulename("parent")
-    !wipe && ismodule(n) && return getfield(Main, n)
+    n  = modulename("parent")
+    if !wipe && ismodule(n)
+        return getfield(Main, n)
+    end
     return newmodule(n, Main)
 end
 
@@ -62,12 +62,35 @@ end
 Either return the a submodule with name `n` if it exists as a child of the
 parent module or create a new one and return it.
 """
-function submodule(n::Symbol; wipe::Bool=false)
+function submodule(n::Symbol; wipe::Bool=false, utils::Bool=false)
     p = parent_module()
-    !wipe && ismodule(n, p) && return getfield(p, n)
-    m = newmodule(n, p)
-    Core.eval(m, USING_FRANKLIN)
+    if !wipe && ismodule(n, p)
+        m = getfield(p, n)
+    else
+        m = newmodule(n, p)
+        Core.eval(m, Meta.parse("using $(env(:module_name))"))
+    end
+    utils && using_utils!(m)
     return m
+end
+
+
+"""
+    using_utils!(m)
+
+Import (Using) the current utils module in `m`. See `LocalContext` instantiation
+with each of its notebooks bringing utils in.
+"""
+function using_utils!(m::Module)
+    gc = env(:cur_global_ctx)
+    isnothing(gc) && return
+    utils_mdl = gc.nb_code.mdl
+    s = replace(
+        "import $(parent_module()).$(utils_mdl) as Utils",
+        ".Main." => "."
+    )
+    include_string(m, s)
+    return
 end
 
 

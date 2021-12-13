@@ -38,10 +38,45 @@ This name can then be used further on with `\show{name}` to show the output.
   println("$a, $b")
   a == b
   ```
-  You can then place the output corresponding to that block as
+}
 
+You can then place the output corresponding to that block as
+
+\showmd{
   \show{example-1}
 }
+
+### XXX
+
+\showmd{
+  ```!
+  1
+  ```
+}
+
+\showmd{
+  ```!
+  println("foo")
+  ```
+}
+
+\showmd{
+  ```!
+  using Images
+  rand(Gray, 2, 2)
+  ```
+}
+
+<!-- \showmd{
+  ```julia:ex
+  using Images
+  rand(Gray, 2, 2)
+  ```
+}
+
+\showmd{
+  \show{ex}
+} -->
 
 <!--
 

@@ -159,13 +159,15 @@ function DefaultLocalContext(
             gc::GlobalContext=DefaultGlobalContext();
             rpath::String=""
             )
-    LocalContext(
+    lc = LocalContext(
         gc,
         deepcopy(DefaultLocalVars),
         LxDefs(),
         alias=copy(DefaultLocalVarsAlias),
         rpath=rpath
-    ) |> set_current_local_context
+    )
+    r = lc |> set_current_local_context
+    return r
 end
 
 # for html pages

@@ -14,6 +14,7 @@ function lx_show(p::VS; tohtml::Bool=true)::String
     ctx = cur_lc()
     nb  = ctx.nb_code
     id  = nb.code_map[p[1]]
-    re  = nb.code_pairs[id].repr.html
-    return re
+    re  = ifelse(tohtml, nb.code_pairs[id].repr.html, nb.code_pairs[id].repr.latex)
+    isempty(re) && return ""
+    return """<div class="code-output">""" * re * "</div>"
 end

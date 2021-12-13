@@ -1,4 +1,28 @@
 """
+    clear_everything(gc; utils)
+
+Used only in `serve` (initially) and in `process_utils`.
+"""
+function clear_everything(gc; utils=false)::GlobalContext
+    if utils
+        @info "❌ clearing everything because Utils changed..."
+        folder = path(:folder)
+        gc     = DefaultGlobalContext()
+        # folder can be empty when running outside of `serve` (e.g. in tests)
+        isempty(folder) || set_paths!(gc, folder)
+        set_current_global_context(gc)
+    else
+        # on initial pass, no need to re-create a gc object here
+        @info "❌ clearing everything for a fresh start..."
+    end
+    for odir in (path(:site), path(:pdf), path(:cache))
+        rm(odir; force=true, recursive=true)
+    end
+    return gc
+end
+
+
+"""
     serve(; kw...)
 
 Runs Franklin in the current directory.
@@ -57,18 +81,16 @@ function serve(d::String   = pwd();
     set_paths!(gc, folder)
 
     # if clear, destroy output directories if any
-    if clear
-        for odir in (path(:site), path(:pdf), path(:cache))
-            rm(odir; force=true, recursive=true)
-        end
-    end
+    clear && clear_everything(gc)
 
     # check if there's a utils/config file and process, this must happen
     # prior to everything as it defines 'ignore' for instance which is
     # needed in the watched_files step
-    process_utils(gc;  initial_pass=true)
+    # NOTE: if utils has changed, everything will be wiped as well given that
+    # utils is potentially loaded everywhere. See process_utils. This is why
+    # process_utils returns a GC which might be different
+    gc = process_utils(gc; initial_pass=true)
     process_config(gc; initial_pass=true)
-
 
     # scrape the folder to collect all files that should be watched for
     # changes; this set will be updated in the loop if new files get
@@ -108,6 +130,8 @@ function serve(d::String   = pwd();
     start = time()
     @info "📓 serializing $(hl("config", :cyan))..."
     serialize_notebook(gc.nb_vars, path(:cache) / "gnbv.cache")
+    @info "📓 serializing $(hl("utils", :cyan))..."
+    cp(path(:folder) / "utils.jl", path(:cache) / "utils.jl", force=true)
     for (rp, ctx) in gc.children_contexts
         # ignore .html pages
         endswith(rp, ".md") || continue
@@ -128,8 +152,8 @@ function serve(d::String   = pwd();
         start = time()
         @info "❌ cleaning up all objects"
         parent_module(wipe=true)
-        setenv(:cur_global_ctx, nothing)
-        setenv(:cur_local_ctx,  nothing)
+        setenv!(:cur_global_ctx, nothing)
+        setenv!(:cur_local_ctx,  nothing)
         δt = time() - start; @info """
             💡 $(hl("cleaning up done", :yellow)) $(hl(time_fmt(δt)))
             """

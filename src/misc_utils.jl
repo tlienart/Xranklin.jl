@@ -81,9 +81,9 @@ end
 
 crumbs(s1, s2="") = @debug "🚧 ... $(hl(s1, :yellow)) $(s2 === "" ? "" : "> $(hl(s2, :light_green))")"
 
+
 assetpath(s...) = begin
     p = joinpath(path(:assets), s...)
     mkpath(dirname(p))
-    @show p
     p
 end
