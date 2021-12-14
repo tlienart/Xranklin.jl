@@ -105,8 +105,7 @@ Process a utils string into a given global context object.
 """
 function process_utils(
             utils::String,
-            gc::GlobalContext=cur_gc();
-            initial_pass::Bool=false
+            gc::GlobalContext=cur_gc()
             )
     crumbs("process_utils")
 
@@ -114,6 +113,8 @@ function process_utils(
     set_current_global_context(gc)
     # set the notebooks at the top
     reset_notebook_counters!(gc)
+    # keep track of utils (see `using_utils!`)
+    setvar!(gc, :_utils_code, utils)
 
     # -----------------------
     start = time(); @info """
@@ -144,14 +145,13 @@ function process_utils(
                 Symbol.([n[4:end] for n in ns if startswith(n, "lx_")]))
     setvar!(gc, :_utils_var_names,
                 Symbol.([n for n in ns if !startswith(n, r"lx_|hfun_")]))
-
     return
 end
 
-function process_utils(gc::GlobalContext=cur_gc(); initial_pass::Bool=false)
+function process_utils(gc::GlobalContext=cur_gc())
     utils_path = path(:folder) / "utils.jl"
     if isfile(utils_path)
-        process_utils(read(utils_path, String), gc; initial_pass)
+        process_utils(read(utils_path, String), gc)
     else
         @info "❎ no utils file found."
     end
@@ -270,12 +270,13 @@ function process_md_file_io!(
     ctx = in_gc ?
             gc.children_contexts[rpath] :
             DefaultLocalContext(gc; rpath)
+
     # set it as current context in case it isn't
     set_current_local_context(ctx)
     # reset the headers
     empty!(ctx.headers)
     # reset code counter
-    setvar!(ctx, :_auto_cell_counter, 1)
+    setvar!(ctx, :_auto_cell_counter, 0)
 
     if initial_pass
         # try to load notebooks from serialized

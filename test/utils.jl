@@ -3,12 +3,26 @@ using Xranklin: (/)
 using Test
 using Dates
 using Logging
-using JSON3
+using Images
 using OrderedCollections
 import Base: (//)
 
+import LiveServer
+X = Xranklin;
+
+X.setenv!(:strict_parsing, false)
+
 X = Xranklin
 MDL = X.env(:module_name)
+
+
+nowarn() = Logging.disable_logging(Logging.Warn)
+logall() = (
+    Logging.disable_logging(Logging.Debug - 100);
+    ENV["JULIA_DEBUG"] = "all";
+)
+
+logall()
 
 # ----------------------- #
 # String comparison utils #
@@ -30,12 +44,6 @@ function isbalanced(s)
     cd = nmatch(r"<\/div>", s)
     @test od == cd
 end
-
-nowarn() = Logging.disable_logging(Logging.Warn)
-logall() = (
-    Logging.disable_logging(Logging.Debug - 100);
-    ENV["JULIA_DEBUG"] = "all";
-)
 
 function testdir(; tag=true)
     d = mktempdir();

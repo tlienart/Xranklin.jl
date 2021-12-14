@@ -17,12 +17,27 @@ menu = [
 # Page layout
 showtoc = false
 
+# Tables
+table_class = "pure-table-striped"
+
 # Misc
 meta_description = "Franklin"
 
 
 +++
 
+
+<!-- GLOBAL REFERENCES -->
+
+[juliaweb]: https://julialang.org
+[Pure.css]: https://purecss.io/
+[hljs]: https://highlightjs.org/
+[katex]: https://katex.org/
+[pycall]: https://github.com/JuliaPy/PyCall.jl
+[rcall]: https://github.com/JuliaInterop/RCall.jl
+[dataframes]: https://github.com/JuliaData/DataFrames.jl
+
+<!-- GLOBAL COMMANDS -->
 
 \newcommand{\fieldset}[3]{
   ~~~
@@ -47,13 +62,19 @@ meta_description = "Franklin"
   XXX keep extra line skip otherwise the blockquote and the
   showmd environment blend and it's ugly!
    -->
-  \fieldset{md-result}{result}{
+  ~~~
+  <div class="trim">
+  ~~~
+    \fieldset{md-result}{result}{
     ~~~~~~
 
-    #1
+      #1
 
     ~~~~~~
-  }
+    }
+  ~~~
+  </div>
+  ~~~
 }
 
 <!--
@@ -74,5 +95,20 @@ meta_description = "Franklin"
   }
 }
 
+<!--
+ Todo
+-->
+\newcommand{\todo}[1]{
+  \fieldset{todo}{🚧 To Do}{
+    #1
+  }
+}
 
-[juliaweb]: https://julialang.org
+<!--
+ Note
+-->
+\newcommand{\note}[1]{
+  \fieldset{note}{⚠️ Note}{
+    #1
+  }
+}

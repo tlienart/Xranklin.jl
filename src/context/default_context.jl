@@ -42,6 +42,7 @@ const DefaultGlobalVars = Vars(
     :anchor_bib_class  => "anchor-bib",
     :eqref_class       => "eqref",
     :bibref_class      => "bibref",
+    :table_class        => "",
     # Dates
     :date_format      => "U dd, yyyy",
     :date_days        => String[],
@@ -98,13 +99,12 @@ const DefaultLocalVars = Vars(
     :hascode            => false,
     :date               => Dates.Date(1),
     :lang               => "julia",
-    :reflinks           => true,
     :tags               => String[],
     :prerender          => true,
     :slug               => "",
     # toc
     :mintoclevel        => 1,
-    :maxtoclevel        => 10,
+    :maxtoclevel        => 6,
     # code
     :reeval             => false,
     :showall            => true,
@@ -149,29 +149,31 @@ const DefaultLocalVarsAlias = Alias(
 
 ##############################################################################
 
-DefaultGlobalContext() = GlobalContext(
-    deepcopy(DefaultGlobalVars),
-    LxDefs(),
-    alias=copy(DefaultGlobalVarsAlias)
-) |> set_current_global_context
-
-function DefaultLocalContext(
-            gc::GlobalContext=DefaultGlobalContext();
-            rpath::String=""
-            )
-    LocalContext(
-        gc,
-        deepcopy(DefaultLocalVars),
-        LxDefs(),
-        alias=copy(DefaultLocalVarsAlias),
-        rpath=rpath
-    ) |> set_current_local_context
+function DefaultGlobalContext()
+    gc = GlobalContext(
+            deepcopy(DefaultGlobalVars),
+            LxDefs(),
+            alias=copy(DefaultGlobalVarsAlias)
+         )
+    set_current_global_context(gc)
 end
+
+function DefaultLocalContext(gc::GlobalContext; rpath::String="")
+    lc = LocalContext(
+            gc,
+            deepcopy(DefaultLocalVars),
+            LxDefs(),
+            alias=copy(DefaultLocalVarsAlias),
+            rpath=rpath
+         )
+    return set_current_local_context(lc)
+end
+
+DefaultLocalContext(; kw...) = DefaultLocalContext(DefaultGlobalContext(); kw...)
 
 # for html pages
 SimpleLocalContext(gc::GlobalContext; rpath::String="") =
     LocalContext(gc; rpath)
-
 
 ##############################################################################
 # These will fail for contexts that haven't been constructed out of Default

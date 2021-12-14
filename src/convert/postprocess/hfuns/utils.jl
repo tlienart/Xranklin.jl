@@ -52,7 +52,7 @@ function hfun_failed(p::VS; tohtml::Bool=true)::String
     tohtml && return _hfun_failed_html(p)
     return _hfun_failed_latex(p)
 end
-hfun_failed(s::String, p::VS) = hfun_failed([s, p...])
+hfun_failed(s::String, p::VS; kw...) = hfun_failed([s, p...]; kw...)
 
 _hfun_failed_html(p::VS) = html_failed(
     "&lbrace;&lbrace; " * join(p, " ") * "&rbrace;&rbrace;"

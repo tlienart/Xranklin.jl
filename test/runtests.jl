@@ -1,16 +1,6 @@
-using Xranklin
-import LiveServer
-using Logging
-using Test
-X = Xranklin;
-
-X.setenv(:strict_parsing, false)
-
 include("utils.jl")
 
 include("integration_convert.jl")  # itest function
-
-logall()
 
 @testset "Misc" begin
     include("misc.jl")
@@ -29,6 +19,7 @@ end
     include(p/"notebook_vars.jl")
     include(p/"notebook_code.jl")
     include(p/"serialize.jl")
+    include(p/"code-show.jl")
 end
 
 @testset "LaTeX" begin

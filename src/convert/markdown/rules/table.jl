@@ -74,7 +74,7 @@ function convert_table(io::IOBuffer, g::Group, c::Context;
                 a == ALIGN_RIGHT  ? "style=\"text-align:right;\"" :
                 ""
             end
-        table_open  = "<table>\n"
+        table_open  = "<table class=\"{{table_class}}\">\n"
         table_close = "</table>\n"
         head_open   = "<thead>\n"
         head_close  = "</thead>\n"

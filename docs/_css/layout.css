@@ -217,7 +217,7 @@ XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX
  */
 @media (max-width: 36em) {
 	:root {
-		--menu-burger-width:  0em;
+		/* --menu-burger-width:  0em; */
 		--html-overflow-x: 		scroll;
 	}
 }
@@ -235,12 +235,14 @@ XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX
     min-width: 0em;
     transition: min-width 0.2s, width 0.2s;
   }
+	#menu-burger {
+		min-width: var(--menu-burger-width);
+	}
   #layout-left-menu.active {
     min-width: var(--left-menu-base-width);
 		background-color: var(--col-chalk);
-
   }
-  #menu-burger.active {
+  #menu-burger.active {70
     min-width: var(--menu-burger-width);
     background-color: white;
     background-image: url(/assets/menu_cross.svg);
@@ -249,6 +251,11 @@ XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX
   }
 }
 
+@media (min-width: 52em) {
+	:root {
+		--left-menu-margin-left: 0em;
+	}
+}
 
 @media (min-width: 70em) {
   :root {
@@ -288,6 +295,11 @@ body {
 	color:       		   var(--text-col);
 	line-height: 			 var(--text-line-height);
   background-color:  var(--col-cream);
+}
+
+a {
+	color: var(--blue30);
+	text-decoration: none;
 }
 
 code {
