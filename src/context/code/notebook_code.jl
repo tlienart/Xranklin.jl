@@ -82,7 +82,7 @@ function eval_code_cell!(
     io_latex = IOBuffer()
     if !isempty(std_out)
         write(io_html,
-            "<pre><code class=\"code-stdout\">",
+            "<pre><code class=\"code-stdout language-plaintext\">",
             std_out,
             "</code></pre>"
         )
@@ -90,7 +90,7 @@ function eval_code_cell!(
     end
     if !isempty(std_err)
         write(io_html,
-            "<pre><code class=\"code-stderr\">",
+            "<pre><code class=\"code-stderr language-plaintext\">",
             std_err,
             "</code></pre>"
         )
@@ -132,7 +132,6 @@ NamedTuple
     * output
 """
 function _eval_code_cell(mdl::Module, code::String, cell_name::String)::Captured
-
     start = time(); @debug """
     ⏳ evaluating code cell... $(
         hl(isempty(cell_name) ? "" : "($cell_name)", :light_green))
@@ -230,10 +229,10 @@ HTML mime show or writing their own code in the cell.
 """
 function append_result_html!(io::IOBuffer, result::R, fig::NamedTuple) where R
     R === Nothing && return
-    Utils = cur_utils_module()
 
-    if isdefined(Utils, :fshow) && hasmethod(Utils.fshow, (IO, MIME"text/html", R))
-        Utils.fshow(io, MIME("text/html"), result)
+    Utils = cur_utils_module()
+    if isdefined(Utils, :html_show) && hasmethod(Utils.html_show, (R,))
+        write(io, Utils.html_show(result))
 
     elseif fig.save && hasmethod(Base.show, (IO, MIME"image/svg+xml", R))
         _write_img(result, fig.fpath * ".svg", MIME("image/svg+xml"))
@@ -248,7 +247,7 @@ function append_result_html!(io::IOBuffer, result::R, fig::NamedTuple) where R
                 """)
 
     else
-        write(io, """<pre><code class="code-result">""")
+        write(io, """<pre><code class="code-result language-plaintext">""")
         Base.show(io, result)
         write(io, """</code></pre>""")
     end
@@ -264,9 +263,10 @@ Note: SVG support in LaTeX is not straightforward (depends on other tools).
 """
 function append_result_latex!(io::IOBuffer, result::R, fig::NamedTuple) where R
     R === Nothing && return
+
     Utils = cur_utils_module()
-    if isdefined(Utils, :fshow) && hasmethod(Utils.fshow, (IO, MIME"text/latex", R))
-        Utils.fshow(io, MIME("text/latex"), result)
+    if isdefined(Utils, :latex_show) && hasmethod(Utils.latex_show, (R,))
+        write(io, Utils.latex_show(result))
 
     elseif fig.save && hasmethod(Base.show, (IO, MIME"application/pdf", R))
         _write_img(result, fig.fpath * ".pdf", MIME("application/pdf"))
@@ -280,7 +280,7 @@ function append_result_latex!(io::IOBuffer, result::R, fig::NamedTuple) where R
                 \\includegraphics{$(fig.fpath).png}">
                 """)
     else
-        Base.show(io, result)
+        Base.@invokelatest Base.show(io, result)
     end
     return
 end
@@ -291,7 +291,7 @@ append_result_latex!(::IOBuffer, ::Nothing, ::NamedTuple) = nothing
 
 function _write_img(result::R, fp::String, mime::MIME) where R
     open(fp, "w") do img
-        Base.show(img, mime, result)
+        Base.@invokelatest Base.show(img, mime, result)
     end
     return
 end

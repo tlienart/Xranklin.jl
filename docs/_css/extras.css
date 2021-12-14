@@ -75,6 +75,25 @@ TO DO
 }
 
 /*
+NOTE
+*/
+.note {
+  background-color: var(--yellow90);
+  border: 0px;
+  font-size: var(--text-sm);
+}
+.note-legend {
+  color: white;
+  background-color: var(--yellow0);
+  padding-left: .5em;
+  padding-right: .5em;
+  padding-bottom: .1em;
+  border-radius: 5px;
+  font-variant: small-caps;
+  font-size: var(--text-sm);
+}
+
+/*
 SHOW MD
 */
 
@@ -136,6 +155,14 @@ SHOW MD
   margin: 0;
 }
 
+.md-result pre {
+  max-width: 100%;
+}
+.md-result .code-output pre {
+  max-width: 100%;
+}
+
+
 .md-result h1 {padding: 0;}
 .md-result h2 {padding: 0;}
 .md-result h3 {padding: 0;}
@@ -168,4 +195,15 @@ SHOW MD
 .code-output .code-figure {
   padding-top: 1em;
   padding-bottom: .75em;
+}
+
+.trim {
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-x: scroll;
+}
+
+.trim .md-result {
+  margin-bottom: 0.5em;
 }

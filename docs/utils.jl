@@ -11,3 +11,13 @@ end
 # used in syntax/vars+funs #e-strings demonstrating that e-strings are
 # evaluated in the Utils module
 bar(x) = "hello from foo <$x>"
+
+
+struct Foo
+    x::Int
+end
+html_show(f::Foo) = "<strong>Foo: $(f.x)</strong>"
+
+struct Baz
+    z::Int
+end

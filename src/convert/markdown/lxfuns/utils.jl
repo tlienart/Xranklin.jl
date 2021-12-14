@@ -26,6 +26,7 @@ function lx_failed(p::VS; tohtml::Bool=true)::String
     tohtml && return html_failed(s)
     return latex_failed(s)
 end
+lx_failed(s::String, p::VS; kw...) = lx_failed([s, p...]; kw...)
 
 
 function _lx_check_nargs(n::Symbol, p::VS, k::Int)

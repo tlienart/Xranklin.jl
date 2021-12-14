@@ -114,7 +114,7 @@ Assign a name to a code cell based on the notebook counter (and increment
 the notebook counter).
 """
 function _auto_cell_name(ctx::LocalContext)
-    cntr  = getvar(ctx, :_auto_cell_counter, 1)
+    cntr  = getvar(ctx, :_auto_cell_counter, 0)
     cntr += 1
     setvar!(ctx, :_auto_cell_counter, cntr)
     cell_name = "auto_cell_$cntr"

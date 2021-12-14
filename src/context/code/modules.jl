@@ -89,7 +89,7 @@ function using_utils!(m::Module)
         "import $(parent_module()).$(utils_mdl) as Utils",
         ".Main." => "."
     )
-    include_string(m, s)
+    include_string(softscope, m, s)
     return
 end
 

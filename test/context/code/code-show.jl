@@ -93,8 +93,8 @@ end
             x::Int
         end
         foo() = 5
-        fshow(io::IO, ::MIME"text/html", i::Int) = write(io, "<span>Int: $i</span>")
-        fshow(io::IO, ::MIME"text/html", f::Foo) = write(io, "<span>Foo: $(f.x)</span>")
+        html_show(i::Int) = "<span>Int: $i</span>"
+        html_show(f::Foo) = "<span>Foo: $(f.x)</span>"
         """
     X.process_utils(utils, gc)
     lc = X.DefaultLocalContext(gc)
@@ -132,7 +132,7 @@ end
         struct Foo
             y::Int
         end
-        fshow(io::IO, ::MIME"text/html", f::Foo) = write(io, "<span>Bar: $(f.y)</span>")
+        html_show(f::Foo) = "<span>Bar: $(f.y)</span>"
         """
     X.process_utils(utils, gc)
     lc = X.DefaultLocalContext(gc)

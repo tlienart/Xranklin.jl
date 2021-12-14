@@ -149,31 +149,31 @@ const DefaultLocalVarsAlias = Alias(
 
 ##############################################################################
 
-DefaultGlobalContext() = GlobalContext(
-    deepcopy(DefaultGlobalVars),
-    LxDefs(),
-    alias=copy(DefaultGlobalVarsAlias)
-) |> set_current_global_context
-
-function DefaultLocalContext(
-            gc::GlobalContext=DefaultGlobalContext();
-            rpath::String=""
-            )
-    lc = LocalContext(
-        gc,
-        deepcopy(DefaultLocalVars),
-        LxDefs(),
-        alias=copy(DefaultLocalVarsAlias),
-        rpath=rpath
-    )
-    r = lc |> set_current_local_context
-    return r
+function DefaultGlobalContext()
+    gc = GlobalContext(
+            deepcopy(DefaultGlobalVars),
+            LxDefs(),
+            alias=copy(DefaultGlobalVarsAlias)
+         )
+    set_current_global_context(gc)
 end
+
+function DefaultLocalContext(gc::GlobalContext; rpath::String="")
+    lc = LocalContext(
+            gc,
+            deepcopy(DefaultLocalVars),
+            LxDefs(),
+            alias=copy(DefaultLocalVarsAlias),
+            rpath=rpath
+         )
+    return set_current_local_context(lc)
+end
+
+DefaultLocalContext(; kw...) = DefaultLocalContext(DefaultGlobalContext(); kw...)
 
 # for html pages
 SimpleLocalContext(gc::GlobalContext; rpath::String="") =
     LocalContext(gc; rpath)
-
 
 ##############################################################################
 # These will fail for contexts that haven't been constructed out of Default

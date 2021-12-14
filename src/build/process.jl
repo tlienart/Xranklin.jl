@@ -105,8 +105,7 @@ Process a utils string into a given global context object.
 """
 function process_utils(
             utils::String,
-            gc::GlobalContext=cur_gc();
-            initial_pass::Bool=false
+            gc::GlobalContext=cur_gc()
             )
     crumbs("process_utils")
 
@@ -114,6 +113,8 @@ function process_utils(
     set_current_global_context(gc)
     # set the notebooks at the top
     reset_notebook_counters!(gc)
+    # keep track of utils (see `using_utils!`)
+    setvar!(gc, :_utils_code, utils)
 
     # -----------------------
     start = time(); @info """
@@ -144,21 +145,17 @@ function process_utils(
                 Symbol.([n[4:end] for n in ns if startswith(n, "lx_")]))
     setvar!(gc, :_utils_var_names,
                 Symbol.([n for n in ns if !startswith(n, r"lx_|hfun_")]))
-
     return
 end
 
-function process_utils(gc::GlobalContext=cur_gc(); initial_pass::Bool=false)::GlobalContext
+function process_utils(gc::GlobalContext=cur_gc())
     utils_path = path(:folder) / "utils.jl"
     if isfile(utils_path)
-        cache_utils = path(:cache) / "utils.jl"
-        identical   = filecmp(utils_path, cache_utils)
-        identical || (gc = clear_everything(gc, utils=true))
-        process_utils(read(utils_path, String), gc; initial_pass)
+        process_utils(read(utils_path, String), gc)
     else
         @info "❎ no utils file found."
     end
-    return gc
+    return
 end
 
 utils_hfun_names()   = getgvar(:_utils_hfun_names)::Vector{Symbol}
@@ -279,7 +276,7 @@ function process_md_file_io!(
     # reset the headers
     empty!(ctx.headers)
     # reset code counter
-    setvar!(ctx, :_auto_cell_counter, 1)
+    setvar!(ctx, :_auto_cell_counter, 0)
 
     if initial_pass
         # try to load notebooks from serialized

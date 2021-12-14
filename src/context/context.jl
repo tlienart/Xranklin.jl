@@ -168,6 +168,7 @@ is_recursive(c::LocalContext)  = c.is_recursive[]
 is_math(c::GlobalContext) = false
 is_math(c::LocalContext)  = c.is_math[]
 
+
 # --------------------------------------- #
 # GLOBAL CONTEXT CONSTRUCTORS AND METHODS #
 # --------------------------------------- #

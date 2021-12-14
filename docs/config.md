@@ -62,13 +62,19 @@ meta_description = "Franklin"
   XXX keep extra line skip otherwise the blockquote and the
   showmd environment blend and it's ugly!
    -->
-  \fieldset{md-result}{result}{
+  ~~~
+  <div class="trim">
+  ~~~
+    \fieldset{md-result}{result}{
     ~~~~~~
 
-    #1
+      #1
 
     ~~~~~~
-  }
+    }
+  ~~~
+  </div>
+  ~~~
 }
 
 <!--
@@ -94,6 +100,15 @@ meta_description = "Franklin"
 -->
 \newcommand{\todo}[1]{
   \fieldset{todo}{🚧 To Do}{
+    #1
+  }
+}
+
+<!--
+ Note
+-->
+\newcommand{\note}[1]{
+  \fieldset{note}{⚠️ Note}{
     #1
   }
 }
