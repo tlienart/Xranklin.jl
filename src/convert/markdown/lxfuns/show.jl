@@ -17,9 +17,7 @@ function lx_show(p::VS; tohtml::Bool=true)::String
         )
 
         isempty(re) && return ""
-        tohtml && return """
-            CELLNAME: $(p[1])
-            <div class="code-output">""" * re * "</div>"
+        tohtml && return """<div class="code-output">""" * re * "</div>"
         return re
     end
     return lx_failed("show", p)
