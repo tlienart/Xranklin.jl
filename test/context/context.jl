@@ -76,7 +76,7 @@ end
 end
 
 @testset "pagevar" begin
-    X.setenv(:cur_local_ctx, nothing)
+    X.setenv!(:cur_local_ctx, nothing)
     gc = X.GlobalContext()
     lc1 = X.LocalContext(gc, rpath="C1")
     X.setvar!(lc1, :a, 123)

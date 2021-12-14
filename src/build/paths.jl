@@ -69,6 +69,10 @@ get_rpath(fpath::String) = fpath[(getgvar(:_idx_rpath)::Int):end]
     get_ropath(opath)
 
 Extract the relative path out of the full output path to a file.
+
+## Example
+
+    `/foo/bar/__site/baz/biz.md` --> `baz/biz.md`
 """
 get_ropath(fpath::String) = fpath[(getgvar(:_idx_ropath)::Int):end]
 

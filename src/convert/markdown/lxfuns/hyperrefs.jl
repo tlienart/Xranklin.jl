@@ -92,7 +92,6 @@ current page).
 function lx_reflink(p::VS; tohtml::Bool=true)::String
     c = _lx_check_nargs(:reflink, p, 1)
     isempty(c) || return c
-
     tohtml || return ""
 
     id = string_to_anchor(p[1])

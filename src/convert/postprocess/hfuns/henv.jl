@@ -141,6 +141,7 @@ within the context `c`.
 function resolve_henv(henv::Vector{HEnvPart}, io::IOBuffer, c::Context)
     env_name = first(henv).name
     crumbs("resolve_henv", env_name)
+
     # ------------------------------------------------
     # IF-style h-env
     # > find the scope corresponding to the validated
@@ -204,11 +205,19 @@ function resolve_henv(henv::Vector{HEnvPart}, io::IOBuffer, c::Context)
         ]
 
         # XXX lots of things to check here
-        for vals in iter                              # loop over iterator values
-            for (name, value) in zip(vars, vals)      # loop over variables and set
-                setvar!(c, name, value)
+        if length(vars) == 1
+            name = vars[1]
+            for val in iter
+                setvar!(c, name, val)
+                write(io, html2(scope, c))
             end
-            write(io, html2(scope, c))
+        else
+            for vals in iter
+                for (name, value) in zip(vars, vals)
+                    setvar!(c, name, value)
+                end
+                write(io, html2(scope, c))
+            end
         end
 
         # reinstate or destroy bindings

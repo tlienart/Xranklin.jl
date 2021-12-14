@@ -49,7 +49,6 @@ function convert_md(md::SS, c::Context;
                     tohtml=true, nop=false, kw...)
     # stream to which the converted text will be written
     io = IOBuffer()
-
     if is_math(c)
         blocks = FP.math_partition(md; kw...)
         process_latex_objects!(blocks, c; tohtml)
@@ -121,6 +120,7 @@ math(b::Block, c; kw...)   = math(content(b), c; kw...)
 
 function html(md::SS, c::Context=DefaultLocalContext(); kw...)
     r = convert_md(md, c; kw...)
+    is_recursive(c) && return r
     return html2(r, c)
 end
 html(md::String, c...; kw...)  = html(subs(md), c...; kw...)
@@ -128,6 +128,7 @@ html(md::String, c...; kw...)  = html(subs(md), c...; kw...)
 
 function latex(md::SS, c::Context=DefaultLocalContext(); kw...)
     r = convert_md(md, c; tohtml=false, kw...)
+    is_recursive(c) && return r
     return latex2(r, c)
 end
 latex(md::String, c...; kw...) = latex(subs(md), c...; kw...)

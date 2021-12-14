@@ -12,6 +12,12 @@ const MATH_LABEL_PAT = r"\\label{(.*?)}"
 # CODE BLOCKS ETC #
 # --------------- #
 
+"Opening element of code block see `_code_info`"
+const CODE_INFO_PAT = r"^\`+(\S+)?"
+
+"Language getter"
+const CODE_LANG_PAT = r"([^\!\:]+)?([\!\:])?(\S+)?"
+
 "Check end of code block to see if should be hidden or not.
 This is fragile if people do something silly like `x = 5 # foo ; # bar`"
 const HIDE_FINAL_OUTPUT_PAT = r";\s*(:?#.*)?\n?"

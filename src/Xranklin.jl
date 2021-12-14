@@ -28,7 +28,6 @@ import LiveServer
 
 import URIs
 import IOCapture
-import JSON3
 import OrderedCollections: LittleDict
 
 # copied from CommonMark.jl, used in dealing with autolink
@@ -45,7 +44,7 @@ export newsite
 export html, latex
 
 # Access contexts
-export getvar, getvarfrom, getlvar, getgvar, setlvar!, setgvar!
+export getvar, getvarfrom, getlvar, getgvar, setlvar!, setgvar!, assetpath
 export locvar, globvar, pagevar  # LEGACY
 
 # ------------------------------------------------------------------------
@@ -58,8 +57,8 @@ const FRANKLIN_ENV = LittleDict{Symbol, Any}(
     :cur_local_ctx     => nothing,        # current local context
     :skipped_files     => Set{String}(),
 )
-env(s::Symbol)       = FRANKLIN_ENV[s]
-setenv(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
+env(s::Symbol)        = FRANKLIN_ENV[s]
+setenv!(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
 
 # ------------------------------------------------------------------------
 

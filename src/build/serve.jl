@@ -66,9 +66,11 @@ function serve(d::String   = pwd();
     # check if there's a utils/config file and process, this must happen
     # prior to everything as it defines 'ignore' for instance which is
     # needed in the watched_files step
-    process_utils(gc;  initial_pass=true)
-    process_config(gc; initial_pass=true)
-
+    # NOTE: if utils has changed, everything will be wiped as well given that
+    # utils is potentially loaded everywhere. See process_utils. This is why
+    # process_utils returns a GC which might be different
+    process_utils(gc)
+    process_config(gc)
 
     # scrape the folder to collect all files that should be watched for
     # changes; this set will be updated in the loop if new files get
@@ -82,12 +84,12 @@ function serve(d::String   = pwd();
     end
 
     # do the initial build
-    full_pass(wf; gc=gc, initial_pass=true)
+    full_pass(wf; gc)
 
     # ---------------------------------------------------------------
     # Start the build loop
     if !single
-        loop = (cntr, watcher) -> build_loop(cntr, watcher, gc, wf)
+        loop = (cntr, watcher) -> build_loop(cntr, watcher, wf)
         # start LiveServer
         LiveServer.serve(
             port=port,
@@ -128,8 +130,8 @@ function serve(d::String   = pwd();
         start = time()
         @info "❌ cleaning up all objects"
         parent_module(wipe=true)
-        setenv(:cur_global_ctx, nothing)
-        setenv(:cur_local_ctx,  nothing)
+        setenv!(:cur_global_ctx, nothing)
+        setenv!(:cur_local_ctx,  nothing)
         δt = time() - start; @info """
             💡 $(hl("cleaning up done", :yellow)) $(hl(time_fmt(δt)))
             """
@@ -147,15 +149,24 @@ end
 Perform a full pass over a set of watched files: each of these is then
 processed in the `gc` context.
 
+This can happen in the following situations (see `build_loop`)
+
+1. the initial start of the server (GC is fresh)
+2. if a layout HTML file was changed (e.g. '_layout/head.html')
+3. if config.md changed
+4. if utils.jl changed
+
+In the last case, the GC is reinstantiated so that all children contexts get
+re-instantiated from scratch, reloading Utils at the start. This is important
+since any code cell might call from Utils and we don't know which ones do.
+
 ## KW-Args
 
     gc:           global context in which to do the full pass
     skip_files:   list of file pairs to ignore in the pass
-    initial_pass: whether it's the first pass, in that case there can be
-                   situations where we want to avoid double-processing some
-                   md files. E.g. if A requests a var from B, then A will
-                   trigger the processing of B and we shouldn't do B again.
-                   See process_md_file and getvarfrom.
+    layout_changed: whether this was triggered by a layout change
+    config_changed: whether this was triggered by a config change
+    utils_changed: whether this was triggered by a utils change
 
 NOTE: it's not straightforward to parallelise this since pages can request
 access to other pages' context or the global context menaing there's a fair
@@ -165,16 +176,41 @@ function full_pass(
             watched_files::LittleDict{Symbol, TrackedFiles};
             gc::GlobalContext=cur_gc(),
             skip_files::Vector{Pair{String, String}}=Pair{String, String}[],
-            initial_pass::Bool=false
+            layout_changed::Bool=false,
+            config_changed::Bool=false,
+            utils_changed::Bool=false
             )::Nothing
 
-    # make sure the context (re)considers the config and utils file for
-    # non-initial passes; if they haven't changed (usually the case) this
-    # will not do anything
-    if !initial_pass
+    initial_pass = !any((layout_changed, config_changed, utils_changed))
+
+    # depending on the case, we'll have to re-consider
+    # utils or config specifically
+    if initial_pass
+        # initial pass
+        process_utils(gc)
+        process_config(gc)
+
+    elseif config_changed
+        # just reconsider config
+        process_config(gc)
+
+    elseif utils_changed
+        # create new GC so that all modules can be reloaded with utils
+        # reinstantiate the global context specifically so that all children
+        # modules are re-loaded with the refreshed utils
+        # NOTE: it's needed to wipe the gc modules and to do that to instantiate
+        # a new GC as the utils.jl might have removed some signatures which then
+        # can't be used anymore. (e.g. if Foo was defined then removed).
+        folder = path(:folder)
+        gc     = DefaultGlobalContext()
+        set_paths!(gc, folder)
+
         process_utils(gc)
         process_config(gc)
     end
+    # NOTE: the case layout_changed -- we don't need to re-check config/utils
+
+    # now we can skip utils/config
     append!(skip_files, [
         path(:folder) => "config.md",
         path(:folder) => "utils.jl"
@@ -227,9 +263,17 @@ end
 function build_loop(
             cycle_counter::Int,
             ::LiveServer.FileWatcher,
-            gc::GlobalContext,
             watched_files::LittleDict{Symbol, TrackedFiles}
             )::Nothing
+
+    # Ensure to have the latest, up-to-date global context
+    # NOTE: this might seem a bit weird (instead of passing a long-standing object
+    # as part of the args of build_loop) but there's a subtlety: when utils.jl changes
+    # it basically re-triggers a full-build because Utils is potentially involved
+    # everywhere. So calling the cur_gc here ensures that upon any trigger we always
+    # take the latest (which, as was unfortunately experimented, was otherwise not
+    # guaranteed) See also full_pass.
+    gc = cur_gc()
     # ========
     # BLOCK A
     # ---------------------------------------------------------------
@@ -270,6 +314,10 @@ function build_loop(
             msg   = "💥 file $(hl(str_fmt(rpath), :cyan)) changed"
             d[fp] = cur_t
 
+            # ===================
+            # FULLPASS TRIGGERS =
+            # ===================
+
             # if it's a `_layout` file that was changed, then we need to process
             # all `.md` and `.html` files
             if case == :infra && endswith(fpath, ".html")
@@ -278,12 +326,18 @@ function build_loop(
                     k for k in keys(d)
                     for (case, d) ∈ watched_files if case ∉ (:md, :html)
                 ]
-                msg *= " → triggering full pass"; @info msg
-                full_pass(watched_files; gc, skip_files)
+                msg *= " → triggering full pass [layout changed]"; @info msg
+                full_pass(watched_files; gc, skip_files, layout_changed=true)
 
-            elseif (fpath in (path(:folder)/"config.md", path(:folder)/"utils.jl"))
-                msg *= " → triggering full pass"; @info msg
-                full_pass(watched_files; gc)
+            # config chagned
+            elseif fpath == path(:folder) / "config.md"
+                msg *= " → triggering full pass [config changed]"; @info msg
+                full_pass(watched_files; gc, config_changed=true)
+
+            elseif fpath == path(:folder) / "utils.jl"
+                msg *= " → triggering full pass [utils changed]"; @info msg
+                # NOTE in this case gc is re-instantiated!
+                full_pass(watched_files; gc, utils_changed=true)
 
             # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
             # TODO

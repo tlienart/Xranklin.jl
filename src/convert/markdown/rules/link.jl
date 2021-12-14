@@ -8,18 +8,17 @@
 #    * ![A](B) IMG_AB   <img src="escape(B)" alt="esc(A)" />
 #    * [A]: B  REF      (--> aggregate B, will need to distinguish later)
 #
-
-# html_link_a
-# html_link_ab
-# html_img_a
-# html_img_ab
-# html_ref
+# Mind map
 #
-# latex_link_a
-# latex_link_ab
-# latex_img_a
-# latex_img_ab
-# latex_ref
+#   _link_blocks: helper for a generic link-like structure, used by all helpers
+#   _link_a:      helper for ![A] or [A]
+#   _link_ab:     helper for ![A](B) or [A](B)
+#   _link_ar:     helper for ![A][B] or [A][B]
+#   _refref:      helper for [A]: B
+#
+#   html_link_a  -> _link_a  -> _link_blocks
+#   html_link_ab -> _link_ab -> _link_blocks
+#
 
 """
     _link_blocks(ss)

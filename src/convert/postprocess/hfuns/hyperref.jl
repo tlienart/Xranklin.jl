@@ -122,7 +122,7 @@ function hfun_link_a(p::VS)::String
         id_to   = "#fn_$id"
         id_from = "fnref_$id"
         return """
-            <sup>[$(html_a("$i"; href=id_to))]</sup>
+            <sup>$(html_a("[$i]"; href=id_to))</sup>
             <a id="$id_from"></a>
             """
     end

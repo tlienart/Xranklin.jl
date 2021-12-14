@@ -31,6 +31,7 @@ Notebook for vars assignments.
     cntr_refs:  keeps track of the evaluated "cell number" when sequentially
                  evaluating code
     code_pairs: keeps track of [(code => vnames)]
+    is_stale_ref: whether the notebook was loaded from cache.
 """
 struct VarsNotebook <: Notebook
     mdl::Module
@@ -167,11 +168,13 @@ is_recursive(c::LocalContext)  = c.is_recursive[]
 is_math(c::GlobalContext) = false
 is_math(c::LocalContext)  = c.is_math[]
 
+
 # --------------------------------------- #
 # GLOBAL CONTEXT CONSTRUCTORS AND METHODS #
 # --------------------------------------- #
 
 function GlobalContext(v=Vars(), d=LxDefs(); alias=Alias())
+    parent_module(wipe=true)
     # vars notebook
     mdl = submodule(modulename("__global_vars", true), wipe=true)
     nv  = VarsNotebook(mdl, Ref(1), VarsCodePairs(), Ref(false))
@@ -212,10 +215,10 @@ setdef!(gc::GlobalContext, n::String, d) = setdef!(gc.lxdefs, n, d)
 # attached to its global context via the children_contexts
 function LocalContext(glob, vars, defs, headers, rpath="", alias=Alias())
     # vars notebook
-    mdl = submodule(modulename("$(rpath)_vars", true), wipe=true)
+    mdl = submodule(modulename("$(rpath)_vars", true), wipe=true, utils=true)
     nv  = VarsNotebook(mdl, Ref(1), VarsCodePairs(), Ref(false))
     # code notebook
-    mdl = submodule(modulename("$(rpath)_code", true), wipe=true)
+    mdl = submodule(modulename("$(rpath)_code", true), wipe=true, utils=true)
     nc  = CodeNotebook(mdl, Ref(1), CodeCodePairs(), CodeMap(), Ref(false))
     # req vars (keep track of what is requested by this page)
     rv = LittleDict{String, Set{Symbol}}(
@@ -226,8 +229,8 @@ function LocalContext(glob, vars, defs, headers, rpath="", alias=Alias())
     )
     tt = Set{String}()
     # form the object
-    lc = LocalContext(glob, vars, defs, headers,
-                      rpath, Ref(false), Ref(false),
+    lc = LocalContext(glob, vars, defs, headers, rpath,
+                      Ref(false), Ref(false),
                       rv, rl, alias, nv, nc, tt)
     # attach it to global
     glob.children_contexts[rpath] = lc
@@ -339,8 +342,8 @@ Set the current global context and reset the current local context if any, in
 order to guarantee consistency.
 """
 function set_current_global_context(gc::GlobalContext)::GlobalContext
-    setenv(:cur_global_ctx, gc)
-    setenv(:cur_local_ctx, nothing)
+    setenv!(:cur_global_ctx, gc)
+    setenv!(:cur_local_ctx, nothing)
     gc
 end
 
@@ -348,12 +351,10 @@ end
 """
     set_current_local_context(lc)
 
-Set the current local context. And since a local context is always attached to
-a global context, also set the current global context to that one.
+Set the current local context.
 """
 function set_current_local_context(lc::LocalContext)::LocalContext
-    setenv(:cur_local_ctx, lc)
-    setenv(:cur_global_ctx, lc.glob)
+    setenv!(:cur_local_ctx, lc)
     lc
 end
 

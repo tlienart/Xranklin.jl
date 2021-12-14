@@ -5,3 +5,5 @@ basic.log
 test/_demo/__*
 docs/__site/
 docs/__cache/
+abc/__site/
+abc/__cache/

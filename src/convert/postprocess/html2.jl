@@ -51,75 +51,95 @@ function html2(parts::Vector{Block}, c::Context)::String
 
         # -----------------------------
         # Double Brace Block processing
-        # A. internal HCOND (if, and derived like ispage)
-        # B. internal HFOR  (for)
-        # C. orphan elseif/else/end
-        # D. internal HFUNS (fill, insert, ...) or external ones
-        # E. default to fill attempt
+        # 0. e-string --> fill
+        # -----------------------------
 
         cb = strip(content(b))
         isempty(cb) && continue
-        split_cb = FP.split_args(cb)
-        fname    = Symbol(lowercase(first(split_cb)))
 
-        # A - internal HENV
-        if fname in INTERNAL_HENVS
-            henv, ci = find_henv(parts, idx)
+        if is_estr(cb)
+            v = eval_str(cb)
+            if isa(v, EvalStrError)
+                @warn """
+                    {{ e"..." }}
+                    ----------------
+                    An environment '{{ e"..." }}' failed to evaluate properly,
+                    check that the code in the e-string is valid and that
+                    variables are prefixed with a \$.
+                    """
+                write(io, hfun_failed(cb |> string))
+            else
+                write(io, string(v))
+            end
+        else
+            # A. internal HENV (if, and derived like ispage, for)
+            # A'. orphan elseif/else/end
+            # B. internal or external HFUNS
+            # C. fill attempt
+            # ---------------------------------------------------
 
-            if isempty(henv)
+            split_cb = FP.split_args(cb)
+            fname    = Symbol(lowercase(first(split_cb)))
+
+            # A - internal HENV
+            if fname in INTERNAL_HENVS
+                henv, ci = find_henv(parts, idx)
+
+                if isempty(henv)
+                    @warn """
+                        {{ $fname ... }}
+                        ----------------
+                        An environment '{{$fname ...}}' was not closed properly.
+                        """
+                    write(io, hfun_failed(split_cb))
+                end
+                resolve_henv(henv, io, c)
+                idx = ci
+
+            # found a dangling {{elseif}} or {{else}} or whatever
+            elseif fname in INTERNAL_HORPHAN
                 @warn """
                     {{ $fname ... }}
                     ----------------
-                    An environment '{{$fname ...}}' was not closed properly.
+                    A block '{{$fname ...}}' was found out of a relevant context.
                     """
                 write(io, hfun_failed(split_cb))
-            end
-            resolve_henv(henv, io, c)
-            idx = ci
 
-        # found a dangling {{elseif}} or {{else}} or whatever
-        elseif fname in INTERNAL_HORPHAN
-            @warn """
-                {{ $fname ... }}
-                ----------------
-                A block '{{$fname ...}}' was found out of a relevant context.
-                """
-            write(io, hfun_failed(split_cb))
+            # B - internal or external HFUNS
+            elseif (u = fname in utils_hfun_names()) || fname in INTERNAL_HFUNS
+                # 'external' functions defined with `hfun_*`, they
+                # take precedence so a user can overwrite the behaviour of
+                # internal functions
+                mdl = ifelse(u, cgc.nb_code.mdl, @__MODULE__)
+                args  = split_cb[2:end]
+                fsymb = Symbol("hfun_$fname")
+                f     = getproperty(mdl, fsymb)
+                write(io, outputof(f, args; tohtml=true))
 
-        # B - internal or external HFUNS
-        elseif (u = fname in utils_hfun_names()) || fname in INTERNAL_HFUNS
-            # 'external' functions defined with `hfun_*`, they
-            # take precedence so a user can overwrite the behaviour of
-            # internal functions
-            mdl = ifelse(u, cgc.nb_code.mdl, @__MODULE__)
-            args  = split_cb[2:end]
-            fsymb = Symbol("hfun_$fname")
-            f     = getproperty(mdl, fsymb)
-            write(io, outputof(f, args; tohtml=true))
+                # re-set current local and global context, just in case these were
+                # changed by the call to the hfun (e.g. by triggering a processing)
+                set_current_global_context(cgc)
+                clc === nothing || set_current_local_context(clc)
 
-            # re-set current local and global context, just in case these were
-            # changed by the call to the hfun (e.g. by triggering a processing)
-            set_current_global_context(cgc)
-            clc === nothing || set_current_local_context(clc)
-
-        # C - try fill
-        else
-            # try to see if it could be an implicit fill {{vname}}
-            if (length(split_cb) == 1) && ((v = getvar(clc, fname)) !== nothing)
-                write(io, string(v))
-            elseif (length(split_cb) == 1) && (fname in utils_var_names())
-                mdl = cgc.nb_code.mdl
-                write(io, string(getproperty(mdl, fname)))
+            # C - try fill
             else
-                @warn """
-                    {{ ... }}
-                    ---------
-                    A block '{{$fname ...}}' was found but the name '$fname'
-                    does not correspond to a built-in block or hfun nor does it
-                    match anything defined in `utils.jl`. It might have been
-                    misspelled.
-                    """
-                write(io, hfun_failed(split_cb))
+                # try to see if it could be an implicit fill {{vname}}
+                if (length(split_cb) == 1) && ((v = getvar(clc, fname)) !== nothing)
+                    write(io, string(v))
+                elseif (length(split_cb) == 1) && (fname in utils_var_names())
+                    mdl = cgc.nb_code.mdl
+                    write(io, string(getproperty(mdl, fname)))
+                else
+                    @warn """
+                      {{ ... }}
+                      ---------
+                      A block '{{$fname ...}}' was found but the name '$fname'
+                      does not correspond to a built-in block or hfun nor does
+                      it match anything defined in `utils.jl`. It might have
+                      been misspelled.
+                      """
+                    write(io, hfun_failed(split_cb))
+                end
             end
         end
     end
