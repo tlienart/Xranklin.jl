@@ -248,7 +248,8 @@ function append_result_html!(io::IOBuffer, result::R, fig::NamedTuple) where R
 
     else
         write(io, """<pre><code class="code-result language-plaintext">""")
-        Base.show(io, result)
+        # need invokelatest in case the cell includes a package which extends show
+        Base.@invokelatest Base.show(io, result)
         write(io, """</code></pre>""")
     end
     return

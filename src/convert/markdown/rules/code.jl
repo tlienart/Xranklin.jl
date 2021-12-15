@@ -128,9 +128,15 @@ html_code_block(b::Block, c::LocalContext) = begin
     post = ""
     if ci.exec
         if ci.lang == "julia"
-            eval_code_cell!(c, ci.code; cell_name=ci.name,
-                            imgdir_html=mkpath(path(:site) / "assets" / c.rpath / "figs-html"),
-                            imgdir_latex=mkpath(path(:site) / "assets" / c.rpath / "figs-latex"))
+            imgdir_base  = mkpath(path(:site) / "assets" / splitext(c.rpath)[1])
+            imgdir_html  = mkpath(imgdir_base / "figs-html")
+            imgdir_latex = mkpath(imgdir_base / "figs-latex")
+            eval_code_cell!(
+                c, ci.code;
+                cell_name=ci.name,
+                imgdir_html,
+                imgdir_latex
+            )
         end
         if ci.auto
             post = lx_show([ci.name])

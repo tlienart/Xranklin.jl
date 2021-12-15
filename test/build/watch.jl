@@ -14,7 +14,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     X.setvar!(lc.glob, :ignore, [r"abc/def.*/", r"foo*", "def", "/", r"\/", ""])
 
     f2i, d2i = X.files_and_dirs_to_ignore()
-    for c in ("README.md", "def", r"foo*")
+    for c in ("README.md", "def", r"foo*", ".DS_Store")
         @test c in f2i
     end
     for c in ("node_modules/", r"abc/def.*/")

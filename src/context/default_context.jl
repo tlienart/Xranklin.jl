@@ -23,7 +23,7 @@ const DefaultGlobalVars = Vars(
     :parse_script_blocks => true,  # see html2; possibly disable DBB in <script>
     # File management
     :ignore_base      => StringOrRegex[
-                               ".DS_Store", ".gitignore", "node_modules/",
+                               r"(?:.*?)\.DS_Store$", ".gitignore", "node_modules/",
                                "LICENSE.md", "README.md"
                                ],
     :ignore           => StringOrRegex[],
