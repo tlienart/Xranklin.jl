@@ -39,6 +39,7 @@ normalize_uri(s::SS)    = URIs.escapeuri(s, issafe)
 
 export serve
 export newsite
+export path
 
 # Conversion functions
 export html, latex

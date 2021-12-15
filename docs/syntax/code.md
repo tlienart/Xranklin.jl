@@ -94,9 +94,6 @@ you'll want to use most often.
 
 ### Hiding lines of code (XXX)
 
-\todo{
-  not there yet
-}
 
 ## Output of executable code block
 
@@ -230,6 +227,59 @@ capture a trimmed stacktrace of the problem which will be displayed:
   ```
 }
 
+### In what path does the code run
+
+In the same path as where `serve` was called but since you could call `serve()`
+from within the site folder or `serve("path/to/folder")` from outside of it,
+this path may change.
+
+If you want a code cell to do something with a path (e.g. read or write a file),
+use `Utils.path(:folder)` as the base path pointing to your website folder.
+You can also use `Utils.path(:site)` as the path pointing to the website build folder.
+
+For instance you might want to save a figure in a specific location and load it
+explicitly rather than use the automatic mode:
+
+```!
+build_dir  = Utils.path(:site)
+target_dir = mkpath(joinpath(build_dir, "assets", "figs"))
+using PyPlot
+x = range(0, 3, length=100)
+y = @. exp(x) * sin(x)
+figure(figsize=(8, 6))
+plot(x, y, lw=5)
+axis("off")
+savefig(joinpath(target_dir, "toy_fig.svg"));
+```
+
+this outputs nothing but it does save `toy_fig.svg` in the build folder at location
+`/assets/figs/` so that you can then insert it explicitly:
+
+\showmd{
+  ![toy plot](/assets/figs/toy_fig.svg)
+}
+
+Another example is that you might want to write a file in the build dir:
+
+```!
+build_dir = Utils.path(:site)
+open(joinpath(build_dir, "405.html"), "w") do f
+  write(f, """
+    Dummy page 405, <a href="/">return home</a>
+    """
+  )
+end;
+```
+
+The above code block writes a dummy HTLM page `405.html` in the build folder.
+You can actually see it [here](/405.html).
+
+\note{
+  Do not use absolute paths since those might not exist in a continuous integration
+  environment. Do use `Utils.path(:folder)` or `Utils.path(:site)`
+  as your base path and use `joinpath` to point to your target.
+}
+
 ## Using packages
 
 You can use packages in executable code blocks but you should add those to the
@@ -264,8 +314,11 @@ axis("off")
 gcf()     # ⚠ it's the figure that's showable, not the plot
 ```
 
+In the above example, note how the last command is `gcf()` as we need to retrieve
+the showable object which is the figure, not the plot.
 
-### Executing Python code
+
+<!-- ### Executing Python code
 
 Since you can use packages, you can use `PyCall` and `RCall`:
 
@@ -273,11 +326,7 @@ Since you can use packages, you can use `PyCall` and `RCall`:
 using PyCall
 math = pyimport("math")
 math.sin(math.pi / 4)
-```
-
-\todo{
-  show how to run a python code block with a command
-}
+``` -->
 
 ## Understanding how things work
 
@@ -307,7 +356,7 @@ the website (see also [the page on utils](/syntax/utils/)).
 While hopefully this shouldn't happen too often, two things can go wrong:
 
 1. some code fails in an un-expected way (e.g.: it calls objects which it should have access to but doesn't seem to),
-1. the output of an auto-cell is not in synch.
+1. the output of an auto-cell is incorrect (either wasn't refreshed or some other random output that you didn't expect).
 
 In both cases, if you can reproduce what led to the problem, kindly open an issue on Github.
 Both problems will typically be addressed by clearing the cache which will force all code cells
