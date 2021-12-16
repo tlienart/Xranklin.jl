@@ -1,6 +1,6 @@
 struct EvalStrError end
 
-is_estr(s::SS) = startswith(s, "e\"")
+is_estr(s::SS) = startswith(s, "e\"") || startswith(s, "> ")
 
 """
     eval_str(estr)
@@ -10,7 +10,11 @@ the logic in the current utils module.
 See tests for examples.
 """
 function eval_str(estr::SS)::Any
-    estr     = strip(lstrip(strip(estr), 'e'), '\"')
+    if startswith(estr, "e")
+        estr = strip(strip(lstrip(estr, 'e'), '\"'))
+    else
+        estr = strip(lstrip(estr, '>'))
+    end
     code     = _eval_str(estr)
     captured = (value=nothing, output="")
     try
