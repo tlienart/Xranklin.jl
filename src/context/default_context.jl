@@ -102,6 +102,7 @@ const DefaultLocalVars = Vars(
     :tags               => String[],
     :prerender          => true,
     :slug               => "",
+    :ignore_cache       => false,
     # toc
     :mintoclevel        => 1,
     :maxtoclevel        => 6,

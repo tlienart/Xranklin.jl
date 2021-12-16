@@ -267,40 +267,55 @@ function process_md_file_io!(
     # -------
     # retrieve the context from gc's children if it exists or
     # create it if it doesn't
-    ctx = in_gc ?
+    lc = in_gc ?
             gc.children_contexts[rpath] :
             DefaultLocalContext(gc; rpath)
 
     # set it as current context in case it isn't
-    set_current_local_context(ctx)
+    set_current_local_context(lc)
     # reset the headers
-    empty!(ctx.headers)
+    empty!(lc.headers)
     # reset code counter
-    setvar!(ctx, :_auto_cell_counter, 0)
+    setvar!(lc, :_auto_cell_counter, 0)
 
+    initial_cache_used = false
     if initial_pass
         # try to load notebooks from serialized
         fpv = path(:cache) / noext(rpath) / "nbv.cache"
         fpc = path(:cache) / noext(rpath) / "nbc.cache"
-        isfile(fpv) && load_vars_cache!(ctx, fpv)
-        isfile(fpc) && load_code_cache!(ctx, fpc)
+        if isfile(fpv)
+            load_vars_cache!(lc, fpv)
+            cache_was_used = true
+        elseif isfile(fpc)
+            load_code_cache!(lc, fpc)
+            cache_was_used = true
+        end
     else
         # reset the notebook counters at the top
-        reset_notebook_counters!(ctx)
+        reset_notebook_counters!(lc)
     end
 
     # set meta parameters
     s = stat(fpath)
-    setvar!(ctx, :_relative_path, rpath)
-    setvar!(ctx, :_relative_url, unixify(ropath))
-    setvar!(ctx, :_creation_time, s.ctime)
-    setvar!(ctx, :_modification_time, s.mtime)
+    setvar!(lc, :_relative_path, rpath)
+    setvar!(lc, :_relative_url, unixify(ropath))
+    setvar!(lc, :_creation_time, s.ctime)
+    setvar!(lc, :_modification_time, s.mtime)
 
     # get and convert markdown
     page_content_md = read(fpath, String)
     output = (tohtml ?
-                _process_md_file_html(ctx, page_content_md) :
-                _process_md_file_latex(ctx, page_content_md))::String
+                _process_md_file_html(lc, page_content_md) :
+                _process_md_file_latex(lc, page_content_md))::String
+
+    # only here do we know whether `ignore_cache` was set to 'true'
+    # if that's the case, reset the code notebook and re-evaluate.
+    if initial_cache_used && getvar(lc, :ignore_cache, false)
+        reset_code_notebook!(lc)
+        output = (tohtml ?
+                    _process_md_file_html(lc, page_content_md) :
+                    _process_md_file_latex(lc, page_content_md))::String
+    end
 
     write(io, output)
     return

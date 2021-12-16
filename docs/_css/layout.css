@@ -63,6 +63,7 @@
 	--col-purplePastel: #e8d0ff;
 	--col-redPastel: 		#ffc4c9;
 	--col-yellowPastel: #ffffa7;
+	--col-lblue: #03a7dd;
 
 	--blue0:   #002077;
 	--blue10:  #003290;
@@ -465,8 +466,8 @@ RIGHT PANEL / MAIN
 }
 
 #margin-toc a:hover {
-	color: inherit;
-	text-decoration: underline;
+	color: var(--col-lblue);
+	text-decoration: none;
 }
 
 #margin-toc ol {
@@ -486,7 +487,7 @@ RIGHT PANEL / MAIN
 
 #margin-toc-legend {
 	text-transform: uppercase;
-	font-weight:    500;
+	font-weight:    650;
 	letter-spacing: 0.0375em;
 	padding-left: 	1.6em;
 }

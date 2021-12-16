@@ -186,7 +186,6 @@ function full_pass(
     # depending on the case, we'll have to re-consider
     # utils or config specifically
     if initial_pass
-        # initial pass
         process_utils(gc)
         process_config(gc)
 

@@ -121,6 +121,7 @@ you can use and overwrite.
 | `date` | `Dates.Date(1)` | publication date of the page |
 | `lang` | `"julia"` | default language of executed code blocks |
 | `tags` | `String[]` | tags for the page |
+| `ignore_cache` | `Bool` | if `true` re-evaluate all the code on the page on first pass |
 | `mintoclevel` | `1` | minimum heading level to add to the table of contents |
 | `maxtoclevel` | `6` | maximum heading level to add to the table of contents |
 | `showall` | `true` | show the output of each executed code blocks |

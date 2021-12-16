@@ -23,6 +23,24 @@ function _lescape(s)
     return s
 end
 
+"""
+    _hide_lines(c)
+"""
+function _hide_lines(c)::SS
+    io = IOBuffer()
+    for line in split(c, '\n')
+        m  = match(CODE_HIDE_PAT, line)
+        ml = match(LITERATE_HIDE_PAT, line)
+        if m === ml === nothing
+            println(io, line)
+        elseif m !== nothing && m.captures[2] !== nothing
+            # case 'hideall'
+            return subs("")
+        end
+    end
+    return strip(String(take!(io)))
+end
+
 # ============================================================================
 #
 # INLINE, not executed
@@ -125,6 +143,8 @@ end
 html_code_block(b::Block, c::LocalContext) = begin
     hascode!(c)
     ci   = _code_info(b, c)
+    # placeholder for output string if has to be added directly after code
+    # might remain empty if result is nothing or if it's not an auto-cell
     post = ""
     if ci.exec
         if ci.lang == "julia"
@@ -141,11 +161,13 @@ html_code_block(b::Block, c::LocalContext) = begin
         if ci.auto
             post = lx_show([ci.name])
         end
+        code = ci.code |> _hide_lines |> _hescape
+    else
+        code = ci.code |> _hescape
     end
-
-    return "<pre><code class=\"$(ci.lang)\">"  *
-             (ci.code |> _hescape ) *
-           "</code></pre>" * post
+    return ifelse(isempty(code), "", """
+        <pre><code class=\"$(ci.lang)\">$code</code></pre>
+        """) * post
 end
 
 latex_code_block(b::Block, c::LocalContext) = begin
@@ -157,8 +179,11 @@ latex_code_block(b::Block, c::LocalContext) = begin
         if ci.auto
             post = lx_show([ci.name]; tohtml=false)
         end
+        code = ci.code |> _hide_lines |> _hescape
+    else
+        code = ci.code |> _hescape
     end
-    return "\\begin{lstlisting}\n" *
-             (ci.code |> _lescape) *
-           "\\end{lstlisting}" * post
+    return ifelse(isempty(code), "", """
+        \\begin{lstlisting}\n$code\n\\end{lstlisting}
+        """) * post
 end

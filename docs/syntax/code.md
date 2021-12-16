@@ -92,7 +92,29 @@ Unless you intend to show the code output somewhere else than below the code blo
 or use a custom method to show the code output, this last syntax is likely the one
 you'll want to use most often.
 
-### Hiding lines of code (XXX)
+### Hiding lines of code
+
+In some cases an executable code cell might need some lines of code to work which you don't
+want to show explicitly.
+You can specify a line should be hidden by adding `#hide` to it (case and spaces don't matter).
+If you want to hide an entire code cell (e.g. you're just interested in the output) you can put `#hideall` in the code.
+
+\showmd{
+  ```!
+  using Random #hide
+  randstring(5)
+  ```
+}
+
+\showmd{
+  ```!
+  #hideall
+  a = 5
+  b = 7
+  println(a+b)
+  true
+  ```
+}
 
 
 ## Output of executable code block
@@ -317,6 +339,22 @@ gcf()     # ⚠ it's the figure that's showable, not the plot
 In the above example, note how the last command is `gcf()` as we need to retrieve
 the showable object which is the figure, not the plot.
 
+
+### Cache and packages
+
+If you start a new Julia session and have a page where some code uses a package
+(say `DataFrames`) and you add a new cell at the end of the page, only that
+cell will be re-executed and, therefore, won't have access to `DataFrames` unless
+you re-evaluate the whole page **or** you explicitly add `using DataFrames` in that
+new cell.
+
+Alternatively, you can
+
+* set the current page to ignore the cache at start by setting the page variable `ignore_cache` to `true` and restart the server,
+* clear the entire site cache
+
+In the first case, on the initial full pass upon server launch, pages with `ignore_cache = true` will re-evaluate all their cells.
+In the second case, on the initial full pass upon server launch, all pages will re-evaluate all their cells.
 
 <!-- ### Executing Python code
 

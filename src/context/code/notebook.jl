@@ -17,6 +17,20 @@ function reset_notebook_counters!(c::Context)
     return
 end
 
+"""
+    reset_code_notebook!(c::Context)
+
+Clear code notebooks so that it can be re-evaluated from scratch in case the
+page variable `ignore_cache` is used for instance.
+"""
+function reset_code_notebook!(c::LocalContext)
+    reset_counter!(c.nb_code)
+    empty!(c.nb_code.code_pairs)
+    empty!(c.nb_code.code_map)
+    fresh_notebook!(c.nb_code)
+    return
+end
+
 # --------------------------------------------- #
 # UTILS FOR eval_vars_cell! AND eval_code_cell! #
 # --------------------------------------------- #
