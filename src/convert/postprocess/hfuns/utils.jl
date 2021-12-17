@@ -11,8 +11,8 @@ const INTERNAL_HENV_IF = [
     # PRIMARY
     :if,
     # SECONDARY
-    :ifdef, :isdef,
-    :ifndef, :ifnotdef, :isndef, :isnotdef,
+    :ifdef, :isdef, :isdefined,
+    :ifndef, :ifnotdef, :isndef, :isnotdef, :isnotdefined,
     :ifempty, :isempty,
     :ifnempty, :ifnotempty, :isnotempty,
     :ispage, :ifpage,

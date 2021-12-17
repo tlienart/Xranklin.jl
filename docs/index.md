@@ -5,6 +5,7 @@ header = "foo"
 * [basics](/syntax/basics/)
 * [extensions](/syntax/extensions/)
 * [code cells](/syntax/code/)
+* [plots](/syntax/plots/)
 * [variables and functions](/syntax/vars+funs/)
 * [custom commands and functions](/syntax/utils/)
 

@@ -57,12 +57,12 @@ function html2(parts::Vector{Block}, c::Context)::String
         cb = strip(content(b))
         isempty(cb) && continue
 
-        if is_estr(cb)
+        if is_estr(cb; allow_short=true)
             v = eval_str(cb)
             if isa(v, EvalStrError)
                 @warn """
-                    {{ e"..." }}
-                    ----------------
+                    {{ e"..." }} or {{ > ... }}
+                    ---------------------------
                     An environment '{{ e"..." }}' failed to evaluate properly,
                     check that the code in the e-string is valid and that
                     variables are prefixed with a \$.

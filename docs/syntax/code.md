@@ -156,6 +156,14 @@ an appropriate location and shown (with priority to the SVG output),
 
 Note that you can suppress a code block's result by adding a final `;` to the code.
 
+\note{
+  When capturing `stdout` during a code-cell evaluation, the Logging level is
+  such that `@info` and `@warn` won't show up.
+  This is to prevent getting spurious information showing up on your website from
+  packages precompiling.
+  This also means that you shouldn't use these macros in your code cells.
+}
+
 ### Nothing to show
 
 Nothing will be shown beyond `stdout` if
@@ -259,26 +267,23 @@ If you want a code cell to do something with a path (e.g. read or write a file),
 use `Utils.path(:folder)` as the base path pointing to your website folder.
 You can also use `Utils.path(:site)` as the path pointing to the website build folder.
 
-For instance you might want to save a figure in a specific location and load it
-explicitly rather than use the automatic mode:
+For instance let's say you want to save a DataFrame to a CSV that you can link to
+as an asset on your site:
 
 ```!
+using DataFrames, CSV
 build_dir  = Utils.path(:site)
-target_dir = mkpath(joinpath(build_dir, "assets", "figs"))
-using PyPlot
-x = range(0, 3, length=100)
-y = @. exp(x) * sin(x)
-figure(figsize=(8, 6))
-plot(x, y, lw=5)
-axis("off")
-savefig(joinpath(target_dir, "toy_fig.svg"));
+target_dir = mkpath(joinpath(build_dir, "assets", "data"))
+df = DataFrame(A=1:4, B=["M", "F", "F", "M"])
+CSV.write(joinpath(target_dir, "data1.csv"), df);
 ```
 
-this outputs nothing but it does save `toy_fig.svg` in the build folder at location
-`/assets/figs/` so that you can then insert it explicitly:
+this outputs nothing but it does save `data1.csv` in the build folder at location
+`/assets/data/` so that you could then link to it explicitly:
 
 \showmd{
-  ![toy plot](/assets/figs/toy_fig.svg)
+  click on [this link](/assets/data/data1.csv) to download the CSV corresponding
+  to the dataframe above.
 }
 
 Another example is that you might want to write a file in the build dir:
@@ -307,12 +312,12 @@ You can actually see it [here](/405.html).
 You can use packages in executable code blocks but you should add those to the
 environment corresponding to the website folder while the server is not running.
 
-For instance let's say you want to use `PyPlot` and `DataFrames`, you would then,
+For instance let's say you want to use `CSV` and `DataFrames`, you would then,
 in a Julia session, do:
 
 ```julia-repl
 julia> using Pkg; Pkg.activate("path/to/website/folder")
-julia> Pkg.add(["PyPlot", "DataFrames"])
+julia> Pkg.add(["CSV", "DataFrames"])
 ```
 
 It's important your website folder has its dedicated environment.
@@ -325,20 +330,7 @@ using DataFrames
 df = DataFrame(A=1:4, B=["M", "F", "F", "M"])
 ```
 
-
-```!
-using PyPlot
-x = range(-1, 1, length=100)
-y = @. exp(-5x) * sinc(x)
-figure(figsize=(8, 6))
-plot(x, y, lw=7)
-axis("off")
-gcf()     # ⚠ it's the figure that's showable, not the plot
-```
-
-In the above example, note how the last command is `gcf()` as we need to retrieve
-the showable object which is the figure, not the plot.
-
+\skip
 
 ### Cache and packages
 
@@ -355,16 +347,6 @@ Alternatively, you can
 
 In the first case, on the initial full pass upon server launch, pages with `ignore_cache = true` will re-evaluate all their cells.
 In the second case, on the initial full pass upon server launch, all pages will re-evaluate all their cells.
-
-<!-- ### Executing Python code
-
-Since you can use packages, you can use `PyCall` and `RCall`:
-
-```!
-using PyCall
-math = pyimport("math")
-math.sin(math.pi / 4)
-``` -->
 
 ## Understanding how things work
 

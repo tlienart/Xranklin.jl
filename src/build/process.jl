@@ -69,6 +69,7 @@ function process_config(
     updated_lxdefs = [
         (@debug "✋ lxdef $n has changed"; n)
         for (n, h) in old_lxdefs
+
         if n ∉ keys(gc.lxdefs) || h != hash(gc.lxdefs[n].def)
     ]
 
@@ -285,10 +286,11 @@ function process_md_file_io!(
         fpc = path(:cache) / noext(rpath) / "nbc.cache"
         if isfile(fpv)
             load_vars_cache!(lc, fpv)
-            cache_was_used = true
-        elseif isfile(fpc)
+            initial_cache_used = true
+        end
+        if isfile(fpc)
             load_code_cache!(lc, fpc)
-            cache_was_used = true
+            initial_cache_used = true
         end
     else
         # reset the notebook counters at the top

@@ -39,6 +39,12 @@ meta_description = "Franklin"
 
 <!-- GLOBAL COMMANDS -->
 
+\newcommand{\skip}{
+  ~~~
+  <p></p>
+  ~~~
+}
+
 \newcommand{\fieldset}[3]{
   ~~~
   <fieldset class="#1"><legend class="#1-legend">#2</legend>
