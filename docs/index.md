@@ -1,5 +1,5 @@
 +++
-header = "foo"
+header = "Static websites with Franklin.jl"
 +++
 
 * [basics](/syntax/basics/)
