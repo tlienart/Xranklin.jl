@@ -235,7 +235,7 @@ You could also change the title to an existing reference by writing
 }
 
 \tip{
-  You might want to define references that can be used on all your pages.
+  You might want to define link references that can be used on all your pages.
   To do so, just place the reference definition on a line in your `config.md` file.
   For instance [this reference][juliaweb] is defined in the current config file.
 }
@@ -251,7 +251,7 @@ For this, you can use the _autolink_ syntax `<location>`:
 \cmdiff{
   CommonMark allows a few other variants such as `[link](location "title")` or
   references with `[name]: location "title"`.
-  These are not supported in Franklin.
+  These are not currently supported in Franklin.
 }
 
 ### (XXX) Internal links

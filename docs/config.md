@@ -59,11 +59,17 @@ meta_description = "Franklin"
   Show markdown + what it looks like in a box
 -->
 \newcommand{\showmd}[1]{
+  ~~~
+  <div class="trim">
+  ~~~
   \fieldset{md-input}{markdown}{
     `````plaintext
     #1
     `````
   }
+  ~~~
+  </div>
+  ~~~
   <!--
   XXX keep extra line skip otherwise the blockquote and the
   showmd environment blend and it's ugly!
@@ -74,7 +80,7 @@ meta_description = "Franklin"
     \fieldset{md-result}{result}{
     ~~~~~~
 
-      #1
+    #1
 
     ~~~~~~
     }
