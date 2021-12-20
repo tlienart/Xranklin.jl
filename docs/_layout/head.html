@@ -30,9 +30,10 @@
 </head>
 <body>
 
+<a id="menu-burger" href="#menu"></a>
+
 <div id="top-bar">
   <!-- button for menu in narrow mode -->
-  <a id="menu-burger" href="#menu"></a>
 
   <div id="top-bar-nav">
     <a href="https://github.com/tlienart/Franklin.jl">
@@ -65,7 +66,7 @@
     <div id="main-right-margin">
         <div id="margin-toc">
           {{if showtoc}}
-            <div id="margin-toc-legend"><a href="#main-top-header">Contents</a></div>
+            <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
             {{toc 2 3}}
           {{end}}
       </div>
