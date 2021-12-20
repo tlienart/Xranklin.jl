@@ -262,7 +262,7 @@ LARGER with right-toc
 
 @media (max-width: 36em) {
 	:root {
-		--html-overflow-x: 		scroll;
+		--html-overflow-x: auto;
 	}
 }
 
@@ -274,10 +274,12 @@ LARGER with right-toc
 		--left-content-padding-left:  .5em;
 		--left-content-padding-right: .5em;
 		--menu-content-border-right:  none;
+		--left-content-width: 90vw;
   }
   #layout-left-menu {
     min-width: 0em;
     transition: min-width 0.2s, width 0.2s;
+		visibility: hidden;
   }
 	#menu-burger {
 		min-width: var(--menu-burger-width);
@@ -408,8 +410,7 @@ TOP BAR
 
 /* Account for the fixed horizontal bar */
 html {
-	scroll-padding: calc(1.1 * var(--top-bar-height)) 0 0 5em;
-	/* background-color: var(--col-xlight); */
+	scroll-padding: 0; /*calc(1.1 * var(--top-bar-height)) 0 0 5em;*/
 }
 
 #top-bar-nav {
@@ -454,6 +455,8 @@ html {
   margin-left:   var(--layout-margin-left);
   margin-right:  var(--layout-margin-right);
   margin-top:    var(--layout-margin-top);
+
+	word-wrap: break-word;
 }
 
 /*
@@ -501,6 +504,7 @@ LEFT PANEL / MENU
 #layout-left-menu.active {
 	min-width: var(--left-menu-base-width);
 	background-color: var(--col-xlight);
+	visibility: initial;
 	/* height: 100vh; */
 }
 
