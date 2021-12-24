@@ -2,6 +2,8 @@
 header = "Static websites with Franklin.jl"
 +++
 
+## Foo
+
 * [basics](/syntax/basics/)
 * [extensions](/syntax/extensions/)
 * [code cells](/syntax/code/)

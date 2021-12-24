@@ -42,7 +42,7 @@ TIP
 */
 .tip {
   margin-top: 1.5em;
-  background-color: var(--green80);
+  background-color: var(--green90);
   border: 0px;
   font-size: var(--text-sm);
 }

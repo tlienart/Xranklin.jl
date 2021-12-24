@@ -1,0 +1,7 @@
+[input]
+base_directory = "__site"
+url_prefix = "https://localhost:8000/"
+html_selector = "#main-left-content"
+files = [
+    {path = "syntax/basics/index.html", url = "/syntax/basics/", title = "Syntax - Basics"}
+]

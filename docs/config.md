@@ -33,6 +33,7 @@ meta_description = "Franklin"
 [Pure.css]: https://purecss.io/
 [hljs]: https://highlightjs.org/
 [katex]: https://katex.org/
+[mathjax]: https://www.mathjax.org/
 [pycall]: https://github.com/JuliaPy/PyCall.jl
 [rcall]: https://github.com/JuliaInterop/RCall.jl
 [dataframes]: https://github.com/JuliaData/DataFrames.jl

@@ -66,7 +66,7 @@ For all these you can also swap the colon (`:`) with an exclamation mark (`!`) w
 the same effect.
 
 When the language is implicit, it is taken from the page variable `:lang` (with default
- `"julia"` of course).
+ `"julia"`).
 When the name is implicit, a name is automatically generated and the output is placed
 directly below the code.
 
@@ -89,14 +89,14 @@ Here's a couple of examples:
 }
 
 Unless you intend to show the code output somewhere else than below the code block
-or use a custom method to show the code output, this last syntax is likely the one
-you'll want to use most often.
+or use a custom method to show the code output, this last syntax (where everythign is implicit) is likely the one
+you will want to use most often.
 
 ### Hiding lines of code
 
 In some cases an executable code cell might need some lines of code to work which you don't
-want to show explicitly.
-You can specify a line should be hidden by adding `#hide` to it (case and spaces don't matter).
+want to show.
+You can indicate that a line should be hidden by adding `#hide` to it (case and spaces don't matter).
 If you want to hide an entire code cell (e.g. you're just interested in the output) you can put `#hideall` in the code.
 
 \showmd{
@@ -149,19 +149,19 @@ If the code block didn't fail, the _appropriate representation_ of a result that
 not `nothing` is obtained by considering the following cases in order:
 
 1. there is a custom `html_show` function for `typeof(result)` that is defined
-in your Utils: the string returned by the call to that function is then added,
+in your `Utils`: the string returned by the call to that function is then added,
 1. the object can be shown as an SVG or PNG image: the image is automatically saved to
 an appropriate location and shown (with priority to the SVG output),
 1. otherwise: the output of `Base.show(result)` is added in a code block.
 
-Note that you can suppress a code block's result by adding a final `;` to the code.
+Note that you can also suppress the display of a code block result by adding a final `;` to the code.
 
 \note{
-  When capturing `stdout` during a code-cell evaluation, the Logging level is
+  When capturing `stdout` during a code-cell evaluation, the logging level is
   such that `@info` and `@warn` won't show up.
-  This is to prevent getting spurious information showing up on your website from
-  packages precompiling.
-  This also means that you shouldn't use these macros in your code cells.
+  This is to prevent getting spurious information being shown on your website from
+  packages precompiling upon CI deployment. \\
+  Long story short: avoid using these macros in your code cells.
 }
 
 ### Nothing to show
@@ -206,12 +206,14 @@ will be applied with a result similar to what you would get in the Julia REPL
 
 ### Showable as SVG or PNG
 
-If the result is showable as SVG or PNG then the relevant file (`.svg` or `.png`) is
+If the result is showable as SVG or PNG then a relevant file (`.svg` or `.png`) is
 generated and the image is inserted with
 
 ```html
 <img class="code-figure" src="...generated_path_to_img...">
 ```
+
+For instance:
 
 \showmd{
   ```!
@@ -220,10 +222,22 @@ generated and the image is inserted with
   ```
 }
 
+If you inspect the HTML, you will see that the image displayed corresponds to a generated path that looks like `/assets/syntax/code/figs-html/__autofig_911582796084046168.svg`.
+The generated path is built as `/assets/[source-path]/figs-html/[gen]` where `gen` is built out of the hash of the code that generated the image:
+
+```!
+hash("""
+  using Images
+  rand(Gray, 2, 2)
+  """ |> strip
+  ) |> string
+```
+
+\skip
+
 ### Custom show
 
-If you've defined a custom `html_show(r)` accepting an object of the type of `result`
-and returning a string, then that will be used.
+If you have defined a custom `html_show(r)` in your `Utils` that accepts an object of the type of the result of a code cell and returning a string, then that will be used.
 
 For instance in the `utils.jl` for the present website, we've defined
 
@@ -234,6 +248,8 @@ end
 html_show(f::Foo) = "<strong>Foo: $(f.x)</strong>"
 ```
 
+We can use the type `Foo` by indicating it is defined in `Utils` and the custom show method will be used:
+
 \showmd{
   ```!
   Utils.Foo(1)
@@ -241,8 +257,7 @@ html_show(f::Foo) = "<strong>Foo: $(f.x)</strong>"
 }
 
 \note{
-  Observe that you can refer to objects and functions defined in `utils.jl`
-  with the syntax `Utils.$name`.
+  You can refer to any object defined in `utils.jl` with the syntax `Utils.$name_of_object`.
 }
 
 
@@ -257,15 +272,13 @@ capture a trimmed stacktrace of the problem which will be displayed:
   ```
 }
 
-### In what path does the code run
+### In what path does the code run?
 
-In the same path as where `serve` was called but since you could call `serve()`
-from within the site folder or `serve("path/to/folder")` from outside of it,
-this path may change.
-
-If you want a code cell to do something with a path (e.g. read or write a file),
+In the same path as where `serve` was called, but since you could call `serve()`
+from within the site folder or `serve("path/to/folder")` this path can vary.
+As a consequence, if you want a code cell to do something with a path (e.g. read or write a file),
 use `Utils.path(:folder)` as the base path pointing to your website folder.
-You can also use `Utils.path(:site)` as the path pointing to the website build folder.
+You can also use `Utils.path(:site)` as the base path pointing to the website build folder.
 
 For instance let's say you want to save a DataFrame to a CSV that you can link to
 as an asset on your site:
@@ -347,6 +360,10 @@ Alternatively, you can
 
 In the first case, on the initial full pass upon server launch, pages with `ignore_cache = true` will re-evaluate all their cells.
 In the second case, on the initial full pass upon server launch, all pages will re-evaluate all their cells.
+
+### Executing Python code
+
+\todo{...}
 
 ## Understanding how things work
 

@@ -5,8 +5,8 @@ header = "Markdown extensions"
 
 ## Equations
 
-In Franklin math is handled by [KaTeX](https://katex.org) by default (though you could set things
-up so that it's handled by MathJax instead).
+In Franklin math is handled by [KaTeX] by default (though you could set things
+up so that it's handled by [MathJax] instead).
 For _inline_ math, use single `$`:
 
 \showmd{
@@ -21,7 +21,7 @@ For _display_ math, use double `$$`:
   $$ \exp(i\pi) + 1 = 0 $$
 }
 
-equations can span multiple lines and use multi-line environments
+Equations can span multiple lines and use multi-line environments
 
 \showmd{
   Here's an optimisation problem
@@ -51,7 +51,7 @@ environment too (like in LaTeX, commands have to be defined before they're used)
 - numbering (look up new stuff, there's a counter set by KaTeX now)
 - text size
 
-## Div Blocks
+## Div blocks
 
 Franklin uses the syntax `@@c1,c2 ... @@` to indicate a div block with class `c1` and `c2`.
 This can be useful if you want to style some specific parts of a page, it's also useful when you're working with a class-heavy framework such as Bootstrap.
@@ -89,7 +89,7 @@ Franklin allows you to define LaTeX-like commands in much the same way as in LaT
 \newcommand{\command}[nargs]{definition}
 ```
 
-where `nargs` is the number or "arguments" of the command and the definition is any valid Franklin markdown with `#1`, `#2`, ... indicating where arguments must be placed.
+where `nargs` is the number of arguments of the command and the definition is any valid Franklin markdown with `#1`, `#2`, ... indicating where arguments must be placed.
 Examples will make all this much clearer.
 
 First, the case without arguments:
@@ -119,7 +119,7 @@ Finally a case with two arguments (there can be more, of course, but most often 
 }
 
 \tip{
-  Command names cannot contain a space, end with a `*` or a `_`. But they can end with one or more digits. For instance, `\com1b`, `\com1` or  `\com_a` are allowed but not `\com*` or `\com_` to avoid ambiguities with indicators for emphasis.
+  Command names cannot contain a space or end with either `*` or `_`. But they can end with one or more digits. For instance, `\com1b`, `\com1` or  `\com_a` are allowed but not `\com*` or `\com_` to avoid ambiguities with emphasised text.
 }
 
 ### Whitespaces
@@ -159,7 +159,7 @@ Zero expected-value: \(\mathbb E\left[X\right]=0\).
 without whitespace on the left of the `X`.
 
 \tip{
-  Generally you should not have to bother about this and can just ignore the `!#` case (in fact KaTeX does some processing of its own to avoid issues with whitespaces).
+  Generally you should not have to bother with this and can just ignore the `!#` case (in fact KaTeX does some processing of its own to avoid issues with whitespaces).
 }
 
 ### Defining commands with Julia
@@ -191,7 +191,7 @@ Here's an example styling a block and using [raw HTML](#raw_html).
   }
 
   \begin{style}{font-weight: 600; color: blue}
-  Here some text
+    Here some text
   \end{style}
 }
 
@@ -205,7 +205,7 @@ with Julia code. See [here](/syntax/utils/).
 You can add footnotes like you would a reference link except the reference must start with  a caret `^` so for instance `[^1]` or `[^note about x]`.
 Footnotes get automatically numbered by order of appearance on the page.
 The "definition" of the footnote can be placed wherever is convenient in the Markdown.
-On the page, however, they will be placed at the end in the order in which they appear.
+On the page however, they will be placed at the end in the order in which they appear.
 
 \showmd{
   Some point we want to add a note to.[^a note]
@@ -227,7 +227,9 @@ Click on  one  of the footnote  link or check the [bottom of this page](#fn-defs
 
 ### Styling (XXX)
 
-## Tables
+\todo{explain how to place stuff if not at bottom?}
+
+## Tables (XXX)
 
 \showmd{
   | item | count | price |

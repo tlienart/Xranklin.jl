@@ -68,10 +68,8 @@ function header_id(c::LocalContext, header_text::String, hk::Symbol)::String
         # keep track of occurrence number for the original id
         n, l, t = c.headers[id]
         c.headers[id] = (n+1, l, t)
-        # create a derived refstring + entry, note the double '_'
-        c.headers["$(id)__$(n+1)"] = (1, lvl, header_text)
-    else
-        c.headers[id] = (1, lvl, header_text)
+        id = "$(id)__$(n+1)"
     end
+    c.headers[id] = (1, lvl, header_text)
     return id
 end
