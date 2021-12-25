@@ -60,6 +60,7 @@ end
 
 Return a processed version of `header_text` which can identify the header (id)
 and add an entry in the context's headers.
+Also add it to the global set of anchors (see `lx_reflink`).
 """
 function header_id(c::LocalContext, header_text::String, hk::Symbol)::String
     id  = string_to_anchor(header_text)
@@ -70,6 +71,10 @@ function header_id(c::LocalContext, header_text::String, hk::Symbol)::String
         c.headers[id] = (n+1, l, t)
         id = "$(id)__$(n+1)"
     end
+    # add the header to the local context set of headers
     c.headers[id] = (1, lvl, header_text)
+    # add the anchor to the global context set of anchors
+    # note that this can overwrite an existing anchor
+    c.glob.vars[:_anchors][id] = getvar(c, :_relative_url, "")
     return id
 end

@@ -33,6 +33,8 @@ function string_to_anchor(s::AbstractString; keep_first_caret::Bool=false)
     else
         st = replace(st, r"\^" => "")
     end
+    # colons
+    st = replace(st, r"\:" => "_")
     # non-ascii
     st = replace(st, r"[^\x00-\x7F]" => "")
     # replace spaces by underscores

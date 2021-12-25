@@ -55,6 +55,7 @@ function lx_label(p::VS; tohtml::Bool=true)::String
     return html_a(; id, class)
 end
 
+
 """
     \\biblabel{id}{text}
 
@@ -82,23 +83,21 @@ function lx_biblabel(p::VS; tohtml::Bool=true)::String
     end
 end
 
+# XXX
+# """
+#     \\reflink{s|id}
+#
+# Refer to an anchor that might be anywhere on the site (not necessarily on the
+# current page).
+# """
+# function lx_reflink(p::VS; tohtml::Bool=true)::String
+#     c = _lx_check_nargs(:reflink, p, 1)
+#     isempty(c) || return c
+#     tohtml || return ""
+#     # needs to happen after full pass
+#     return "{{reflink \"$(p[1])\"}}"
+# end
 
-"""
-    \\reflink{s|id}
-
-Refer to an anchor that might be anywhere on the site (not necessarily on the
-current page).
-"""
-function lx_reflink(p::VS; tohtml::Bool=true)::String
-    c = _lx_check_nargs(:reflink, p, 1)
-    isempty(c) || return c
-    tohtml || return ""
-
-    id = string_to_anchor(p[1])
-    anchors_ = anchors()
-    id in keys(anchors_) || return "#"
-    return "$(anchors_[id])#$(id)"
-end
 
 """
     \\eqref{s|id}

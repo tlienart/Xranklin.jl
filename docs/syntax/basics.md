@@ -273,11 +273,18 @@ so for instance
   [internal links](#internal_links)
 }
 
+TEST: [link to cache and packages](\reflink{Cache and packages})
+
 If you wish to link to an anchor across pages you can use `\reflink{id}`:
 
 \todo{
   this doesn't quite work, need to check anchors + need to resolve the link otherwise it
   will just try to link to `\reflink` which is dumb.
+
+  Note: only done on full pass, needs to trigger double pass, tricky to do
+  upon modifications because link is not obvious. At least for now, if
+  full pass, ok, if then title disappears, there might be an erroneous link
+  until the next full pass.
 }
 
 

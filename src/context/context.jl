@@ -119,7 +119,8 @@ Fields:
     vars:             a dictionary of the local variables
     lxdefs:           a dictionary of the local lx-definitions
     headers:          a dictionary of the current page headers
-    rpath:            relative path to the page with this local context.
+    rpath:            relative path to the page with this local context
+                       this includes the extension so e.g. foo/bar/baz.md
     is_recursive:     whether we're in a recursive context
     is_math:          whether we're recursing in a math environment
     req_vars:         mapping {pg => set of vars requested from pg}

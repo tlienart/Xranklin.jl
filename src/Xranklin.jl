@@ -33,7 +33,7 @@ import OrderedCollections: LittleDict
 # copied from CommonMark.jl, used in dealing with autolink
 @inline issafe(c::Char) = c in "?:/,-+@._()#=*&%" ||
                           (isascii(c) && (isletter(c) || isnumeric(c)))
-normalize_uri(s::SS)    = URIs.escapeuri(s, issafe)
+normalize_uri(s) = URIs.escapeuri(s, issafe)
 
 # ------------------------------------------------------------------------
 

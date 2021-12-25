@@ -185,14 +185,28 @@ function _link_ab(b::Block, c::LocalContext; tohtml=true, img=false)
 
     title = subs(parent_string(ss), next_index(t1), prev_index(t2))
     title = convert_md(title, c; tohtml, nop=true)
-    ref   = subs(parent_string(ss), next_index(t2), prev_index(t3))
-    ref   = normalize_uri(ref)
+    ref   = subs(parent_string(ss), next_index(t2), prev_index(t3)) |> strip
+
+    ref = normalize_uri(ref)
+
+    # if startswith(ref, "\\reflink{")
+    #     ref = rstrip(ref[10:end], '}') |> strip
+    #     ref = "{{reflink \"$ref\"}}"
+    #     setvar!(c, :_retrigger, true)
+    # elseif startswith(ref, "##")
+    #     ref = ref[3:end] |> strip
+    #     ref = "{{reflink \"$ref\"}}"
+    #     setvar!(c, :_retrigger, true)
+    # else
+    #     ref = normalize_uri(ref)
+    # end
 
     img && begin
         tohtml && return html_img(ref; alt=title)
+        opts = getvar(c, :latex_img_opts, "width=.5\\textwidth")
         return """
             \\begin{figure}[!h]
-                \\includegraphics[$(getvar(c, :latex_img_opts, "width=.5\\textwidth"))]{$ref}
+                \\includegraphics[$opts]{$ref}
                 \\caption{$title}
             \\end{figure}
             """
