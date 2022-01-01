@@ -12,6 +12,7 @@ the logic in the current utils module.
 See tests for examples.
 """
 function eval_str(estr::SS)::Any
+    estr = strip(estr)
     if startswith(estr, "e")
         estr = strip(strip(lstrip(estr, 'e'), '\"'))
     else

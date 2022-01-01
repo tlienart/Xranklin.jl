@@ -118,7 +118,7 @@ end
         \comb{XXX}
         """
     h = html(s, nop=true)
-    @test h // "ABC class=foo<pre><code class=\"markdown\">XXX</code></pre>DEF"
+    @test h // "ABC class=foo<pre><code class=\"markdown\">XXX</code></pre>\nDEF"
 
     s = raw"""
         \newcommand{\coma}[1]{

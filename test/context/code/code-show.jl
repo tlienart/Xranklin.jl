@@ -80,10 +80,10 @@ end
         <pre><code class="julia">using Images
         rand(Gray, 2, 2)</code></pre>
         <div class="code-output">
-          <img class="code-figure" src="/assets/figs-html/__1_ex.svg">
+          <img class="code-figure" src="/assets/figs-html/__autofig_911582796084046168.svg">
         </div>
         """)
-    @test isfile(d / "__site" / "assets" / "figs-html" / "__1_ex.svg")
+    @test isfile(d / "__site" / "assets" / "figs-html" / "__autofig_911582796084046168.svg")
 end
 
 @testset "custom show" begin
