@@ -187,20 +187,17 @@ function _link_ab(b::Block, c::LocalContext; tohtml=true, img=false)
     title = convert_md(title, c; tohtml, nop=true)
     ref   = subs(parent_string(ss), next_index(t2), prev_index(t3)) |> strip
 
+    # shortcut for a global anchor (see context/anchor.jl)
+    if startswith(ref, "##") && tohtml && !img
+        ref = ref[3:end] |> strip |> string_to_anchor
+        return """
+            <a href="{{reflink $ref}}">$title</a>
+            """
+    end
+
+    # otherwise normalize the ref and apply the different path depending
+    # on whether it's HTML output, IMG etc.
     ref = normalize_uri(ref)
-
-    # if startswith(ref, "\\reflink{")
-    #     ref = rstrip(ref[10:end], '}') |> strip
-    #     ref = "{{reflink \"$ref\"}}"
-    #     setvar!(c, :_retrigger, true)
-    # elseif startswith(ref, "##")
-    #     ref = ref[3:end] |> strip
-    #     ref = "{{reflink \"$ref\"}}"
-    #     setvar!(c, :_retrigger, true)
-    # else
-    #     ref = normalize_uri(ref)
-    # end
-
     img && begin
         tohtml && return html_img(ref; alt=title)
         opts = getvar(c, :latex_img_opts, "width=.5\\textwidth")

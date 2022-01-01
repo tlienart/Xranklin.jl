@@ -72,7 +72,6 @@ const DefaultGlobalVars = Vars(
     :_utils_envfun_names => Symbol[],
     :_utils_var_names    => Symbol[],
     # Hyperrefs
-    :_anchors => LittleDict{String, String}(),  # id => relative_url
     :_refrefs => LittleDict{String, String}(),  # id => location
     :_bibrefs => LittleDict{String, String}(),  # id => location
 )
@@ -134,6 +133,8 @@ const DefaultLocalVars = Vars(
     :_modification_time => 0.0,
     # mddefs related
     :_setvar            => Set{Symbol}(),
+    # set of anchor ids defined on the page (used to check removals)
+    :_anchors           => Set{String}(),
     # references (note: headers are part of context, see ctx.headers)
     :_refrefs           => LittleDict{String, String}(),
     :_eqrefs            => LittleDict{String, Int}("__cntr__" => 0),
@@ -180,11 +181,9 @@ SimpleLocalContext(gc::GlobalContext; rpath::String="") =
 # These will fail for contexts that haven't been constructed out of Default
 # NOTE: anchors is GC so that anchors can be used across pages.
 
-anchors(c::GlobalContext) = getvar(c, :_anchors, LittleDict{String, String}())
 eqrefs(c::LocalContext)   = getvar(c, :_eqrefs,  LittleDict{String, Int}())
 bibrefs(c::LocalContext)  = getvar(c, :_bibrefs, LittleDict{String, String}())
 
-anchors() = anchors(cur_gc())
 eqrefs()  = eqrefs(cur_lc())
 bibrefs() = bibrefs(cur_lc())
 
@@ -192,12 +191,3 @@ refrefs(c::Context) = c.vars[:_refrefs]::LittleDict{String, String}
 refrefs()           = merge(refrefs(cur_gc()), refrefs(cur_lc()))
 
 relative_url_curpage() = getlvar(:_relative_url, "")
-
-function get_anchor(s, c::GlobalContext)::String
-    id  = string_to_anchor(s)
-    loc = get(anchors(c), id, "")
-    isempty(loc) && return "#"
-    return "$loc#$id"
-end
-
-get_anchor(s) = get_anchor(s, cur_gc())

@@ -4,7 +4,7 @@ header = "Markdown basics"
 +++
 
 <!-- avoid having the dummy example headers in the toc -->
-{{rm_headers level_1 level_2 level_3}}
+{{rm_headers level_1 level_2 level_3 a_text a_text__2}}
 
 ## Text
 
@@ -261,31 +261,49 @@ For this, you can use the _autolink_ syntax `<location>`:
   These are not currently supported in Franklin.
 }
 
-### (XXX) Internal links
+### Internal links
 
-Every header in Franklin automatically has an anchor attached to it which
-allows to refer to them easily.
+Every header in Franklin automatically has an anchor attached to it for easy reference.
 For instance the current header corresponds to the anchor id `internal_links`.
-To link to such an anchor, the same syntax as for links can be used except the path is `#id`
-so for instance
+To link to such an anchor, the same syntax as for links can be used except the path is `#id`, so for instance:
 
 \showmd{
   [internal links](#internal_links)
 }
 
-TEST: [link to cache and packages](\reflink{Cache and packages})
+The mapping from anchor name to anchor id does a few things like lowercasing the anchor name, replacing spaces with underscores, dropping special characters etc.
+For instance:
 
-If you wish to link to an anchor across pages you can use `\reflink{id}`:
+* `This Is AN anchor Name` → `this_is_an_anchor_name`
+* `anchor α: _foo_` → `anchor_foo`
 
-\todo{
-  this doesn't quite work, need to check anchors + need to resolve the link otherwise it
-  will just try to link to `\reflink` which is dumb.
+You can check the generated id by hovering on the header or inspecting the HTML.
+Alternatively, you can use global linking (see further below).
 
-  Note: only done on full pass, needs to trigger double pass, tricky to do
-  upon modifications because link is not obvious. At least for now, if
-  full pass, ok, if then title disappears, there might be an erroneous link
-  until the next full pass.
+You can place anchors anywhere you want with `\label{anchor name}`:
+
+\showmd{
+  \label{abcd}
+
+  and now [we refer to it](#abcd)
 }
+
+Franklin also allows to link globally **across** pages by using `##` instead of `#`.
+So for instance there's a header "_Cache and packages_" defined on the page `/syntax/code/` and you can link to this with
+
+\showmd{
+  All three forms link to the same header:
+
+  * [explicit](/syntax/code/#cache_and_packages)
+  * [implicit](##cache_and_packages)
+  * [implicit 2](## Cache and packages)
+}
+
+Observe that in the last case, the mapping `(anchor name) -> (anchor id)` step is implicit.
+There's a few additional notes for the global linking:
+
+1. if the anchor is defined on multiple pages, the current page has priority followed by whichever page was seen by Franklin last. This also means that using global linking is ambiguous for anchors that are defined on more than one page (e.g. if you have a section `Introduction` on several pages).
+2. further to the previous point, you can use global linking for something defined on the current page, e.g. `[link](## Internal links)`: [link](## Internal links); this isn't ambiguous since the current page has priority.
 
 
 ## Images

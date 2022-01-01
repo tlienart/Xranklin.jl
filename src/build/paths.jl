@@ -1,5 +1,3 @@
-(/)(s...) = joinpath(s...)
-
 """
     paths()
 
@@ -150,8 +148,7 @@ end
     unixify(rpath)
 
 Take a path and return a unix version of the path (i.e. with forward slashes).
-For instance to convert a relative path corresponding to a local file and
-convert it to a relative URL.
+The path returned necessarily ends with a '/'.
 """
 function unixify(rpath::String)
     isempty(rpath) && return "/"

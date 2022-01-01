@@ -75,6 +75,6 @@ function header_id(c::LocalContext, header_text::String, hk::Symbol)::String
     c.headers[id] = (1, lvl, header_text)
     # add the anchor to the global context set of anchors
     # note that this can overwrite an existing anchor
-    c.glob.vars[:_anchors][id] = getvar(c, :_relative_url, "")
+    add_anchor(c.glob, id, c.rpath)
     return id
 end

@@ -44,14 +44,14 @@ Includes an anchor with a name so that it can be referenced elsewhere.
 function lx_label(p::VS; tohtml::Bool=true)::String
     c = _lx_check_nargs(:label, p, 1)
     isempty(c) || return c
-
-    tohtml || return "\\label{$(p[1])}"
-
+    tohtml     || return "\\label{$(p[1])}"
+    # here we have a non empty label for a HTML output
     id = string_to_anchor(p[1])
     # keep track of the anchor, note that if there is already one with that
     # exact same id, then it will be overwritten!
-    anchors()[id] = relative_url_curpage()
-    class = getgvar(:anchor_class, "anchor")
+    lc = cur_lc()
+    add_anchor(lc.glob, id, lc.rpath)
+    class = getvar(lc.glob, :anchor_class, "anchor")
     return html_a(; id, class)
 end
 
@@ -82,21 +82,6 @@ function lx_biblabel(p::VS; tohtml::Bool=true)::String
         return html_a(; id, class)
     end
 end
-
-# XXX
-# """
-#     \\reflink{s|id}
-#
-# Refer to an anchor that might be anywhere on the site (not necessarily on the
-# current page).
-# """
-# function lx_reflink(p::VS; tohtml::Bool=true)::String
-#     c = _lx_check_nargs(:reflink, p, 1)
-#     isempty(c) || return c
-#     tohtml || return ""
-#     # needs to happen after full pass
-#     return "{{reflink \"$(p[1])\"}}"
-# end
 
 
 """

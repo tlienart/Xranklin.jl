@@ -34,7 +34,6 @@ function html2(parts::Vector{Block}, c::Context)::String
     while idx < nparts
         idx += 1
         b    = parts[idx]
-
         if b.name == :COMMENT
             continue
         elseif b.name == :TEXT
@@ -77,7 +76,6 @@ function html2(parts::Vector{Block}, c::Context)::String
             # B. internal or external HFUNS
             # C. fill attempt
             # ---------------------------------------------------
-
             split_cb = FP.split_args(cb)
             fname    = Symbol(lowercase(first(split_cb)))
 

@@ -23,7 +23,7 @@ it for hyper-references. So for instance `"aa  bb"` will become `aa_bb`.
 It also defensively removes any non-word character so for instance `"aa bb !"`
 will be `"aa_bb"`
 """
-function string_to_anchor(s::AbstractString; keep_first_caret::Bool=false)
+function string_to_anchor(s::AbstractString; keep_first_caret::Bool=false)::String
     # remove html tags
     st = replace(strip(s), r"<[a-zA-Z\/]+>" => "")
     # remove non-word characters or non-ascii
@@ -41,7 +41,9 @@ function string_to_anchor(s::AbstractString; keep_first_caret::Bool=false)
     st = replace(lowercase(strip(st)), r"\s+|\-+" => "_")
     # to avoid clashes with numbering of repeated headers, replace
     # double underscores by a single one
-    st = replace(st, r"__" => "_")
+    st = replace(st, r"_+" => "_")
+    # drop dangling `_` as well
+    st = strip(st, '_') |> string
     # in the unlikely event we don't have anything here, return the hash
     # of the original string
     return ifelse(isempty(st), string(hash(s)), st)
