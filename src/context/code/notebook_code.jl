@@ -31,6 +31,7 @@ function eval_code_cell!(
     # skip cell if previously seen and unchanged though check in case the
     # cell name changed and if so, adjust
     if isunchanged(nb, cntr, code)
+        @info "  ⏩  skipping cell $cell_name (unchanged)"
         for (name, i) in nb.code_map
             if i == cntr
                 if name != cell_name
@@ -45,6 +46,9 @@ function eval_code_cell!(
     end
 
     if isstale(nb)
+        start = time(); @info """
+              ❗ code notebook stale, refreshing...
+            """
         # reeval all previous cells, we don't need to
         # keep track of their vars or whatever as they haven't changed
         tempc = 1
@@ -60,17 +64,21 @@ function eval_code_cell!(
             )
             tempc += 1
         end
+        δt = time() - start; @info """
+            ... [code notebook refresh] ✓ $(hl(time_fmt(δt)))"
+            """
         fresh_notebook!(nb)
     end
 
     # eval cell
+    @info "  ⏯️  evaluating cell $cell_name..."
     std_out, std_err, result = _eval_code_cell(nb.mdl, code, cell_name)
 
     autosavefigs = getvar(ctx, :autosavefigs, true)
     autoshowfigs = getvar(ctx, :autoshowfigs, true)
-    file_prefix  = "__$(cntr)_$(cell_name)"
-    fpath_html   = imgdir_html / file_prefix
-    fpath_latex  = imgdir_latex / file_prefix
+    fig_id       = "__autofig_$(hash(code))"
+    fpath_html   = imgdir_html / fig_id
+    fpath_latex  = imgdir_latex / fig_id
     fig_html     = (save=autosavefigs, show=autoshowfigs, fpath=fpath_html)
     fig_latex    = (save=autosavefigs, show=autoshowfigs, fpath=fpath_latex)
 
@@ -139,6 +147,11 @@ function _eval_code_cell(mdl::Module, code::String, cell_name::String)::Captured
     std_out = ""
     std_err = ""
     result  = nothing
+
+    # avoid Precompilation info and warning showing up in stdout
+    pre_log_level = Base.CoreLogging._min_enabled_level[] # yeah.. I know
+    Logging.disable_logging(Logging.Warn)
+
     try
         captured = IOCapture.capture() do
             include_string(softscope, mdl, code)
@@ -146,6 +159,8 @@ function _eval_code_cell(mdl::Module, code::String, cell_name::String)::Captured
         # if we're here then 'output' and 'value' are set
         std_out = captured.output
         result  = captured.value
+
+        Base.CoreLogging._min_enabled_level[] = pre_log_level
 
     catch e
         # also write to REPL so the user is doubly aware
@@ -160,6 +175,8 @@ function _eval_code_cell(mdl::Module, code::String, cell_name::String)::Captured
         # retrieve the stacktrace string so it can be shown in repl
         stacktrace = sprint(showerror, exc, bt) |> trim_stacktrace
         std_err    = stacktrace
+
+        Base.CoreLogging._min_enabled_level[] = pre_log_level
 
         msg = """
               Code evaluation
@@ -248,7 +265,8 @@ function append_result_html!(io::IOBuffer, result::R, fig::NamedTuple) where R
 
     else
         write(io, """<pre><code class="code-result language-plaintext">""")
-        Base.show(io, result)
+        # need invokelatest in case the cell includes a package which extends show
+        Base.@invokelatest Base.show(io, result)
         write(io, """</code></pre>""")
     end
     return

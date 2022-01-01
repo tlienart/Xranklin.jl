@@ -23,7 +23,7 @@ const DefaultGlobalVars = Vars(
     :parse_script_blocks => true,  # see html2; possibly disable DBB in <script>
     # File management
     :ignore_base      => StringOrRegex[
-                               ".DS_Store", ".gitignore", "node_modules/",
+                               r"(?:.*?)\.DS_Store$", ".gitignore", "node_modules/",
                                "LICENSE.md", "README.md"
                                ],
     :ignore           => StringOrRegex[],
@@ -72,9 +72,8 @@ const DefaultGlobalVars = Vars(
     :_utils_envfun_names => Symbol[],
     :_utils_var_names    => Symbol[],
     # Hyperrefs
-    :_anchors => LittleDict{String, String}(),
-    :_refrefs => LittleDict{String, String}(),
-    :_bibrefs => LittleDict{String, String}(),
+    :_refrefs => LittleDict{String, String}(),  # id => location
+    :_bibrefs => LittleDict{String, String}(),  # id => location
 )
 const DefaultGlobalVarsAlias = Alias(
     :prepath                => :base_url_prefix,
@@ -102,6 +101,7 @@ const DefaultLocalVars = Vars(
     :tags               => String[],
     :prerender          => true,
     :slug               => "",
+    :ignore_cache       => false,
     # toc
     :mintoclevel        => 1,
     :maxtoclevel        => 6,
@@ -133,12 +133,14 @@ const DefaultLocalVars = Vars(
     :_modification_time => 0.0,
     # mddefs related
     :_setvar            => Set{Symbol}(),
+    # set of anchor ids defined on the page (used to check removals)
+    :_anchors           => Set{String}(),
     # references (note: headers are part of context, see ctx.headers)
     :_refrefs           => LittleDict{String, String}(),
     :_eqrefs            => LittleDict{String, Int}("__cntr__" => 0),
     :_bibrefs           => LittleDict{String, String}(),
     # cell counter
-    :_auto_cell_counter => 0,
+    :_auto_cell_counter => 0
 )
 const DefaultLocalVarsAlias = Alias(
     :fd_rpath     => :_relative_path,
@@ -179,9 +181,11 @@ SimpleLocalContext(gc::GlobalContext; rpath::String="") =
 # These will fail for contexts that haven't been constructed out of Default
 # NOTE: anchors is GC so that anchors can be used across pages.
 
-anchors(c=cur_gc()) = getvar(c, :_anchors, LittleDict{String, String}())
-eqrefs(c=cur_lc())  = getvar(c, :_eqrefs,  LittleDict{String, Int}())
-bibrefs(c=cur_lc()) = getvar(c, :_bibrefs, LittleDict{String, String}())
+eqrefs(c::LocalContext)   = getvar(c, :_eqrefs,  LittleDict{String, Int}())
+bibrefs(c::LocalContext)  = getvar(c, :_bibrefs, LittleDict{String, String}())
+
+eqrefs()  = eqrefs(cur_lc())
+bibrefs() = bibrefs(cur_lc())
 
 refrefs(c::Context) = c.vars[:_refrefs]::LittleDict{String, String}
 refrefs()           = merge(refrefs(cur_gc()), refrefs(cur_lc()))

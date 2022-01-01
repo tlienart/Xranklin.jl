@@ -34,7 +34,6 @@ function html2(parts::Vector{Block}, c::Context)::String
     while idx < nparts
         idx += 1
         b    = parts[idx]
-
         if b.name == :COMMENT
             continue
         elseif b.name == :TEXT
@@ -57,12 +56,12 @@ function html2(parts::Vector{Block}, c::Context)::String
         cb = strip(content(b))
         isempty(cb) && continue
 
-        if is_estr(cb)
+        if is_estr(cb; allow_short=true)
             v = eval_str(cb)
             if isa(v, EvalStrError)
                 @warn """
-                    {{ e"..." }}
-                    ----------------
+                    {{ e"..." }} or {{ > ... }}
+                    ---------------------------
                     An environment '{{ e"..." }}' failed to evaluate properly,
                     check that the code in the e-string is valid and that
                     variables are prefixed with a \$.
@@ -77,7 +76,6 @@ function html2(parts::Vector{Block}, c::Context)::String
             # B. internal or external HFUNS
             # C. fill attempt
             # ---------------------------------------------------
-
             split_cb = FP.split_args(cb)
             fname    = Symbol(lowercase(first(split_cb)))
 

@@ -33,11 +33,18 @@ meta_description = "Franklin"
 [Pure.css]: https://purecss.io/
 [hljs]: https://highlightjs.org/
 [katex]: https://katex.org/
+[mathjax]: https://www.mathjax.org/
 [pycall]: https://github.com/JuliaPy/PyCall.jl
 [rcall]: https://github.com/JuliaInterop/RCall.jl
 [dataframes]: https://github.com/JuliaData/DataFrames.jl
 
 <!-- GLOBAL COMMANDS -->
+
+\newcommand{\skip}{
+  ~~~
+  <p></p>
+  ~~~
+}
 
 \newcommand{\fieldset}[3]{
   ~~~
@@ -53,11 +60,17 @@ meta_description = "Franklin"
   Show markdown + what it looks like in a box
 -->
 \newcommand{\showmd}[1]{
+  ~~~
+  <div class="trim">
+  ~~~
   \fieldset{md-input}{markdown}{
     `````plaintext
     #1
     `````
   }
+  ~~~
+  </div>
+  ~~~
   <!--
   XXX keep extra line skip otherwise the blockquote and the
   showmd environment blend and it's ugly!
@@ -68,7 +81,7 @@ meta_description = "Franklin"
     \fieldset{md-result}{result}{
     ~~~~~~
 
-      #1
+    #1
 
     ~~~~~~
     }

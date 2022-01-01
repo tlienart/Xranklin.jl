@@ -1,8 +1,9 @@
 (function (window, document) {
       function getElements() {
           return {
-              menu_panel:  document.getElementById('layout-left-menu'),
-              menu_burger: document.getElementById('menu-burger')
+              menu_panel:   document.getElementById('layout-left-menu'),
+              menu_burger:  document.getElementById('menu-burger'),
+              main_overlay: document.getElementById('layout-main-overlay')
           };
       }
       function toggleClass(element, className) {
@@ -24,8 +25,9 @@
       function toggleAll(state = 'active') {
           var active = 'active';
           var elements = getElements();
-          toggleClass(elements.menu_panel,   active);
-          toggleClass(elements.menu_burger,  active);
+          toggleClass(elements.menu_panel,    active);
+          toggleClass(elements.menu_burger,   active);
+          toggleClass(elements.main_overlay,  active);
       }
       function handleEvent(e) {
           var elements = getElements();

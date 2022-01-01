@@ -12,7 +12,7 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
     @test isapproxstr(h, """
         <pre><code class="julia">true</code></pre>
         <div class="code-output">
-            <pre><code class="code-result">true</code></pre>
+            <pre><code class="code-result language-plaintext">true</code></pre>
         </div>
         """)
     s = raw"""
@@ -25,7 +25,7 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
     @test isapproxstr(h, """
         <pre><code class="julia">&quot;abc&quot;</code></pre>
         <div class="code-output">
-            <pre><code class="code-result">"abc"</code></pre>
+            <pre><code class="code-result language-plaintext">"abc"</code></pre>
         </div>
         """)
 
@@ -37,7 +37,7 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
         \show{ex}
         """
     h = html(s, nop=true)
-    @test occursin("<pre><code class=\"code-stdout\">hello\n</code></pre>", h)
+    @test occursin("<pre><code class=\"code-stdout language-plaintext\">hello\n</code></pre>", h)
 
     # basic hidden output
     s = raw"""
@@ -60,7 +60,7 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
         """
     h = html(s, nop=true)
     @test occursin("""<pre><code class="julia">sqrt(-1)</code></pre>""", h)
-    @test occursin("""<pre><code class="code-stderr">LoadError: DomainError with -1.0:""", h)
+    @test occursin("""<pre><code class="code-stderr language-plaintext">LoadError: DomainError with -1.0:""", h)
     @test occursin("""sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).""", h)
     @test occursin("""Stacktrace:""", h)
     @test occursin("""throw_complex_domainerror""", h)
@@ -80,10 +80,10 @@ end
         <pre><code class="julia">using Images
         rand(Gray, 2, 2)</code></pre>
         <div class="code-output">
-          <img class="code-figure" src="/assets/figs-html/__1_ex.svg">
+          <img class="code-figure" src="/assets/figs-html/__autofig_911582796084046168.svg">
         </div>
         """)
-    @test isfile(d / "__site" / "assets" / "figs-html" / "__1_ex.svg")
+    @test isfile(d / "__site" / "assets" / "figs-html" / "__autofig_911582796084046168.svg")
 end
 
 @testset "custom show" begin
@@ -126,7 +126,6 @@ end
         </div>
         """)
 
-    gc = X.clear_everything(gc; utils=true)
     utils = raw"""
         import Base.show
         struct Foo
@@ -134,6 +133,7 @@ end
         end
         html_show(f::Foo) = "<span>Bar: $(f.y)</span>"
         """
+    gc = X.DefaultGlobalContext()
     X.process_utils(utils, gc)
     lc = X.DefaultLocalContext(gc)
     h = html(s, lc, nop=true)
@@ -153,7 +153,7 @@ end
     @test isapproxstr(h, """
         <pre><code class="julia">5</code></pre>
         <div class="code-output">
-            <pre><code class="code-result">5</code></pre>
+            <pre><code class="code-result language-plaintext">5</code></pre>
         </div>
         """)
 end

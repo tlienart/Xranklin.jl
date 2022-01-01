@@ -30,10 +30,20 @@
 </head>
 <body>
 
-<div id="layout">
+<a id="menu-burger" href="#menu"></a>
 
+<div id="top-bar">
   <!-- button for menu in narrow mode -->
-  <a id="menu-burger" href="#menu"></a>
+
+  <div id="top-bar-nav">
+    <a href="https://github.com/tlienart/Franklin.jl">
+      <span>Franklin.jl</span>
+      <img src="/assets/gh_icon.svg" alt="github-repo">
+    </a>
+  </div>
+</div>
+
+<div id="layout">
 
   <!-- LAYOUT | LEFT MENU -->
   <div id="layout-left-menu">
@@ -46,9 +56,9 @@
     <!-- MAIN | TOP HEADER -->
     <div id="main-top-header">
       <div id="main-top-header-content">
-        <!-- {{isdef header}} -->
+        {{isdef header}}
           <h1>{{header}}</h1>
-        <!-- {{end}} -->
+        {{end}}
       </div>
     </div>
 
@@ -56,7 +66,7 @@
     <div id="main-right-margin">
         <div id="margin-toc">
           {{if showtoc}}
-            <div id="margin-toc-legend">Contents</div>
+            <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
             {{toc 2 3}}
           {{end}}
       </div>

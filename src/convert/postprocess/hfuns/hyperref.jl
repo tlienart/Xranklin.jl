@@ -100,6 +100,22 @@ function hfun_cite(p::VS)::String
     return html_a(text; href="#$(id)", class)
 end
 
+
+"""
+    {{reflink id}}
+
+Global reference to an id that might be on any page (see anchor).
+"""
+function hfun_reflink(p::VS)::String
+    # should not really need to check but anyway
+    c = _hfun_check_nargs(:reflink, p; kmin=1)
+    isempty(c) || return c
+    lc = cur_lc()
+    target = get_anchor(lc.glob, p[1], lc.rpath)
+    return target
+end
+
+
 """
     {{link_a ref title}}
 

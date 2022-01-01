@@ -33,12 +33,13 @@ import OrderedCollections: LittleDict
 # copied from CommonMark.jl, used in dealing with autolink
 @inline issafe(c::Char) = c in "?:/,-+@._()#=*&%" ||
                           (isascii(c) && (isletter(c) || isnumeric(c)))
-normalize_uri(s::SS)    = URIs.escapeuri(s, issafe)
+normalize_uri(s) = URIs.escapeuri(s, issafe)
 
 # ------------------------------------------------------------------------
 
 export serve
 export newsite
+export path
 
 # Conversion functions
 export html, latex
@@ -72,6 +73,7 @@ include("html_utils.jl")
 
 include("context/types.jl")
 include("context/context.jl")
+include("context/anchors.jl")
 include("context/default_context.jl")
 
 include("context/code/modules.jl")

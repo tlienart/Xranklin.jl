@@ -7,7 +7,7 @@ pre-configuration (e.g. a Utils package generating a default config).
 """
 function process_config(
             config::String,
-            gc::GlobalContext=cur_gc();
+            gc::GlobalContext;
             initial_pass::Bool=false
             )
     crumbs("process_config")
@@ -69,6 +69,7 @@ function process_config(
     updated_lxdefs = [
         (@debug "✋ lxdef $n has changed"; n)
         for (n, h) in old_lxdefs
+
         if n ∉ keys(gc.lxdefs) || h != hash(gc.lxdefs[n].def)
     ]
 
@@ -84,7 +85,7 @@ function process_config(
     return
 end
 
-function process_config(gc::GlobalContext=cur_gc(); initial_pass::Bool=false)
+function process_config(gc::GlobalContext; initial_pass::Bool=false)
     config_path = path(:folder) / "config.md"
     if isfile(config_path)
         process_config(read(config_path, String), gc; initial_pass)
@@ -97,6 +98,9 @@ function process_config(gc::GlobalContext=cur_gc(); initial_pass::Bool=false)
     return
 end
 
+process_config(config::String) = process_config(config, cur_gc())
+process_config() = process_config(cur_gc())
+
 
 """
     process_utils(utils, gc)
@@ -105,7 +109,7 @@ Process a utils string into a given global context object.
 """
 function process_utils(
             utils::String,
-            gc::GlobalContext=cur_gc()
+            gc::GlobalContext
             )
     crumbs("process_utils")
 
@@ -148,7 +152,7 @@ function process_utils(
     return
 end
 
-function process_utils(gc::GlobalContext=cur_gc())
+function process_utils(gc::GlobalContext)
     utils_path = path(:folder) / "utils.jl"
     if isfile(utils_path)
         process_utils(read(utils_path, String), gc)
@@ -157,6 +161,10 @@ function process_utils(gc::GlobalContext=cur_gc())
     end
     return
 end
+
+process_utils(utils::String) = process_utils(utils, cur_gc())
+process_utils() = process_utils(cur_gc())
+
 
 utils_hfun_names()   = getgvar(:_utils_hfun_names)::Vector{Symbol}
 utils_lxfun_names()  = getgvar(:_utils_lxfun_names)::Vector{Symbol}
@@ -179,10 +187,10 @@ Take a file (markdown, html, ...) and process it appropriately:
 * process_file -> process_html_file -> process_html_file_io!
 """
 function process_file(
+            gc::GlobalContext,
             fpair::Pair{String,String},
             case::Symbol,
             t::Float64=0.0;             # compare modif time
-            gc::GlobalContext=cur_gc(),
             skip_files::Vector{Pair{String, String}}=Pair{String, String}[],
             initial_pass::Bool=false
             )
@@ -206,7 +214,13 @@ function process_file(
 
         if case == :md
             process_md_file(gc, fpath, opath; initial_pass=initial_pass)
-            initial_pass || process_triggers(gc, skip_files)
+            if !initial_pass
+                # reprocess all pages that depend upon definitions from this page
+                rpath = get_rpath(fpath)
+                for r in gc.children_contexts[rpath].to_trigger
+                    reprocess(r, gc; skip_files, msg="(depends on updated vars)")
+                end
+            end
 
         elseif case == :html
             process_html_file(gc, fpath, opath)
@@ -230,6 +244,9 @@ function process_file(
     end
     return
 end
+
+process_file(fpair::Pair{String,String}, case::Symbol, t::Float64=0.0; kw...) =
+    process_file(cur_gc(), fpair, case, t; kw...)
 
 
 """
@@ -267,42 +284,68 @@ function process_md_file_io!(
     # -------
     # retrieve the context from gc's children if it exists or
     # create it if it doesn't
-    ctx = in_gc ?
+    lc = in_gc ?
             gc.children_contexts[rpath] :
             DefaultLocalContext(gc; rpath)
 
     # set it as current context in case it isn't
-    set_current_local_context(ctx)
+    set_current_local_context(lc)
     # reset the headers
-    empty!(ctx.headers)
+    empty!(lc.headers)
     # reset code counter
-    setvar!(ctx, :_auto_cell_counter, 0)
+    setvar!(lc, :_auto_cell_counter, 0)
+    # keep track of the anchors pre-processing to see which ones
+    # are removed (see context/anchors)
+    bk_anchors = copy(lc.anchors)
+    empty!(lc.anchors)
 
+    initial_cache_used = false
     if initial_pass
         # try to load notebooks from serialized
         fpv = path(:cache) / noext(rpath) / "nbv.cache"
         fpc = path(:cache) / noext(rpath) / "nbc.cache"
-        isfile(fpv) && load_vars_cache!(ctx, fpv)
-        isfile(fpc) && load_code_cache!(ctx, fpc)
+        if isfile(fpv)
+            load_vars_cache!(lc, fpv)
+            initial_cache_used = true
+        end
+        if isfile(fpc)
+            load_code_cache!(lc, fpc)
+            initial_cache_used = true
+        end
     else
         # reset the notebook counters at the top
-        reset_notebook_counters!(ctx)
+        reset_notebook_counters!(lc)
     end
 
     # set meta parameters
     s = stat(fpath)
-    setvar!(ctx, :_relative_path, rpath)
-    setvar!(ctx, :_relative_url, unixify(ropath))
-    setvar!(ctx, :_creation_time, s.ctime)
-    setvar!(ctx, :_modification_time, s.mtime)
+    setvar!(lc, :_relative_path, rpath)
+    setvar!(lc, :_relative_url, unixify(ropath))
+    setvar!(lc, :_creation_time, s.ctime)
+    setvar!(lc, :_modification_time, s.mtime)
 
     # get and convert markdown
     page_content_md = read(fpath, String)
     output = (tohtml ?
-                _process_md_file_html(ctx, page_content_md) :
-                _process_md_file_latex(ctx, page_content_md))::String
+                _process_md_file_html(lc, page_content_md) :
+                _process_md_file_latex(lc, page_content_md))::String
+
+    # only here do we know whether `ignore_cache` was set to 'true'
+    # if that's the case, reset the code notebook and re-evaluate.
+    if initial_cache_used && getvar(lc, :ignore_cache, false)
+        reset_code_notebook!(lc)
+        output = (tohtml ?
+                    _process_md_file_html(lc, page_content_md) :
+                    _process_md_file_latex(lc, page_content_md))::String
+    end
 
     write(io, output)
+
+    # check whether any anchor has been removed by comparing
+    # to 'bk_anchors'.
+    for id in setdiff(bk_anchors, lc.anchors)
+        rm_anchor(gc, id, lc.rpath)
+    end
     return
 end
 
@@ -326,7 +369,7 @@ function process_md_file(gc::GlobalContext, rpath::String; kw...)
     process_md_file(gc, fpath, opath; kw...)
 end
 
-function _process_md_file_html(ctx::Context, page_content_md::String)
+function _process_md_file_html(ctx::LocalContext, page_content_md::String)
     # get and process html for the foot of the page
     page_foot_path = path(:folder) / getgvar(:layout_page_foot)::String
     page_foot_html = ""
@@ -376,7 +419,7 @@ function _process_md_file_html(ctx::Context, page_content_md::String)
     return full_page_html
 end
 
-function _process_md_file_latex(ctx::Context, page_content_md::String)
+function _process_md_file_latex(ctx::LocalContext, page_content_md::String)
     page_content_latex = latex(page_content_md, ctx)
 
     full_page_latex = raw"\begin{document}" * "\n\n"
@@ -440,35 +483,27 @@ end
 
 
 """
-    process_triggers(gc)
+    reprocess(rpath, gc; skip_files, msg)
 
-See if earlier processing incurred any dependent processing by having modified
-some page variables. The typical case is when definitions change in the config
-file and all pages that use those definitions should be re-processed.
+Re-process a md file at 'rpath' as it may depend on things that will only be
+available at the time of the re-processing.
 """
-function process_triggers(gc::GlobalContext, skip_files::Vector{Pair{String, String}})
-    crumbs("process_triggers")
-
-    # see if it incurred re-triggers
-    re_process = gc.to_trigger
-    empty!(gc.to_trigger)
-    for c in values(gc.children_contexts)
-        union!(re_process, c.to_trigger)
-        empty!(c.to_trigger)
-    end
-
-    for rpath in re_process
-        start = time(); @info """
-            ⌛ re-proc $(hl(str_fmt(rpath), :cyan)) (depends on updated vars)
-            """
-        fpair = path(:folder) => rpath
-        process_file(
-            path(:folder) => rpath,
-            ifelse(splitext(rpath)[2] == ".html", :html, :md);
-            gc, skip_files, initial_pass=false
-        )
-        δt = time() - start; @info """
-            ... ✔ [reproc] $(hl(time_fmt(δt)))
-            """
-    end
+function reprocess(
+            rpath::String, gc::GlobalContext;
+            skip_files::Vector{Pair{String, String}}=Pair{String,String}[],
+            msg::String=""
+            )::Nothing
+    # check if the file was marked as to be skipped
+    fpair = path(:folder) => rpath
+    fpair in skip_files && return
+    # otherwise reprocess the file
+    case = ifelse(splitext(rpath)[2] == ".html", :html, :md)
+    start = time(); @info """
+        ⌛ re-proc $(hl(str_fmt(rpath), :cyan)) $msg
+        """
+    process_file(gc, fpair, case)
+    δt = time() - start; @info """
+        ... ✔ [reproc] $(hl(time_fmt(δt)))
+        """
+    return
 end
