@@ -142,3 +142,24 @@ const PageRefs = LittleDict{
     String,  # e.g. from '[the link]' to 'the_link'
     String   # e.g. 'https://example.com' or '#the_note'
 }
+
+
+"""
+    Anchor
+
+See anchors.jl, eltype of one of the fields of GC.
+
+Fields
+------
+    * id: the id of the anchor (e.g.: 'foo_bar')
+    * locs: list of rpaths that define the anchor, the last one is the one
+        that gets used.
+    * reqs: set of rpaths that require the anchor.
+"""
+struct Anchor
+    id::String
+    locs::Vector{String}
+    reqs::Set{String}
+end
+
+Anchor(id::String, loc::String) = Anchor(id, [loc], Set{String}())

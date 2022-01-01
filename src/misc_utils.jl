@@ -3,6 +3,13 @@ const VS = Vector{String}
 # used in default context
 const StringOrRegex = Union{String, Regex}
 
+"""
+    p1 / p2
+
+Acts as joinpath.
+"""
+(/)(s...) = joinpath(s...)
+
  """
     hl(s, c)
 
@@ -80,6 +87,7 @@ end
 
 
 crumbs(s1, s2="") = @debug "🚧 ... $(hl(s1, :yellow)) $(s2 === "" ? "" : "> $(hl(s2, :light_green))")"
+alert(s)          = @error "🚧 ... $s"
 
 
 assetpath(s...) = begin

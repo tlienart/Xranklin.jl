@@ -73,6 +73,7 @@ include("html_utils.jl")
 
 include("context/types.jl")
 include("context/context.jl")
+include("context/anchors.jl")
 include("context/default_context.jl")
 
 include("context/code/modules.jl")

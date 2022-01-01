@@ -84,7 +84,7 @@ function serve(d::String   = pwd();
     end
 
     # do the initial build
-    full_pass(wf; gc)
+    full_pass(gc, wf)
 
     # ---------------------------------------------------------------
     # Start the build loop
@@ -173,8 +173,8 @@ access to other pages' context or the global context menaing there's a fair
 bit of interplay that's possible.
 """
 function full_pass(
+            gc::GlobalContext,
             watched_files::LittleDict{Symbol, TrackedFiles};
-            gc::GlobalContext=cur_gc(),
             skip_files::Vector{Pair{String, String}}=Pair{String, String}[],
             layout_changed::Bool=false,
             config_changed::Bool=false,
@@ -237,16 +237,33 @@ function full_pass(
     # Go over all the watched files and run `process_file` on them
     for (case, dict) in watched_files, (fp, t) in dict
         process_file(
-            fp, case, dict[fp];
-            gc, skip_files, initial_pass
+            gc, fp, case, dict[fp];
+            skip_files, initial_pass
         )
     end
 
+    # REPROCESSING (2nd pass)
+    # -----------------------
     # Collect the pages that may need re-processing if they depend on
-    # definitions that got updated in the meantime.
-    # We can ignore gc because we just did a full pass
+    # definitions that got updated in the pass.
+    # This is for all the cross pages dependencies (e.g. if page A
+    # depends on a var that's defined in B that was seen after).
+    # GC triggers can be ignored here because we just did a full pass.
     empty!(gc.to_trigger)
-    process_triggers(gc, skip_files)
+    to_reprocess = Set{String}()
+    # cross pages dependencies (via getvarfrom)
+    for c in values(gc.children_contexts)
+        union!(to_reprocess, c.to_trigger)
+        empty!(c.to_trigger)
+    end
+    # global init dependencies such as anchors
+    if initial_pass
+        union!(to_reprocess, gc.init_trigger)
+    end
+    # reprocess
+    for r in to_reprocess
+        reprocess(r, gc; skip_files, msg="(depends on updated vars/anchors)")
+    end
 
     # ---------------------------------------------------------
     δt = time() - start; @info """
@@ -255,6 +272,9 @@ function full_pass(
     # ---------------------------------------------------------
     return
 end
+
+full_pass(watched_files::LittleDict{Symbol, TrackedFiles}; kw...) =
+    full_pass(cur_gc(), watched_files, kw...)
 
 
 """
@@ -326,17 +346,17 @@ function build_loop(
                     for (case, d) ∈ watched_files if case ∉ (:md, :html)
                 ]
                 msg *= " → triggering full pass [layout changed]"; @info msg
-                full_pass(watched_files; gc, skip_files, layout_changed=true)
+                full_pass(gc, watched_files; skip_files, layout_changed=true)
 
             # config chagned
             elseif fpath == path(:folder) / "config.md"
                 msg *= " → triggering full pass [config changed]"; @info msg
-                full_pass(watched_files; gc, config_changed=true)
+                full_pass(gc, watched_files; config_changed=true)
 
             elseif fpath == path(:folder) / "utils.jl"
                 msg *= " → triggering full pass [utils changed]"; @info msg
                 # NOTE in this case gc is re-instantiated!
-                full_pass(watched_files; gc, utils_changed=true)
+                full_pass(gc, watched_files; utils_changed=true)
 
             # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
             # TODO
@@ -347,7 +367,7 @@ function build_loop(
             # it's a standard file, process just that one
             else
                 @info msg
-                process_file(fp, case, cur_t; gc)
+                process_file(gc, fp, case, cur_t)
             end
 
             @info "✅  Website updated and ready to view"
