@@ -121,6 +121,7 @@ you can use and overwrite.
 | `date` | `Dates.Date(1)` | publication date of the page |
 | `lang` | `"julia"` | default language of executed code blocks |
 | `tags` | `String[]` | tags for the page |
+| `ignore_cache` | `Bool` | if `true` re-evaluate all the code on the page on first pass |
 | `mintoclevel` | `1` | minimum heading level to add to the table of contents |
 | `maxtoclevel` | `6` | maximum heading level to add to the table of contents |
 | `showall` | `true` | show the output of each executed code blocks |
@@ -252,6 +253,7 @@ There are some standard conditionals that can be particularly useful in layout.
   you should generally keep environments for HTML blocks or layout files.
 }
 
+
 ### E-strings
 
 E-strings allow you to run simple Julia code to define the parameters of a `{{...}}` block.
@@ -275,16 +277,25 @@ The first case is best illustrated with a simple example:
 
 More generally the syntax is `{{ e"..." }}` where the `...` is valid Julia code
 where page variables are prefixed with a `$`.
+The alternative syntax `{{> ...}}` is also supported:
+
+\showmd{
+  +++
+  bbb = 321
+  +++
+
+  {{> $bbb // 3}}
+}
 
 The code in the e-string is evaluated inside the [utils module](/syntax/utils/)
 and so could leverage any package it imports or any function it defines.
-For we added a function
+For instance we added a function
 
 ```julia
 bar(x) = "hello from foo <$x>"
 ```
 
-to `utils.jl` and can call it from here in a e-string as:
+to `utils.jl` and can call it from here in an e-string as:
 
 \showmd{
   {{e"bar($foo)"}}

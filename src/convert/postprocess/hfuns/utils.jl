@@ -11,8 +11,8 @@ const INTERNAL_HENV_IF = [
     # PRIMARY
     :if,
     # SECONDARY
-    :ifdef, :isdef,
-    :ifndef, :ifnotdef, :isndef, :isnotdef,
+    :ifdef, :isdef, :isdefined,
+    :ifndef, :ifnotdef, :isndef, :isnotdef, :isnotdefined,
     :ifempty, :isempty,
     :ifnempty, :ifnotempty, :isnotempty,
     :ispage, :ifpage,
@@ -37,6 +37,7 @@ const INTERNAL_HFUNS = [
     # /hyperrefs.jl
     :toc,
     :eqref,
+    :reflink,
     :cite,
     :link_a, :img_a,
     :footnotes
@@ -68,12 +69,12 @@ Helper function to check the number of arguments in a hfun.
 function _hfun_check_nargs(n::Symbol, p::VS; kmin::Int=0, kmax::Int=kmin)
     np = length(p)
     if !(kmin ≤ np ≤ kmax)
-        rge = ifelse(kmin == kmax, "$k", "[$kmin, $kmax]")
+        rge = ifelse(kmin == kmax, "$kmin", "[$kmin, $kmax]")
         @warn """
             {{$n ...}}
             $n expects $rge arg(s), $np given.
             """
-        return hfun_failed(n, p)
+        return hfun_failed(n |> string, p)
     end
     return ""
 end

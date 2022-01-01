@@ -25,6 +25,12 @@ const HIDE_FINAL_OUTPUT_PAT = r";\s*(:?#.*)?\n?"
 "Trim the non-relevant part of a stacktrace when evaluating code."
 const STACKTRACE_TRIM_PAT = r"\[\d+\]\stop-level\sscope"
 
+"Hide some or all lines of code in an executable block."
+const CODE_HIDE_PAT = Regex(raw"(?:^|[^\S\r\n]*?)#(\s)*?(?i)hide(all)?")
+
+"Same as CODE_HIDE_PAT but accounting for Literate syntax."
+const LITERATE_HIDE_PAT  = Regex(raw"(?:^|[^\S\r\n]*?)#src")
+
 # ---------- #
 # LIST+TABLE #
 # ---------- #

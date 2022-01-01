@@ -63,6 +63,41 @@ end
     @test isapproxstr(h, "bar")
 end
 
+@testset "if > ifdef" begin
+    lc = X.DefaultLocalContext()
+    s = raw"""
+        +++
+        a = "hello"
+        c = true
+        +++
+
+        {{isdef a}}yes{{else}}no{{end}}
+        {{isdef b}}yes{{else}}no{{end}}
+        {{isndef b}}yes{{else}}no{{end}}
+        {{isndef a}}yes{{elseif c}}foo{{else}}no{{end}}
+        """
+    h = html(s, lc; nop=true)
+    @test isapproxstr(h, "yes no yes foo")
+end
+
+@testset "if > isempty" begin
+    lc = X.DefaultLocalContext()
+    s = raw"""
+        +++
+        using Dates
+        a = ""
+        b = nothing
+        c = Dates.Date(1)
+        d = Dates.today()
+        +++
+        {{isempty a}}yes{{end}}
+        {{isempty b}}yes{{end}}
+        {{isempty c}}yes{{end}}
+        {{isnotempty d}}yes{{end}}
+        """
+    h = html(s, lc; nop=true)
+    @test isapproxstr(h, "yes yes yes yes")
+end
 
 # =============================================
 @testset "for basic" begin

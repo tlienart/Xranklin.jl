@@ -12,7 +12,10 @@ function eval_vars_cell!(ctx::Context, cell_code::SS)::Nothing
     code = cell_code |> strip |> string
 
     # skip cell if previously seen and unchanged
-    isunchanged(nb, cntr, code) && (increment!(nb); return)
+    if isunchanged(nb, cntr, code)
+        increment!(nb)
+        return
+    end
 
     if isstale(nb)
         # reeval all previous cells, we don't need to

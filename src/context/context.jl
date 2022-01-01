@@ -66,6 +66,7 @@ isstale(nb::Notebook)         = nb.is_stale_ref[]
 stale_notebook!(nb::Notebook) = (nb.is_stale_ref[] = true;)
 fresh_notebook!(nb::Notebook) = (nb.is_stale_ref[] = false;)
 
+
 # ------------------------------ #
 # GLOBAL and LOCAL CONTEXT TYPES #
 # ------------------------------ #
@@ -93,7 +94,22 @@ Fields:
     nb_code:            notebook associated with utils.jl
     children_contexts:  associated local contexts {rpath => lc}
     to_trigger:         set of dependent pages to trigger after updating GC
+                         (e.g. if config redefines a var used by some pages)
+    init_retrigger:     set of pages to trigger a second time after the initial
+                         full pass so they have access to everything defined in
+                         the full pass (e.g. all anchors).
 
+Note: generally it is 'to_trigger' that is used. The logic there is that when
+a page queries directly from GC we know that arrow (pg -> GC) and so when
+GC gets updated we necessarily need to go the other way (GC -> pg).
+When a page requires from another page (pg1 -> pg2) then this is handled
+via pg2's LC.to_trigger.
+
+However in some cases like the anchors, pages might request an information
+from another page without knowing which page provides it. In this context
+these pages need to be re-processed after the initial full pass so that
+they can 'find' the right provider page. That's what the init_trigger
+is for.
 """
 struct GlobalContext{LC<:Context} <: Context
     vars::Vars
@@ -101,8 +117,10 @@ struct GlobalContext{LC<:Context} <: Context
     vars_aliases::Alias
     nb_vars::VarsNotebook
     nb_code::CodeNotebook
+    anchors::LittleDict{String, Anchor}
     children_contexts::LittleDict{String, LC}
     to_trigger::Set{String}
+    init_trigger::Set{String}
 end
 
 
@@ -119,7 +137,9 @@ Fields:
     vars:             a dictionary of the local variables
     lxdefs:           a dictionary of the local lx-definitions
     headers:          a dictionary of the current page headers
-    rpath:            relative path to the page with this local context.
+    rpath:            relative path to the page with this local context
+                       this includes the extension so e.g. foo/bar/baz.md
+    anchors:          set of anchor ids defined on the page.
     is_recursive:     whether we're in a recursive context
     is_math:          whether we're recursing in a math environment
     req_vars:         mapping {pg => set of vars requested from pg}
@@ -139,6 +159,7 @@ struct LocalContext <: Context
     lxdefs::LxDefs
     headers::PageHeaders
     rpath::String
+    anchors::Set{String}
     # chars
     is_recursive::Ref{Bool}
     is_math::Ref{Bool}
@@ -173,19 +194,31 @@ is_math(c::LocalContext)  = c.is_math[]
 # GLOBAL CONTEXT CONSTRUCTORS AND METHODS #
 # --------------------------------------- #
 
-function GlobalContext(v=Vars(), d=LxDefs(); alias=Alias())
+function GlobalContext(vars=Vars(), defs=LxDefs(); alias=Alias())
     parent_module(wipe=true)
     # vars notebook
-    mdl = submodule(modulename("__global_vars", true), wipe=true)
-    nv  = VarsNotebook(mdl, Ref(1), VarsCodePairs(), Ref(false))
+    mdl     = submodule(modulename("__global_vars", true), wipe=true)
+    vars_nb = VarsNotebook(mdl, Ref(1), VarsCodePairs(), Ref(false))
     # utils notebook
     mdl = submodule(modulename("__global_utils", true), wipe=true)
-    nc  = CodeNotebook(mdl, Ref(1), CodeCodePairs(), CodeMap(), Ref(false))
-    # children
-    c   = LittleDict{String, LocalContext}()
-    # to_trigger
-    tt  = Set{String}()
-    return GlobalContext(v, d, alias, nv, nc, c, tt)
+    code_nb = CodeNotebook(mdl, Ref(1), CodeCodePairs(), CodeMap(), Ref(false))
+    # rest
+    anchors      = LittleDict{String, Anchor}()
+    children     = LittleDict{String, LocalContext}()
+    to_trigger   = Set{String}()
+    init_trigger = Set{String}()
+
+    return GlobalContext(
+        vars,
+        defs,
+        alias,
+        vars_nb,
+        code_nb,
+        anchors,
+        children,
+        to_trigger,
+        init_trigger
+    )
 end
 
 function hasvar(gc::GlobalContext, n::Symbol)
@@ -216,22 +249,36 @@ setdef!(gc::GlobalContext, n::String, d) = setdef!(gc.lxdefs, n, d)
 function LocalContext(glob, vars, defs, headers, rpath="", alias=Alias())
     # vars notebook
     mdl = submodule(modulename("$(rpath)_vars", true), wipe=true, utils=true)
-    nv  = VarsNotebook(mdl, Ref(1), VarsCodePairs(), Ref(false))
+    vars_nb  = VarsNotebook(mdl, Ref(1), VarsCodePairs(), Ref(false))
     # code notebook
     mdl = submodule(modulename("$(rpath)_code", true), wipe=true, utils=true)
-    nc  = CodeNotebook(mdl, Ref(1), CodeCodePairs(), CodeMap(), Ref(false))
+    code_nb  = CodeNotebook(mdl, Ref(1), CodeCodePairs(), CodeMap(), Ref(false))
     # req vars (keep track of what is requested by this page)
-    rv = LittleDict{String, Set{Symbol}}(
+    req_vars = LittleDict{String, Set{Symbol}}(
         "__global" => Set{Symbol}()
     )
-    rl = LittleDict{String, Set{String}}(
+    req_defs = LittleDict{String, Set{String}}(
         "__global" => Set{String}()
     )
-    tt = Set{String}()
+    anchors    = Set{String}()
+    to_trigger = Set{String}()
     # form the object
-    lc = LocalContext(glob, vars, defs, headers, rpath,
-                      Ref(false), Ref(false),
-                      rv, rl, alias, nv, nc, tt)
+    lc = LocalContext(
+        glob,
+        vars,
+        defs,
+        headers,
+        rpath,
+        anchors,
+        Ref(false),    # is recursive
+        Ref(false),    # is math
+        req_vars,
+        req_defs,
+        alias,
+        vars_nb,
+        code_nb,
+        to_trigger
+    )
     # attach it to global
     glob.children_contexts[rpath] = lc
     return lc

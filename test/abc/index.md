@@ -5,17 +5,13 @@ header = "foo"
 # ABC
 
 ```!
-Utils.AAA(1)
+using Random
+randstring(5)
 ```
 
 ```!
-Utils.BBB(1)
+randstring(3)
 ```
 
-```!
-Utils.CCC(0)
-```
-
-```!
-Utils.DDD(2)
-```
+s
+s

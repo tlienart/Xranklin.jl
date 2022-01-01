@@ -124,8 +124,9 @@ function find_henv(parts::Vector{Block}, idx::Int)::Tuple{Vector{HEnvPart},Int}
 end
 
 
-_estr(s)  = "e\"$s\""
-_nestr(s) = replace(s, r"^e\"" => "e\"!")
+_estr(s)     = "e\"$s\""
+_nestr(s)    = replace(s, r"^e\"" => "e\"!")
+_e_dollar(s) = raw"$" * s
 
 _isemptyvar(v::T) where T = hasmethod(isempty, (T,)) ? isempty(v) : false
 _isemptyvar(::Nothing)    = true
@@ -234,29 +235,39 @@ end
 
 function _resolve_henv_cond(henv::HEnvPart)
     crumbs("_resolve_henv_cond")
-    # XXX assumptions about the number of arguments
+    # XXX assumptions about the number of arguments (henv.args)
     env_name = henv.name
     env_name == :else && return true
     args     = henv.args
+
+    # placeholder for the condition to be evaluated
     cond_str = _estr("false")
+
     if env_name in (:if, :elseif)
         # XXX
         @assert length(args) == 1
+
+        # argument is either an e-string or a single variable 'var' which
+        # is turned into a corresponding estring with '$var'
         cond_str = args[1]
         if !startswith(cond_str, "e\"")
             cond_str = _estr("(\$$cond_str)")
         end
 
     # IS DEF
-    elseif env_name in (:ifdef, :isdef, :ifndef, :ifnotdef, :isndef, :isnotdef)
-        cond_str = _estr("(getlvar(\$$(args[1])) !== nothing)")
-        if env_name in (:ifndef, :ifnotdef, :isndef, :isnotdef)
+    elseif env_name in (:ifdef, :isdef, :isdefined, :ifndef, :ifnotdef, :isndef, :isnotdef)
+        cond_str = _estr("""
+            (getlvar(:$(args[1])) !== nothing)
+            """)
+        if env_name in (:ifndef, :ifnotdef, :ifnotdefined, :isndef, :isnotdef)
             cond_str = _nestr(cond_str)
         end
 
     # IS EMPTY
     elseif env_name in (:ifempty, :isempty, :ifnempty, :ifnotempty, :isnotempty)
-        cond_str = _estr("Xranklin._isemptyvar(\$$(args[1]))")
+        cond_str = _estr("""
+            Xranklin._isemptyvar(getlvar(:$(args[1])))
+            """)
         if env_name in (:ifnempty, :ifnotempty, :isnotempty)
             cond_str = _nestr(cond_str)
         end

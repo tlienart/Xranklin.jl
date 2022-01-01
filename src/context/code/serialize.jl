@@ -96,7 +96,7 @@ existing code cells are modified or new code cells added
 """
 function load_vars_cache!(ctx::Context, fpath::String)
     start = time(); @info """
-        ⏫ loading vars cache $(hl(str_fmt(get_rpath(fpath)), :cyan))
+          🔄  loading vars cache $(hl(str_fmt(get_rpath(fpath)), :cyan))
         """
     nb = ctx.nb_vars
     append!(nb.code_pairs, deserialize(fpath))
@@ -117,7 +117,7 @@ Same as `load_vars_cache!` but for a code-notebook.
 """
 function load_code_cache!(ctx::Context, fpath::String)
     start = time(); @info """
-        ⏫ loading code cache $(hl(str_fmt(get_rpath(fpath)), :cyan))
+          🔄  loading code cache $(hl(str_fmt(get_rpath(fpath)), :cyan))
         """
     nb = ctx.nb_code
     code_pairs, code_map = deserialize(fpath)

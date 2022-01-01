@@ -1,3 +1,49 @@
+/*
+
+NARROWEST with menu closed
+
+NARROWEST with menu active
+
+MEDIUM
+
+LARGE
+
+LARGER with right-toc
+
+* everything visible
+* auto margin around layout
+
+----------------------------------------------------------------
+
+#layout
+
+┌────────────────────────────────────────────────────┐
+│                                                    │
+│     #layout-left-menu         #layout-main         │
+│     ┌────────┬┬──────────────────────────┐         │
+│     │        ││                          │         │
+│     │        ││  ┌─────────────────────┐ │         │
+│     │        ││  │ #main-top-header    │ │         │
+│     │        ││  │                     │ │         │
+│     │        ││  └─────────────────────┘ │         │
+│     │        ││   #main-left-content     │         │
+│     │        ││     |           #main-right-margin │
+│     │        ││   ┌──────────┐  ┌─────┐  │         │
+│     │        ││   │          │  │     │  │         │
+│     │        ││   │          │  │     │  │         │
+│     │        ││   │          │  │     │  │         │
+│     │        ││   │          │  │     │  │         │
+│     │        ││   │          │  │     │  │         │
+│     │        ││   │          │  │     │  │         │
+│     │        ││   │          │  │     │  │         │
+│     │        ││   └──────────┘  └─────┘  │         │
+│     │        ││                          │         │
+│     └────────┴┴──────────────────────────┘         │
+│                                                    │
+└────────────────────────────────────────────────────┘
+
+ */
+
 :root {
   /* -------------
      FONT VARIABLES
@@ -63,6 +109,7 @@
 	--col-purplePastel: #e8d0ff;
 	--col-redPastel: 		#ffc4c9;
 	--col-yellowPastel: #ffffa7;
+	--col-lblue: #03a7dd;
 
 	--blue0:   #002077;
 	--blue10:  #003290;
@@ -137,30 +184,32 @@
 	--html-overflow-x:      hidden;
 
   --layout-width:         100%;
-  --layout-margin-left:   0em;
-  --layout-margin-right:  .5em;
-  --layout-margin-top:    0em;
-  --layout-margin-bottom: 0em;
+  --layout-margin-left:   0px;
+  --layout-margin-right:  8px;
+  --layout-margin-top:    0px;
+  --layout-margin-bottom: 0px;
 
   /* LAYOUT > MENU BUTTON */
   --menu-burger-visibility: hidden;
-  --menu-burger-width:      45px;
-  --menu-burger-height:     45px;
+  --menu-burger-width:      40px;
+  --menu-burger-height:     40px;
 
   /* LAYOUT > LEFT-MENU */
-  --left-menu-base-width:    13em;
+  --left-menu-base-width:    208px;
   --left-menu-width:         var(--left-menu-base-width);
-  --left-menu-margin-left:   calc(-1 * var(--menu-burger-width));
-  --left-menu-margin-right:  .25em;   /* next to main */
-  --left-menu-margin-top:    0em;
-	--left-menu-content-top:   5em;
+  --left-menu-margin-left:   0; /* calc(-1 * var(--menu-burger-width));*/
+  --left-menu-margin-right:  4px;   /* next to main */
+  --left-menu-margin-top:    0px;
+	--left-menu-content-top:   160px;
 
 	--menu-content-border-right:  1px solid var(--col-chalk);
 
+	--top-bar-nav-padding-left: 30px;
+
   /* LAYOUT > MAIN */
-  --main-margin-left:  .25em;
-  --main-margin-right: 0em;
-  --main-margin-top:   0em;
+  --main-margin-left:  4px;
+  --main-margin-right: 0px;
+  --main-margin-top:   2px;
   --main-width:        calc(100% - (
                          var(--left-menu-margin-left)  +
                          var(--left-menu-width)         +
@@ -170,12 +219,14 @@
                          var(--main-margin-right)
                          )
                        );
+	--main-overlay-bg: none;
 
   /* MAIN > TOP HEADER */
-  --header-margin-left:   .5em;
-  --header-margin-right:  .5em;
-  --header-margin-top:    1em;
-  --header-margin-bottom: 0em;
+  --header-margin-left:   8px;
+  --header-margin-right:  8px;
+  --header-margin-top:    16px;
+  --header-margin-bottom: 0px;
+	--header-padding-left:  8px;
   --header-width:         calc(100% - (
                             var(--header-margin-left)  +
                             var(--header-margin-right)
@@ -184,17 +235,17 @@
 
   /* MAIN > RIGHT-MARGIN */
   --right-margin-visibility:    hidden;
-  --right-margin-margin-left:   0em;
-  --right-margin-margin-right:  0em;
-  --right-margin-margin-top:    0em;
-  --right-margin-width:         0em;
+  --right-margin-margin-left:   0px;
+  --right-margin-margin-right:  0px;
+  --right-margin-margin-top:    0px;
+  --right-margin-width:         0px;
 
   /* MAIN > LEFT-CONTENT */
-  --left-content-margin-left:   .5em;
-  --left-content-margin-right:  .5em;
-  --left-content-margin-top:    .5em;
-	--left-content-padding-left:  1.5em;
-	--left-content-padding-right: 1em;
+  --left-content-margin-left:   8px;
+  --left-content-margin-right:  8px;
+  --left-content-margin-top:    8px;
+	--left-content-padding-left:  24px;
+	--left-content-padding-right: 16px;
   --left-content-width:         calc(100% - (
                                   var(--left-content-margin-left)  +
 																	var(--left-content-padding-left) +
@@ -209,69 +260,54 @@
 }
 
 
-/*
-XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX
-XXX here need to hack something proper otherwise page goes to shit
-at the moment  only hiding the burger which  is not great.
-XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX
- */
-@media (max-width: 36em) {
+@media (max-width: 576px) {
 	:root {
-		/* --menu-burger-width:  0em; */
-		--html-overflow-x: 		scroll;
+		--html-overflow-x: auto;
 	}
 }
 
-@media (max-width: 52em) {
+@media (max-width: 832px) {
   :root {
     --menu-burger-visibility:     visible;
-    --left-menu-width:            0em;
-    --left-menu-margin-right:     0em;
-		--left-content-padding-left:  .5em;
-		--left-content-padding-right: .5em;
+    --left-menu-width:            0px;
+    --left-menu-margin-right:     0px;
+		--left-content-padding-left:  8px;
+		--left-content-padding-right: 8px;
 		--menu-content-border-right:  none;
+		--left-content-width: 90vw;
   }
   #layout-left-menu {
-    min-width: 0em;
+    min-width: 0px;
     transition: min-width 0.2s, width 0.2s;
+		visibility: hidden;
   }
 	#menu-burger {
 		min-width: var(--menu-burger-width);
 	}
-  #layout-left-menu.active {
-    min-width: var(--left-menu-base-width);
-		background-color: var(--col-chalk);
-  }
-  #menu-burger.active {70
-    min-width: var(--menu-burger-width);
-    background-color: white;
-    background-image: url(/assets/menu_cross.svg);
-    left: var(--left-menu-base-width);
-    border-radius: 7px;
-  }
 }
 
-@media (min-width: 52em) {
+@media (min-width: 832px) {
 	:root {
-		--left-menu-margin-left: 0em;
+		--left-menu-margin-left: 0px;
+		--header-padding-left:   24px;
 	}
 }
 
-@media (min-width: 70em) {
+@media (min-width: 1120px) {
   :root {
     --right-margin-visibility:    visible;
-    --right-margin-margin-left:   .25em;
-    --right-margin-margin-right:  0em;
-    --right-margin-margin-top:    .5em;
-    --right-margin-width:         13em;
-    --left-content-margin-right:  .25em
+    --right-margin-margin-left:   4px;
+    --right-margin-margin-right:  0px;
+    --right-margin-margin-top:    8px;
+    --right-margin-width:         208px;
+    --left-content-margin-right:  4px;
   }
 }
 
 
-@media (min-width: 80em) {
+@media (min-width: 1280px) {
   :root {
-    --layout-width:        77em;
+    --layout-width:        1232px;
     --layout-margin-left:  auto;
     --layout-margin-right: auto;
   }
@@ -321,6 +357,7 @@ code {
 
 h1 {
 	font-size: var(--text-h1);
+	font-weight: 600;
 }
 
 h2 {
@@ -351,6 +388,51 @@ LAYOUT
 =====================================================================
  */
 
+/*
+------------
+TOP BAR
+------------
+*/
+
+:root {
+	--top-bar-height: 55px;
+}
+
+#top-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-color: var(--col-dark);
+	height: var(--top-bar-height);
+	min-width: 100%;
+}
+
+/* Account for the fixed horizontal bar */
+/* html {
+	scroll-padding: 0;
+} */
+
+#top-bar-nav {
+	float: right;
+	height: var(--top-bar-height);
+	padding-right: var(--top-bar-nav-padding-left);
+}
+#top-bar-nav a {
+	display: flex;
+	align-items: center;
+	height: 100%;
+}
+
+#top-bar-nav span {
+	color: white;
+	font-size: var(--text-xl);
+	font-weight: 350;
+}
+
+#top-bar-nav img {
+	padding-left: 20px;
+	height: 65%;
+}
 
 #layout {
   display:       flex;                      /* so that children have same height */
@@ -358,6 +440,8 @@ LAYOUT
   margin-left:   var(--layout-margin-left);
   margin-right:  var(--layout-margin-right);
   margin-top:    var(--layout-margin-top);
+
+	word-wrap: break-word;
 }
 
 /*
@@ -368,29 +452,45 @@ LEFT PANEL / MENU
 
 #menu-burger {
   position:   sticky;
-  top:        0;
+  top:        calc( ( var(--top-bar-height) - var(--menu-burger-height) ) / 2 );
   left:       0;
 
   visibility: var(--menu-burger-visibility);
   width:      var(--menu-burger-width);
   height:     var(--menu-burger-height);
 
-  background-color: black;
+	display: inline-block;
+
+  background-color: var(--col-dark);
   background-image: url(/assets/menu_list.svg);
-  border-radius: 7px;
+  /* border-radius: 7px; */
+
+	opacity: 85%;
 
   z-index: 5;
   transition: 0.2s left;
 }
+#menu-burger.active {
+	min-width: var(--menu-burger-width);
+	background-image: url(/assets/menu_cross.svg);
+	background-color: var(--col-dark);
+	left: var(--left-menu-base-width);
+}
 
 #layout-left-menu {
   flex: 1;
-  z-index: 10;
+  /* z-index: 10; */
 
   min-width:    var(--left-menu-width);
   margin-left:  var(--left-menu-margin-left);
   margin-right: var(--left-menu-margin-right);
   margin-top:   var(--left-menu-margin-top);
+}
+#layout-left-menu.active {
+	min-width: var(--left-menu-base-width);
+	background-color: var(--col-xlight);
+	visibility: initial;
+	/* height: 100vh; */
 }
 
 #menu-content {
@@ -421,7 +521,7 @@ RIGHT PANEL / MAIN
   margin-top:    var(--header-margin-top);
   margin-bottom: var(--header-margin-bottom);
 
-	padding-left: 1em;
+	padding-left: var(--header-padding-left);
 	padding-top: 1em;
 }
 
@@ -440,11 +540,13 @@ RIGHT PANEL / MAIN
 	padding-left: var(--left-content-padding-left);
 }
 
+#main-left-content h2:first-of-type { padding-top: 0em; }
+
 #main-right-margin {
   visibility:   var(--right-margin-visibility);
 	position:     sticky;
   float:        right;
-	top:	  			10em;
+	top:	  			var(--left-menu-content-top);
 
   width:        var(--right-margin-width);
   margin-left:  var(--right-margin-margin-left);
@@ -465,8 +567,8 @@ RIGHT PANEL / MAIN
 }
 
 #margin-toc a:hover {
-	color: inherit;
-	text-decoration: underline;
+	color: var(--col-lblue);
+	text-decoration: none;
 }
 
 #margin-toc ol {
@@ -486,7 +588,7 @@ RIGHT PANEL / MAIN
 
 #margin-toc-legend {
 	text-transform: uppercase;
-	font-weight:    500;
+	font-weight:    650;
 	letter-spacing: 0.0375em;
 	padding-left: 	1.6em;
 }
