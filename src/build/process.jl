@@ -295,9 +295,6 @@ function process_md_file_io!(
         fpv = path(:cache) / noext(rpath) / "nbv.cache"
         fpc = path(:cache) / noext(rpath) / "nbc.cache"
 
-        alert("isfile fpv ($fpv)? $(isfile(fpv))")
-        alert("isfile fpc ($fpc)? $(isfile(fpc))")
-
         if isfile(fpv)
             load_vars_cache!(lc, fpv)
             initial_cache_used = true
