@@ -56,8 +56,13 @@ function serve(d::String   = pwd();
     gc = DefaultGlobalContext()
     set_paths!(gc, folder)
 
+    # if there is a utils.jl that was cached, check if it has changed,
+    # if it has, we clear even if clear is false
+    cached  = path(:cache)  / "utils.jl"
+    current = path(:folder) / "utils.jl"
+
     # if clear, destroy output directories if any
-    if clear
+    if clear || !filecmp(cached, current)
         for odir in (path(:site), path(:pdf), path(:cache))
             rm(odir; force=true, recursive=true)
         end
@@ -110,6 +115,7 @@ function serve(d::String   = pwd();
     start = time()
     @info "📓 serializing $(hl("config", :cyan))..."
     serialize_notebook(gc.nb_vars, path(:cache) / "gnbv.cache")
+    cp(path(:folder) / "utils.jl", path(:cache) / "utils.jl", force=true)
     for (rp, ctx) in gc.children_contexts
         # ignore .html pages
         endswith(rp, ".md") || continue

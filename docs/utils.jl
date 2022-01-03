@@ -1,5 +1,5 @@
 function hfun_rm_headers(ps::Vector{String})
-    c = Xranklin.cur_lc()
+    c = cur_lc()
     for h in ps
         if h in keys(c.headers)
             delete!(c.headers, h)
@@ -20,4 +20,41 @@ html_show(f::Foo) = "<strong>Foo: $(f.x)</strong>"
 
 struct Baz
     z::Int
+end
+
+####################################
+# Layout
+####################################
+
+function hfun_navmenu()
+    io = IOBuffer()
+    for m in getgvar(:menu)
+        name = m.first
+        subs = m.second
+
+        # Submenu title + start of subs
+        write(io, """
+            <strong style="color:red; font-size: var(--large);">
+                $(uppercasefirst(name))
+            </strong>
+            <ul class="pure-menu-list">
+            """)
+
+        # subs items
+        for s in subs
+            loc   = "$name/$s"
+            title = getvarfrom(:header, loc * ".md")
+            write(io, """
+                <li class="pure-menu-item">
+                    <a href="/$loc/" class="pure-menu-link">
+                        $title
+                    </a>
+                </li>
+                """)
+        end
+
+        # end of list
+        write(io, "</ul>")
+    end
+    return String(take!(io))
 end

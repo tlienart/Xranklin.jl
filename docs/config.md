@@ -6,12 +6,17 @@ author = "Thibaut Lienart"
 # General Layout
 layout_page_foot = ""
 content_tag = ""
+
+# Menus + ordering of submenus
 menu = [
-  "Overview"  => "/overview/",
-  "Syntax"    => "/syntax/",
-  "Layout"    => "/layout/",
-  "Context"   => "/context/",
-  "FAQs"      => "/faq/"
+  "syntax" => [
+                "basics",
+                "extensions",
+                "code",
+                "plots",
+                "vars+funs",
+                "utils"
+                ],
 ]
 
 # Page layout

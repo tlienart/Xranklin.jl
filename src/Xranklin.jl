@@ -46,6 +46,7 @@ export html, latex
 
 # Access contexts
 export getvar, getvarfrom, getlvar, getgvar, setlvar!, setgvar!, assetpath
+export cur_lc, cur_gc
 export locvar, globvar, pagevar  # LEGACY
 
 # ------------------------------------------------------------------------

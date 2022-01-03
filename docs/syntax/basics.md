@@ -3,7 +3,7 @@ showtoc = true
 header = "Markdown basics"
 +++
 
-<!-- avoid having the dummy example headers in the toc -->
+<!-- avoid having dummy example headers in the toc -->
 {{rm_headers level_1 level_2 level_3 a_text a_text__2}}
 
 ## Text
@@ -124,7 +124,7 @@ there can be any formatting in the blockquote:
 
 }
 
-you can also skip lines which will act as a paragraph break _within_ the blockquote:
+You can also skip lines which will act as a paragraph break _within_ the blockquote:
 
 \showmd{
   > ABC
@@ -133,7 +133,7 @@ you can also skip lines which will act as a paragraph break _within_ the blockqu
 
 }
 
-you can also nest blockquotes (make sure you skip a line after the nested block as shown below to separate between the inner nested quote and the outer one):
+You can also nest blockquotes (make sure you skip a line after the nested block as shown below to separate between the inner nested quote and the outer one):
 
 \showmd{
   > ABC

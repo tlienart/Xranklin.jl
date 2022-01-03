@@ -488,9 +488,8 @@ LEFT PANEL / MENU
 }
 #layout-left-menu.active {
 	min-width: var(--left-menu-base-width);
-	background-color: var(--col-xlight);
 	visibility: initial;
-	/* height: 100vh; */
+	border-right: 1px solid var(--col-light);
 }
 
 #menu-content {
