@@ -211,3 +211,27 @@ SHOW MD
 .trim .md-result {
   margin-bottom: 0.5em;
 }
+
+/* ==================================================================
+    KATEX
+================================================================== */
+
+body { counter-reset: eqnum; }
+
+.katex { font-size: 1.1em !important; }
+
+.katex-display .katex {
+    display: inline-block;
+}
+
+.katex-display::after {
+    counter-increment: eqnum;
+    content: "(" counter(eqnum) ")";
+    position: relative;
+    float: right;
+    padding-right: 5px; }
+
+.nonumber .katex-display::after {
+  counter-increment: nothing;
+  content: "";
+}

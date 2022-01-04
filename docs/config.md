@@ -1,3 +1,10 @@
+<!--
+Notes:
+
+- KaTeX version = 0.15.1 (changed Jan'22)
+- HL version = 11.3.1
+ -->
+
 +++
 
 

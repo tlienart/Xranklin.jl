@@ -4,27 +4,21 @@ header = "foo"
 
 # ABC
 
-```!
-using Random
-randstring(5)
-```
+\nonumber{
+  $$ x = 1 \label{foo} $$
+}
 
-```!
-randstring(3)
-```
+$$ x = 2 \label{eq2} $$
 
-# page from (works)
+\eqref{eq2}
 
-[aa](/syntax/aa/), [bb](/syntax/bb/)
+$$ x = 3 $$
 
-<!-- * {{fill v syntax/aa}}
-* {{fill v syntax/bb}}
- -->
 
-# page from (investigate)
+\nonumber{
+  $$ x = 4 $$
+}
 
-{{allv}}
+$$ x = 5 \label{eq5} $$
 
-# page from (doesn't work)
-
-<!-- {{navmenu}} -->
+\eqref{eq2, eq5}

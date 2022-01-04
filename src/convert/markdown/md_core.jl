@@ -182,29 +182,28 @@ rlatex(b::Block, c; kw...)  = rlatex(content(b), c; tokens=b.inner_tokens, kw...
 
 
 """
-    dmath(b, c)
+    dmath(b, ctx)
 
 Display math block on a page with HTML output and processing of possible
 label command. If a labelcommand is found, the output is preceded with
 an anchor.
 """
-function dmath(b::Block, c::LocalContext)
-    hasmath!(c)
+function dmath(b::Block, ctx::LocalContext)
+    hasmath!(ctx)
     math_str = content(b)
     anchor   = ""
+    cntr     = (eqrefs(ctx)["__cntr__"] += 1)
     # check if there's a \label{...}, if there is, process it
     # then remove it & do the rest of the processing
-    label_match = match(MATH_LABEL_PAT, math_str)
-    if label_match !== nothing
+    if (label_match = match(MATH_LABEL_PAT, math_str)) !== nothing
         id       = string_to_anchor(string(label_match.captures[1]))
-        class    = getvar(c, :anchor_class, "anchor") * " " *
-                   getvar(c, :anchor_math_class, "anchor-math")
+        class    = getvar(ctx, :anchor_class, "anchor") * " " *
+                   getvar(ctx, :anchor_math_class, "anchor-math")
         anchor   = html_a(; id, class)
         math_str = replace(math_str, MATH_LABEL_PAT => "") |> subs
         # keep track of the reference + numbering
-        eqrefs(c)[id] = (eqrefs(c)["__cntr__"] += 1)
-    else
-        eqrefs(c)["__cntr__"] += 1
+        eqrefs(ctx)[id] = cntr
     end
-    return "$anchor\\[ $(math(math_str, c)) \\]\n"
+    is_recursive(ctx) && return "\\[ $(math(math_str, ctx)) \\]\n"
+    return "$anchor\\[ $(math(math_str, ctx)) \\]\n"
 end

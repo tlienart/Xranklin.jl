@@ -93,6 +93,7 @@ include("convert/regex.jl")
 include("convert/markdown/lxfuns/utils.jl")
 include("convert/markdown/lxfuns/hyperrefs.jl")
 include("convert/markdown/lxfuns/show.jl")
+include("convert/markdown/lxfuns/misc.jl")
 
 # >> LxObjects
 include("convert/markdown/latex_objects.jl")

@@ -21,6 +21,25 @@ For _display_ math, use double `$$`:
   $$ \exp(i\pi) + 1 = 0 $$
 }
 
+Every "display math" block gets automatically numbered.
+You can suppress this using `\nonumber{$$...$$}` for instance:
+
+\showmd{
+  \nonumber{
+    $$ x = 0 $$
+  }
+}
+
+You can add labels to equations using `\label{label name}` and refer to it via `\eqref{label name}`:
+
+\showmd{
+  $$
+    x + \underbrace{y + z}_{w} = u \label{some equation}
+  $$
+
+  And refer to it as \eqref{some equation}.
+}
+
 Equations can span multiple lines and use multi-line environments
 
 \showmd{
@@ -46,10 +65,41 @@ environment too (like in LaTeX, commands have to be defined before they're used)
   $$ \E{\sum_{i=1}^n X^2_i} = \lambda\exp(\sigma) $$
 }
 
-### Styling (XXX)
+### Styling
 
-- numbering (look up new stuff, there's a counter set by KaTeX now)
-- text size
+The standard styling for KaTeX with Franklin will be something like
+
+```css
+body { counter-reset: eqnum; }
+
+.katex { font-size: 1.1em !important; }
+
+.katex-display .katex {
+    display: inline-block;
+}
+
+.katex-display::after {
+    counter-increment: eqnum;
+    content: "(" counter(eqnum) ")";
+    position: relative;
+    float: right;
+    padding-right: 5px; }
+
+.nonumber .katex-display::after {
+  counter-increment: nothing;
+  content: "";
+}
+```
+
+Increase the `1.1em` to e.g. `1.2em` if you want larger font or decrease to e.g. `1.0em` for smaller font.
+The classes `.katex-display` are for block maths, `eqnum` is the CSS counter used for numbering equations.
+The `.nonumber` class is used for equations with suppressed numbering.
+
+\note{
+  Franklin uses its own counter to keep track of equations, there is no communication between KaTeX or the CSS and Franklin. This also means that you cannot effectively use KaTeX commands that would suppress numbering as this would impact equation references via `\eqref`.
+}
+
+
 
 ## Div blocks
 

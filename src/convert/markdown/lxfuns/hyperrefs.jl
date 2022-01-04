@@ -28,7 +28,6 @@ function lx_toc(; tohtml::Bool=true)::String
     # TODO in LaTeX it's a bit more subtle, we could play
     # with tocdepth setting, it won't be exactly the same
     tohtml || return "\\tableofcontents"
-
     minlevel = getlvar(:mintoclevel)::Int
     maxlevel = getlvar(:maxtoclevel)::Int
     return "{{toc $minlevel $maxlevel}}"
@@ -92,8 +91,7 @@ Refer to an equation possibly defined later.
 function lx_eqref(p::VS; tohtml::Bool=true)::String
     c = _lx_check_nargs(:eqref, p, 1)
     isempty(c) || return c
-
-    tohtml || return "\\eqref{$(p[1])}"
+    tohtml     || return "\\eqref{$(p[1])}"
 
     ids   = string_to_anchor.(string.(split(p[1], ',')))
     inner = prod("{{eqref $id}}$(ifelse(i < length(ids), ", ", ""))"

@@ -282,6 +282,8 @@ function process_md_file_io!(
     set_current_local_context(lc)
     # reset the headers
     empty!(lc.headers)
+    # reset the eqs counter
+    eqrefs(lc)["__cntr__"] = 0
     # reset code counter
     setvar!(lc, :_auto_cell_counter, 0)
     # keep track of the anchors pre-processing to see which ones
