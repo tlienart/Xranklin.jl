@@ -235,3 +235,13 @@ body { counter-reset: eqnum; }
   counter-increment: nothing;
   content: "";
 }
+
+/* ---
+
+--- */
+.pure-menu-link {
+  padding-left: 2em;
+}
+.pure-menu-link:hover {
+  background-color: var(--col-xlight);
+}

@@ -1,6 +1,7 @@
 +++
 showtoc = true
 header = "Plots"
+menu_title = header
 +++
 
 ~~~

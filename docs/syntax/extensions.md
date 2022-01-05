@@ -1,6 +1,7 @@
 +++
 showtoc = true
 header = "Markdown extensions"
+menu_title = "Extensions"
 +++
 
 ## Equations

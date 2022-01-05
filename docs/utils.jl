@@ -43,7 +43,7 @@ function hfun_navmenu()
         # subs items
         for s in subs
             loc   = "$name/$s"
-            title = getvarfrom(:header, loc * ".md")
+            title = getvarfrom(:menu_title, loc * ".md")
             write(io, """
                 <li class="pure-menu-item">
                     <a href="/$loc/" class="pure-menu-link">

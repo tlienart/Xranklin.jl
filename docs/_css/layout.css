@@ -195,14 +195,14 @@ LARGER with right-toc
   --menu-burger-height:     40px;
 
   /* LAYOUT > LEFT-MENU */
-  --left-menu-base-width:    208px;
+  --left-menu-base-width:    200px;
   --left-menu-width:         var(--left-menu-base-width);
   --left-menu-margin-left:   0; /* calc(-1 * var(--menu-burger-width));*/
   --left-menu-margin-right:  4px;   /* next to main */
   --left-menu-margin-top:    0px;
 	--left-menu-content-top:   160px;
 
-	--menu-content-border-right:  1px solid var(--col-chalk);
+	--menu-content-border-right:  1px solid var(--col-xlight);
 
 	--top-bar-nav-padding-left: 30px;
 
@@ -489,7 +489,7 @@ LEFT PANEL / MENU
 #layout-left-menu.active {
 	min-width: var(--left-menu-base-width);
 	visibility: initial;
-	border-right: 1px solid var(--col-light);
+	border-right: 2px solid var(--col-xlight);
 }
 
 #menu-content {
@@ -556,7 +556,7 @@ RIGHT PANEL / MAIN
 #margin-toc {
 	font-size: var(--text-sm);
 	color: var(--col-gray);
-	border-left: 1px solid var(--col-chalk);
+	border-left: 1px solid var(--col-xlight);
 	padding-right: 1em;
 }
 

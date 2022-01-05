@@ -1,6 +1,7 @@
 +++
 showtoc = true
 header = "Markdown basics"
+menu_title = "Basics"
 +++
 
 <!-- avoid having dummy example headers in the toc -->

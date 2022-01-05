@@ -1,6 +1,7 @@
 +++
 showtoc = true
-header = "Variables and Functions"
+header = "Page Variables"
+menu_title = header
 +++
 
 ## Page variables

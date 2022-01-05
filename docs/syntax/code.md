@@ -1,6 +1,7 @@
 +++
 showtoc = true
-header = "Code cells"
+header = "Code blocks"
+menu_title = header
 +++
 
 \newcommand{\triplebt}{~~~<code>&#96;&#96;&#96;</code>~~~}
