@@ -5,7 +5,6 @@ menu_title = header
 +++
 
 \newcommand{\triplebt}{~~~<code>&#96;&#96;&#96;</code>~~~}
-
 ~~~
 <style>
 img.code-figure {

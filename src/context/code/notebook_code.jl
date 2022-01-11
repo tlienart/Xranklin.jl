@@ -180,7 +180,6 @@ function _eval_code_cell(mdl::Module, code::String, cell_name::String)::Captured
 
         msg = """
               Code evaluation
-              ---------------
               There was an error of type '$err' when running code '$(cell_name)'
               Details:
               $stacktrace

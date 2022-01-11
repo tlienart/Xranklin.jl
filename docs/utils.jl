@@ -5,7 +5,7 @@ function hfun_rm_headers(ps::Vector{String})
             delete!(c.headers, h)
         end
     end
-    return
+    return ""
 end
 
 # used in syntax/vars+funs #e-strings demonstrating that e-strings are
@@ -34,9 +34,9 @@ function hfun_navmenu()
 
         # Submenu title + start of subs
         write(io, """
-            <strong style="color:red; font-size: var(--large);">
+            <div class="submenu-title">
                 $(uppercasefirst(name))
-            </strong>
+            </div>
             <ul class="pure-menu-list">
             """)
 

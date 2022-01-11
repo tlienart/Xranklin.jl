@@ -229,7 +229,7 @@ LARGER with right-toc
 	--header-padding-left:  8px;
   --header-width:         calc(100% - (
                             var(--header-margin-left)  +
-                            var(--header-margin-right)
+                            var(--header-margin-right) - 2em;
                             )
                           );
 
@@ -276,6 +276,9 @@ LARGER with right-toc
 		--menu-content-border-right:  none;
 		--left-content-width: 90vw;
   }
+	#top-bar-nav img {
+		margin-left: auto;
+	}
   #layout-left-menu {
     min-width: 0px;
     transition: min-width 0.2s, width 0.2s;
@@ -413,24 +416,30 @@ TOP BAR
 } */
 
 #top-bar-nav {
-	float: right;
 	height: var(--top-bar-height);
 	padding-right: var(--top-bar-nav-padding-left);
+	width: 100%;
+	max-width: 1200px;
+	margin-left: auto;
+	margin-right: auto;
 }
 #top-bar-nav a {
 	display: flex;
 	align-items: center;
 	height: 100%;
+	margin-right: 20px;
 }
 
 #top-bar-nav span {
 	color: white;
 	font-size: var(--text-xl);
 	font-weight: 350;
+	margin-left: auto;
 }
 
 #top-bar-nav img {
-	padding-left: 20px;
+	padding-left: 40px;
+	/* padding-right: 20px; */
 	height: 65%;
 }
 
@@ -452,35 +461,30 @@ LEFT PANEL / MENU
 
 #menu-burger {
   position:   sticky;
-  top:        calc( ( var(--top-bar-height) - var(--menu-burger-height) ) / 2 );
-  left:       0;
-
+	left: 0;
   visibility: var(--menu-burger-visibility);
   width:      var(--menu-burger-width);
   height:     var(--menu-burger-height);
-
-	display: inline-block;
-
+	display: block;
   background-color: var(--col-dark);
-  background-image: url(/assets/menu_list.svg);
-  /* border-radius: 7px; */
-
 	opacity: 85%;
-
   z-index: 5;
   transition: 0.2s left;
 }
+#menu-burger {
+  top:        calc( ( var(--top-bar-height) - var(--menu-burger-height) ) / 2 );
+  background-image: url(/assets/icons/menu_list.svg);
+}
+
 #menu-burger.active {
+	visibility: visible;
 	min-width: var(--menu-burger-width);
-	background-image: url(/assets/menu_cross.svg);
-	background-color: var(--col-dark);
+	background-image: url(/assets/icons/menu_cross.svg);
 	left: var(--left-menu-base-width);
 }
 
 #layout-left-menu {
-  flex: 1;
-  /* z-index: 10; */
-
+	flex: 1;
   min-width:    var(--left-menu-width);
   margin-left:  var(--left-menu-margin-left);
   margin-right: var(--left-menu-margin-right);
@@ -498,6 +502,7 @@ LEFT PANEL / MENU
   top: var(--left-menu-content-top);
 	padding-left: 1em;
 	border-right: var(--menu-content-border-right);
+	display: block;
 }
 
 /*
@@ -628,4 +633,7 @@ PAGE FOOT
 }
 #pg-foot a {
 	color: inherit;
+}
+#pg-foot a:hover {
+	color: var(--col-lblue);
 }

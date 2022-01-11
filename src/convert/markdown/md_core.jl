@@ -77,16 +77,19 @@ function convert_md(md::SS, c::Context;
     # go over each group, if it's a paragraph add the paragraph separators
     # around it, then convert each block in the group and write that to stream
     for g in groups
-        if g.role == :PARAGRAPH
+        if g.role in (:PARAGRAPH, :PARAGRAPH_NOP)
+            par = g.role == :PARAGRAPH
             process_latex_objects!(g.blocks, c; tohtml)
-            if !all(isempty, g.blocks)
-                write(io, before_par)
-                pio = IOBuffer()
-                for b in g.blocks
-                    write(pio, convert(b, c))
-                end
-                write(io, strip(String(take!(pio)), '\n'))
-                write(io, after_par)
+            pio = IOBuffer()
+            for b in g.blocks
+                cb = convert(b, c)
+                write(pio, cb)
+            end
+            bulk = strip(String(take!(pio)), '\n')
+            if par
+                write(io, before_par, bulk, after_par)
+            else
+                write(io, bulk)
             end
 
         elseif g.role == :LIST

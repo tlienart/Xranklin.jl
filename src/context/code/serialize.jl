@@ -99,7 +99,15 @@ function load_vars_cache!(ctx::Context, fpath::String)
           🔄  loading vars cache $(hl(str_fmt(get_rpath(fpath)), :cyan))
         """
     nb = ctx.nb_vars
-    append!(nb.code_pairs, deserialize(fpath))
+    try
+        append!(nb.code_pairs, deserialize(fpath))
+    catch
+        # deserialization failed because of changed julia version or something of the sorts
+        @info """
+            ... [load vars] ❌ (deserialization failed, usually due to Julia version switch).
+            """
+        return
+    end
     for vcp in nb.code_pairs, vp in vcp.vars
         setvar!(ctx, vp.var, vp.value)
     end
@@ -120,9 +128,17 @@ function load_code_cache!(ctx::Context, fpath::String)
           🔄  loading code cache $(hl(str_fmt(get_rpath(fpath)), :cyan))
         """
     nb = ctx.nb_code
-    code_pairs, code_map = deserialize(fpath)
-    append!(nb.code_pairs, code_pairs)
-    merge!(nb.code_map, code_map)
+    try
+        code_pairs, code_map = deserialize(fpath)
+        append!(nb.code_pairs, code_pairs)
+        merge!(nb.code_map, code_map)
+    catch
+        # deserialization failed because of changed julia version or something of the sorts
+        @info """
+            ... [load code] ❌ (deserialization failed, usually due to Julia version switch).
+            """
+        return
+    end
     stale_notebook!(nb)
     @info """
         ... [load code] ✔ $(hl(time_fmt(time()-start)))

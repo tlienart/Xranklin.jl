@@ -16,6 +16,11 @@ content_tag = ""
 
 # Menus + ordering of submenus
 menu = [
+  "workflow" => [
+    "getting_started",
+    "folder_structure",
+    "deployment",
+  ],
   "syntax" => [
                 "basics",
                 "extensions",
@@ -34,7 +39,7 @@ table_class = "pure-table-striped"
 
 # Misc
 meta_description = "Franklin"
-
+github = "https://github.com/tlienart/Franklin.jl"
 
 +++
 

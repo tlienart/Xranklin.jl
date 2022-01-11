@@ -1,3 +1,5 @@
+const EMPTY_DBB = "__EMPTY_DBB__"
+
 """
     html2(s, c)
 
@@ -41,7 +43,7 @@ function html2(parts::Vector{Block}, c::Context)::String
             continue
         elseif b.name == :SCRIPT
             if getvar(cgc, :parse_script_blocks, true)
-                write(io, html2(string(b.ss), c; disable=[:SCRIPT_OPEN,  :SCRIPT_CLOSE]))
+                write(io, html2(string(b.ss), c; disable=[:SCRIPT_OPEN, :SCRIPT_CLOSE]))
             else
                 write(io, string(b.ss))
             end
@@ -54,9 +56,11 @@ function html2(parts::Vector{Block}, c::Context)::String
         # -----------------------------
 
         cb = strip(content(b))
-        isempty(cb) && continue
 
-        if is_estr(cb; allow_short=true)
+        if isempty(cb)
+            write(io, EMPTY_DBB)
+
+        elseif is_estr(cb; allow_short=true)
             v = eval_str(cb)
             if isa(v, EvalStrError)
                 @warn """
@@ -68,8 +72,14 @@ function html2(parts::Vector{Block}, c::Context)::String
                     """
                 write(io, hfun_failed(cb |> string))
             else
-                write(io, string(v))
+                sv = string(v)
+                if isempty(sv)
+                    write(io, EMPTY_DBB)
+                else
+                    write(io, sv)
+                end
             end
+
         else
             # A. internal HENV (if, and derived like ispage, for)
             # A'. orphan elseif/else/end
@@ -108,11 +118,16 @@ function html2(parts::Vector{Block}, c::Context)::String
                 # 'external' functions defined with `hfun_*`, they
                 # take precedence so a user can overwrite the behaviour of
                 # internal functions
-                mdl = ifelse(u, cgc.nb_code.mdl, @__MODULE__)
+                mdl   = ifelse(u, cgc.nb_code.mdl, @__MODULE__)
                 args  = split_cb[2:end]
                 fsymb = Symbol("hfun_$fname")
                 f     = getproperty(mdl, fsymb)
-                write(io, outputof(f, args; tohtml=true))
+                out   = outputof(f, args; tohtml=true)
+                if isempty(out)
+                    write(io, EMPTY_DBB)
+                else
+                    write(io, out)
+                end
 
                 # re-set current local and global context, just in case these were
                 # changed by the call to the hfun (e.g. by triggering a processing)
@@ -122,11 +137,12 @@ function html2(parts::Vector{Block}, c::Context)::String
             # C - try fill
             else
                 # try to see if it could be an implicit fill {{vname}}
+                fs = ""
                 if (length(split_cb) == 1) && ((v = getvar(clc, fname)) !== nothing)
-                    write(io, string(v))
+                    fs = string(v)
                 elseif (length(split_cb) == 1) && (fname in utils_var_names())
                     mdl = cgc.nb_code.mdl
-                    write(io, string(getproperty(mdl, fname)))
+                    fs  = getproperty(mdl, fname) |> string
                 else
                     @warn """
                       {{ ... }}
@@ -136,10 +152,18 @@ function html2(parts::Vector{Block}, c::Context)::String
                       it match anything defined in `utils.jl`. It might have
                       been misspelled.
                       """
-                    write(io, hfun_failed(split_cb))
+                    fs = hfun_failed(split_cb)
+                end
+
+                if isempty(fs)
+                    write(io, EMPTY_DBB)
+                else
+                    write(io, fs)
                 end
             end
-        end
+        end # end dbb
     end
-    return String(take!(io))
+    out = String(take!(io))
+    out = replace(out, Regex("(?:<p>\\s*$(EMPTY_DBB)\\s*</p>)|(?:$(EMPTY_DBB))") => "")
+    return out
 end
