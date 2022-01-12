@@ -20,7 +20,7 @@
 ≂̸ CommonMark
  */
 .cm-diff {
-  margin-top: 1.5em;
+  margin-top: 2em;
   background-color: var(--yellow80);
   border: 0px;
   font-size: var(--text-sm);
@@ -41,7 +41,7 @@
 TIP
 */
 .tip {
-  margin-top: 1.5em;
+  margin-top: 2em;
   background-color: var(--green90);
   border: 0px;
   font-size: var(--text-sm);
@@ -61,7 +61,7 @@ TIP
 TO DO
 */
 .todo {
-  margin-top: 1.5em;
+  margin-top: 2em;
   background-color: var(--red90);
   border: 0px;
   font-size: var(--text-sm);
@@ -81,7 +81,7 @@ TO DO
 NOTE
 */
 .note {
-  margin-top: 1.5em;
+  margin-top: 2em;
   background-color: var(--yellow90);
   border: 0px;
   font-size: var(--text-sm);
@@ -137,7 +137,7 @@ SHOW MD
   padding-bottom: 1.25em;
   padding-left: 1.5em;
   font-size: var(--text-sm);
-  margin-bottom: 1.75em;
+  margin-bottom: 2em;
 }
 .md-result img {
   width: 40%;
@@ -209,7 +209,7 @@ SHOW MD
 }
 
 .trim .md-result {
-  margin-bottom: 0.5em;
+  margin-bottom: 1.5em;
 }
 
 /* ==================================================================
@@ -255,10 +255,12 @@ Menu extra design
 
 #menu-logos {
   width: 85%;
-  margin-left: auto;
+  /* margin-left: auto; */
   margin-right: auto;
   text-align: center;
-  padding-top: 2.5em;
+  padding-top: 1.5em;
+  border-top: 1px solid var(--col-xlight);
+  margin-top: 1.5em;
 }
 
 #menu-logos a img {

@@ -153,7 +153,7 @@ you should typically not set those yourself.
 `prerender`, `slug`, `reeval`, `rss*`, `sitemap*`, `robots*`, `latex*`, `fn_title`
 
 \todo{
-  `reeval` is useful to clear a single page and re-evaluate it
+  `reeval` is useful to clear a single page and re-evaluate it --> `ignore_cache`
 }
 
 ## Global variables

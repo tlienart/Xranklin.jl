@@ -52,8 +52,9 @@ the code block if it's not `nothing`.
   In the future, Python and R may also be directly supported via [PyCall] and [RCall].
   As [shown below](#executing_python_code), you can already do this manually within a Julia code block.
 }
+\skip
 
-## Syntax for executable code block
+## Syntax for executable code blocks
 
 Beyond the syntax introduced briefly above, there are several other ways of indicating
 that a fenced code block should be executed:
@@ -62,15 +63,15 @@ that a fenced code block should be executed:
 * \triplebt`:name` &mdash; the language is implicit, the name of the block is explicit,
 * \triplebt`:` &mdash; the language and the name are implicit.
 
-For all these you can also swap the colon (`:`) with an exclamation mark (`!`) with
+For all these you can also swap the colon ('`:`') with an exclamation mark ('`!`') with
 the same effect.
 
-When the language is implicit, it is taken from the page variable `:lang` (with default
+When the language is implicit, it is taken from the page variable `lang` (with default
  `"julia"`).
 When the name is implicit, a name is automatically generated and the output is placed
 directly below the code.
 
-Here's a couple of examples:
+Here's an example with implicit language and explicit name:
 
 \showmd{
   ```:abc
@@ -82,15 +83,18 @@ Here's a couple of examples:
   \show{abc}
 }
 
+And here's an example with implicit language and implicit name (the output is shown
+  automatically below the code):
+
 \showmd{
   ```!
-  1//2
+  1//2^2
   ```
 }
 
 Unless you intend to show the code output somewhere else than below the code block
-or use a custom method to show the code output, this last syntax (where everythign is implicit) is likely the one
-you will want to use most often.
+or use a custom method to show the code output, this last syntax (where everything is implicit)
+is likely the one you will want to use most often.
 
 ### Hiding lines of code
 
@@ -116,8 +120,47 @@ If you want to hide an entire code cell (e.g. you're just interested in the outp
   ```
 }
 
+\skip
 
-## Output of executable code block
+## Understanding how things work
+
+Each page can be seen as one "notebook".
+All executed code blocks on the page are executed in one sandbox module
+attached to that page and share the same scope.
+That sandbox module also loads the content of `utils.jl` as a `Utils` module
+and so all objects defined there can be accessed in any code block via
+`Utils.$name` (see also [the page on Utils](/syntax/utils/)).
+
+When a code block is executed, the code string as well as the output strings are
+cached.
+This allows code blocks to not be systematically re-executed if they don't need to be.
+The cached representation can be _stale_ in which case the code block will be re-evaluated
+as soon as the page changes.
+When adding or modifying a code block, every code block below that one are re-executed.
+
+Since `Utils` is loaded into the sandbox module attached to a page, if `utils.jl` changes,
+the entirety of the page "notebook" is marked as stale and will be re-run to guarantee
+that it uses the latest definitions from Utils (even if it doesn't use Utils at all).
+In that sense changing `utils.jl` amounts to clearing the entire cache and re-building
+the website (see also [the page discussing Utils](/syntax/utils/)).
+
+### What to do when things go wrong
+
+While hopefully this shouldn't happen too often, two things can go wrong:
+
+1. some code fails in an un-expected way (e.g.: it calls objects which it should have access to but doesn't seem to),
+1. the output of an auto-cell is incorrect (either wasn't refreshed or some other random output that you didn't expect).
+
+In both cases, if you can reproduce what led to the problem, kindly open an issue on Github.
+Both problems will typically be addressed by clearing the cache which will force all code cells
+to be re-evaluated in order.
+
+To do this you can either call `serve(..., clear=true)` which will clear the entire cache
+and rebuild everything from scratch or, if the problem is just on a single page, you can
+temporarily set the [page variable](/syntax/vars+funs/) `ignore_cache` to `true` and re-start the server, this will ignore
+the cache for that specific page and re-evaluate all code blocks.
+
+## Output of executable code blocks
 
 
 When evaluating a cell, Franklin captures `stdout`, `stderr` and, if the code
@@ -364,37 +407,3 @@ In the second case, on the initial full pass upon server launch, all pages will 
 ### Executing Python code
 
 \todo{...}
-
-## Understanding how things work
-
-Each page can be seen as one "notebook".
-All executed code blocks on the page are executed in one sandbox module
-attached to that page and share the same scope.
-That sandbox module also loads the content of `utils.jl` as a `Utils` module
-and so all objects defined there can be accessed in any code block via
-`Utils.$name`.
-
-When a code block is executed, the code string as well as the output strings are
-cached.
-This allows code blocks to not be systematically re-executed if they don't need to be.
-
-The cached representation can be _stale_ in which case the code block will be re-evaluated
-as soon as the page changes.
-When adding or modifying a code block, every code block below that one are re-executed.
-
-Since Utils is loaded into the sandbox module attached to a page, if `utils.jl` changes,
-the entirety of the page "notebook" is marked as stale and will be re-run to guarantee
-that it uses the latest definitions from Utils (even if it doesn't use Utils at all).
-In that sense changing `utils.jl` amounts to clearing the entire cache and re-building
-the website (see also [the page on utils](/syntax/utils/)).
-
-### What to do when things go wrong
-
-While hopefully this shouldn't happen too often, two things can go wrong:
-
-1. some code fails in an un-expected way (e.g.: it calls objects which it should have access to but doesn't seem to),
-1. the output of an auto-cell is incorrect (either wasn't refreshed or some other random output that you didn't expect).
-
-In both cases, if you can reproduce what led to the problem, kindly open an issue on Github.
-Both problems will typically be addressed by clearing the cache which will force all code cells
-to be re-evaluated in order.

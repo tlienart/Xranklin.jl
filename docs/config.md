@@ -35,7 +35,7 @@ menu = [
 showtoc = false
 
 # Tables
-table_class = "pure-table-striped"
+table_class = "pure-table"
 
 # Misc
 meta_description = "Franklin"
@@ -54,6 +54,7 @@ github = "https://github.com/tlienart/Franklin.jl"
 [pycall]: https://github.com/JuliaPy/PyCall.jl
 [rcall]: https://github.com/JuliaInterop/RCall.jl
 [dataframes]: https://github.com/JuliaData/DataFrames.jl
+[bootstrap]: https://getbootstrap.com/
 
 <!-- GLOBAL COMMANDS -->
 

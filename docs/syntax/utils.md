@@ -6,7 +6,7 @@ menu_title = "Advanced"
 
 ## Overview
 
-`utils.jl` file, `Utils` module
+`utils.jl` file, `Utils` module, objects that can be accessed via `Utils.$..`
 
 ## Custom hfuns
 

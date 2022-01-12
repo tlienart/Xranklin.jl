@@ -27,8 +27,12 @@
 
   <div id="top-bar-nav">
     <a href="/">
-      <img src="/assets/icons/franklin.svg" alt="github-repo">
+      <img src="/assets/icons/franklin.svg" alt="franklin">
     </a>
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <input class="search-input" name="q" placeholder="Search the docs..." type="text">
+      <input type="submit" value="🔍" formaction="/search/index.html">
+    </form>
   </div>
 </div>
 
@@ -42,7 +46,7 @@
       <div id="menu-logos">
         <a href="/"><img src="/assets/icons/home.svg"></a> &nbsp;
         <a href="#"><img src="/assets/icons/arrowup.svg"></a> &nbsp;
-        <a href="{{github}}"><img src="/assets/github.svg"></a>
+        <a href="{{github}}"><img src="/assets/icons/github.svg"></a>
       </div>
 
     </div>

@@ -276,8 +276,12 @@ LARGER with right-toc
 		--menu-content-border-right:  none;
 		--left-content-width: 90vw;
   }
-	#top-bar-nav img {
+	#top-bar-nav a {
 		margin-left: auto;
+		visibility: hidden;
+	}
+	#lunrSearchForm {
+		margin-right: 1em;
 	}
   #layout-left-menu {
     min-width: 0px;
@@ -351,7 +355,6 @@ code {
 :is(h1, h2, h3) a {
 	text-decoration: none;
 	color: var(--col-dark);
-	font-weight: 600;
 }
 :is(h1, h2, h3) {
 	margin-top: 0;
@@ -366,11 +369,13 @@ h1 {
 h2 {
 	font-size:   var(--text-h2);
 	padding-top: 1em;
+	font-weight: 550;
 }
 
 h3 {
 	font-size:   var(--text-h3);
-	padding-top: .5em;
+	padding-top: 1em;
+	font-weight: 450;
 }
 
 /* ol {
@@ -416,6 +421,7 @@ TOP BAR
 } */
 
 #top-bar-nav {
+	display: flex;
 	height: var(--top-bar-height);
 	padding-right: var(--top-bar-nav-padding-left);
 	width: 100%;
@@ -429,18 +435,25 @@ TOP BAR
 	height: 100%;
 	margin-right: 20px;
 }
-
-#top-bar-nav span {
-	color: white;
-	font-size: var(--text-xl);
-	font-weight: 350;
-	margin-left: auto;
-}
-
 #top-bar-nav img {
 	padding-left: 40px;
 	/* padding-right: 20px; */
 	height: 65%;
+}
+
+#lunrSearchForm {
+	padding-top: 13px;
+	margin-left: 15px;
+}
+#lunrSearchForm input {
+	line-height: 1.5em;
+}
+#lunrSearchForm input.search-input {
+	width: 200px;
+	padding-left: 10px;
+}
+#lunrSearchForm input[type=submit] {
+	cursor: pointer;
 }
 
 #layout {
@@ -544,7 +557,7 @@ RIGHT PANEL / MAIN
 	padding-left: var(--left-content-padding-left);
 }
 
-#main-left-content h2:first-of-type { padding-top: 0em; }
+#main-left-content h2:first-of-type { padding-top: 1em; }
 
 #main-right-margin {
   visibility:   var(--right-margin-visibility);

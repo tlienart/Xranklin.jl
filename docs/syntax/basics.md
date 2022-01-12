@@ -1,3 +1,7 @@
+<!--
+LAST REVISION: Jan 12, 2022
+ -->
+
 +++
 showtoc = true
 header = "Markdown basics"
@@ -7,17 +11,26 @@ menu_title = "Basics"
 <!-- avoid having dummy example headers in the toc -->
 {{rm_headers level_1 level_2 level_3 a_text a_text__2}}
 
+## Overview
+
+Many of you will already be familiar with some flavour of Markdown such as [GitHub Markdown](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)
+or [CommonMark](https://commonmark.org/).
+Franklin can be seen as yet another flavour of Markdown with extensions.
+
+This page covers the Markdown basics that you should find to be broadly identical to standard Markdown along with some notes in the cases where there may be a noteworthy difference.
+
 ## Text
 
 ### Emphasis
 
-You can fence a block of text with `*` to change its emphasis (bold, italic):
+You can fence a block of text with '`*`' to change its emphasis (bold, italic):
 
 \showmd{
   *italic* **bold** ***bold+italic***
 }
 
-this also works with `_`:
+This also works if you use '`_`' instead of '`*`' (though you should be consistent:
+an open '`_`' should be closed by a matching '`_`'):
 
 \showmd{
     _italic_ __bold__ ___bold+italic___
@@ -29,50 +42,39 @@ and you can nest emphasis styles:
   _italic **bold+italic**_
 }
 
-### Special characters
+\skip
 
-If you want to show the characters `*` or `_` (or other special characters which have a meaning in Franklin), you should escape them with a `\ `:
+### Paragraphs
 
-\showmd{
-  \* \_ \$ \` \@ \# \{ \} \~ \! \% \& \'    \\
-  \+ \, \- \. \/ \: \; \< \= \> \? \^ \|
-}
-
-The double backslash, like in LaTeX, works as a line break (see [next section](#paragraphs)).
-Therefore, if you want to show the backslash character, you have to use its HTML entity `&#92;` or `&bsol;`.
-You can indeed also insert emojis or HTML-entities:
-
-\showmd{
-  ❌ 🐂 🔦 &amp; &pi; &#42; &bsol;
-}
-
-## Paragraphs
-
-When converting text (to HTML or LaTeX), sets of consecutive "inline" blocks will be grouped
+When converting text, sets of consecutive "inline" blocks will be grouped
 and placed within a paragraph (in HTML: `<p>...</p>`).
 The main inline blocks are:
 
-* a block of text not separated by an empty line possibly including emphasised text and special characters,
-* inline code and inline maths,
-* latex-like commands.
+* a block of text not separated by an empty line possibly including emphasised
+text and special characters,
+* inline code and inline maths (see [extensions](/extensions/)),
+* latex-like commands (see [extensions](/extensions/)).
 
 A paragraph will be interrupted by:
 
 * a line skip (empty line),
-* a "non-inline" block (for instance a heading, a code block or a div block),
-* the end of the text.
+* a "non-inline" block (for instance a heading, a code block or a div block
+  (see [extensions](/extensions))),
+* the end of the page.
 
 If you want to introduce a line return without interrupting a paragraph,
-you can use a double backslash `\\` (similar to LaTeX):
+you can use a double backslash as in LaTeX:
 
 \showmd{
   ABC \\ DEF
 }
 
-## Headings
+\skip
 
-You can indicate headings with one or more adjacent `#` followed by a space and
-the heading title. There can be up to 6 `#` indicating the depth of the title
+### Headings
+
+You can indicate headings with one or more adjacent '`#`' followed by a space and
+the heading title. There can be up to 6 '`#`' indicating the depth of the title
 though note that only 3 levels are supported in the LaTeX conversion:
 
 \showmd{
@@ -81,31 +83,58 @@ though note that only 3 levels are supported in the LaTeX conversion:
   ### Level 3
 }
 
-Headings are automatically made into anchors (you can see this by hovering
+Headings are automatically made into link anchors (you can see this by hovering
 over the ones created above).
 This allows to easily link to parts of a page (as well as across pages).
 For instance `[link](#headings)` will give: [link](#headings).
-See also the section on [Links](#links) below.
+See also the [section on links](#links) below.
 
-For a unique header text, the anchor will generally be that text, in lowercase, after replacing spaces and special characters by `_`.
-So for instance if there's a unique heading `My Heading` the associated anchor will be `#my_heading`.
-If there's several heading with the same text, the second heading anchor id will be followed by `__2` and so on.
+If the text of a header is unique, the anchor will generally be just that text, in lowercase,
+after replacing spaces and special characters by '`_`'.
+So for instance if there's a unique heading `My Heading` the associated anchor will
+be `#my_heading`. If there's several heading with the same text, the second heading
+anchor id will be followed by `__2` and so on.
 
 \showmd{
   ## a text
   ### a text
 }
 
-If you hover over the headings above, you'll see that the first one has id `#a_text` and the second one `#a_text__2`.
+If you hover over the headings above, you'll see that the first one has id `#a_text`
+and the second one `#a_text__2`.
+
 
 \cmdiff{
   CommonMark supports indicating level 1 and 2 headings by underlying them
   with `===` or `---` ("_alt heading_") this is not supported in Franklin.  
 }
 
+\skip
+
+### Special characters
+
+If you want to show the characters '`*`' or '`_`' or '`#`' (or other characters which
+  may have a meaning in Franklin), you should escape them with a backslash.
+  For instance:
+
+\showmd{
+  \* \_ \$ \` \@ \# \{ \} \~
+}
+
+The double backslash, like in LaTeX, works as a line break (see [below](#paragraphs)).
+Therefore, if you want to show the backslash character, you have to use its HTML entity `&#92;` or `&bsol;`.
+You can indeed also insert emojis or HTML-entities:
+
+\showmd{
+  ❌ 🐂 🔦 &amp; &pi; &#42; &bsol;
+}
+
+The online website [amp-what](https://www.amp-what.com/) is a great resource to figure
+out the HTML entity associated with a character.
+
 ## Blockquotes
 
-A set of lines prefixed with `>` will form a blockquote including continuation lines (i.e. lines immediately after, not separated by an empty line):
+A set of lines prefixed with '`>`' will form a blockquote including continuation lines (i.e. lines immediately after, not separated by an empty line):
 
 \showmd{
 
@@ -117,7 +146,7 @@ A set of lines prefixed with `>` will form a blockquote including continuation l
   Here it's separate as there's a line skip.
 }
 
-there can be any formatting in the blockquote:
+There can be any formatting in the blockquote:
 
 \showmd{
   > ABC
@@ -145,11 +174,12 @@ You can also nest blockquotes (make sure you skip a line after the nested block 
 
 }
 
+\skip
 
 ## Lists
 
-Lists are formed of one or more items indicated with a line starting with a `*`, `-` or `+`
-(unordered list) or a number followed by a dot (`.`) or a bracket (`)`) (ordered list).
+Lists are formed of one or more items indicated with a line starting with a '`*`', '`-`' or '`+`'
+(unordered list) or a number followed by a dot ('`.`') or a bracket ('`)`') (ordered list).
 Nesting is indicated with either a tab or two or more spaces.
 
 Here's a simple unordered list:
@@ -198,6 +228,8 @@ List items can contain any "inline" element (e.g. emphasised text or maths):
   "Loose" lists (with line skips between items) are not supported in Franklin.
 }
 
+\skip
+
 ## Links
 
 You can insert a link by writing `[link title](link_url)`.
@@ -207,8 +239,8 @@ For instance this is a link pointing to the Julia Lang website:
   [JuliaLang website](https://julialang.org)
 }
 
-It can be convenient to link multiple times to the same location in which case you
-can define a reference by writing `[Name Of Reference]: location` on a dedicated
+Sometimes you'll want to link several time to the same location in which case
+it is convenient to define a _reference_ by writing `[Name Of Reference]: location` on a dedicated
 line and use the reference by specifying `[Name Of Reference]` somewhere in the text:
 
 \showmd{
@@ -220,7 +252,7 @@ line and use the reference by specifying `[Name Of Reference]` somewhere in the 
 }
 
 The pointer to a reference can be placed before or after the reference.
-The name of the reference can have spaces in it (and case doesn't matter).
+The name of the reference can have spaces in it (and letter case doesn't matter).
 The main constraint is that the reference definition must be on a dedicated line.
 Here's another example:
 
@@ -244,7 +276,7 @@ You could also change the title to an existing reference by writing
 
 \tip{
   You might want to define link references that can be used on all your pages.
-  To do so, just place the reference definition on a line in your `config.md` file.
+  To do so, just place the reference definition on a line of your `config.md` file.
   For instance [this reference][juliaweb] is defined in the current config file.
 }
 
@@ -262,11 +294,14 @@ For this, you can use the _autolink_ syntax `<location>`:
   These are not currently supported in Franklin.
 }
 
+\skip
+
 ### Internal links
 
 Every header in Franklin automatically has an anchor attached to it for easy reference.
 For instance the current header corresponds to the anchor id `internal_links`.
-To link to such an anchor, the same syntax as for links can be used except the path is `#id`, so for instance:
+To link to such an anchor, the same syntax as for links can be used except
+the path is `#id`, so for instance:
 
 \showmd{
   [internal links](#internal_links)
@@ -279,7 +314,7 @@ For instance:
 * `anchor α: _foo_` → `anchor_foo`
 
 You can check the generated id by hovering on the header or inspecting the HTML.
-Alternatively, you can use global linking (see further below).
+Alternatively, you can use global linking (see [next point](#global_internal_links)).
 
 You can place anchors anywhere you want with `\label{anchor name}`:
 
@@ -289,11 +324,14 @@ You can place anchors anywhere you want with `\label{anchor name}`:
   and now [we refer to it](#abcd)
 }
 
-Franklin also allows to link globally **across** pages by using `##` instead of `#`.
-So for instance there's a header "_Cache and packages_" defined on the page `/syntax/code/` and you can link to this with
+### Global internal links
+
+Franklin allows to link globally **across** pages by using `##` instead of `#`.
+For instance, there is a header "_Cache and packages_" defined on the page `/syntax/code/`,
+and it can be linked to with:
 
 \showmd{
-  All three forms link to the same header:
+  all three forms link to the same header:
 
   * [explicit](/syntax/code/#cache_and_packages)
   * [implicit](##cache_and_packages)
@@ -303,8 +341,8 @@ So for instance there's a header "_Cache and packages_" defined on the page `/sy
 Observe that in the last case, the mapping `(anchor name) -> (anchor id)` step is implicit.
 There's a few additional notes for the global linking:
 
-1. if the anchor is defined on multiple pages, the current page has priority followed by whichever page was seen by Franklin last. This also means that using global linking is ambiguous for anchors that are defined on more than one page (e.g. if you have a section `Introduction` on several pages).
-2. further to the previous point, you can use global linking for something defined on the current page, e.g. `[link](## Internal links)`: [link](## Internal links); this isn't ambiguous since the current page has priority.
+1. if the anchor is defined on multiple pages, the current page has priority followed by whichever page was seen by Franklin last. This also means that using global linking is ambiguous for anchors that are defined on more than one page (e.g. if you have a section `Introduction` on several pages and want to refer to one, you should use explicit linking specifying the path).
+2. further to the previous point, you **can** use global linking for something defined on the _current_ page, e.g. `[link](## Internal links)`: [link](## Internal links); this is never ambiguous since the current page has priority.
 
 
 ## Images
@@ -319,7 +357,7 @@ The allowed syntax for images are:
 * `![alt][id]` inserts reference image `id` with `alt`
 
 The path can be a relative path to the site root or a valid URL to a file.
-All images below are taken from Wikimedia Commons.
+All images below are taken from [Wikimedia Commons](https://commons.wikimedia.org/wiki/Main_Page).
 
 \showmd{
   ![](/assets/eximg/zebra.svg)
@@ -337,21 +375,23 @@ add these references in your `config.md` to make them globally available.
   ![a flamingo][flamingo]
 }
 
+\skip
+
 ## Code
 
 To show code, you can use one or two backticks for _inline_ code
 and three to five backticks for _block_ code.
-Let's see the inline case:
+Let's see the **inline** case:
 
 \showmd{
   Inline code: `abc` or ``a`bc``
 }
 
-Observe that the code doesn't break the paragraph, also in the second case with double backticks you can
-have code with a single backtick without it closing the code environment (this is the main
-motivation for ever using two backticks instead of just one).
+Observe that the inline code doesn't break the paragraph.
+Using double backticks allow to show single backticks in the code without that
+closing the environment.
 
-For blocks (three to five backticks) you can optionally indicate the language of the code
+For **code blocks** (three to five backticks) you can optionally indicate the language of the code
 which is useful if you use a library for code highlighting (Franklin templates
 use [highlight.js](hljs) by default).
 
@@ -362,6 +402,8 @@ use [highlight.js](hljs) by default).
   end
   ```
 }
+
+If no language is specified, the default language is drawn from the `lang` [page variable](/syntax/vars+funs/).
 
 If you want to show a code block within a code block, increase the number of ticks.
 For instance in the example below we show a triple-tick code block within a markdown code block
@@ -378,13 +420,11 @@ which has 4 ticks.
 Franklin supports running Julia code blocks and showing or using the output
 of such code blocks. This can be very useful in tutorials for instance.
 See [the page on executed code blocks](/syntax/code/) for more on the topic.
-Note also that you can even execute Python or R code blocks by leveraging
-[PyCall.jl](pycall) or [RCall.jl](rcall).
 
 
 ## Horizontal rules
 
-If a line contains exclusively 3 or more consecutive of either `-`, `*` or `_`, a
+If a line contains exclusively 3 or more consecutive of either '`-`', '`*`' or '`_`', a
 horizontal rule will be inserted:
 
 \showmd{
@@ -396,7 +436,7 @@ horizontal rule will be inserted:
   ___
 }
 
-if the same character (e.g. `-`) is present after that on the line, the effect will be the same:
+Any additional character of the same type appearing on that line will be ignored:
 
 \showmd{
   --- --- --- - -- --- ------
