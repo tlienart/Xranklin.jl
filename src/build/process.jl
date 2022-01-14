@@ -250,6 +250,34 @@ process_file(fpair::Pair{String,String}, case::Symbol, t::Float64=0.0; kw...) =
 
 
 """
+    setup_page_context(lc; kw...)
+
+Set the current page context and reset its variables.
+"""
+function setup_page_context(lc::LocalContext; reset_notebook=false)
+    # set it as current context in case it isn't
+    set_current_local_context(lc)
+
+    # reset the headers
+    empty!(lc.headers)
+    # reset the eqs counter
+    eqrefs(lc)["__cntr__"] = 0
+    # reset code counter
+    setvar!(lc, :_auto_cell_counter, 0)
+
+    # in the context of "ignore_cache", reset the notebook
+    reset_notebook && reset_code_notebook!(lc)
+
+    # keep track of the anchors pre-processing to see which ones
+    # are removed (see context/anchors)
+    bk_anchors = copy(lc.anchors)
+    empty!(lc.anchors)
+
+    return bk_anchors
+end
+
+
+"""
     process_md_file_io!(io, gc, fpath, opath)
 
 Process a markdown file located at `fpath` within global context `gc` and
@@ -278,18 +306,7 @@ function process_md_file_io!(
             gc.children_contexts[rpath] :
             DefaultLocalContext(gc; rpath)
 
-    # set it as current context in case it isn't
-    set_current_local_context(lc)
-    # reset the headers
-    empty!(lc.headers)
-    # reset the eqs counter
-    eqrefs(lc)["__cntr__"] = 0
-    # reset code counter
-    setvar!(lc, :_auto_cell_counter, 0)
-    # keep track of the anchors pre-processing to see which ones
-    # are removed (see context/anchors)
-    bk_anchors = copy(lc.anchors)
-    empty!(lc.anchors)
+    bk_anchors = setup_page_context(lc)
 
     initial_cache_used = false
     if initial_pass
@@ -326,7 +343,7 @@ function process_md_file_io!(
     # only here do we know whether `ignore_cache` was set to 'true'
     # if that's the case, reset the code notebook and re-evaluate.
     if initial_cache_used && getvar(lc, :ignore_cache, false)
-        reset_code_notebook!(lc)
+        setup_page_context(lc, reset_notebook=true)
         output = (tohtml ?
                     _process_md_file_html(lc, page_content_md) :
                     _process_md_file_latex(lc, page_content_md))::String

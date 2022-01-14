@@ -453,7 +453,8 @@ TOP BAR
 	padding-left: 10px;
 }
 #lunrSearchForm input[type=submit] {
-	cursor: pointer;
+	visibility: hidden;
+	/* cursor: pointer; */
 }
 
 #layout {

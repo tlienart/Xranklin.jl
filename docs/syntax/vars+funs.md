@@ -9,25 +9,28 @@ menu_title = header
 ### Overview
 
 The main purpose of page variables is to communicate informations
-to the layout from the page content though once you get the hang of it, you might use
+to the layout from the page content though, once you get the hang of it, you might use
 them for quite a bit more than that.
 
-As a first example, the layout of blog pages might include a small author blurb at the
-bottom of the page.
-This would be some HTML with slightly different information for each page (e.g.: different
-author name, bio, path for mugshot etc.).
-For instance the layout could have something like:
+As a first example, let's say that the layout of blog pages includes a small author
+blurb at the bottom of the page.
+This could be some HTML with slightly different information for each page (e.g.: different
+author name, bio, path for mugshot, ...).
+
+In Franklin you can indicate this in the layout with:
 
 ```html
 <div class="author-card">
   <div class="author-name">{{author_name}}</div>
   <div class="author-blurb">{{author_blurb}}</div>
-  <div class="author-mug"><img src="{{author_mug_src}}" alt="{{author_name}}"/></div>
+  <div class="author-mug">
+    <img src="{{author_mug_src}}" alt="{{author_name}}"/>
+  </div>
 </div>
 ```
 
-and a given blog post would then define these elements `author-name`, `author-blurb`, and
-`author-mug-src` so that they can be inserted:
+and a given blog post would then define these elements `author_name`, `author_blurb`, and
+`author_mug_src` so that they can be inserted:
 
 ```plaintext
 +++
@@ -74,6 +77,7 @@ variables:
 
   Build-date: {{todays_date}}.
 }
+\skip
 
 ### Using page variables
 
@@ -85,14 +89,14 @@ Page variables can be used in two ways:
 The first one is actually a shorthand for `{{fill name_of_variable}}`.
 Note that if there is an ambiguity between the name of a variable and the name of a function,
 it will be the function that will be called with priority.
-There is low risk of this happening but it is up to the user to ensure that variable names
+It is up to you to ensure that variable names
 don't clash with function names.
 
 When inserting a page variable with `{{var_name}}` or `{{fill var_name}}`, the Julia function
-`string` will be called on the value of `var_name` and that is what will effectively be included.
+`repr` will be called on the value of `var_name` and that is what will effectively be included.
 For basic Julia types, this will typically look like what you would expect but for custom types
 that you would have defined or that are defined in a package, you would have to consider what
-`string(obj)` returns.
+`repr(obj)` returns.
 
 ### Getting page variables from specific pages
 
@@ -146,21 +150,19 @@ you should typically not set those yourself.
 | `_bibrefs`       | `LittleDict()` | bibliography references |
 | `_auto_cell_counter`  | `0` | counter for executed code cells for automatic naming |
 
-<!-- -->
+\skip
+
 
 ### (XXX) Not used, need to check
 
 `prerender`, `slug`, `reeval`, `rss*`, `sitemap*`, `robots*`, `latex*`, `fn_title`
 
-\todo{
-  `reeval` is useful to clear a single page and re-evaluate it --> `ignore_cache`
-}
 
 ## Global variables
 
 Global variables are defined in `config.md` in the same way as (local) page variable and are
 available everywhere.
-For instance you might define a `author` variable in your `config.md` that would be inserted in
+For instance you might define an `author` variable in your `config.md` that would be inserted in
 the footer of your layout.
 
 Local page variables take precedence over global page variables so if you define

@@ -1,7 +1,7 @@
 # Vars --> LittleDict{Symbol, Any} (see types.jl)
 const VarPair      = NamedTuple{(:var,  :value), Tuple{Symbol, Any}}
 const VarsCodePair = NamedTuple{(:code, :vars),  Tuple{String, Vector{VarPair}}}
-const CodeRepr     = NamedTuple{(:html, :latex), Tuple{String, String}}
+const CodeRepr     = NamedTuple{(:html, :latex, :raw), Tuple{String, String, String}}
 const CodeCodePair = NamedTuple{(:code, :repr),  Tuple{String, CodeRepr}}
 
 const VarsCodePairs = Vector{VarsCodePair}

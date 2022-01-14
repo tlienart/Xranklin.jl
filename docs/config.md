@@ -25,7 +25,7 @@ menu = [
                 "basics",
                 "extensions",
                 "code",
-                "plots",
+                # "plots",
                 "vars+funs",
                 "utils"
                 ],

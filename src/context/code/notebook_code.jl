@@ -88,6 +88,7 @@ function eval_code_cell!(
     #     want specific objects to have a specific HTML or LaTeX repr
     io_html  = IOBuffer()
     io_latex = IOBuffer()
+    io_raw   = IOBuffer()
     if !isempty(std_out)
         write(io_html,
             "<pre><code class=\"code-stdout language-plaintext\">",
@@ -95,6 +96,7 @@ function eval_code_cell!(
             "</code></pre>"
         )
         write(io_latex, std_out)
+        write(io_raw, std_out, "\n")
     end
     if !isempty(std_err)
         write(io_html,
@@ -109,8 +111,11 @@ function eval_code_cell!(
 
     append_result_html!(io_html, result, fig_html)
     append_result_latex!(io_latex, result, fig_latex)
+    isnothing(result) || write(io_raw, repr(result))
 
-    repr = CodeRepr((String(take!(io_html)), String(take!(io_latex))))
+    code_repr = CodeRepr(
+        String.(take!.((io_html, io_latex, io_raw)))
+    )
 
     crumbs("eval_code_cell!", "[formed repr]")
 
@@ -118,7 +123,7 @@ function eval_code_cell!(
     # links to lots of stuff, like "ans" in a way)
     nb.code_map[cell_name] = cntr
 
-    return finish_cell_eval!(nb, CodeCodePair((code, repr)))
+    return finish_cell_eval!(nb, CodeCodePair((code, code_repr)))
 end
 
 
