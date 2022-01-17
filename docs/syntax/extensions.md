@@ -1,5 +1,5 @@
 <!--
-LAST REVISION: Jan 12, 2022  (full page ok)
+LAST REVISION: Jan 17, 2022  (full page ok)
  -->
 
 +++
@@ -10,14 +10,14 @@ menu_title = "Extensions"
 
 ## Overview
 
-Franklin adds a number of extension to the basic Markdown-like syntax to facilitate
-some operations such as adding [equations](#equations), [tables](#tables),
+Franklin adds a number of extension to the Markdown-like syntax in order to
+facilitate some operations such as adding [equations](#equations), [tables](#tables),
 [footnotes](#footnotes), [commands](#latex_like_commands) and more.
 
 ## Injecting HTML
 
 You can always insert arbitrary HTML on a page in a block fenced with '`~~~`'.
-HTML inserted in this way is considered "inline" (won't break an existing paragraph).
+HTML inserted in this way is considered "inline" (it won't break an existing paragraph).
 Here's an example where we apply some local styling inside a paragraph:
 
 \showmd{
@@ -39,7 +39,7 @@ that apply whatever custom HTML you see  fit, or use this to insert buttons etc.
 
 ## Equations
 
-In Franklin math is handled by [KaTeX] (though you could set things
+In Franklin, math is handled by [KaTeX] (though you could set things
 up so that it's handled by [MathJax] instead).
 For _inline_ math, use a single '`$`' like in LaTeX (here's a [cheatsheet](http://tug.ctan.org/info/undergradmath/undergradmath.pdf) for LaTeX math if you're unfamiliar with the syntax):
 
@@ -102,10 +102,19 @@ environment too:
 }
 
 \note{
-  Franklin uses its own counter to keep track of equations.
-  There is no communication between Franklin and KaTeX or the CSS.
+  Double-braces (which can be used to call [hfuns](/syntax/vars+funs/) or insert page variables)
+  are disabled in math environments.
+  This is to avoid ambiguities since in LaTeX-like math syntax,
+  double braces can happen. So, for instance, `${{x}}$` will just show $x$ even if you do have
+  a page variable `x` on the page.
+}
+
+\note{
+  Franklin uses its **own counter** to keep track of equation numbering.
+  There is no communication between Franklin and any KaTeX or CSS counters.
   This means that you cannot effectively use KaTeX-specific commands that suppress numbering
-  as this would cause issues with subsequent equation references done with `\eqref`.
+  as this would cause issues with subsequent equation references done with `\eqref`.\\
+  Long story short: if you want to suppress numbering, use `\nonumber`.
 }
 \skip
 

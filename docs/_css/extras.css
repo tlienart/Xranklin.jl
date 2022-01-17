@@ -258,13 +258,18 @@ Menu extra design
   /* margin-left: auto; */
   margin-right: auto;
   text-align: center;
-  padding-top: 1.5em;
+  padding-top: 2em;
   border-top: 1px solid var(--col-xlight);
   margin-top: 1.5em;
 }
 
-#menu-logos a img {
+#menu-logos a svg {
   width: 25px;
+  color: var(--gray20);
+}
+
+#menu-logos a:hover svg {
+    color: #005dc5;
 }
 
 .hljs-string {

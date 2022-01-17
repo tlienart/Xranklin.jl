@@ -36,15 +36,20 @@ function html2(parts::Vector{Block}, c::Context)::String
     while idx < nparts
         idx += 1
         b    = parts[idx]
-        if b.name == :COMMENT
-            continue
-        elseif b.name == :TEXT
-            write(io, string(b.ss))
-            continue
-        elseif b.name == :SCRIPT
-            if getvar(cgc, :parse_script_blocks, true)
-                write(io, html2(string(b.ss), c; disable=[:SCRIPT_OPEN, :SCRIPT_CLOSE]))
-            else
+
+        if b.name != :DBB
+            if b.name == :TEXT
+                write(io, string(b.ss))
+            elseif b.name == :SCRIPT
+                if getvar(cgc, :parse_script_blocks, true)
+                    write(io, html2(string(b.ss), c; disable=[:SCRIPT_OPEN, :SCRIPT_CLOSE]))
+                else
+                    write(io, string(b.ss))
+                end
+            elseif b.name in (:MATH_INLINE, :MATH_BLOCK)
+                # do not reprocess what's inside, so, specifically, if there's a double
+                # brace block within a math context, it will be ignored, this prevents
+                # errors where you'd have math with {{ and or }}
                 write(io, string(b.ss))
             end
             continue
@@ -52,14 +57,16 @@ function html2(parts::Vector{Block}, c::Context)::String
 
         # -----------------------------
         # Double Brace Block processing
-        # 0. e-string --> fill
         # -----------------------------
 
         cb = strip(content(b))
 
+        # empty double brace -> write as empty (will be reconsidered at the end
+        # as part of the EMPTY_DBB processing)
         if isempty(cb)
             write(io, EMPTY_DBB)
 
+        # e-string fill
         elseif is_estr(cb; allow_short=true)
             v = eval_str(cb)
             if isa(v, EvalStrError)
@@ -80,12 +87,13 @@ function html2(parts::Vector{Block}, c::Context)::String
                 end
             end
 
+        # Other cases:
+        # A. internal HENV (if, and derived like ispage, for)
+        # A'. orphan elseif/else/end
+        # B. internal or external HFUNS
+        # C. fill attempt
+        # ---------------------------------------------------
         else
-            # A. internal HENV (if, and derived like ispage, for)
-            # A'. orphan elseif/else/end
-            # B. internal or external HFUNS
-            # C. fill attempt
-            # ---------------------------------------------------
             split_cb = FP.split_args(cb)
             fname    = Symbol(lowercase(first(split_cb)))
 
@@ -104,7 +112,7 @@ function html2(parts::Vector{Block}, c::Context)::String
                 resolve_henv(henv, io, c)
                 idx = ci
 
-            # found a dangling {{elseif}} or {{else}} or whatever
+            # A' found a dangling {{elseif}} or {{else}} or whatever
             elseif fname in INTERNAL_HORPHAN
                 @warn """
                     {{ $fname ... }}
