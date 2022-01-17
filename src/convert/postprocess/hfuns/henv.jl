@@ -276,13 +276,20 @@ function _resolve_henv_cond(henv::HEnvPart)
     elseif env_name in (:ispage, :ifpage, :isnotpage, :ifnotpage)
         cond_str = _estr("""
             begin
-                rp = splitext(Xranklin.unixify(getlvar(:fd_rpath)))[1]
+                rp = splitext(Xranklin.unixify(getlvar(:_relative_path)))[1]
                 any(p -> Xranklin.match_url(rp, p), $args)
             end
             """)
         if env_name in (:isnotpage, :ifnotpage)
             cond_str = _nestr(cond_str)
         end
+
+    elseif env_name == :hasmath
+        cond_str = _estr("getlvar(:_hasmath)")
+
+    elseif env_name == :hascode
+        cond_str = _estr("getlvar(:_hascode)")
+
     end
     # XXX cast will fail
     return Bool(eval_str(cond_str))

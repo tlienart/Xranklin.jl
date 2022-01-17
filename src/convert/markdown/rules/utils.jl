@@ -76,7 +76,7 @@ replace_unsafe_char(s::AbstractString) = get(UNSAFE_MAP, s, s)
 Set the context as having code to display (used to indicate whether
 highlight.js should be loaded).
 """
-hascode!(c::LocalContext) = setvar!(c, :hascode, true)
+hascode!(c::LocalContext) = setvar!(c, :_hascode, true)
 
 
 """
@@ -84,4 +84,4 @@ hascode!(c::LocalContext) = setvar!(c, :hascode, true)
 
 Set the context as having math
 """
-hasmath!(c::LocalContext) = setvar!(c, :hasmath, true)
+hasmath!(c::LocalContext) = setvar!(c, :_hasmath, true)

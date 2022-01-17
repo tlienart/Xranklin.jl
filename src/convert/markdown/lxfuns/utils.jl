@@ -10,6 +10,7 @@ const INTERNAL_LXFUNS = Symbol[
     # /show.jl (a coderepr)
     :show, :mdshow,
     # /misc.jl
+    :par,
     :nonumber,
 ]
 

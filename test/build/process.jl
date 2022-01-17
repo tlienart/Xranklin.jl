@@ -113,10 +113,10 @@ end
         \newcommand{\foo}{bar}
         """)
     write(d/"pg1.md", raw"""
-        {{a}}
+        r: {{a}}
         """)
     write(d/"pg2.md", raw"""
-        \foo
+        r: \foo
         """)
     X.process_config(gc)
     X.process_md_file(gc, "pg1.md")
@@ -124,12 +124,12 @@ end
 
     @test isapproxstr(readpg("pg1.md"), """
     <div class="franklin-content">
-    <p>5</p>
+    <p>r: 5</p>
     </div>
     """)
     @test isapproxstr(readpg("pg2.md"), """
     <div class="franklin-content">
-    <p>bar</p>
+    <p>r: bar</p>
     </div>
     """)
 
@@ -163,24 +163,24 @@ end
         +++
         a = 5
         +++
-        {{a}}
+        r: {{a}}
         """)
     write(d/"pg2.md", raw"""
-        {{geta pg1.md}}
+        r: {{geta pg1.md}}
         """)
     X.process_md_file(gc, "pg1.md")
     X.process_md_file(gc, "pg2.md")
-    @test readpg("pg1.md") // "<p>5</p>"
-    @test readpg("pg2.md") // "<p>5</p>"
+    @test readpg("pg1.md") // "<p>r: 5</p>"
+    @test readpg("pg2.md") // "<p>r: 5</p>"
 
     # Modify vars on pg1 --> pg2 should be marked as trigger
     write(d/"pg1.md", """
         +++
         a = 7
         +++
-        {{a}}
+        r: {{a}}
         """)
     X.process_md_file(gc, "pg1.md")
-    @test readpg("pg1.md") // "<p>7</p>"
+    @test readpg("pg1.md") // "<p>r: 7</p>"
     @test X.cur_lc().to_trigger == Set(["pg2.md"])
 end

@@ -12,13 +12,11 @@ const DefaultGlobalVars = Vars(
     :content_tag         => "div",
     :content_class       => "franklin-content",
     :content_id          => "",
-    :autocode            => true,
-    :automath            => true,
     :autosavefigs        => true,
     :autoshowfigs        => true,
     :layout_head         => "_layout/head.html",
-    :layout_page_foot    => "_layout/page_foot.html",
     :layout_foot         => "_layout/foot.html",
+    :layout_page_foot    => "_layout/page_foot.html",
     :layout_head_lx      => "_layout/latex/head.tex",
     :parse_script_blocks => true,  # see html2; possibly disable DBB in <script>
     # File management
@@ -78,7 +76,7 @@ const DefaultGlobalVars = Vars(
 const DefaultGlobalVarsAlias = Alias(
     :prepath                => :base_url_prefix,
     :prefix                 => :base_url_prefix,
-    :base_path              => :rss_website_url,
+    :base_path              => :base_url_prefix,
     :website_url            => :rss_website_url,
     :website_title          => :rss_website_title,
     :website_description    => :rss_website_descr,
@@ -94,8 +92,6 @@ robots_disallow: disallow the current page
 const DefaultLocalVars = Vars(
     # General
     :title              => nothing,
-    :hasmath            => false,
-    :hascode            => false,
     :date               => Dates.Date(1),
     :lang               => "julia",
     :tags               => String[],
@@ -126,6 +122,9 @@ const DefaultLocalVars = Vars(
     :latex_img_opts     => "width=0.5\\textwidth",
     # footnotes
     :fn_title           => "Notes",
+    #
+    :_hasmath           => false,
+    :_hascode           => false,
     # meta
     :_relative_path     => "",
     :_relative_url      => "",
@@ -148,6 +147,8 @@ const DefaultLocalVarsAlias = Alias(
     :fd_ctime     => :_creation_time,
     :fd_mtime     => :_modification_time,
     :reeval       => :ignore_cache,
+    :hasmath      => :_hasmath,
+    :hascode      => :_hascode,
 )
 
 ##############################################################################

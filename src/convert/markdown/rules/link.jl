@@ -190,9 +190,7 @@ function _link_ab(b::Block, c::LocalContext; tohtml=true, img=false)
     # shortcut for a global anchor (see context/anchor.jl)
     if startswith(ref, "##") && tohtml && !img
         ref = ref[3:end] |> strip |> string_to_anchor
-        return """
-            <a href="{{reflink $ref}}">$title</a>
-            """
+        return """<a href="{{reflink $ref}}">$title</a>"""
     end
 
     # otherwise normalize the ref and apply the different path depending

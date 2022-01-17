@@ -2,16 +2,16 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
 
 @testset "command - basic" begin
     let s = raw"""
-        \newcommand{\foo}{bar}
+        \newcommand{\foo}{\par{bar}}
         \foo\foo
         """
         h = html(s)
         l = latex(s)
-        @test h // "<p>barbar</p>"
-        @test l // "barbar\\par"
+        @test h // "<p>bar</p><p>bar</p>"
+        @test l // "bar\\parbar\\par"
     end
     let s = raw"""
-        \newcommand{\foo}[1]{bar:#1}
+        \newcommand{\foo}[1]{\par{bar:#1}}
         \foo{hello}
         """
         h = html(s)
@@ -20,7 +20,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         @test l // "bar:hello\\par"
     end
     let s = raw"""
-        \newcommand{\foo}[2]{bar:#1#2}
+        \newcommand{\foo}[2]{\par{bar:#1#2}}
         \foo{hello}{!}
         """
         h = html(s)
@@ -32,7 +32,7 @@ end
 
 @testset "command - nesting" begin
     let s = raw"""
-        \newcommand{\foo}[2]{bar:#1#2}
+        \newcommand{\foo}[2]{\par{bar:#1#2}}
         \newcommand{\ext}[1]{
             \foo{hello}{#1}
         }

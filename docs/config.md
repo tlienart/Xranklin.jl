@@ -18,6 +18,8 @@ content_tag = ""
 menu = [
   "workflow" => [
     "getting_started",
+    "page_structure",
+    "adapting_layout",
     "folder_structure",
     "deployment",
   ],
