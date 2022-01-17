@@ -7,5 +7,29 @@
   <link rel="stylesheet" href="/libs/katex/katex.min.css">
   <link rel="stylesheet" href="/libs/highlight/github.min.css">
 
+<style>
+body { counter-reset: eqnum; }
+
+.katex { font-size: 1.1em !important; }
+
+.katex-display .katex {
+    display: inline-block;
+}
+
+.katex-display::after {
+    counter-increment: eqnum;
+    content: "(" counter(eqnum) ")";
+    position: relative;
+    float: right;
+    padding-right: 5px; }
+
+.nonumber .katex-display::after {
+  counter-increment: nothing;
+  content: "";
+}
+
+</style>
+
+
 </head>
 <body>

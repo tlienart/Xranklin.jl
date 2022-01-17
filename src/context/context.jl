@@ -1,7 +1,7 @@
 # Vars --> LittleDict{Symbol, Any} (see types.jl)
 const VarPair      = NamedTuple{(:var,  :value), Tuple{Symbol, Any}}
 const VarsCodePair = NamedTuple{(:code, :vars),  Tuple{String, Vector{VarPair}}}
-const CodeRepr     = NamedTuple{(:html, :latex), Tuple{String, String}}
+const CodeRepr     = NamedTuple{(:html, :latex, :raw), Tuple{String, String, String}}
 const CodeCodePair = NamedTuple{(:code, :repr),  Tuple{String, CodeRepr}}
 
 const VarsCodePairs = Vector{VarsCodePair}
@@ -356,10 +356,12 @@ function getvarfrom(n::Symbol, rpath::String, d=nothing)
     clc = env(:cur_local_ctx)
     clc === nothing && return d
     glob = clc.glob
+
     if rpath ∉ keys(glob.children_contexts)
         # if there's no file at that rpath, process_md_file will not do
         # anything and the default will be returned later
-        process_md_file(glob, rpath)
+        # also we're necessarily in the initial pass if rpath exists
+        process_md_file(glob, rpath; initial_pass=true)
         # if rpath didn't correspond to a file then it's still not in the children
         # contexts key and we should return the default
         rpath ∉ keys(glob.children_contexts) && return d

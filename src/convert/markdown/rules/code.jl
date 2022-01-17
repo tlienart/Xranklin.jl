@@ -118,7 +118,7 @@ function _code_info(b::Block, ctx::LocalContext)
         if !isnothing(n)
             name = n
         else
-            name = _auto_cell_name(ctx)
+            name = auto_cell_name(ctx)
             auto = true
         end
     end
@@ -126,18 +126,20 @@ function _code_info(b::Block, ctx::LocalContext)
 end
 
 """
-    _auto_cell_name(ctx)
+    auto_cell_name(ctx)
 
 Assign a name to a code cell based on the notebook counter (and increment
 the notebook counter).
 """
-function _auto_cell_name(ctx::LocalContext)
+function auto_cell_name(ctx::LocalContext)
     cntr  = getvar(ctx, :_auto_cell_counter, 0)
     cntr += 1
     setvar!(ctx, :_auto_cell_counter, cntr)
     cell_name = "auto_cell_$cntr"
     return cell_name
 end
+
+auto_cell_name() = auto_cell_name(cur_lc())
 
 
 html_code_block(b::Block, c::LocalContext) = begin

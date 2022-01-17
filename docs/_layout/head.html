@@ -18,28 +18,21 @@
   <link rel="stylesheet" href="/css/layout.css">
   <link rel="stylesheet" href="/css/extras.css">
 
-  <!-- XXX <link rel="stylesheet" href="/css/side_menu.css"> -->
-
-  <!-- Our own -->
-  <!-- XXX <link rel="stylesheet" href="/css/x_vars.css"> -->
-  <!-- XXX <link rel="stylesheet" href="/css/x_sides.css"> -->
-
-  <!-- <link rel="icon" href="/assets/favicon.png"> -->
-  <!-- {{isdef title}} <title>{{fill title}}</title>  {{end}} -->
-
 </head>
 <body>
 
 <a id="menu-burger" href="#menu"></a>
 
 <div id="top-bar">
-  <!-- button for menu in narrow mode -->
 
   <div id="top-bar-nav">
-    <a href="https://github.com/tlienart/Franklin.jl">
-      <span>Franklin.jl</span>
-      <img src="/assets/gh_icon.svg" alt="github-repo">
+    <a href="/">
+      <img src="/assets/icons/franklin.svg" alt="franklin">
     </a>
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <input class="search-input" name="q" placeholder="Search the docs..." type="text">
+      <input type="submit" value="🔍" formaction="/search/index.html">
+    </form>
   </div>
 </div>
 
@@ -47,7 +40,16 @@
 
   <!-- LAYOUT | LEFT MENU -->
   <div id="layout-left-menu">
-    {{insert menu.html}}
+    <div id="menu-content">
+      {{navmenu}}
+
+      <div id="menu-logos">
+        <a href="/">{{insert ../_assets/icons/home.svg}}</a> &nbsp;
+        <a href="#">{{insert ../_assets/icons/arrowup.svg}}</a> &nbsp;
+        <a href="{{github}}">{{insert ../_assets/icons/github.svg}}</a>
+      </div>
+
+    </div>
   </div>
 
   <!-- LAYOUT | (RIGHT) MAIN -->
@@ -78,63 +80,3 @@
           Here is where the content resulting from the conversion of
           Markdown to HTML is placed.
        -->
-
-
-
-
-  <!-- {{insert menu.html}}
-
-  <div class="content" id="main">
-
-    <div class="header">
-      <h1>{{header}}</h1>
-    </div>
-
-    <a name="top"></a>
-
-    <div id="right-side">
-      {{if showtoc}}
-        <div id="toc-legend">Contents</div>
-        {{toc 2 3}}
-      {{end}}
-    </div> -->
-
-    <!-- <style>
-    .back-to-top-wrapper {
-      position: absolute;
-      top: 100vh;
-      right: 1rem;
-      bottom: -5em;
-      width: 3em;
-      pointer-events: none;
-    }
-
-    .back-to-top-link {
-      position: sticky;
-      pointer-events: all;
-      top: calc(100vh - 5rem);
-      display: inline-block;
-      text-decoration: none;
-      font-size: 2rem;
-      line-height: 3rem;
-      text-align: center;
-      width: 3rem;
-      height: 3rem;
-      border-radius: 50%;
-      padding: 0.25rem;
-
-      border: 1px solid gray;
-      background-color: cornflowerblue;
-      transition: transform 80ms ease-in;
-    }
-    @media screen and (min-width: 77em) {
-      .back-to-top-wrapper {
-        right: auto;
-        left:  73em;
-      }
-    }
-    </style>
-
-    <div class="back-to-top-wrapper">
-      <a href="#top" class="back-to-top-link" aria-label="Scroll to Top">🔝</a>
-    </div> -->

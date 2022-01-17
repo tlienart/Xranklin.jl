@@ -7,8 +7,10 @@ const INTERNAL_LXFUNS = Symbol[
     :cite, :citet, :citep,
     :label, :biblabel,
     :reflink,
-    # /show (a coderepr)
-    :show,
+    # /show.jl (a coderepr)
+    :show, :mdshow,
+    # /misc.jl
+    :nonumber,
 ]
 
 const INTERNAL_ENVFUNS = Symbol[

@@ -1,10 +1,16 @@
+<!--
+LAST REVISION: Jan 14, 2022 (full page ok)
+ -->
+
+
 +++
 showtoc = true
-header = "Code cells"
+header = "Code blocks"
+menu_title = header
+# ignore_cache = true
 +++
 
 \newcommand{\triplebt}{~~~<code>&#96;&#96;&#96;</code>~~~}
-
 ~~~
 <style>
 img.code-figure {
@@ -27,13 +33,13 @@ Here is a basic example:
 
 At a high level, this both shows the code on the webpage (as illustrated above)
 and also uses the running Julia session to execute the code so that the output
-can be shown somewhere else:
+can be shown somewhere else via the `\show` command:
 
 \showmd{
   \show{example}
 }
 
-the syntax
+The syntax
 
 ````markdown
 ```julia:name
@@ -41,19 +47,20 @@ the syntax
 ```
 ````
 
-identifies a fenced code block as "executable" and assigns a name `name` which
+identifies a fenced code block as "executable" and assigns a name '`name`' which
 allows to refer specifically to the output of that code block.
 
 The command `\show{name}` then displays `stdout`, `stderr` and the result of
 the code block if it's not `nothing`.
 
 \note{
-  At the moment, only Julia code can be executed.
-  In the future, Python and R may also be directly supported via [PyCall] and [RCall].
-  As [shown below](#executing_python_code), you can already do this manually within a Julia code block.
+  At the moment, only Julia code can be executed, though of course you can use
+  [PyCall] or [RCall] to execute Python or R code.
+  This is [illustrated in the examples](#executing_python_code).
 }
+\skip
 
-## Syntax for executable code block
+## Syntax for executable code blocks
 
 Beyond the syntax introduced briefly above, there are several other ways of indicating
 that a fenced code block should be executed:
@@ -62,15 +69,15 @@ that a fenced code block should be executed:
 * \triplebt`:name` &mdash; the language is implicit, the name of the block is explicit,
 * \triplebt`:` &mdash; the language and the name are implicit.
 
-For all these you can also swap the colon (`:`) with an exclamation mark (`!`) with
-the same effect.
+For all these you can also swap the colon ('`:`') with an exclamation mark ('`!`') with
+the same effect (see examples below).
 
-When the language is implicit, it is taken from the page variable `:lang` (with default
+When the language is implicit, it is taken from the page variable `lang` (with default
  `"julia"`).
 When the name is implicit, a name is automatically generated and the output is placed
 directly below the code.
 
-Here's a couple of examples:
+Here's an example with implicit language and explicit name:
 
 \showmd{
   ```:abc
@@ -82,22 +89,27 @@ Here's a couple of examples:
   \show{abc}
 }
 
+And here's an example with implicit language and implicit name (the output is shown
+  automatically below the code):
+
 \showmd{
   ```!
-  1//2
+  1//2^2
   ```
 }
 
-Unless you intend to show the code output somewhere else than below the code block
-or use a custom method to show the code output, this last syntax (where everythign is implicit) is likely the one
-you will want to use most often.
+Unless you intend to show the code output somewhere else than below the code block,
+or use a custom method to show the code output, this last syntax (where everything is implicit)
+is likely the one you will want to use most often.
 
 ### Hiding lines of code
 
 In some cases an executable code cell might need some lines of code to work which you don't
 want to show.
-You can indicate that a line should be hidden by adding `#hide` to it (case and spaces don't matter).
-If you want to hide an entire code cell (e.g. you're just interested in the output) you can put `#hideall` in the code.
+You can indicate that a line should be hidden by adding `#hide` to it (letter case and whitespace
+  don't matter).
+If you want to hide an entire code cell (e.g. you're just interested in the output)
+you can put `#hideall` in the code.
 
 \showmd{
   ```!
@@ -116,12 +128,70 @@ If you want to hide an entire code cell (e.g. you're just interested in the outp
   ```
 }
 
+\skip
 
-## Output of executable code block
+## Understanding how things work
+
+Each page can be seen as one "notebook".
+All executed code blocks on the page are executed in one sandbox module
+attached to that page and **share the same scope**.
+That sandbox module also loads the content of `utils.jl` as a `Utils` module
+and so all objects defined there can be accessed in any code block via
+`Utils.$name` (see also [the page on Utils](/syntax/utils/)).
+
+To illustrate the scoping, consider these two consecutive cells:
+
+\showmd{
+  ```!
+  #hideall
+  x = 3;
+  ```
+
+  ```!
+  y = x
+  @show y
+  ```
+}
+
+When a code block is executed, the code string as well as the output strings are
+cached.
+This allows for code blocks to not be systematically re-executed if they don't need to be.
+The cached representation can however be considered _stale_ in which case the code block
+will be re-evaluated as soon as the page changes.
+When adding or modifying a code block, every code block below that one are considered stale,
+and so will be re-executed.
+
+Since `Utils` is loaded into the sandbox module attached to a page, if `utils.jl` changes,
+the entirety of each page's "notebook" will be marked as stale and will be re-run to guarantee
+that it uses the latest definitions from `Utils` (even if it doesn't use `Utils` at all).
+In that sense changing `utils.jl` amounts to clearing the entire cache and re-building
+the website (see also [the page discussing Utils](/syntax/utils/)).
 
 
-When evaluating a cell, Franklin captures `stdout`, `stderr` and, if the code
-doesn't fail, the `result`.
+### What to do when things go wrong
+
+While hopefully this shouldn't happen too often, two things can go wrong:
+
+1. some code fails in an un-expected way (e.g.: it calls objects which it should have access to but doesn't seem to),
+1. the output of an auto-cell is incorrect (either wasn't refreshed or some other random output that you didn't expect).
+
+In both cases, clearing the cache should resolve the issue.
+You can do this in two ways:
+
+1. interrupt the server, add the [page variable](/syntax/vars+funs/) `ignore_cache = true` and re-start the server,
+1. interrupt the server and restart it with the argument `clear = true`.
+
+In the first case, only the cache associated with the current page will be ignored and only that
+page will be (completely) re-evaluated.
+In the second case, the whole site is re-built from scratch.
+
+In any case, if you can reproduce what led to the problem, kindly open an issue on GitHub.
+
+## Output of executable code blocks
+
+
+When evaluating a code block, Franklin captures `stdout`, `stderr` and, if the code
+doesn't fail, the result of the execution.
 When using the command `\show`, the output is placed in the following HTML:
 
 ```html
@@ -142,9 +212,6 @@ When using the command `\show`, the output is placed in the following HTML:
 </div>
 ```
 
-This can be changed if you overwrite the `\show` command by defining a custom
-`lx_show` function in your utils (see [how to define latex commands](/syntax/utils/)).
-
 If the code block didn't fail, the _appropriate representation_ of a result that is
 not `nothing` is obtained by considering the following cases in order:
 
@@ -152,9 +219,11 @@ not `nothing` is obtained by considering the following cases in order:
 in your `Utils`: the string returned by the call to that function is then added,
 1. the object can be shown as an SVG or PNG image: the image is automatically saved to
 an appropriate location and shown (with priority to the SVG output),
-1. otherwise: the output of `Base.show(result)` is added in a code block.
+1. the output of `Base.show(result)` is added in a `<pre><code...` block.
 
-Note that you can also suppress the display of a code block result by adding a final `;` to the code.
+Note that you can always suppress the display of a code block result by
+adding a final '`;`' to the code.
+These different cases are illustrated further below.
 
 \note{
   When capturing `stdout` during a code-cell evaluation, the logging level is
@@ -164,12 +233,17 @@ Note that you can also suppress the display of a code block result by adding a f
   Long story short: avoid using these macros in your code cells.
 }
 
+You can also overwrite the `\show` command by defining a custom
+`lx_show` function in your utils (see [how to define latex commands](/syntax/utils/)) if you
+want to handle the output in your own way (or define your own alternative command that does it).
+
+
 ### Nothing to show
 
 Nothing will be shown beyond `stdout` if
 
 * the last command in the code block is a `@show` or returns `nothing`
-* the last command in the code block is followed by `;`
+* the last command in the code block is followed by '`;`'
 
 For instance
 
@@ -189,8 +263,8 @@ For instance
 
 ### Default show
 
-For result that is not showable as an image or doesn't have a custom show, `Base.show`
-will be applied with a result similar to what you would get in the Julia REPL
+For a result that is not showable as an image or doesn't have a custom show, `Base.show`
+will be applied with a result similar to what you would get in the Julia REPL:
 
 \showmd{
   ```!
@@ -222,8 +296,20 @@ For instance:
   ```
 }
 
-If you inspect the HTML, you will see that the image displayed corresponds to a generated path that looks like `/assets/syntax/code/figs-html/__autofig_911582796084046168.svg`.
-The generated path is built as `/assets/[source-path]/figs-html/[gen]` where `gen` is built out of the hash of the code that generated the image:
+If you inspect the HTML, you will see that the image displayed corresponds to a generated path that looks like
+
+```plaintext
+/assets/syntax/code/figs-html/__autofig_911582796084046168.svg
+```
+
+The generated path is built as
+
+```plaintext
+/assets/[relative-path]/figs-html/[gen]
+```
+
+where `relative-path` is the relative path to the page with the code and
+`gen` is built out of the hash of the code that generated the image:
 
 ```!
 hash("""
@@ -233,11 +319,14 @@ hash("""
   ) |> string
 ```
 
+
 \skip
 
 ### Custom show
 
-If you have defined a custom `html_show(r)` in your `Utils` that accepts an object of the type of the result of a code cell and returning a string, then that will be used.
+If you have defined a custom `html_show(r)` in your `Utils` that accepts an object of the type
+of the result of a code block and returns a string, then that will be used to represent the
+result on the page.
 
 For instance in the `utils.jl` for the present website, we've defined
 
@@ -257,7 +346,29 @@ We can use the type `Foo` by indicating it is defined in `Utils` and the custom 
 }
 
 \note{
-  You can refer to any object defined in `utils.jl` with the syntax `Utils.$name_of_object`.
+  Remember that you can refer to any object defined in `utils.jl` with the syntax `Utils.$name_of_object`.
+}
+\skip
+
+### Showing the output as Markdown
+
+In some cases it can be convenient to use a code block to generate some markdown.
+One way is to define a [utils function](/syntax/utils/) but you can also use the `\showmd` command
+which interprets the output of `stdout` and the string representation of the result as Markdown.
+
+Here's a simple illustration:
+
+\showmd{
+  ````!ex-showmd
+  #hideall
+  println("```plaintext")
+  for i in 1:5
+    println("*"^i)
+  end
+  println("```")
+  ````
+
+  \mdshow{ex-showmd}
 }
 
 
@@ -271,13 +382,15 @@ capture a trimmed stacktrace of the problem which will be displayed:
   sqrt(-1)
   ```
 }
+\skip
 
 ### In what path does the code run?
 
-In the same path as where `serve` was called, but since you could call `serve()`
-from within the site folder or `serve("path/to/folder")` this path can vary.
-As a consequence, if you want a code cell to do something with a path (e.g. read or write a file),
-use `Utils.path(:folder)` as the base path pointing to your website folder.
+In the same path as where `serve` was called.
+And since you can call `serve()` from within the site folder or from elsewhere specifying
+`serve("path/to/folder")`, this path can vary.
+As a consequence, if you want some code to do something with a path (e.g. read or write a file),
+you should use `Utils.path(:folder)` as the base path pointing to your website folder.
 You can also use `Utils.path(:site)` as the base path pointing to the website build folder.
 
 For instance let's say you want to save a DataFrame to a CSV that you can link to
@@ -317,16 +430,15 @@ You can actually see it [here](/405.html).
 \note{
   Do not use absolute paths since those might not exist in a continuous integration
   environment. Do use `Utils.path(:folder)` or `Utils.path(:site)`
-  as your base path and use `joinpath` to point to your target.
+  as your base path and use `joinpath` to point to the specific location you care about.
 }
+\skip
 
 ## Using packages
 
-You can use packages in executable code blocks but you should add those to the
-environment corresponding to the website folder while the server is not running.
-
-For instance let's say you want to use `CSV` and `DataFrames`, you would then,
-in a Julia session, do:
+As already illustrated in a few examples above, you can use packages in executable code blocks.
+You should make sure that those packages are added to the environment corresponding to the
+website folder. For instance let's say you want to use `CSV` and `DataFrames`, you would do:
 
 ```julia-repl
 julia> using Pkg; Pkg.activate("path/to/website/folder")
@@ -348,53 +460,305 @@ df = DataFrame(A=1:4, B=["M", "F", "F", "M"])
 ### Cache and packages
 
 If you start a new Julia session and have a page where some code uses a package
-(say `DataFrames`) and you add a new cell at the end of the page, only that
-cell will be re-executed and, therefore, won't have access to `DataFrames` unless
+(say `DataFrames`) and you add a new code block at the end of the page, only that
+code will be executed and, therefore, won't have access to `DataFrames` unless
 you re-evaluate the whole page **or** you explicitly add `using DataFrames` in that
-new cell.
+new cell (possibly with a `# hide` if you don't want to show it multiple times).
 
-Alternatively, you can
+Alternatively, you can (same as when you encounter errors):
 
-* set the current page to ignore the cache at start by setting the page variable `ignore_cache` to `true` and restart the server,
-* clear the entire site cache
+* set the current page to ignore the cache at the start of the server by setting
+the page variable `ignore_cache` to `true` and restart the server,
+* clear the entire site cache.
 
-In the first case, on the initial full pass upon server launch, pages with `ignore_cache = true` will re-evaluate all their cells.
-In the second case, on the initial full pass upon server launch, all pages will re-evaluate all their cells.
+## More examples
+
+You'll find here a few toy examples of what can be done with executed
+code cells, hopefully it will give you some inspiration for what you might do with
+them yourself!
+
+### Generating a table
+
+In this example we use code to generate the Markdown representation of a table and use
+`\mdshow` to show the result.
+You could combine such an example with `CSV` to read data from a file for instance.
+
+\showmd{
+  ```!ex-gen-table
+  #hideall
+  names = (:Taimur, :Catherine, :Maria, :Arvind, :Jose, :Minjie)
+  numbers = (1525, 5134, 4214, 9019, 8918, 5757)
+  # header
+  println( "| Name  | Number  |")
+  println( "| :---  | :---    |")
+  # all rows
+  println.("| $name | $number |"
+    for (name, number) in zip(names, numbers)
+  );
+  ```
+  \mdshow{ex-gen-table}
+}
+
+### Generating SVG
+
+Here we combine the use of `\mdshow` with a command that inputs some SVG.
+
+~~~
+<style>
+.ccols {
+  margin-top:1.5em;
+  margin-bottom:1.5em;
+  margin-left:auto;
+  margin-right:auto;
+  width: 60%;
+  text-align: center;}
+.ccols svg {
+  width:30px;}
+</style>
+~~~
+
+
+\showmd{
+  \newcommand{\circle}[1]{
+    ~~~
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4">
+    <circle cx="2" cy="2" r="1.5" fill="#1"/></svg>
+    ~~~
+  }
+
+  ```!ex-gen-svg
+  #hideall
+  cols = (
+    :pink, :lightpink, :hotpink, :deeppink,
+    :mediumvioletred, :palevioletred, :coral,
+    :tomato, :orangered, :darkorange, :orange, :gold
+  )
+  print("@@ccols ")
+  print.("\\circle{$c}" for c in cols)
+  println("@@")
+  ```
+
+  \mdshow{ex-gen-svg}
+}
+
+The CSS corresponding to `ccols` is
+
+```css
+.ccols {
+  margin-top:1.5em;
+  margin-bottom:1.5em;
+  margin-left:auto;
+  margin-right:auto;
+  width: 60%;
+  text-align: center;}
+.ccols svg {
+  width:30px;}
+```
+
+### Team cards
+
+You may want to have a page with responsive team cards for instance where every card would
+follow the same layout but the content would be different.
+There are multiple ways you can do this with Franklin and a simple one below
+(adapted from [this tutorial](https://www.w3schools.com/howto/howto_css_team.asp)).
+The advantage of doing something like this is that it can help separate the content
+from the layout making both arguably easier to maintain.
+
+~~~
+<style>
+.column {
+  float:left;
+  width:30%;
+  margin-bottom:16px;
+  padding:0 8px; }
+@media (max-width:62rem) {
+  .column {
+    width:45%;
+    display:block; }
+  }
+@media (max-width:30rem){
+  .column {
+    width:95%;
+    display:block;}
+  }
+.card { box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); }
+.card img {
+  padding-left:0;
+  width: 100%; }
+.container { padding: 0 16px; }
+.container::after, .row::after{
+  content: "";
+  clear: both;
+  display: table; }
+.title { color: grey; }
+.vitae { margin-top: 0.5em; }
+.email {
+  font-family: courier;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em; }
+.button{
+  border: none;
+  outline: 0;
+  display: inline-block;
+  padding: 8px;
+  color: white;
+  background-color: #000;
+  text-align: center;
+  cursor: pointer;
+  width: 100%; }
+.button:hover{ background-color: #555; }
+</style>
+~~~
+
+\showmd{
+  \newcommand{\card}[5]{
+    @@card
+      ![#1](/assets/eximg/team/!#2.jpg)
+      @@container
+        ~~~
+        <h2>#1</h2>
+        ~~~
+        @@title #3 @@
+        @@vitae #4 @@
+        @@email #5 @@
+        ~~~
+        <p><button class="button">Contact</button></p>
+        ~~~
+      @@
+    @@
+  }
+
+  ```!ex-gen-teamcards
+  #hideall
+  team = [
+    (
+      name="Jane Doe",
+      pic="beth",
+      title="CEO & Founder",
+      vitae="Phasellus eget enim eu lectus faucibus vestibulum",
+      email="example@example.com"
+    ),
+    (
+      name="Mike Ross",
+      pic="rick",
+      title="Art Director",
+      vitae="Phasellus eget enim eu lectus faucibus vestibulum",
+      email="example@example.com"
+    ),
+    (
+      name="John Doe",
+      pic="meseeks",
+      title="Designer",
+      vitae="Phasellus eget enim eu lectus faucibus vestibulum",
+      email="example@example.com"
+    )
+  ]
+
+  "@@cards @@row" |> println
+  for person in team
+    """
+    @@column
+      \\card{
+        $(person.name)}{
+        $(person.pic)}{
+        $(person.title)}{
+        $(person.vitae)}{
+        $(person.email)}
+    @@
+    """ |> println
+  end
+  println("@@ @@") # end of cards + row
+  ```
+
+  \mdshow{ex-gen-teamcards}
+}
+
+The CSS used here is
+
+```css
+.column {
+  float:left;
+  width:30%;
+  margin-bottom:16px;
+  padding:0 8px; }
+@media (max-width:62rem) {
+  .column {
+    width:45%;
+    display:block; }
+  }
+@media (max-width:30rem){
+  .column {
+    width:95%;
+    display:block;}
+  }
+.card { box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); }
+.card img {
+  padding-left:0;
+  width: 100%; }
+.container { padding: 0 16px; }
+.container::after, .row::after{
+  content: "";
+  clear: both;
+  display: table; }
+.title { color: grey; }
+.vitae { margin-top: 0.5em; }
+.email {
+  font-family: courier;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em; }
+.button{
+  border: none;
+  outline: 0;
+  display: inline-block;
+  padding: 8px;
+  color: white;
+  background-color: #000;
+  text-align: center;
+  cursor: pointer;
+  width: 100%; }
+.button:hover{ background-color: #555; }
+```
 
 ### Executing Python code
 
-\todo{...}
+Using [PyCall] you can evaluate Python code in Julia, and so you can do that in Franklin too.
+The simple example below shows how that can work (you could do something similar with [RCall] too).
 
-## Understanding how things work
+\showmd{
+  \newcommand{\pycode}[1]{
+    <!-- Show python code block -->
+    ```python
+    #1
+    ```
+    <!-- Execute code with PyCall.jl -->
+    ```!
+    #hideall
+    using PyCall
+    lines = replace(
+      """#1""",
+      r"(^|\n)([^\n]+)\n?$" => s"\1res = \2"
+    )
+    py"""
+    $$lines
+    """
+    println(py"res")
+    ```
+  }
 
-Each page can be seen as one "notebook".
-All executed code blocks on the page are executed in one sandbox module
-attached to that page and share the same scope.
-That sandbox module also loads the content of `utils.jl` as a `Utils` module
-and so all objects defined there can be accessed in any code block via
-`Utils.$name`.
+  \pycode{
+    import numpy as np
+    np.random.seed(2)
+    x = np.random.randn(5)
+    r = np.linalg.norm(x) / len(x)
+    np.round(r, 2)
+  }
 
-When a code block is executed, the code string as well as the output strings are
-cached.
-This allows code blocks to not be systematically re-executed if they don't need to be.
+}
 
-The cached representation can be _stale_ in which case the code block will be re-evaluated
-as soon as the page changes.
-When adding or modifying a code block, every code block below that one are re-executed.
+The `replace` line in the code block adds a `res = ...` before the last line
+so that the result can be shown, cf. the [PyCall] docs.
 
-Since Utils is loaded into the sandbox module attached to a page, if `utils.jl` changes,
-the entirety of the page "notebook" is marked as stale and will be re-run to guarantee
-that it uses the latest definitions from Utils (even if it doesn't use Utils at all).
-In that sense changing `utils.jl` amounts to clearing the entire cache and re-building
-the website (see also [the page on utils](/syntax/utils/)).
-
-### What to do when things go wrong
-
-While hopefully this shouldn't happen too often, two things can go wrong:
-
-1. some code fails in an un-expected way (e.g.: it calls objects which it should have access to but doesn't seem to),
-1. the output of an auto-cell is incorrect (either wasn't refreshed or some other random output that you didn't expect).
-
-In both cases, if you can reproduce what led to the problem, kindly open an issue on Github.
-Both problems will typically be addressed by clearing the cache which will force all code cells
-to be re-evaluated in order.
+\note{
+  It's up to you to make sure that [PyCall] works well in your Julia session and that
+  the Python environment it uses has the relevant libraries (e.g. `numpy`).
+}

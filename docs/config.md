@@ -1,3 +1,10 @@
+<!--
+Notes:
+
+- KaTeX version = 0.15.1 (changed Jan'22)
+- HL version = 11.3.1
+ -->
+
 +++
 
 
@@ -6,23 +13,33 @@ author = "Thibaut Lienart"
 # General Layout
 layout_page_foot = ""
 content_tag = ""
+
+# Menus + ordering of submenus
 menu = [
-  "Overview"  => "/overview/",
-  "Syntax"    => "/syntax/",
-  "Layout"    => "/layout/",
-  "Context"   => "/context/",
-  "FAQs"      => "/faq/"
+  "workflow" => [
+    "getting_started",
+    "folder_structure",
+    "deployment",
+  ],
+  "syntax" => [
+                "basics",
+                "extensions",
+                "code",
+                # "plots",
+                "vars+funs",
+                "utils"
+                ],
 ]
 
 # Page layout
 showtoc = false
 
 # Tables
-table_class = "pure-table-striped"
+table_class = "pure-table"
 
 # Misc
 meta_description = "Franklin"
-
+github = "https://github.com/tlienart/Franklin.jl"
 
 +++
 
@@ -37,6 +54,7 @@ meta_description = "Franklin"
 [pycall]: https://github.com/JuliaPy/PyCall.jl
 [rcall]: https://github.com/JuliaInterop/RCall.jl
 [dataframes]: https://github.com/JuliaData/DataFrames.jl
+[bootstrap]: https://getbootstrap.com/
 
 <!-- GLOBAL COMMANDS -->
 

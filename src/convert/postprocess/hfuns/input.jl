@@ -28,7 +28,7 @@ function _hfun_fill_1(p::VS)::String
         return string(v)
     elseif vname in utils_var_names()
         mdl = cur_gc().nb_code.mdl
-        return string(getproperty(mdl, vname))
+        return repr(getproperty(mdl, vname))
     else
         @warn """
             {{fill $vname}}
@@ -47,7 +47,7 @@ function _hfun_fill_2(p::VS)::String
     has_var = rpath in keys(gc.children_contexts) &&
               vname in keys(gc.children_contexts[rpath].vars)
     if has_var
-        return string(gc.children_contexts[rpath].vars[vname])
+        return repr(gc.children_contexts[rpath].vars[vname])
     else
         @warn """
             {{fill $vname $rpath}}

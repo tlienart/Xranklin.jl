@@ -111,12 +111,10 @@ removed location was the last one.
 """
 function rm_anchor(gc::GlobalContext, id::String, rpath::String)
     crumbs("rm_anchor", "$id (from $rpath)")
-    alert("RM ANCHOR $id from $rpath")
     # this check should be superfluous
     if id in keys(gc.anchors)
         locs = gc.anchors[id].locs
         cloc = last(locs)
-        alert("CLOC 0: $cloc")
         reqs = copy(gc.anchors[id].reqs)
         prev = copy(locs)
         empty!(locs)
