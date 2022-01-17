@@ -183,8 +183,8 @@ Take a file (markdown, html, ...) and process it appropriately:
 
 ## Paths
 
-* process_file -> process_md_file   -> process_md_file_io!
-* process_file -> process_html_file -> process_html_file_io!
+* process_file -> process_md_file   -> process_md_file_io!    (writes to file)
+* process_file -> process_html_file -> process_html_file_io!  (writes to file)
 """
 function process_file(
             gc::GlobalContext,
@@ -250,6 +250,34 @@ process_file(fpair::Pair{String,String}, case::Symbol, t::Float64=0.0; kw...) =
 
 
 """
+    setup_page_context(lc; kw...)
+
+Set the current page context and reset its variables.
+"""
+function setup_page_context(lc::LocalContext; reset_notebook=false)
+    # set it as current context in case it isn't
+    set_current_local_context(lc)
+
+    # reset the headers
+    empty!(lc.headers)
+    # reset the eqs counter
+    eqrefs(lc)["__cntr__"] = 0
+    # reset code counter
+    setvar!(lc, :_auto_cell_counter, 0)
+
+    # in the context of "ignore_cache", reset the notebook
+    reset_notebook && reset_code_notebook!(lc)
+
+    # keep track of the anchors pre-processing to see which ones
+    # are removed (see context/anchors)
+    bk_anchors = copy(lc.anchors)
+    empty!(lc.anchors)
+
+    return bk_anchors
+end
+
+
+"""
     process_md_file_io!(io, gc, fpath, opath)
 
 Process a markdown file located at `fpath` within global context `gc` and
@@ -261,24 +289,14 @@ function process_md_file_io!(
             fpath::String;
             opath::String="",
             initial_pass::Bool=false,
+            in_gc::Bool=false,
             tohtml::Bool=true
             )::Nothing
     crumbs("process_md_file_io!", fpath)
 
-    # usually not necessary apart if triggered from getvarfrom
-    isfile(fpath) || return
     # path of the file relative to path(:folder)
     rpath  = get_rpath(fpath)
     ropath = get_ropath(opath)
-
-    # if it's the initial pass and the gc already has a reference to this
-    # file, it means it's already been processed (e.g. cached or because
-    # it was triggered by another page requesting a var from it)
-    in_gc = rpath in keys(gc.children_contexts)
-    if initial_pass && in_gc
-        @debug "🚀 skipping (page already processed)."
-        return
-    end
 
     # CONTEXT
     # -------
@@ -288,22 +306,14 @@ function process_md_file_io!(
             gc.children_contexts[rpath] :
             DefaultLocalContext(gc; rpath)
 
-    # set it as current context in case it isn't
-    set_current_local_context(lc)
-    # reset the headers
-    empty!(lc.headers)
-    # reset code counter
-    setvar!(lc, :_auto_cell_counter, 0)
-    # keep track of the anchors pre-processing to see which ones
-    # are removed (see context/anchors)
-    bk_anchors = copy(lc.anchors)
-    empty!(lc.anchors)
+    bk_anchors = setup_page_context(lc)
 
     initial_cache_used = false
     if initial_pass
         # try to load notebooks from serialized
         fpv = path(:cache) / noext(rpath) / "nbv.cache"
         fpc = path(:cache) / noext(rpath) / "nbc.cache"
+
         if isfile(fpv)
             load_vars_cache!(lc, fpv)
             initial_cache_used = true
@@ -333,7 +343,7 @@ function process_md_file_io!(
     # only here do we know whether `ignore_cache` was set to 'true'
     # if that's the case, reset the code notebook and re-evaluate.
     if initial_cache_used && getvar(lc, :ignore_cache, false)
-        reset_code_notebook!(lc)
+        setup_page_context(lc, reset_notebook=true)
         output = (tohtml ?
                     _process_md_file_html(lc, page_content_md) :
                     _process_md_file_latex(lc, page_content_md))::String
@@ -353,16 +363,30 @@ function process_md_file(
             gc::GlobalContext,
             fpath::String,
             opath::String;
-            kw...)
+            initial_pass::Bool=false,
+            kw...)::Nothing
+
+    # check if the file should be skipped
+    # 1> usually not necessary apart if triggered from getvarfrom
+    isfile(fpath) || return
+    # 2> check if the file has already been processed and in initial pass
+    # (this may happen in the case of getvarfrom)
+    rpath = get_rpath(fpath)
+    in_gc = rpath in keys(gc.children_contexts)
+    if initial_pass && in_gc
+        @debug "🚀 skipping $rpath (page already processed)."
+        return
+    end
+
+    # otherwise process the page and write to opath
     open(opath, "w") do outf
-        process_md_file_io!(outf, gc, fpath; opath, kw...)
+        process_md_file_io!(outf, gc, fpath; opath, initial_pass, in_gc, kw...)
     end
     return
 end
 
 function process_md_file(gc::GlobalContext, rpath::String; kw...)
     crumbs("process_md_file", rpath)
-
     fpath = path(:folder) / rpath
     d, f  = splitdir(fpath)
     opath = form_output_path(d => f, :md)

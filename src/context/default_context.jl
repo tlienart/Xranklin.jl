@@ -147,6 +147,7 @@ const DefaultLocalVarsAlias = Alias(
     :fd_url       => :_relative_url,
     :fd_ctime     => :_creation_time,
     :fd_mtime     => :_modification_time,
+    :reeval       => :ignore_cache,
 )
 
 ##############################################################################

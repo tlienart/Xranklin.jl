@@ -1,6 +1,13 @@
-+++
+<!--
+
+Currently hidden, this might be better in a separate demo page.
+
+ -->
+
+<!-- +++
 showtoc = true
 header = "Plots"
+menu_title = header
 +++
 
 ~~~
@@ -111,4 +118,4 @@ PlotlyJS.savejson(p, joinpath(opath, "plotlyjs_ex.json"));
 graphDiv = document.getElementById("foobar");
 plotlyPromise = PlotlyJS_json(graphDiv, "/assets/figs/plotlyjs_ex.json")
 </script>
-~~~
+~~~ -->

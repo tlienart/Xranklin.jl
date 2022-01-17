@@ -1,5 +1,5 @@
 +++
-header = "Static websites with Franklin.jl"
+header = "Building websites with Franklin.jl"
 +++
 
 ## Foo

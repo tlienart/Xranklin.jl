@@ -46,6 +46,8 @@ export html, latex
 
 # Access contexts
 export getvar, getvarfrom, getlvar, getgvar, setlvar!, setgvar!, assetpath
+export cur_lc, cur_gc
+export auto_cell_name
 export locvar, globvar, pagevar  # LEGACY
 
 # ------------------------------------------------------------------------
@@ -92,6 +94,7 @@ include("convert/regex.jl")
 include("convert/markdown/lxfuns/utils.jl")
 include("convert/markdown/lxfuns/hyperrefs.jl")
 include("convert/markdown/lxfuns/show.jl")
+include("convert/markdown/lxfuns/misc.jl")
 
 # >> LxObjects
 include("convert/markdown/latex_objects.jl")
