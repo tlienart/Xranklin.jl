@@ -171,6 +171,8 @@ struct LocalContext <: Context
     nb_vars::VarsNotebook
     nb_code::CodeNotebook
     to_trigger::Set{String}
+    # self
+    page_hash::Ref{UInt64}
 end
 
 
@@ -262,6 +264,7 @@ function LocalContext(glob, vars, defs, headers, rpath="", alias=Alias())
     )
     anchors    = Set{String}()
     to_trigger = Set{String}()
+    page_hash  = Ref(hash(""))
     # form the object
     lc = LocalContext(
         glob,
@@ -277,7 +280,8 @@ function LocalContext(glob, vars, defs, headers, rpath="", alias=Alias())
         alias,
         vars_nb,
         code_nb,
-        to_trigger
+        to_trigger,
+        page_hash
     )
     # attach it to global
     glob.children_contexts[rpath] = lc

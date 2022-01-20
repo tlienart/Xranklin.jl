@@ -1,5 +1,5 @@
 <!--
-LAST REVISION: Jan 17, 2022  (full page ok)
+LAST REVISION: Jan 20, 2022  (full page ok)
  -->
 
 +++
@@ -115,6 +115,29 @@ environment too:
   This means that you cannot effectively use KaTeX-specific commands that suppress numbering
   as this would cause issues with subsequent equation references done with `\eqref`.\\
   Long story short: if you want to suppress numbering, use `\nonumber`.
+}
+\skip
+
+### Environments
+
+Franklin also supports common math environments: `equation`, `align`, `aligned`, `eqnarray`,
+and their "starred" version (which suppresses the number):
+
+\showmd{
+  \begin{eqnarray*}
+    \mathcal F[g](\omega)
+            &=& \langle g, \exp(i\omega \cdot) \rangle \\
+            &=& \displaystyle{\int_{\mathbb R} g(x)\exp(i\omega x)\mathrm{d}x}
+  \end{eqnarray*}
+}
+
+\note{
+  In "proper" LaTeX, the use of `\eqnarray` is discouraged due to possible interference
+  with array column spacing.
+  In Franklin/KaTeX this does not happen and so the only practical difference is that
+  `\eqnarray` will give you a bit more horizontal spacing around the `=` signs than
+  the `align` environme
+  nt.
 }
 \skip
 

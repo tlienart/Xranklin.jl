@@ -15,6 +15,7 @@ Acts as joinpath.
 
 Make a string coloured and printable within a macro such as `@info`.
 Courtesy of Andrey Oskin on discourse.
+Allowed colours are the ones of `printstyled`.
 """
 function hl(o, c::Symbol=:light_magenta)
     io = IOBuffer()

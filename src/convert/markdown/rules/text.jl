@@ -1,9 +1,8 @@
 #
 # FAIL
 #
-html_failed(s::String)  = html_prepost("[FAILED:]&gt;$s&lt;", "<span>";
-                                       style="color:red;")
-latex_failed(s::String) = latex_prepost(">$(b.ss)<", "textcolor{crimson}")
+html_failed(s::String)  = html_prepost("[FAILED:]&gt;$s&lt;", "<span>"; style="color:red;")
+latex_failed(s::String) = latex_prepost(">$s<", "textcolor{crimson}")
 
 html_failed(b, _)  = html_failed(string(b.ss))
 latex_failed(b, _) = latex_failed(string(b.ss))

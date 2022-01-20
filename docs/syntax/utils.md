@@ -12,7 +12,7 @@ menu_title = "Advanced"
 
 ## Custom lxfuns
 
-## Custom lxenvs
+## Custom envfuns
 
 \note{
   avoid extending `Base.show` or other modules + discussion from discourse

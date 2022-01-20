@@ -120,12 +120,18 @@ function serve(d::String   = pwd();
         # ignore .html pages
         endswith(rp, ".md") || continue
         @info "📓 serializing $(hl(str_fmt(rp), :cyan))..."
-        serialize_notebook(ctx.nb_vars, path(:cache) / noext(rp) / "nbv.cache")
-        serialize_notebook(ctx.nb_code, path(:cache) / noext(rp) / "nbc.cache")
+        bp = path(:cache) / noext(rp)
+        mkpath(bp)
+        serialize_notebook(ctx.nb_vars, bp / "nbv.cache")
+        serialize_notebook(ctx.nb_code, bp / "nbc.cache")
+        open(bp / "pg.hash", "w") do f
+            write(f, ctx.page_hash[])
+        end
     end
     δt = time() - start; @info """
-        💡 $(hl("serializing done", :yellow)) $(hl(time_fmt(δt)))
+        💡 $(hl("serializing done", :yellow)) $(hl(time_fmt(δt), :red))
         """
+    println("")
 
     # ---------------------------------------------------------------
     # Cleanup:
@@ -139,8 +145,9 @@ function serve(d::String   = pwd();
         setenv!(:cur_global_ctx, nothing)
         setenv!(:cur_local_ctx,  nothing)
         δt = time() - start; @info """
-            💡 $(hl("cleaning up done", :yellow)) $(hl(time_fmt(δt)))
+            💡 $(hl("cleaning up done", :yellow)) $(hl(time_fmt(δt), :red))
             """
+        println("")
     end
     # > deactivate env
     Pkg.activate()
@@ -235,9 +242,11 @@ function full_pass(
     end
 
     # ---------------------------------------------
+    println("")
     start = time(); @info """
         💡 $(hl("starting the full pass", :yellow))
         """
+    println("")
     # ---------------------------------------------
 
     # Go over all the watched files and run `process_file` on them
@@ -272,9 +281,11 @@ function full_pass(
     end
 
     # ---------------------------------------------------------
+    println("")
     δt = time() - start; @info """
-        💡 $(hl("full pass done", :yellow)) $(hl(time_fmt(δt)))
+        💡 $(hl("full pass done", :yellow)) $(hl(time_fmt(δt), :light_red))
         """
+    println("")
     # ---------------------------------------------------------
     return
 end
@@ -284,6 +295,7 @@ full_pass(watched_files::LittleDict{Symbol, TrackedFiles}; kw...) =
 
 
 """
+    build_loop(...)
 """
 function build_loop(
             cycle_counter::Int,

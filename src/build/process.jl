@@ -277,6 +277,41 @@ function setup_page_context(lc::LocalContext; reset_notebook=false)
 end
 
 
+function process_md_file(gc::GlobalContext, rpath::String; kw...)
+    crumbs("process_md_file", rpath)
+    fpath = path(:folder) / rpath
+    d, f  = splitdir(fpath)
+    opath = form_output_path(d => f, :md)
+    process_md_file(gc, fpath, opath; kw...)
+end
+
+function process_md_file(
+            gc::GlobalContext,
+            fpath::String,
+            opath::String;
+            initial_pass::Bool=false,
+            kw...)::Nothing
+
+    # check if the file should be skipped
+    # 1> usually not necessary apart if triggered from getvarfrom
+    isfile(fpath) || return
+    # 2> check if the file has already been processed and in initial pass
+    # (this may happen in the case of getvarfrom)
+    rpath = get_rpath(fpath)
+    in_gc = rpath in keys(gc.children_contexts)
+    if initial_pass && in_gc
+        @debug "🚀 skipping $rpath (page already processed)."
+        return
+    end
+
+    # otherwise process the page and write to opath
+    open(opath, "w") do outf
+        process_md_file_io!(outf, gc, fpath; opath, initial_pass, in_gc, kw...)
+    end
+    return
+end
+
+
 """
     process_md_file_io!(io, gc, fpath, opath)
 
@@ -308,11 +343,17 @@ function process_md_file_io!(
 
     bk_anchors = setup_page_context(lc)
 
+    # get markdown
+    page_content_md = read(fpath, String)
+    page_hash       = hash(page_content_md)
+
     initial_cache_used = false
     if initial_pass
         # try to load notebooks from serialized
-        fpv = path(:cache) / noext(rpath) / "nbv.cache"
-        fpc = path(:cache) / noext(rpath) / "nbc.cache"
+        bp  = path(:cache) / noext(rpath)
+        fpv = bp / "nbv.cache"
+        fpc = bp / "nbc.cache"
+        pgc = bp / "pg.hash"
 
         if isfile(fpv)
             load_vars_cache!(lc, fpv)
@@ -321,6 +362,12 @@ function process_md_file_io!(
         if isfile(fpc)
             load_code_cache!(lc, fpc)
             initial_cache_used = true
+        end
+        # page hasn't changed since last time --> early stop
+        if isfile(pgc) && read(pgc, UInt64) == page_hash
+            lc.page_hash[] = page_hash
+            @info "👀 page '$rpath' hasn't changed, skipping the conversion..."
+            return
         end
     else
         # reset the notebook counters at the top
@@ -334,8 +381,8 @@ function process_md_file_io!(
     setvar!(lc, :_creation_time, s.ctime)
     setvar!(lc, :_modification_time, s.mtime)
 
-    # get and convert markdown
-    page_content_md = read(fpath, String)
+    lc.page_hash[] = page_hash
+
     output = (tohtml ?
                 _process_md_file_html(lc, page_content_md) :
                 _process_md_file_latex(lc, page_content_md))::String
@@ -359,39 +406,9 @@ function process_md_file_io!(
     return
 end
 
-function process_md_file(
-            gc::GlobalContext,
-            fpath::String,
-            opath::String;
-            initial_pass::Bool=false,
-            kw...)::Nothing
 
-    # check if the file should be skipped
-    # 1> usually not necessary apart if triggered from getvarfrom
-    isfile(fpath) || return
-    # 2> check if the file has already been processed and in initial pass
-    # (this may happen in the case of getvarfrom)
-    rpath = get_rpath(fpath)
-    in_gc = rpath in keys(gc.children_contexts)
-    if initial_pass && in_gc
-        @debug "🚀 skipping $rpath (page already processed)."
-        return
-    end
 
-    # otherwise process the page and write to opath
-    open(opath, "w") do outf
-        process_md_file_io!(outf, gc, fpath; opath, initial_pass, in_gc, kw...)
-    end
-    return
-end
 
-function process_md_file(gc::GlobalContext, rpath::String; kw...)
-    crumbs("process_md_file", rpath)
-    fpath = path(:folder) / rpath
-    d, f  = splitdir(fpath)
-    opath = form_output_path(d => f, :md)
-    process_md_file(gc, fpath, opath; kw...)
-end
 
 function _process_md_file_html(ctx::LocalContext, page_content_md::String)
     # get and process html for the foot of the page

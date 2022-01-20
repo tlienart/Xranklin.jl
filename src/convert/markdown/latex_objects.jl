@@ -63,6 +63,11 @@ function failed_block(
     # form a "failedblock"
     return Block(:FAILED, b.ss)
 end
+function failed_block(bs::Vector{Block}, m::String)::Block
+    env(:strict_parsing) && throw(m)
+    @warn m
+    return Block(:FAILED, prod(bi.ss for bi in bs))
+end
 
 
 """
@@ -325,11 +330,17 @@ the definition is in the utils module or it's internal but it exists.
 """
 function from_utils(n::Symbol, i::Int, blocks::Vector{Block}, ctx::LocalContext;
                     isenv=false, tohtml=true)
-    args  = next_adjacent_brackets(i, blocks, ctx; tohtml)
+    args = next_adjacent_brackets(i, blocks, ctx; tohtml)
     if isenv
         fsymb    = Symbol("env_$n")
         kind     = :RAW_BLOCK
         internal = n in INTERNAL_ENVFUNS
+        # first arg = content, next args are brackets after the env name (3,4,...)
+        # \begin{foo}{bar}{baz} ... \end{foo}
+        # ---> env is "..."
+        # ---> args above is {foo}{bar}{baz}
+        # ---> args after is ["...", "bar", "baz"]
+        args     = [_env_content(blocks, length(args) - 1), args[3:end]...]
     else
         fsymb    = Symbol("lx_$n")
         kind     = :RAW_INLINE
@@ -365,6 +376,25 @@ end
 
 
 """
+    normalize_env_name(b)
+
+Take a brace block corresponding to the name of an environment and return a
+normalized name stripped of spaces, where internal spaces are replaced with
+underscores and when `*` is converted to `_star`.
+"""
+function normalize_env_name(oname::SS)::String
+    name = strip(oname)
+    # internal spaces => underscore
+    name = replace(name, r"\s"  => "_")
+    # name with star => _star
+    name = replace(name, "*"    => "_star")
+    # repeated underscores => single underscore
+    name = replace(name, r"\_+" => "_")
+    return name
+end
+
+
+"""
     try_resolve_lxenv(...)
 
 Here the blocks are within an ENV_* group. By index:
@@ -389,11 +419,19 @@ function try_resolve_lxenv(
     #       or not all braces
     # 3. assemble into string, dedent and resolve
     # ------------------------------------------------------------------------
-    name = strip(content(blocks[2])) |> string
+    oname = content(blocks[2])
+    name  = normalize_env_name(oname)
+
+    if !isascii(name)
+        return failed_block(
+            blocks,
+            "Incorrect environment name $oname, use only ascii characters."
+        )
+    end
 
     if !hasdef(ctx, name)
         nsymb = Symbol(name)
-        if is_in_utils(nsymb)
+        if is_in_utils(nsymb; isenv=true)
             block, _ = from_utils(nsymb, 1, blocks, ctx; isenv=true, tohtml)
             return block
         elseif ctx.is_math[]
@@ -401,7 +439,7 @@ function try_resolve_lxenv(
         end
 
         m = "Environment '$(name)' used before it was defined."
-        return failed_block(cand, m), 0
+        failed_block(blocks, m)
     end
     lxdef = getdef(ctx, name)
 
@@ -412,7 +450,7 @@ function try_resolve_lxenv(
             There is a clashing definition of a command with name '$name'.
             This is not allowed; use unique names for environments and commands.
             """
-        return failed_block(cand, m)
+        failed_block(blocks, m)
     end
 
     #
@@ -424,7 +462,7 @@ function try_resolve_lxenv(
         )
 
         m = "Not enough braces to resolve environment '$env_name'."
-        return failed_block(cand, m)
+        return failed_block(blocks, m)
     end
 
     # 3 -- assemble into string and process
@@ -432,16 +470,28 @@ function try_resolve_lxenv(
     pre  = def.first
     post = def.second
 
-    s = parent_string(blocks[1])
-    r = subs(s, next_index(blocks[2+nargs]), prev_index(blocks[end-1]))
-    r = r |> dedent |> strip
-
     @inbounds for j in 1:nargs
         c    = content(blocks[2+j])
         pre  = replace(pre,  "#$j" => c)
         post = replace(post, "#$j" => c)
     end
     recursion = ifelse(tohtml, rhtml, rlatex)
+    r  = _env_content(blocks, nargs)
     r2 = recursion(pre * r * post, ctx)
     return Block(:RAW_BLOCK, subs(r2))
+end
+
+
+"""
+    _env_content(blocks, nargs)
+
+Helper function to extract the content of an environment e.g.
+`\\begin{foo}bar\\end{foo}` will get `bar`. The `nargs` is the number of
+argument braces expected for that environment.
+"""
+function _env_content(blocks::Vector{Block}, nargs::Int)::String
+    s = parent_string(blocks[1])
+    r = subs(s, next_index(blocks[2+nargs]), prev_index(blocks[end-1]))
+    r = r |> dedent |> strip
+    return string(r)
 end

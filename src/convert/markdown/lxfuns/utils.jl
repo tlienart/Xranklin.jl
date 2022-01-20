@@ -1,6 +1,4 @@
 const INTERNAL_LXFUNS = Symbol[
-    # .
-    :failed,
     # /hyperrefs.jl
     :toc, :tableofcontents,
     :eqref,
@@ -14,24 +12,26 @@ const INTERNAL_LXFUNS = Symbol[
     :nonumber,
 ]
 
-const INTERNAL_ENVFUNS = Symbol[
-
-]
-
 
 """
-    \\failed{command name}{arg1}{arg2}
+    failed_lxc(p; tohtml)
 
-LxFun used for when other lxfuns fail.
+Returns an error message when a LaTeX-like command fails.
 """
-function lx_failed(p::VS; tohtml::Bool=true)::String
+function failed_lxc(p::VS; tohtml::Bool=true)::String
     s = "\\" * p[1] * prod("{$e}" for e in p[2:end])
     tohtml && return html_failed(s)
     return latex_failed(s)
 end
-lx_failed(s::String, p::VS; kw...) = lx_failed([s, p...]; kw...)
+failed_lxc(s::String, p::VS; kw...) = failed_lxc([s, p...]; kw...)
 
 
+"""
+    _lx_check_nargs(n, p, k)
+
+Helper function to check whether the number of arguments (contained in `p`)
+match the expected number of arguments `k` for the command `n`.
+"""
 function _lx_check_nargs(n::Symbol, p::VS, k::Int)
     np = length(p)
     if np != k
@@ -39,7 +39,7 @@ function _lx_check_nargs(n::Symbol, p::VS, k::Int)
             \\$n...
             $n expects $k arg(s) ($k bracket(s) {...}), $np given.
             """
-        return lx_failed([n, p...])
+        return failed_lxc([n |> string, p...])
     end
     return ""
 end

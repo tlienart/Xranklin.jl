@@ -19,7 +19,7 @@ function lx_show(p::VS; tohtml::Bool=true)::String
         tohtml && return """<div class="code-output">""" * re * "</div>"
         return re
     end
-    return lx_failed("show", p)
+    return failed_lxc("show", p)
 end
 
 """
@@ -39,5 +39,5 @@ function lx_mdshow(p::VS; tohtml::Bool=true)::String
         tohtml && return rhtml(re, ctx)
         return rlatex(re, ctx)
     end
-    return lx_failed("showmd", p)
+    return failed_lxc("showmd", p)
 end
