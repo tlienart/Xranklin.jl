@@ -20,14 +20,25 @@ jobs:
         uses: julia-actions/setup-julia@v1
         with:
           version: 1.7
+      - run: '
+             if [ `git branch --list gh-pages-cache` ]
+             then
+                 git checkout gh-pages-cache -- __cache
+             fi'
       - run: julia -e '
           using Pkg;
           Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
           using Xranklin;
           build("docs");'
       - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+        uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           FOLDER: docs/__site
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages-cache
+          FOLDER: docs/
