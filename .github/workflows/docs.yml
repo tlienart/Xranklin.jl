@@ -14,7 +14,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: docs/__cache
-          key: ${{ runner.os }}-cache-
+          key: ${{ runner.os }}-franklin-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-franklin-cache-
+
 
       # Python
       - name: Install python
