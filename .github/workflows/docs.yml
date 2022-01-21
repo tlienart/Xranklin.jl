@@ -15,22 +15,22 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.8'
-      - run: pip install numpy
+      - run: pip install numpy matplotlib
       - name: Install Julia
         uses: julia-actions/setup-julia@v1
         with:
           version: 1.7
       - run: '
-             if [ `git branch --list gh-pages` ]; then
-               git checkout gh-pages -- cache.zip;
+             if [ `git checkout gh-pages -- cache.zip` ]; then
+               echo "Using Cache";
                unzip cache.zip;
+             else
+              echo "No cache found";
              fi'
       - run: ls -aoh
       - run: julia -e '
           using Pkg;
           Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
-          Pkg.add("Conda");
-          using Conda; Conda.add("fontconfig");
           using Xranklin;
           build("docs");'
       - run: 'zip -r cache.zip docs/__cache; mv cache.zip docs/__site/cache.zip'
