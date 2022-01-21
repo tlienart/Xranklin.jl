@@ -34,6 +34,7 @@ jobs:
           using Xranklin;
           build("docs");'
       - run: 'zip -r cache.zip docs/__cache; mv cache.zip docs/__site/cache.zip'
+      - run: touch docs/__site/.nojekyll
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
