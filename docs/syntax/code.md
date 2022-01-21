@@ -319,8 +319,22 @@ hash("""
   ) |> string
 ```
 
+Here's another example with PyPlot (and you could use any other plotting library such as
+  [Plots](https://github.com/JuliaPlots/Plots.jl),
+  [PlotlyJS](https://github.com/JuliaPlots/PlotlyJS.jl), etc.)
 
-\skip
+```!
+using PyPlot
+x = range(0, pi, length=500)
+y = @. sin(exp(x)) * sinc(x)
+figure(figsize=(8, 6))
+plot(x, y)
+gcf()
+```
+
+Note that it's the figure object that is showable as SVG in Pyplot and so we must do
+`gcf()` here to have it be the effective result of the cell and have the plot shown.
+
 
 ### Custom show
 
