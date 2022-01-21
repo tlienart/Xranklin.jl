@@ -22,7 +22,7 @@ jobs:
           version: 1.7
       - run: '
              if [ `git branch --list gh-pages-cache` ]; then
-                 git checkout gh-pages-cache -- __cache;
+                 git checkout gh-pages-cache;
              fi'
       - run: julia -e '
           using Pkg;
@@ -40,4 +40,4 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages-cache
-          FOLDER: docs/
+          FOLDER: docs/__cache

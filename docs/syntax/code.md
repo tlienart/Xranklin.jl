@@ -291,15 +291,15 @@ For instance:
 
 \showmd{
   ```!
-  using Images
-  rand(Gray, 2, 2)
+  using Luxor
+  @drawsvg juliacircles()
   ```
 }
 
 If you inspect the HTML, you will see that the image displayed corresponds to a generated path that looks like
 
 ```plaintext
-/assets/syntax/code/figs-html/__autofig_911582796084046168.svg
+/assets/syntax/code/figs-html/__autofig_10012904553771893789.svg
 ```
 
 The generated path is built as
@@ -313,8 +313,8 @@ where `relative-path` is the relative path to the page with the code and
 
 ```!
 hash("""
-  using Images
-  rand(Gray, 2, 2)
+  using Luxor
+  @drawsvg juliacircles()
   """ |> strip
   ) |> string
 ```
