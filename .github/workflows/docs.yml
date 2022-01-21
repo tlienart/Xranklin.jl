@@ -7,18 +7,12 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      # try to checkout cache branch if it exists
-      # this might fail if it doesn't and that's fine
-      - name: Git checkout
-        uses: actions/checkout@v2
-        with:
-          ref: gh-pages-cache
-
       # checkout the base branch (main) and ignore if the previous
       # step failed
       - name: Git checkout
-        if: always()
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       # Python
       - name: Install python
