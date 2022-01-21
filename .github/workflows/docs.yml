@@ -12,7 +12,7 @@ jobs:
 
       - uses: actions/cache@v2
         with:
-          path: ~/docs/__cache
+          path: docs/__cache
           key: ${{ runner.os }}-cache-
 
       # Python
@@ -34,10 +34,6 @@ jobs:
           Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
           using Xranklin;
           build("docs");'
-      - run: |
-             zip -r cache.zip docs/__cache
-             mkdir _cache_
-             mv cache.zip _cache_/cache.zip
 
       # Deployment and caching
       - run: touch docs/__site/.nojekyll
