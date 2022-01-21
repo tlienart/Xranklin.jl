@@ -10,7 +10,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          persiste-credentials: false
+          persist-credentials: false
       - name: Install python
         uses: actions/setup-python@v2
         with:
@@ -21,10 +21,10 @@ jobs:
         with:
           version: 1.7
       - run: '
-             if [ `git branch --list gh-pages-cache` ]
-             then
-                 git checkout gh-pages-cache -- __cache
-             fi'
+             if [ `git branch --list gh-pages-cache` ];
+             then;
+                 git checkout gh-pages-cache -- __cache;
+             fi;'
       - run: julia -e '
           using Pkg;
           Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
