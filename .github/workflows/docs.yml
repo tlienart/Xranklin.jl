@@ -27,11 +27,12 @@ jobs:
         with:
           version: 1.7
       - run: |
-             if [ `git checkout gh-pages-cache -- cache.zip` ]; then
-               echo "Using Cache";
-               unzip cache.zip;
+             if [ `git checkout gh-pages-cache -- cache.zip` ]
+             then
+               echo "Using Cache"
+               unzip cache.zip
              else
-              echo "No cache found";
+               echo "No cache found"
              fi
       - run: ls -aoh
 
@@ -41,10 +42,13 @@ jobs:
           Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
           using Xranklin;
           build("docs");'
-      - run: 'zip -r cache.zip docs/__cache; mv cache.zip _cache_/cache.zip'
-      - run: touch docs/__site/.nojekyll
+      - run: |
+             zip -r cache.zip docs/__cache
+             mkdir _cache_
+             mv cache.zip _cache_/cache.zip
 
       # Deployment and caching
+      - run: touch docs/__site/.nojekyll
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
