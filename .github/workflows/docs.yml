@@ -15,8 +15,7 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.8'
-      - run: sudo apt-get install -y fontconfig-config
-      - run: pip install numpy matplotlib
+      - run: pip install numpy
       - name: Install Julia
         uses: julia-actions/setup-julia@v1
         with:
@@ -25,9 +24,12 @@ jobs:
              if [ `git branch --list gh-pages-cache` ]; then
                  git checkout gh-pages-cache;
              fi'
+      - run: ls -aoh
       - run: julia -e '
           using Pkg;
           Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
+          Pkg.add(Conda);
+          using Conda; Conda.add("fontconfig");
           using Xranklin;
           build("docs");'
       - name: Deploy
