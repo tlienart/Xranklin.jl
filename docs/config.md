@@ -10,6 +10,9 @@ Notes:
 
 author = "Thibaut Lienart"
 
+# Base URL prefix when live
+base_url_prefix = "Xranklin.jl"
+
 # General Layout
 layout_page_foot = ""
 content_tag = ""

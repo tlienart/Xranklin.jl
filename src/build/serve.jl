@@ -13,6 +13,8 @@ Runs Franklin in the current directory.
                   having inadvertently modified files in one of those folders
                   or if somehow a lot of stale files accumulated in one of
                   these folders.
+    final (Bool): whether it's the build (e.g. for CI or publication), in this
+                  case all links are adjusted to reflect the 'prepath'.
     single (Bool): do a single build pass and stop.
     debug (Bool): whether to display debugging messages.
     cleanup (Bool): whether to destroy the context objects, when debugging this
@@ -28,11 +30,13 @@ Runs Franklin in the current directory.
                    already have a browser tab pointing to a page of interest.
 
 """
-function serve(d::String   = pwd();
+function serve(d::String = pwd();
+            #
             dir::String    = d,
             folder::String = dir,
             clear::Bool    = false,
-            single::Bool   = false,
+            final::Bool    = false,
+            single::Bool   = final,
             # Debugging options
             debug::Bool   = false,
             cleanup::Bool = true,
@@ -89,11 +93,11 @@ function serve(d::String   = pwd();
     end
 
     # do the initial build
-    full_pass(gc, wf)
+    full_pass(gc, wf; final)
 
     # ---------------------------------------------------------------
     # Start the build loop
-    if !single
+    if !final || !single
         loop = (cntr, watcher) -> build_loop(cntr, watcher, wf)
         # start LiveServer
         LiveServer.serve(
@@ -115,7 +119,11 @@ function serve(d::String   = pwd();
     start = time()
     @info "📓 serializing $(hl("config", :cyan))..."
     serialize_notebook(gc.nb_vars, path(:cache) / "gnbv.cache")
-    cp(path(:folder) / "utils.jl", path(:cache) / "utils.jl", force=true)
+    cp(
+        path(:folder) / "utils.jl",
+        path(:cache) / "utils.jl",
+        force=true
+    )
     for (rp, ctx) in gc.children_contexts
         # ignore .html pages
         endswith(rp, ".md") || continue
@@ -155,6 +163,14 @@ function serve(d::String   = pwd();
     return
 end
 
+"""
+    build(d, kw...)
+
+Same as serve but with `final=true` by default. Note that if final is given
+again in the kw then that will take precedence.
+"""
+build(d; kw...) = serve(d, final=true, kw...)
+
 
 """
     full_pass(watched_files; kw...)
@@ -191,7 +207,8 @@ function full_pass(
             skip_files::Vector{Pair{String, String}}=Pair{String, String}[],
             layout_changed::Bool=false,
             config_changed::Bool=false,
-            utils_changed::Bool=false
+            utils_changed::Bool=false,
+            final::Bool=false
             )::Nothing
 
     initial_pass = !any((layout_changed, config_changed, utils_changed))
@@ -253,7 +270,7 @@ function full_pass(
     for (case, dict) in watched_files, (fp, t) in dict
         process_file(
             gc, fp, case, dict[fp];
-            skip_files, initial_pass
+            skip_files, initial_pass, final
         )
     end
 
@@ -328,6 +345,9 @@ function build_loop(
             if !isfile(fpath)
                 delete!(d, fp)
                 delete!(gc.children_contexts, rpath)
+                # delete corresponding output file if it exists
+                opath = get_opath(fpath)
+                isfile(opath) && rm(opath)
             end
         end
         # scan the directory and add the new files to the watched_files

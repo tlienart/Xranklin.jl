@@ -76,12 +76,12 @@ get_ropath(fpath::String) = fpath[(getgvar(:_idx_ropath)::Int):end]
 
 
 """
-    form_output_path
+    get_opath
 
 Given a file pair, form the output path (where the derived file will be
 written/copied).
 """
-function form_output_path(fpair::Pair{String,String}, case::Symbol)::String
+function get_opath(fpair::Pair{String,String}, case::Symbol)::String
     base, file = fpair
     fpath      = joinpath(base, file)
     outbase    = form_output_base_path(base)
@@ -103,6 +103,16 @@ function form_output_path(fpair::Pair{String,String}, case::Symbol)::String
     isdir(outdir) || mkpath(outdir)
     return outpath
 end
+
+function get_opath(fpath::String)::String
+    d, f = splitdir(fpath)
+    ext  = splitext(f)[2]
+    case = ext == ".md" ? :md :
+           ext == ".html" ? :html :
+           :xx
+    return get_opath(d => f, case)
+end
+
 
 """
     form_output_base_path(base)

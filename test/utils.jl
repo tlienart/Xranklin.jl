@@ -58,7 +58,7 @@ end
 function readpg(rpath)
     fpath = X.path(:folder)/rpath
     d, f = splitdir(fpath)
-    opath = X.form_output_path(d => f, :md)
+    opath = X.get_opath(d => f, :md)
     read(opath, String)
 end
 

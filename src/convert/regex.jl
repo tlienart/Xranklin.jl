@@ -46,3 +46,14 @@ const TABLE_SEP_LINE_PAT = r"^[ \t]*\|(?:[ \t]*\:?-+\:?[ \t]*\|)+[ \t]*\:?-+\:?[
 
 "Pattern for an individual column separator (used in `eachmatch`)."
 const TABLE_SEP_COL_PAT = r"(\:?-+\:?)"
+
+# ---- #
+# MISC #
+# ---- #
+
+"""
+    PREPATH_FIX_PAT
+
+Link fixing (see in process_file / final pass).
+"""
+const PREPATH_FIX_PAT = r"(src|href|formaction|action|url)\s*?=\s*?([\"\']?)\/"

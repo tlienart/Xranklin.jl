@@ -37,7 +37,7 @@ normalize_uri(s) = URIs.escapeuri(s, issafe)
 
 # ------------------------------------------------------------------------
 
-export serve
+export serve, build
 export newsite
 export path
 
@@ -129,9 +129,14 @@ include("convert/postprocess/latex2.jl")
 
 # ------------------------------------------------------------------------
 
+include("process/process.jl")
+include("process/config_utils.jl")
+include("process/md.jl")
+include("process/html.jl")
+include("process/tex.jl")
+
 include("build/paths.jl")
 include("build/watch.jl")
-include("build/process.jl")
 include("build/serve.jl")
 
 end # module

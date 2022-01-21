@@ -64,7 +64,7 @@ end
     d, gc = testdir()
     fpair = d => "foo.md"
     fpath = joinpath(fpair...)
-    opath = X.form_output_path(fpair, :md)
+    opath = X.get_opath(fpair, :md)
     write(fpath, """
         abc `def` **ghi**
         """)
