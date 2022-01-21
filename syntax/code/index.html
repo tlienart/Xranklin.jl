@@ -283,7 +283,7 @@ randstring(5)
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">randstring(5)</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">"DDtya"</code></pre></div></fieldset>
+<div class="code-output"><pre><code class="code-result language-plaintext">"WivGw"</code></pre></div></fieldset>
 
 </div><div class="trim">
 
@@ -527,37 +527,8 @@ y = @. sin(exp(x)) * sinc(x)
 figure(figsize=(8, 6))
 plot(x, y)
 gcf()</code></pre>
-<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: ArgumentError: Package PyPlot not found in current path:
-- Run `import Pkg; Pkg.add("PyPlot")` to install the PyPlot package.
-
-Stacktrace:
-   [1] require(into::Module, mod::Symbol)
-     @ Base ./loading.jl:967
-   [2] eval
-     @ ./boot.jl:373 [inlined]
-   [3] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
-     @ Base ./loading.jl:1196
-   [4] include_string
-     @ ./loading.jl:1180 [inlined]
-   [5] #42
-     @ ~/.julia/packages/Xranklin/4rL7P/src/context/code/notebook_code.jl:162 [inlined]
-   [6] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#42#43"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, Base.PipeEndpoint, Base.PipeEndpoint})()
-     @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:118
-   [7] with_logstate(f::Function, logstate::Any)
-     @ Base.CoreLogging ./logging.jl:511
-   [8] with_logger
-     @ ./logging.jl:623 [inlined]
-   [9] capture(f::Xranklin.var"#42#43"{Module, String}; rethrow::Type, color::Bool)
-     @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:116
-  [10] capture
-     @ ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:75 [inlined]
-  [11] _eval_code_cell(mdl::Module, code::String, cell_name::String)
-     @ Xranklin ~/.julia/packages/Xranklin/4rL7P/src/context/code/notebook_code.jl:161
-  [12] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}; cell_name::String, imgdir_html::String, imgdir_latex::String)
-     @ Xranklin ~/.julia/packages/Xranklin/4rL7P/src/context/code/notebook_code.jl:75
-  [13] html_code_block(b::FranklinParser.Block, c::Xranklin.LocalContext)
-     @ Xranklin ~/.julia/packages/Xranklin/4rL7P/src/convert/markdown/rules/code.jl:156
-</code></pre></div><p>Note that it's the figure object that is showable as SVG in Pyplot and so we must do
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/assets/syntax/code/figs-html/__autofig_11665811911839426768.svg">
+</div><p>Note that it's the figure object that is showable as SVG in Pyplot and so we must do
 <code>gcf()</code> here to have it be the effective result of the cell and have the plot shown.</p>
 <h3 id="custom_show" ><a href="#custom_show"> Custom show</a></h3><p>If you have defined a custom <code>html_show(r)</code> in your <code>Utils</code> that accepts an object of the type
 of the result of a code block and returns a string, then that will be used to represent the
