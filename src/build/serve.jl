@@ -294,7 +294,7 @@ function full_pass(
     end
     # reprocess
     for r in to_reprocess
-        reprocess(r, gc; skip_files, msg="(depends on updated vars/anchors)")
+        reprocess(r, gc; skip_files, final, msg="(depends on updated vars/anchors)")
     end
 
     # ---------------------------------------------------------

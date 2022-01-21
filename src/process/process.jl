@@ -119,7 +119,8 @@ from 'A.md'.
 function reprocess(
             rpath::String, gc::GlobalContext;
             skip_files::Vector{Pair{String, String}}=Pair{String,String}[],
-            msg::String=""
+            msg::String="",
+            final::Bool=false
             )::Nothing
     # check if the file was marked as 'to be skipped'
     fpair = path(:folder) => rpath
@@ -130,7 +131,7 @@ function reprocess(
     start = time(); @info """
         ⌛ [reprocess] $(hl(str_fmt(rpath), :cyan)) $msg
         """
-    process_file(gc, fpair, case)
+    process_file(gc, fpair, case; final)
     δt = time() - start; @info """
         ... ✔ [reprocess] $(hl(time_fmt(δt)))
         """
