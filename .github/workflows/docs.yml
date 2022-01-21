@@ -7,12 +7,13 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      # checkout the base branch (main) and ignore if the previous
-      # step failed
       - name: Git checkout
         uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
         with:
-          fetch-depth: 0
+          path: ~/docs/__cache
+          key: ${{ runner.os }}-cache-
 
       # Python
       - name: Install python
@@ -26,15 +27,6 @@ jobs:
         uses: julia-actions/setup-julia@v1
         with:
           version: 1.7
-      - run: |
-             if [ `git checkout gh-pages-cache -- cache.zip` ]
-             then
-               echo "Using Cache"
-               unzip cache.zip
-             else
-               echo "No cache found"
-             fi
-      - run: ls -aoh
 
       # Website build
       - run: julia -e '
@@ -54,8 +46,3 @@ jobs:
         with:
           BRANCH: gh-pages
           FOLDER: docs/__site
-      - name: Save cache 🚀
-        uses: JamesIves/github-pages-deploy-action@releases/v4
-        with:
-          BRANCH: gh-pages-cache
-          FOLDER: _cache_
