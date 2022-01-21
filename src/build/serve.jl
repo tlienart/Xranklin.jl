@@ -86,10 +86,11 @@ function serve(d::String = pwd();
     # added that should be watched
     wf = find_files_to_watch(folder)
 
-    # activate the folder environment if there is one
-    project_file  = path(:folder) / "Project.toml"
-    if isfile(project_file)
-        Pkg.activate(project_file)
+    # activate the folder environment
+    pf = path(:folder)
+    if isfile(pf / "Project.toml")
+        Pkg.activate(pf)
+        Pkg.instantiate()
     end
 
     # do the initial build
