@@ -21,26 +21,22 @@ jobs:
         with:
           version: 1.7
       - run: '
-             if [ `git branch --list gh-pages-cache` ]; then
-                 git checkout gh-pages-cache;
+             if [ `git branch --list gh-pages` ]; then
+               git checkout gh-pages -- cache.zip;
+               unzip cache.zip;
              fi'
       - run: ls -aoh
       - run: julia -e '
           using Pkg;
           Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
-          Pkg.add(Conda);
+          Pkg.add("Conda");
           using Conda; Conda.add("fontconfig");
           using Xranklin;
           build("docs");'
+      - run: 'zip -r cache.zip docs/__cache; mv cache.zip docs/__site/cache.zip'
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           FOLDER: docs/__site
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@releases/v4
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages-cache
-          FOLDER: docs/__cache
