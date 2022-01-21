@@ -9,6 +9,10 @@ menu_title = "Deployment"
 
 ## Deployment on GitHub
 
+### Caching
+
 ## Deployment on GitLab
+
+### Caching
 
 ## Manual deployment
