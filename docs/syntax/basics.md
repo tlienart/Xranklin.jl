@@ -52,14 +52,14 @@ The main inline blocks are:
 
 * a block of text not separated by an empty line possibly including emphasised
 text and special characters,
-* inline code and inline maths (see [extensions](/extensions/)),
-* latex-like commands (see [extensions](/extensions/)).
+* inline code and inline maths (see [extensions](/syntax/extensions/)),
+* latex-like commands (see [extensions](/syntax/extensions/)).
 
 A paragraph will be interrupted by:
 
 * a line skip (empty line),
 * a "non-inline" block (for instance a heading, a code block or a div block
-  (see [extensions](/extensions))),
+  (see [extensions](/syntaxextensions/))),
 * the end of the page.
 
 If you want to introduce a line return without interrupting a paragraph,
