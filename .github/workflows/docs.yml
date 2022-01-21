@@ -10,20 +10,11 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v2
 
-      - name: Cache download
-        uses: actions/download-artifact@v2
+      - name: Cache
+        uses: actions/cache@v2
         with:
-          name: franklin-cache
-
-      - name: Untar cache
-        run: |
-             if [ -e cache.tar ]
-             then
-                 echo "Cache found"
-                 tar -xvf cache.tar
-             else
-                 echo "No cache found"
-             fi
+          path: docs/__cache
+          key: {{ runner.os }}-cache-
 
       # Python
       - name: Install python
@@ -52,10 +43,3 @@ jobs:
         with:
           BRANCH: gh-pages
           FOLDER: docs/__site
-
-      - run: tar -cvf cache.tar docs/__cache
-      - name: Cache upload
-        uses: actions/upload-artifact@v2
-        with:
-          name: franklin-cache
-          path: cache.tar
