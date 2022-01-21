@@ -21,10 +21,9 @@ jobs:
         with:
           version: 1.7
       - run: '
-             if [ `git branch --list gh-pages-cache` ];
-             then;
+             if [ `git branch --list gh-pages-cache` ]; then
                  git checkout gh-pages-cache -- __cache;
-             fi;'
+             fi'
       - run: julia -e '
           using Pkg;
           Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
