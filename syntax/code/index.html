@@ -283,7 +283,7 @@ randstring(5)
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">randstring(5)</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">"SrAjO"</code></pre></div></fieldset>
+<div class="code-output"><pre><code class="code-result language-plaintext">"IrfUA"</code></pre></div></fieldset>
 
 </div><div class="trim">
 
@@ -527,7 +527,7 @@ y = @. sin(exp(x)) * sinc(x)
 figure(figsize=(8, 6))
 plot(x, y)
 gcf()</code></pre>
-<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: InitError: PyCall.PyError("PyImport_ImportModule\n\nThe Python package matplotlib could not be imported by pyimport. Usually this means\nthat you did not install matplotlib in the Python version being used by PyCall.\n\nPyCall is currently configured to use the Python version at:\n\n/opt/hostedtoolcache/Python/3.8.12/x64/bin/python3\n\nand you should use whatever mechanism you usually use (apt-get, pip, conda,\netcetera) to install the Python package containing the matplotlib module.\n\nOne alternative is to re-configure PyCall to use a different Python\nversion on your system: set ENV[\"PYTHON\"] to the path/name of the python\nexecutable you want to use, run Pkg.build(\"PyCall\"), and re-launch Julia.\n\nAnother alternative is to configure PyCall to use a Julia-specific Python\ndistribution via the Conda.jl package (which installs a private Anaconda\nPython distribution), which has the advantage that packages can be installed\nand kept up-to-date via Julia.  As explained in the PyCall documentation,\nset ENV[\"PYTHON\"]=\"\", run Pkg.build(\"PyCall\"), and re-launch Julia. Then,\nTo install the matplotlib module, you can use `pyimport_conda(\"matplotlib\", PKG)`,\nwhere PKG is the Anaconda package that contains the module matplotlib,\nor alternatively you can use the Conda package directly (via\n`using Conda` followed by `Conda.add` etcetera).\n\n", PyCall.PyObject(Ptr{PyCall.PyObject_struct} @0x00007f9a6d9b52a0), PyCall.PyObject(Ptr{PyCall.PyObject_struct} @0x00007f9a7d0536d0), PyCall.PyObject(Ptr{PyCall.PyObject_struct} @0x0000000000000000))
+<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: InitError: PyCall.PyError("PyImport_ImportModule\n\nThe Python package matplotlib could not be imported by pyimport. Usually this means\nthat you did not install matplotlib in the Python version being used by PyCall.\n\nPyCall is currently configured to use the Python version at:\n\n/opt/hostedtoolcache/Python/3.8.12/x64/bin/python3\n\nand you should use whatever mechanism you usually use (apt-get, pip, conda,\netcetera) to install the Python package containing the matplotlib module.\n\nOne alternative is to re-configure PyCall to use a different Python\nversion on your system: set ENV[\"PYTHON\"] to the path/name of the python\nexecutable you want to use, run Pkg.build(\"PyCall\"), and re-launch Julia.\n\nAnother alternative is to configure PyCall to use a Julia-specific Python\ndistribution via the Conda.jl package (which installs a private Anaconda\nPython distribution), which has the advantage that packages can be installed\nand kept up-to-date via Julia.  As explained in the PyCall documentation,\nset ENV[\"PYTHON\"]=\"\", run Pkg.build(\"PyCall\"), and re-launch Julia. Then,\nTo install the matplotlib module, you can use `pyimport_conda(\"matplotlib\", PKG)`,\nwhere PKG is the Anaconda package that contains the module matplotlib,\nor alternatively you can use the Conda package directly (via\n`using Conda` followed by `Conda.add` etcetera).\n\n", PyCall.PyObject(Ptr{PyCall.PyObject_struct} @0x00007f40c1cab2a0), PyCall.PyObject(Ptr{PyCall.PyObject_struct} @0x00007f40d4cdb6d0), PyCall.PyObject(Ptr{PyCall.PyObject_struct} @0x0000000000000000))
 Stacktrace:
    [1] pyimport(name::String)
      @ PyCall ~/.julia/packages/PyCall/L0fLP/src/PyCall.jl:550
@@ -554,7 +554,7 @@ Stacktrace:
   [12] include_string
      @ ./loading.jl:1180 [inlined]
   [13] #42
-     @ ~/.julia/packages/Xranklin/qhAHV/src/context/code/notebook_code.jl:162 [inlined]
+     @ ~/.julia/packages/Xranklin/qqZ3Y/src/context/code/notebook_code.jl:162 [inlined]
   [14] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#42#43"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, Base.PipeEndpoint, Base.PipeEndpoint})()
      @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:118
   [15] with_logstate(f::Function, logstate::Any)
@@ -566,11 +566,11 @@ Stacktrace:
   [18] capture
      @ ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:75 [inlined]
   [19] _eval_code_cell(mdl::Module, code::String, cell_name::String)
-     @ Xranklin ~/.julia/packages/Xranklin/qhAHV/src/context/code/notebook_code.jl:161
+     @ Xranklin ~/.julia/packages/Xranklin/qqZ3Y/src/context/code/notebook_code.jl:161
   [20] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}; cell_name::String, imgdir_html::String, imgdir_latex::String)
-     @ Xranklin ~/.julia/packages/Xranklin/qhAHV/src/context/code/notebook_code.jl:75
+     @ Xranklin ~/.julia/packages/Xranklin/qqZ3Y/src/context/code/notebook_code.jl:75
   [21] html_code_block(b::FranklinParser.Block, c::Xranklin.LocalContext)
-     @ Xranklin ~/.julia/packages/Xranklin/qhAHV/src/convert/markdown/rules/code.jl:156
+     @ Xranklin ~/.julia/packages/Xranklin/qqZ3Y/src/convert/markdown/rules/code.jl:156
 </code></pre></div><p>Note that it's the figure object that is showable as SVG in Pyplot and so we must do
 <code>gcf()</code> here to have it be the effective result of the cell and have the plot shown.</p>
 <h3 id="custom_show" ><a href="#custom_show"> Custom show</a></h3><p>If you have defined a custom <code>html_show(r)</code> in your <code>Utils</code> that accepts an object of the type
