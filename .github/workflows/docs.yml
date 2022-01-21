@@ -5,39 +5,57 @@ on:
       - main
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      # try to checkout cache branch if it exists
+      # this might fail if it doesn't and that's fine
+      - name: Git checkout
         uses: actions/checkout@v2
         with:
-          persist-credentials: false
+          ref: gh-pages-cache
+
+      # checkout the base branch (main)
+      - name: Git checkout
+        uses: actions/checkout@v2
+
+      # Python
       - name: Install python
         uses: actions/setup-python@v2
         with:
           python-version: '3.8'
-      - run: pip install numpy matplotlib
+      - run: pip install numpy # matplotlib
+
+      # Julia
       - name: Install Julia
         uses: julia-actions/setup-julia@v1
         with:
           version: 1.7
-      - run: '
-             if [ `git checkout gh-pages -- cache.zip` ]; then
+      - run: |
+             if [ `git checkout gh-pages-cache -- cache.zip` ]; then
                echo "Using Cache";
                unzip cache.zip;
              else
               echo "No cache found";
-             fi'
+             fi
       - run: ls -aoh
+
+      # Website build
       - run: julia -e '
           using Pkg;
           Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
           using Xranklin;
           build("docs");'
-      - run: 'zip -r cache.zip docs/__cache; mv cache.zip docs/__site/cache.zip'
+      - run: 'zip -r cache.zip docs/__cache; mv cache.zip _cache_/cache.zip'
       - run: touch docs/__site/.nojekyll
-      - name: Deploy
+
+      # Deployment and caching
+      - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           FOLDER: docs/__site
+      - name: Save cache 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        with:
+          BRANCH: gh-pages-cache
+          FOLDER: _cache_
