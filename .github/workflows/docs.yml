@@ -14,8 +14,10 @@ jobs:
         with:
           ref: gh-pages-cache
 
-      # checkout the base branch (main)
+      # checkout the base branch (main) and ignore if the previous
+      # step failed
       - name: Git checkout
+        if: always()
         uses: actions/checkout@v2
 
       # Python
