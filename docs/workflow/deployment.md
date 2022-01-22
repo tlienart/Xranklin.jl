@@ -11,6 +11,8 @@ menu_title = "Deployment"
 
 ### Caching
 
+What happens with caching
+
 ## Deployment on GitLab
 
 ### Caching
