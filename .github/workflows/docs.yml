@@ -15,6 +15,7 @@ jobs:
         with:
           path: |
                 docs/__cache
+                docs/__site
                 ~/.julia
                 ~/.cache/pip
           key: ${{ runner.os }}-franklin-cache-${{ github.sha }}
