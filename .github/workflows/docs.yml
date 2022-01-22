@@ -16,9 +16,9 @@ jobs:
           path: |
                 docs/__cache
                 ~/.julia
+                ~/.cache/pip
           key: ${{ runner.os }}-franklin-cache-${{ github.sha }}
           restore-keys: ${{ runner.os }}-franklin-cache-
-
 
       # Python
       - name: Install python
