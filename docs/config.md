@@ -35,7 +35,7 @@ menu = [
     ],
   "engine" => [
     "build_passes",
-  ]
+  ],
 ]
 
 # Page layout
