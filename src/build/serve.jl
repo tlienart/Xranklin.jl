@@ -149,7 +149,7 @@ function serve(d::String = pwd();
     # > unlink global and local context so that the gc can destroy them.
     if cleanup
         start = time()
-        @info "❌ cleaning up all objects"
+        @info "🗑️ cleaning up all objects"
         parent_module(wipe=true)
         setenv!(:cur_global_ctx, nothing)
         setenv!(:cur_local_ctx,  nothing)

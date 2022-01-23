@@ -31,8 +31,11 @@ menu = [
     "code",
     # "plots",
     "vars+funs",
-    "utils"
+    "utils",
     ],
+  "engine" => [
+    "build_passes",
+  ]
 ]
 
 # Page layout
