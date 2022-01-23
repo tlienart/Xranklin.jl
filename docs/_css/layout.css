@@ -200,7 +200,7 @@ LARGER with right-toc
   --left-menu-margin-left:   0; /* calc(-1 * var(--menu-burger-width));*/
   --left-menu-margin-right:  4px;   /* next to main */
   --left-menu-margin-top:    0px;
-	--left-menu-content-top:   160px;
+	--left-menu-content-top:   205px;
 
 	--menu-content-border-right:  1px solid var(--col-xlight);
 
@@ -224,7 +224,7 @@ LARGER with right-toc
   /* MAIN > TOP HEADER */
   --header-margin-left:   8px;
   --header-margin-right:  8px;
-  --header-margin-top:    16px;
+  --header-margin-top:    32px;
   --header-margin-bottom: 0px;
 	--header-padding-left:  8px;
   --header-width:         calc(100% - (
@@ -376,6 +376,12 @@ h3 {
 	font-size:   var(--text-h3);
 	padding-top: 1em;
 	font-weight: 450;
+}
+
+pre code.hljs {
+	background-color: var(--block-background);
+	border-radius: 7px;
+	padding-left: 1.5em;
 }
 
 /* ol {
@@ -564,7 +570,7 @@ RIGHT PANEL / MAIN
   visibility:   var(--right-margin-visibility);
 	position:     sticky;
   float:        right;
-	top:	  			var(--left-menu-content-top);
+	top:	  			calc(var(--left-menu-content-top) + 1em);
 
   width:        var(--right-margin-width);
   margin-left:  var(--right-margin-margin-left);

@@ -21,19 +21,18 @@ content_tag = ""
 menu = [
   "workflow" => [
     "getting_started",
-    "page_structure",
-    "adapting_layout",
     "folder_structure",
+    "adapting_layout",
     "deployment",
   ],
   "syntax" => [
-                "basics",
-                "extensions",
-                "code",
-                # "plots",
-                "vars+funs",
-                "utils"
-                ],
+    "basics",
+    "extensions",
+    "code",
+    # "plots",
+    "vars+funs",
+    "utils"
+    ],
 ]
 
 # Page layout
@@ -60,6 +59,8 @@ github = "https://github.com/tlienart/Franklin.jl"
 [rcall]: https://github.com/JuliaInterop/RCall.jl
 [dataframes]: https://github.com/JuliaData/DataFrames.jl
 [bootstrap]: https://getbootstrap.com/
+[franklin-repo]: https://github.com/tlienart/Franklin.jl
+[liveserver]: https://github.com/tlienart/LiveServer.jl
 
 <!-- GLOBAL COMMANDS -->
 

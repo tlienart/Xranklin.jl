@@ -39,6 +39,10 @@ can be shown somewhere else via the `\show` command:
   \show{example}
 }
 
+The orange box helps indicate what corresponds to the output of an executed code cell.
+This is just the styling we use on the present site though, you can of course control this
+yourself by styling the class `.code-output` or one of the more specific sub-classes (see [the section on code output](#output_of_executable_code_blocks)).
+
 The syntax
 
 ````markdown

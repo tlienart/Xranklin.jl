@@ -109,8 +109,6 @@ and the second one `#a_text__2`.
   with `===` or `---` ("_alt heading_") this is not supported in Franklin.  
 }
 
-\skip
-
 ### Special characters
 
 If you want to show the characters '`*`' or '`_`' or '`#`' (or other characters which
@@ -228,8 +226,6 @@ List items can contain any "inline" element (e.g. emphasised text or maths):
   "Loose" lists (with line skips between items) are not supported in Franklin.
 }
 
-\skip
-
 ## Links
 
 You can insert a link by writing `[link title](link_url)`.
@@ -293,8 +289,6 @@ For this, you can use the _autolink_ syntax `<location>`:
   references with `[name]: location "title"`.
   These are not currently supported in Franklin.
 }
-
-\skip
 
 ### Internal links
 

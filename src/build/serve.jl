@@ -120,11 +120,11 @@ function serve(d::String = pwd();
     start = time()
     @info "📓 serializing $(hl("config", :cyan))..."
     serialize_notebook(gc.nb_vars, path(:cache) / "gnbv.cache")
-    cp(
-        path(:folder) / "utils.jl",
-        path(:cache) / "utils.jl",
-        force=true
-    )
+    futils = path(:folder) / "utils.jl"
+    if isfile(futils)
+        @info "📓 serializing $(hl("utils", :cyan))..."
+        cp(futils, path(:cache) / "utils.jl", force=true)
+    end
     for (rp, ctx) in gc.children_contexts
         # ignore .html pages
         endswith(rp, ".md") || continue

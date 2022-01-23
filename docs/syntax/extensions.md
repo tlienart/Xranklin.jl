@@ -116,7 +116,7 @@ environment too:
   as this would cause issues with subsequent equation references done with `\eqref`.\\
   Long story short: if you want to suppress numbering, use `\nonumber`.
 }
-\skip
+
 
 ### Environments
 
@@ -139,7 +139,6 @@ and their "starred" version (which suppresses the number):
   the `align` environme
   nt.
 }
-\skip
 
 ### Styling
 
@@ -387,7 +386,7 @@ command that applies custom local-styling to some text:
   For instance, `\com1b`, `\com1` or  `\com_a` are allowed but not `\com*` or `\com_`,
   to avoid ambiguities with emphasised text.
 }
-\skip
+
 
 ### Whitespaces
 
@@ -433,7 +432,7 @@ without whitespace on the left of the '`X`'.
 \tip{
   Generally you should not have to bother with this and can just ignore the `!#` case (in fact KaTeX does some processing of its own to avoid issues with whitespaces).
 }
-\skip
+
 
 ### Defining commands with Julia
 
