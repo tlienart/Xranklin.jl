@@ -51,18 +51,13 @@
     </a>
 </li>
 <li class="pure-menu-item">
-    <a href="/Xranklin.jl/workflow/page_structure/" class="pure-menu-link">
-        Page Structure
+    <a href="/Xranklin.jl/workflow/folder_structure/" class="pure-menu-link">
+        Folder Structure
     </a>
 </li>
 <li class="pure-menu-item">
     <a href="/Xranklin.jl/workflow/adapting_layout/" class="pure-menu-link">
         Adapting a layout
-    </a>
-</li>
-<li class="pure-menu-item">
-    <a href="/Xranklin.jl/workflow/folder_structure/" class="pure-menu-link">
-        Folder Structure
     </a>
 </li>
 <li class="pure-menu-item">
@@ -326,8 +321,7 @@ as this would cause issues with subsequent equation references done with <code>\
 
 Long story short: if you want to suppress numbering, use <code>\nonumber</code>.
 
-</fieldset>
-<p></p><h3 id="environments" ><a href="#environments"> Environments</a></h3><p>Franklin also supports common math environments: <code>equation</code>, <code>align</code>, <code>aligned</code>, <code>eqnarray</code>,
+</fieldset><h3 id="environments" ><a href="#environments"> Environments</a></h3><p>Franklin also supports common math environments: <code>equation</code>, <code>align</code>, <code>aligned</code>, <code>eqnarray</code>,
 and their "starred" version (which suppresses the number):</p>
 <div class="trim">
 
@@ -360,8 +354,7 @@ In Franklin/KaTeX this does not happen and so the only practical difference is t
 the <code>align</code> environme
 nt.
 
-</fieldset>
-<p></p><h3 id="styling" ><a href="#styling"> Styling</a></h3><p>The standard styling for KaTeX with Franklin will be something like</p>
+</fieldset><h3 id="styling" ><a href="#styling"> Styling</a></h3><p>The standard styling for KaTeX with Franklin will be something like</p>
 <pre><code class="css">body &lbrace; counter-reset: eqnum; &rbrace;
 
 .katex &lbrace; font-size: 1.1em !important; &rbrace;
@@ -781,8 +774,7 @@ But they can end with one or more digits.
 For instance, <code>\com1b</code>, <code>\com1</code> or  <code>\com_a</code> are allowed but not <code>\com*</code> or <code>\com_</code>,
 to avoid ambiguities with emphasised text.
 
-</fieldset>
-<p></p><h3 id="whitespaces" ><a href="#whitespaces"> Whitespaces</a></h3><p>In math environments, to  avoid issues with chaining Franklin-defined commands
+</fieldset><h3 id="whitespaces" ><a href="#whitespaces"> Whitespaces</a></h3><p>In math environments, to  avoid issues with chaining Franklin-defined commands
 (which require braces for arguments) and KaTeX commands (which don't always require braces),
 Franklin forces the insertion of whitespaces left of injected arguments.
 This will usually not have a visible effect on the result but you may still
@@ -832,8 +824,7 @@ Zero expected-value: $\E&lbrace;X&rbrace;=0$.</code></pre>
 
 Generally you should not have to bother with this and can just ignore the <code>!#</code> case (in fact KaTeX does some processing of its own to avoid issues with whitespaces).
 
-</fieldset>
-<p></p><h3 id="defining_commands_with_julia" ><a href="#defining_commands_with_julia"> Defining commands with Julia</a></h3><p>You can also define the behaviour of a LaTeX-like command with Julia code.
+</fieldset><h3 id="defining_commands_with_julia" ><a href="#defining_commands_with_julia"> Defining commands with Julia</a></h3><p>You can also define the behaviour of a LaTeX-like command with Julia code.
 This can be useful for more advanced processing and is
 covered on <a href="/Xranklin.jl/syntax/utils/">a dedicated page</a>.</p>
 <h2 id="latex_like_environments" ><a href="#latex_like_environments"> LaTeX-like environments</a></h2><p>To accompany LaTeX-like commands, you can also define LaTeX-like environments in

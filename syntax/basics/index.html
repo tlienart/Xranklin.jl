@@ -51,18 +51,13 @@
     </a>
 </li>
 <li class="pure-menu-item">
-    <a href="/Xranklin.jl/workflow/page_structure/" class="pure-menu-link">
-        Page Structure
+    <a href="/Xranklin.jl/workflow/folder_structure/" class="pure-menu-link">
+        Folder Structure
     </a>
 </li>
 <li class="pure-menu-item">
     <a href="/Xranklin.jl/workflow/adapting_layout/" class="pure-menu-link">
         Adapting a layout
-    </a>
-</li>
-<li class="pure-menu-item">
-    <a href="/Xranklin.jl/workflow/folder_structure/" class="pure-menu-link">
-        Folder Structure
     </a>
 </li>
 <li class="pure-menu-item">
@@ -273,7 +268,7 @@ and the second one <code>#a_text__2</code>.</p>
 CommonMark supports indicating level 1 and 2 headings by underlying them
 with <code>===</code> or <code>---</code> ("<em>alt heading</em>") this is not supported in Franklin.
 
-</fieldset><p></p><h3 id="special_characters" ><a href="#special_characters"> Special characters</a></h3><p>If you want to show the characters '<code>*</code>' or '<code>_</code>' or '<code>#</code>' (or other characters which
+</fieldset><h3 id="special_characters" ><a href="#special_characters"> Special characters</a></h3><p>If you want to show the characters '<code>*</code>' or '<code>_</code>' or '<code>#</code>' (or other characters which
   may have a meaning in Franklin), you should escape them with a backslash.
   For instance:</p>
 <div class="trim">
@@ -496,7 +491,7 @@ So if you want an ordered list starting from 2 for instance you could do:</p>
 
 "Loose" lists (with line skips between items) are not supported in Franklin.
 
-</fieldset><p></p><h2 id="links" ><a href="#links"> Links</a></h2><p>You can insert a link by writing <code>[link title](link_url)</code>.
+</fieldset><h2 id="links" ><a href="#links"> Links</a></h2><p>You can insert a link by writing <code>[link title](link_url)</code>.
 For instance this is a link pointing to the Julia Lang website:</p>
 <div class="trim">
 
@@ -603,7 +598,7 @@ CommonMark allows a few other variants such as <code>[link](location &quot;title
 references with <code>[name]: location &quot;title&quot;</code>.
 These are not currently supported in Franklin.
 
-</fieldset><p></p><h3 id="internal_links" ><a href="#internal_links"> Internal links</a></h3><p>Every header in Franklin automatically has an anchor attached to it for easy reference.
+</fieldset><h3 id="internal_links" ><a href="#internal_links"> Internal links</a></h3><p>Every header in Franklin automatically has an anchor attached to it for easy reference.
 For instance the current header corresponds to the anchor id <code>internal_links</code>.
 To link to such an anchor, the same syntax as for links can be used except
 the path is <code>#id</code>, so for instance:</p>

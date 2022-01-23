@@ -8,6 +8,8 @@
   
 
   
+    <link rel="stylesheet" href="/Xranklin.jl/libs/highlight/github.min.css">
+  
 
 
   <link rel="stylesheet" href="/Xranklin.jl/css/pure.css">
@@ -47,18 +49,13 @@
     </a>
 </li>
 <li class="pure-menu-item">
-    <a href="/Xranklin.jl/workflow/page_structure/" class="pure-menu-link">
-        Page Structure
+    <a href="/Xranklin.jl/workflow/folder_structure/" class="pure-menu-link">
+        Folder Structure
     </a>
 </li>
 <li class="pure-menu-item">
     <a href="/Xranklin.jl/workflow/adapting_layout/" class="pure-menu-link">
         Adapting a layout
-    </a>
-</li>
-<li class="pure-menu-item">
-    <a href="/Xranklin.jl/workflow/folder_structure/" class="pure-menu-link">
-        Folder Structure
     </a>
 </li>
 <li class="pure-menu-item">
@@ -132,7 +129,7 @@
         <div id="margin-toc">
           
             <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
-            
+            <div class="toc"><ol><li><a href="#basic_folder_structure"> Basic folder structure</a><ol><li><a href="#index_file"> Index file</a></li><li><a href="#config_file"> Config file</a></li><li><a href="#layout_files"> Layout files</a></li></ol></li><li><a href="#site_and_cache_folders"> Site and cache folders</a></li></ol></div>
           
       </div>
     </div>
@@ -140,7 +137,80 @@
     
     <div id="main-left-content">
       
+<h2 id="basic_folder_structure" ><a href="#basic_folder_structure"> Basic folder structure</a></h2><p>A Franklin-compatible website folder will always have the following basic structure:</p>
+<pre><code class="plaintext">TestWebsite
+├── _layout
+│   ├── foot.html
+│   └── head.html
+├── config.md
+└── index.md       # or index.html</code></pre>
+<p>where <code>TestWebsite</code> is the title of the website folder.
+Let's go over what these different files do.</p>
+<h3 id="index_file" ><a href="#index_file"> Index file</a></h3><p>The <code>index.md</code> file is what Franklin will convert into your website's landing page.
+So, for instance, if the content of <code>index.md</code> is</p>
+<pre><code class="markdown"># Hello
 
+Some text.</code></pre>
+<p>and that you start the server, the page you will see when navigating to <code>localhost:8000/</code>
+will contain matching HTML like:</p>
+<pre><code class="html">...
+  &lt;h1&gt;Hello&lt;/h1&gt;
+  &lt;p&gt;Some text.&lt;/p&gt;
+...</code></pre>
+<p>In some cases you might want to have full control over the landing page and write it directly in HTML.
+In such cases, simply remove the file <code>index.md</code> and write a file <code>index.html</code> instead.</p>
+<h3 id="config_file" ><a href="#config_file"> Config file</a></h3><p>The config file is where you can define global <a href="/Xranklin.jl/syntax/vars+funs/">page variables</a>
+and <a href="/Xranklin.jl/syntax/extensions/">commands</a>.
+As a quick idea of what the <code>config.md</code> file can be used to do, this is where you might
+specify who the author of the website is, or what it's about:</p>
+<pre><code class="plaintext">+++
+author = &quot;Zenobia&quot;
+descr = &quot;&quot;&quot;
+  This website is dedicated to Zenobia, a famous queen of Syria.
+  &quot;&quot;&quot;
++++</code></pre>
+<p>It is also the place where you will define the <code>base_url_prefix</code> (or <code>prepath</code>)
+which is <strong>crucial</strong> to get your site to <a href="/Xranklin.jl/workflow/deployment/">deploy</a> properly.</p>
+<h3 id="layout_files" ><a href="#layout_files"> Layout files</a></h3><p>The <code>_layout</code> folder will usually contain a <code>head.html</code> and <code>foot.html</code> which are appended at the top and bottom of the HTML coming from the Markdown conversion (cf. the <a href="/Xranklin.jl/workflow/getting_started/#page_structure">page structure</a> diagram).</p>
+<p>These files are where you should indicate the base layout of your pages and, for instance, where you might indicate what CSS or JS to load on pages.
+See <a href="/Xranklin.jl/workflow/adapting_layout/">how to adapt a layout</a> for more details on how to specify these files if you want to write your own layout.</p>
+<p>You might find it convenient to define additional layout files in order to separate (and de-clutter) layout elements.
+For instance, let's say your layout includes a menu, you might begin with a <code>head.html</code> looking like</p>
+<pre><code class="html">&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt; The title &lt;/title&gt;
+&lt;/head&gt;
+
+&lt;nav&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href=&quot;/home/&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;/posts/&quot;&gt;Posts&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;/about/&quot;&gt;About&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+
+&lt;body&gt;</code></pre>
+<p>As your site grows, this might become more complex and it then becomes helpful to a file <code>menu.html</code> with</p>
+<pre><code class="html">&lt;nav&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href=&quot;/home/&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;/posts/&quot;&gt;Posts&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;/about/&quot;&gt;About&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</code></pre>
+<p>and indicate that this file should be <em>inserted</em> in the <code>head.html</code>:</p>
+<pre><code class="html">&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt; The title &lt;/title&gt;
+&lt;/head&gt;
+
+&lbrace;&lbrace;insert menu.html&rbrace;&rbrace;
+
+&lt;body&gt;</code></pre>
+<p>This allows to split your layout in smaller bits that are easier to maintain.
+The <code>&lbrace;&lbrace;...&rbrace;&rbrace;</code> syntax indicates we're calling the <a href="/Xranklin.jl/syntax/vars+funs/">"HTML" function</a> <code>insert</code>.
+For that function, paths are taken relative to the <code>_layout</code> folder (so here <code>menu.html</code> is assumed to be next to <code>head.html</code>).</p>
+<h2 id="site_and_cache_folders" ><a href="#site_and_cache_folders"> Site and cache folders</a></h2>
 
 
 
@@ -160,6 +230,9 @@
 
   
 
+  
+    <script src="/Xranklin.jl/libs/highlight/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();hljs.configure({tabReplace: '    '});</script>
   
 
   

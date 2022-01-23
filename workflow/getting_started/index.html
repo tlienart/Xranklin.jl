@@ -8,6 +8,8 @@
   
 
   
+    <link rel="stylesheet" href="/Xranklin.jl/libs/highlight/github.min.css">
+  
 
 
   <link rel="stylesheet" href="/Xranklin.jl/css/pure.css">
@@ -47,18 +49,13 @@
     </a>
 </li>
 <li class="pure-menu-item">
-    <a href="/Xranklin.jl/workflow/page_structure/" class="pure-menu-link">
-        Page Structure
+    <a href="/Xranklin.jl/workflow/folder_structure/" class="pure-menu-link">
+        Folder Structure
     </a>
 </li>
 <li class="pure-menu-item">
     <a href="/Xranklin.jl/workflow/adapting_layout/" class="pure-menu-link">
         Adapting a layout
-    </a>
-</li>
-<li class="pure-menu-item">
-    <a href="/Xranklin.jl/workflow/folder_structure/" class="pure-menu-link">
-        Folder Structure
     </a>
 </li>
 <li class="pure-menu-item">
@@ -132,7 +129,7 @@
         <div id="margin-toc">
           
             <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
-            <div class="toc"><ol><li><a href="#selecting_a_template"> Selecting a template</a><ol><li><a href="#basic_configuration"> Basic configuration</a></li></ol></li><li><a href="#running_the_server"> Running the server</a></li></ol></div>
+            <div class="toc"><ol><li><a href="#starting_with_a_template"> Starting with a template</a></li><li><a href="#running_the_server"> Running the server</a><ol><li><a href="#modifying_files"> Modifying files</a></li><li><a href="#interrupting_and_restarting_the_server"> Interrupting and restarting the server</a></li></ol></li><li><a href="#page_structure"> Page structure</a></li><li><a href="#next_steps"> Next steps</a></li></ol></div>
           
       </div>
     </div>
@@ -140,8 +137,107 @@
     
     <div id="main-left-content">
       
-<h2 id="selecting_a_template" ><a href="#selecting_a_template"> Selecting a template</a></h2><h3 id="basic_configuration" ><a href="#basic_configuration"> Basic configuration</a></h3><p><strong>prepath</strong></p>
-<h2 id="running_the_server" ><a href="#running_the_server"> Running the server</a></h2>
+<h2 id="starting_with_a_template" ><a href="#starting_with_a_template"> Starting with a template</a></h2><p>To get started with Franklin, use the <code>newsite</code> function
+in a Julia REPL.
+That function will generate a <em>website folder</em> on your computer that's ready
+to be built by Franklin, and that you can modify at will:</p>
+<pre><code class="julia">using Franklin
+newsite(&quot;TestWebsite&quot;; template=&quot;hyde&quot;)</code></pre>
+<p>The execution of this command will also move you to that folder (i.e. <code>cd TestWebsite</code>).</p>
+<p>The first argument of <code>newsite</code> is the title of the folder that will be created,
+and moved to.
+You can change it later depending on what kind of <a href="/Xranklin.jl/workflow/deployment/">deployment</a>
+you want to do.</p>
+<p>The <code>template=</code> keyword argument allows you to specify one of the few
+<a href="https://tlienart.github.io/FranklinTemplates.jl/">simple templates / themes</a>
+that can get you started with Franklin.
+If you just want a super basic template to experiment with, you may find
+the <code>&quot;sandbox&quot;</code> template useful.</p>
+<fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+
+Most of these templates are simplified, adapted version of common standard
+static site templates.
+They are not meant to be very polished but should be easy to adjust to your liking
+once you're familiar with how Franklin operates.
+<br>
+
+Your help to add new templates or make existing ones better is very welcome!
+
+</fieldset><h2 id="running_the_server" ><a href="#running_the_server"> Running the server</a></h2><p>Once you have a website folder, say <code>TestWebsite</code>, you can start the Franklin
+server from within it:</p>
+<pre><code class="plaintext">serve()
+
+[...]
+
+✓ LiveServer listening on http://localhost:8000/ ...
+  (use CTRL+C to shut down)</code></pre>
+<p>If you are outside of your website folder, you can also do <code>serve(&quot;path/to/TestWebsite&quot;)</code>.
+You can now visit your site at <code>http://localhost:8000</code> (the page should have been opened automatically in your browser).</p>
+<p>At a high level, the <code>serve</code> function does the following:</p>
+<ol>
+<li>looks at your config files,</li>
+<li>builds all your pages in a "<em>first pass</em>",</li>
+<li>starts <a href="https://github.com/tlienart/LiveServer.jl">LiveServer</a> which<ol>
+<li>starts a browser,</li>
+<li>watches your files for changes and, upon changes, re-builds the relevant page(s) and refreshes the browser.</li>
+</ol>
+</li>
+</ol>
+<p>There's a number of keyword arguments to <code>serve</code> which you might find useful, do <code>?serve</code>
+to read the relevant docstring.</p>
+<h3 id="modifying_files" ><a href="#modifying_files"> Modifying files</a></h3><p>Once the server is running, you can edit the file <code>index.md</code> and try modifying it to
+see the effect it has in the browser.
+If you're familiar with Markdown, this step should hopefully be fairly intuitive.
+The file itself has indications for how to do things, and you should try it out to get
+a feel for things!</p>
+<p>If you want help with the <a href="/Xranklin.jl/syntax/basics/">syntax</a> click on the relevant links in the menu.</p>
+<h3 id="interrupting_and_restarting_the_server" ><a href="#interrupting_and_restarting_the_server"> Interrupting and restarting the server</a></h3><p>You can interrupt the server at any time by hitting <kbd>Ctrl</kbd> + <kbd>C</kbd> in the Julia REPL.
+And, of course, you can then re-start it with <code>serve(...)</code> again.</p>
+<p>Passing <code>launch=false</code> to <code>serve</code> can be convenient in this case as you may already have a
+browser tab pointing to <code>localhost:8000</code> and may not want to open a new one every time you
+restart the server.</p>
+<h2 id="page_structure" ><a href="#page_structure"> Page structure</a></h2><p>When using Franklin, it is useful to understand how the HTML pages are generated.
+For a source page with the following Markdown:</p>
+<pre><code class="markdown"># Hello
+
+Some **text** here.</code></pre>
+<p>a HTML page will be generated that looks like this:</p>
+<pre><code class="plaintext">┌──────────────────────────────────────────────┐
+│ ┌──────────────────┐                         │
+│ │ &lt;!doctype html&gt;  │                         │
+│ │ &lt;html lang=&quot;en&quot;&gt; │                         │
+│ │ &lt;head&gt;           │                         │
+│ │ ...              │  (_layout/head.html)    │
+│ │ &lt;/head&gt;          │                         │
+│ │ &lt;body&gt;           │                         │
+│ │ ...              │                         │
+│ └──────────────────┘                         │
+│ ┌──────────────────────────────────────────┐ │
+│ │ &lt;h1&gt;Hello&lt;/h1&gt;                           │ │
+│ │ &lt;p&gt;Some &lt;strong&gt;text&lt;/strong&gt; here.&lt;/p&gt;  │ │
+│ └──────────────────────────────────────────┘ │
+│ ┌──────────┐                                 │
+│ │ ...      │                                 │
+│ │ &lt;/body&gt;  │          (_layout/foot.html)    │
+│ │ &lt;/html&gt;  │                                 │
+│ └──────────┘                                 │
+└──────────────────────────────────────────────┘</code></pre>
+<p>The top box corresponds to the file <code>_layout/head.html</code> in your website folder.
+Correspondingly, the bottom box corresponds to the file <code>_layout/foot.html</code>.
+The middle box is the HTML that is generated by Franklin when converting the source Markdown.</p>
+<p>Note that what gets effectively placed at the "top" or "bottom" of your page can be finely controlled
+via <a href="/Xranklin.jl/syntax/vars+funs/">page variables</a> but, for now, the important bit is just to have this general understanding of how the HTML pages are generated.</p>
+<h2 id="next_steps" ><a href="#next_steps"> Next steps</a></h2><p>Now that you have a working website that you can render locally and experiment with,
+you should try to modify the <code>.md</code> file(s) in the folder and the <code>.html</code> files in the
+<code>_layout</code> folder and try to get an intuition for how things work.</p>
+<p>The rest of the docs is there to help you when things don't work like you would expect them to 😅.
+Remember also to:</p>
+<ul>
+<li>join the <code>#franklin</code> channel of the <a href="https://join.slack.com/t/julialang/shared_invite/zt-w0pifg7p-18IUSkZy_WpofNumiTTROQ">Julia Slack</a> to get help quickly,</li>
+<li>ask questions on the <a href="https://discourse.julialang.org/">Julia Discourse</a> adding the tag <code>franklin</code>,</li>
+<li>open issues on <a href="https://github.com/tlienart/Franklin.jl">the repository</a> if you encounter a bug.</li>
+</ul>
+
 
 
 
@@ -161,6 +257,9 @@
 
   
 
+  
+    <script src="/Xranklin.jl/libs/highlight/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();hljs.configure({tabReplace: '    '});</script>
   
 
   

@@ -21,8 +21,10 @@
  */
 .cm-diff {
   margin-top: 2em;
+  margin-bottom: 2em;
   background-color: var(--yellow80);
   border: 0px;
+  border-radius: 7px;
   font-size: var(--text-sm);
 }
 .cm-diff-legend{
@@ -41,9 +43,11 @@
 TIP
 */
 .tip {
-  margin-top: 2em;
+  margin-top: 1.25em;
+  margin-bottom: 2em;
   background-color: var(--green90);
   border: 0px;
+  border-radius: 7px;
   font-size: var(--text-sm);
 }
 .tip-legend {
@@ -61,9 +65,11 @@ TIP
 TO DO
 */
 .todo {
-  margin-top: 2em;
+  margin-top: 1.25em;
+  margin-bottom: 2em;
   background-color: var(--red90);
   border: 0px;
+  border-radius: 7px;
   font-size: var(--text-sm);
 }
 .todo-legend {
@@ -81,9 +87,11 @@ TO DO
 NOTE
 */
 .note {
-  margin-top: 2em;
+  margin-top: 1.25em;
+  margin-bottom: 2em;
   background-color: var(--yellow90);
   border: 0px;
+  border-radius: 7px;
   font-size: var(--text-sm);
 }
 .note-legend {
@@ -103,6 +111,7 @@ SHOW MD
 
 .md-input {
   border-width: 0;
+  border-radius: 7px;
   margin-bottom: 1em;
   background-color: var(--block-background);
   font-size: var(--text-sm);
@@ -129,9 +138,9 @@ SHOW MD
 }
 
 .md-result {
-  border: none;
+  border-radius: 7px;
   background-color: #e3edf2;
-  border-left: 2px solid #5bc0de;
+  border: 1px solid #5bc0de;
   margin-left: 1.5em;
   padding-top: 1.25em;
   padding-bottom: 1.25em;
@@ -193,7 +202,7 @@ SHOW MD
 .code-output {
   margin-top: 1em;
   margin-left: 1em;
-  border: 3px solid var(--blue90);
+  border: 1px solid var(--col-coral);
 }
 
 .code-output .code-figure {
@@ -275,3 +284,18 @@ Menu extra design
 .hljs-string {
   color: var(--green30);
 }
+
+
+kbd {
+    background-color: #eee;
+    border-radius: 3px;
+    border: 1px solid #b4b4b4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 2px 0 0 rgba(255, 255, 255, .7) inset;
+    color: #333;
+    display: inline-block;
+    font-size: .85em;
+    font-weight: 600;
+    line-height: 1;
+    padding: 2px 4px;
+    white-space: nowrap;
+   }
