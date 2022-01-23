@@ -493,13 +493,13 @@ LEFT PANEL / MENU
 }
 #menu-burger {
   top:        calc( ( var(--top-bar-height) - var(--menu-burger-height) ) / 2 );
-  background-image: url(/assets/icons/menu_list.svg);
+  background-image: url('/assets/icons/menu_list.svg');
 }
 
 #menu-burger.active {
 	visibility: visible;
 	min-width: var(--menu-burger-width);
-	background-image: url(/assets/icons/menu_cross.svg);
+	background-image: url('/assets/icons/menu_cross.svg');
 	left: var(--left-menu-base-width);
 }
 
@@ -518,8 +518,10 @@ LEFT PANEL / MENU
 
 #menu-content {
   overflow-x: hidden;
+	overflow-y: auto;
   position: sticky;
   top: var(--left-menu-content-top);
+	height: calc(100vh - var(--left-menu-content-top));
 	padding-left: 1em;
 	border-right: var(--menu-content-border-right);
 	display: block;
@@ -571,7 +573,8 @@ RIGHT PANEL / MAIN
 	position:     sticky;
   float:        right;
 	top:	  			calc(var(--left-menu-content-top) + 1em);
-
+	overflow-y:   auto;
+	height: 		  calc(100vh - var(--left-menu-content-top) - 1em);
   width:        var(--right-margin-width);
   margin-left:  var(--right-margin-margin-left);
   margin-right: var(--right-margin-margin-right);
