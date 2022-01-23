@@ -5,6 +5,16 @@ menu_title = "Adapting a layout"
 +++
 
 ## Overview
+
+Remember that layouts can quickly become complicated especially if you want them to work on multiple devices flawlessly: does the layout work on all screen ratios? on all browsers? don't forget that the aim should be to publish great content and not spend hundreds of hours trying to figure out why some menu doesn't properly collabse in narrow mode.
+
+Starting from an established layout that you've found somewhere and/or using a CSS template will help a lot in this respect.
+Designing a layout from scratch, if you don't have a lot of webdev experience, can be pretty painful.
+
+## Tips and tricks
+
+### Organising layout files
+
 You might find it convenient to define additional layout files in order to separate (and de-clutter) layout elements.
 For instance, let's say your layout includes a menu, you might begin with a `head.html` looking like
 
