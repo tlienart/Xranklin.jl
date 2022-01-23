@@ -8,8 +8,6 @@
   
 
   
-    <link rel="stylesheet" href="/Xranklin.jl/libs/highlight/github.min.css">
-  
 
 
   <link rel="stylesheet" href="/Xranklin.jl/css/pure.css">
@@ -128,7 +126,7 @@
     <div id="main-top-header">
       <div id="main-top-header-content">
         
-          <h1>Using and adapting an external layout</h1>
+          <h1>Page build passes</h1>
         
       </div>
     </div>
@@ -138,7 +136,7 @@
         <div id="margin-toc">
           
             <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
-            <div class="toc"><ol><li><a href="#overview"> Overview</a></li></ol></div>
+            <div class="toc"><ol><li><a href="#overview"> Overview</a></li><li><a href="#pass_1"> Pass 1</a></li><li><a href="#pass_2"> Pass 2</a></li></ol></div>
           
       </div>
     </div>
@@ -146,43 +144,7 @@
     
     <div id="main-left-content">
       
-<h2 id="overview" ><a href="#overview"> Overview</a></h2><p>You might find it convenient to define additional layout files in order to separate (and de-clutter) layout elements.
-For instance, let's say your layout includes a menu, you might begin with a <code>head.html</code> looking like</p>
-<pre><code class="html">&lt;html&gt;
-&lt;head&gt;
-  &lt;title&gt; The title &lt;/title&gt;
-&lt;/head&gt;
-
-&lt;nav&gt;
-  &lt;ul&gt;
-    &lt;li&gt;&lt;a href=&quot;/home/&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;/posts/&quot;&gt;Posts&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;/about/&quot;&gt;About&lt;/a&gt;&lt;/li&gt;
-  &lt;/ul&gt;
-&lt;/nav&gt;
-
-&lt;body&gt;</code></pre>
-<p>As your site grows, this might become more complex and it then becomes helpful to a file <code>menu.html</code> with</p>
-<pre><code class="html">&lt;nav&gt;
-  &lt;ul&gt;
-    &lt;li&gt;&lt;a href=&quot;/home/&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;/posts/&quot;&gt;Posts&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;/about/&quot;&gt;About&lt;/a&gt;&lt;/li&gt;
-  &lt;/ul&gt;
-&lt;/nav&gt;</code></pre>
-<p>and indicate that this file should be <em>inserted</em> in the <code>head.html</code>:</p>
-<pre><code class="html">&lt;html&gt;
-&lt;head&gt;
-  &lt;title&gt; The title &lt;/title&gt;
-&lt;/head&gt;
-
-&lbrace;&lbrace;insert menu.html&rbrace;&rbrace;
-
-&lt;body&gt;</code></pre>
-<p>This allows to split your layout in smaller bits that are easier to maintain.
-The <code>&lbrace;&lbrace;...&rbrace;&rbrace;</code> syntax indicates we're calling the <a href="/Xranklin.jl/syntax/vars+funs/">"HTML" function</a> <code>insert</code>.
-For that function, paths are taken relative to the <code>_layout</code> folder (so here <code>menu.html</code> is assumed to be next to <code>head.html</code>).</p>
-
+<h2 id="overview" ><a href="#overview"> Overview</a></h2><h2 id="pass_1" ><a href="#pass_1"> Pass 1</a></h2><h2 id="pass_2" ><a href="#pass_2"> Pass 2</a></h2>
 
 
 
@@ -202,9 +164,6 @@ For that function, paths are taken relative to the <code>_layout</code> folder (
 
   
 
-  
-    <script src="/Xranklin.jl/libs/highlight/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();hljs.configure({tabReplace: '    '});</script>
   
 
   
