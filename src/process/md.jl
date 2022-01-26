@@ -91,7 +91,7 @@ function setup_page_context(lc::LocalContext; reset_notebook=false)::Set{String}
     bk_anchors = copy(lc.anchors)
 
     # Reset page counters and variables (headers etc)
-    empty!(lc.headers)
+    empty!(lc.headings)
     empty!(lc.anchors)
     eqrefs(lc)["__cntr__"] = 0
     setvar!(lc, :_auto_cell_counter, 0)

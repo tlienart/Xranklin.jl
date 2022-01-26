@@ -9,10 +9,10 @@ function hfun_toc(p::VS)::String
     c = _hfun_check_nargs(:toc, p; kmin=2)
     isempty(c) || return c
 
-    # retrieve the headers of the local context
-    # (type PageHeaders = LittleDict{String, Tuple{Int, Int}})
-    headers = cur_lc().headers
-    isempty(headers) && return ""
+    # retrieve the headings of the local context
+    # (type PageHeadings = LittleDict{String, Tuple{Int, Int}})
+    headings = cur_lc().headings
+    isempty(headings) && return ""
 
     # try to parse min-max level
     min = 0
@@ -28,17 +28,17 @@ function hfun_toc(p::VS)::String
         return hfun_failed("toc", p)
     end
 
-    # trim the headers corresponding to min/max, each header is (id => (nocc, lvl))
-    headers = [
+    # trim the headings corresponding to min/max, each header is (id => (nocc, lvl))
+    headings = [
         (; id, level, text)
-        for (id, (_, level, text)) in headers
+        for (id, (_, level, text)) in headings
         if min ≤ level ≤ max
     ]
-    base_level = minimum(h.level for h in headers) - 1
+    base_level = minimum(h.level for h in headings) - 1
     cur_level  = base_level
 
     io = IOBuffer()
-    for h in headers
+    for h in headings
         if h.level ≤ cur_level
             # close previous list item
             write(io, "</li>")
