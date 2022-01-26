@@ -173,11 +173,14 @@ function hfun_footnotes()::String
             """)
         write(fn_io, """
               <a id="fn-defs"></a>
-              <div class="fn-title">
-                $(getvar(ctx, :fn_title, ""))
-              </div>
-              <ol>
               """)
+        fnt = getvar(ctx, :fn_title, "")
+        if !isempty(fnt)
+            write(fn_io, """
+              <div class="fn-title">$fnt</div>
+              """)
+        end
+        write(fn_io, "<ol>")
         for fn in fns
             id = chop(fn, head=1, tail=0)
             # see hfun_link_a

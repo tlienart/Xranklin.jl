@@ -242,6 +242,7 @@ might be irrelevant for you.
 | `header_class` | `""` | class to add to headers (converted from `## ...`) |
 | `header_link`  | `true` | whether to make headers into links |
 | `header_link_class` | `""` | class of the header links if any |
+| `header_post` | `""` | HTML that should be placed after every heading if any (can contain `{{...}}`) |
 | `toc_class` | `"toc"` | class of the table of contents |
 | `anchor_class` | `"anchor"` | class of the page anchors |
 | `anchor_math_class` | `"anchor-math"` | class of anchors in math environment |

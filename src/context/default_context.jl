@@ -33,6 +33,7 @@ const DefaultGlobalVars = Vars(
     :header_class      => "",
     :header_link       => true,
     :header_link_class => "",
+    :header_post       => "",
     # General classes
     :toc_class         => "toc",
     :anchor_class      => "anchor",

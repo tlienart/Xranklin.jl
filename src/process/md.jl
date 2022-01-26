@@ -34,6 +34,7 @@ function process_md_file(
             opath::String;
             initial_pass::Bool=false,
             kw...)::Nothing
+    crumbs("process_md_file", fpath)
 
     # check if the file should be skipped
     # 1> is the file actually still there? this is a rare case which may happen
@@ -141,6 +142,14 @@ function process_md_file_io!(
     # a last time).
     page_content_md = read(fpath, String)
     page_hash       = hash(page_content_md)
+    lc.page_hash[]  = page_hash
+
+    # set meta parameters
+    s = stat(fpath)
+    setvar!(lc, :_relative_path, rpath)
+    setvar!(lc, :_relative_url, unixify(ropath))
+    setvar!(lc, :_creation_time, s.ctime)
+    setvar!(lc, :_modification_time, s.mtime)
 
     # if we're in the initial pass, there may be cached representation of
     # the hash of the page, of the vars and of the code notebooks that can
@@ -164,7 +173,6 @@ function process_md_file_io!(
 
         # page hasn't changed since last time --> early stop
         if isfile(pgc) && (read(pgc, UInt64) == page_hash) && isfile(opath)
-            lc.page_hash[] = page_hash
             @info """
                 👀 page '$rpath' hasn't changed, skipping the conversion...
                 """
@@ -174,15 +182,6 @@ function process_md_file_io!(
         # reset the notebook counters at the top
         reset_notebook_counters!(lc)
     end
-
-    # set meta parameters
-    s = stat(fpath)
-    setvar!(lc, :_relative_path, rpath)
-    setvar!(lc, :_relative_url, unixify(ropath))
-    setvar!(lc, :_creation_time, s.ctime)
-    setvar!(lc, :_modification_time, s.mtime)
-
-    lc.page_hash[] = page_hash
 
     output = (tohtml ?
                 _process_md_file_html(lc, page_content_md) :

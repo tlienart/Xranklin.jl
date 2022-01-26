@@ -70,7 +70,6 @@ function process_file(
             # we just re-processed it.
             #
             if !initial_pass
-
                 for pg in gc.children_contexts[rpath].to_trigger
                     reprocess(pg, gc; skip_files, msg="(depends on updated vars)")
                 end

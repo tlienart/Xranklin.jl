@@ -190,7 +190,7 @@ function resolve_henv(henv::Vector{HEnvPart}, io::IOBuffer, c::Context)
         if is_estr(iter)
             iter = eval_str(iter)
         else
-            iter = getlvar(Symbol(iter))
+            iter = getvar(c, Symbol(iter))
         end
 
         # (x, y, z) => [:x, :y, :z]
@@ -291,6 +291,7 @@ function _resolve_henv_cond(henv::HEnvPart)
         cond_str = _estr("getlvar(:_hascode)")
 
     end
+
     # XXX cast will fail
     return Bool(eval_str(cond_str))
 end

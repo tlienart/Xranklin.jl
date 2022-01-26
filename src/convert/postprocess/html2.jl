@@ -146,12 +146,30 @@ function html2(parts::Vector{Block}, c::Context)::String
             else
                 # try to see if it could be an implicit fill {{vname}}
                 fs = ""
-                if (length(split_cb) == 1) && ((v = getvar(clc, fname)) !== nothing)
-                    fs = string(v)
-                elseif (length(split_cb) == 1) && (fname in utils_var_names())
-                    mdl = cgc.nb_code.mdl
-                    fs  = getproperty(mdl, fname) |> string
+                fill_failed = false
+
+                if length(split_cb) == 1
+                    # Fill from LC
+                    if clc !== nothing && ((v = getvar(clc, fname)) !== nothing)
+                        fs = string(v)
+
+                    # Fill from GC
+                    elseif ((v = getvar(cgc, fname)) !== nothing)
+                        fs = string(v)
+
+                    # Fill from Utils
+                    elseif fname in utils_var_names()
+                        mdl = cgc.nb_code.mdl
+                        fs  = getproperty(mdl, fname) |> string
+
+                    else
+                        fill_failed = true
+                    end
                 else
+                    fill_failed = true
+                end
+
+                if fill_failed
                     @warn """
                       {{ ... }}
                       ---------

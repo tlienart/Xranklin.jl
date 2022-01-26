@@ -67,6 +67,8 @@ github = "https://github.com/tlienart/Franklin.jl"
 
 <!-- GLOBAL COMMANDS -->
 
+\newcommand{\emdash}{&#8212;}
+
 \newcommand{\skip}{
   ~~~
   <p></p>
