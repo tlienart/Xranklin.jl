@@ -12,7 +12,6 @@ end
 # evaluated in the Utils module
 bar(x) = "hello from foo <$x>"
 
-
 struct Foo
     x::Int
 end
