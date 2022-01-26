@@ -128,7 +128,7 @@ end
     LocalContext
 
 Typically instantiated at a page level, the context keeps track of the
-variables, headers, definitions etc. to specify the context in which the
+variables, headings, definitions etc. to specify the context in which the
 conversion is happening.
 
 Fields:
@@ -136,7 +136,7 @@ Fields:
     glob:             the "parent" global context
     vars:             a dictionary of the local variables
     lxdefs:           a dictionary of the local lx-definitions
-    headers:          a dictionary of the current page headers
+    headings:         a dictionary of the current page headings
     rpath:            relative path to the page with this local context
                        this includes the extension so e.g. foo/bar/baz.md
     anchors:          set of anchor ids defined on the page.
@@ -157,7 +157,7 @@ struct LocalContext <: Context
     glob::GlobalContext
     vars::Vars
     lxdefs::LxDefs
-    headers::PageHeaders
+    headings::PageHeadings
     rpath::String
     anchors::Set{String}
     # chars
@@ -248,7 +248,7 @@ setdef!(gc::GlobalContext, n::String, d) = setdef!(gc.lxdefs, n, d)
 
 # Note that when a local context is created it is automatically
 # attached to its global context via the children_contexts
-function LocalContext(glob, vars, defs, headers, rpath="", alias=Alias())
+function LocalContext(glob, vars, defs, headings, rpath="", alias=Alias())
     # vars notebook
     mdl = submodule(modulename("$(rpath)_vars", true), wipe=true, utils=true)
     vars_nb  = VarsNotebook(mdl, Ref(1), VarsCodePairs(), Ref(false))
@@ -270,7 +270,7 @@ function LocalContext(glob, vars, defs, headers, rpath="", alias=Alias())
         glob,
         vars,
         defs,
-        headers,
+        headings,
         rpath,
         anchors,
         Ref(false),    # is recursive
@@ -290,7 +290,7 @@ end
 
 function LocalContext(g=GlobalContext(), v=Vars(), d=LxDefs();
                       rpath="", alias=Alias())
-    return LocalContext(g, v, d, PageHeaders(), rpath, alias)
+    return LocalContext(g, v, d, PageHeadings(), rpath, alias)
 end
 
 # when trying to retrieve a variable from a local context, we first check

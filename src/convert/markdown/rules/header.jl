@@ -19,19 +19,19 @@ Process a block corresponding to a heading of level `hk` and convert it to
 HTML.
 """
 function html_hk(b::Block, c::LocalContext, hk::Symbol)
-    header_text = rhtml(b, c; nop=true)
-    id          = heading_id(c, header_text, hk)
+    heading_text = rhtml(b, c; nop=true)
+    id           = heading_id(c, heading_text, hk)
     # extra attributes
-    class       = getvar(c, :header_class)::String
-    add_link    = getvar(c, :header_link)::Bool
-    link_class  = getvar(c, :header_link_class)::String
-    post        = getvar(c, :header_post)::String
+    class       = getvar(c, :heading_class)::String
+    add_link    = getvar(c, :heading_link)::Bool
+    link_class  = getvar(c, :heading_link_class)::String
+    post        = getvar(c, :heading_post)::String
     # make the heading a link if required
     if add_link
-        header_text = "<a href=\"#$(id)\">$(header_text)</a>"
+        heading_text = "<a href=\"#$(id)\">$(heading_text)</a>"
     end
     return "<$(hk) $(attr(:id, id)) $(attr(:class, class))>" *
-             header_text *
+             heading_text *
              replace(post, "HEADING_ID" => id) *
            "</$hk>"
 end
@@ -48,12 +48,12 @@ LaTeX.
 Level 4-5-6 are not supported in LaTeX and so will just be written as text.
 """
 function latex_hk(b::Block, c::LocalContext, hk::Symbol)
-    header_text = rlatex(b, c; nop=true)
-    id          = heading_id(c, header_text, hk)
-    hk in (:h4, :h5, :h6) && return header_text
-    hk == :h1 && return "\\section{\\label{$id}$header_text}"
-    hk == :h2 && return "\\subsection{\\label{$id}$header_text}"
-    return "\\subsubsection{\\label{$id}$header_text}"
+    heading_text = rlatex(b, c; nop=true)
+    id           = heading_id(c, heading_text, hk)
+    hk in (:h4, :h5, :h6) && return heading_text
+    hk == :h1 && return "\\section{\\label{$id}$heading_text}"
+    hk == :h2 && return "\\subsection{\\label{$id}$heading_text}"
+    return "\\subsubsection{\\label{$id}$heading_text}"
 end
 
 
@@ -67,14 +67,14 @@ Also add it to the global set of anchors (see `lx_reflink`).
 function heading_id(c::LocalContext, heading_text::String, hk::Symbol)::String
     id  = string_to_anchor(heading_text)
     lvl = parse(Int, String(hk)[2])
-    if id in keys(c.headers)
+    if id in keys(c.headings)
         # keep track of occurrence number for the original id
-        n, l, t = c.headers[id]
-        c.headers[id] = (n+1, l, t)
+        n, l, t = c.headings[id]
+        c.headings[id] = (n+1, l, t)
         id = "$(id)__$(n+1)"
     end
-    # add the heading to the local context set of headers
-    c.headers[id] = (1, lvl, heading_text)
+    # add the heading to the local context set of headings
+    c.headings[id] = (1, lvl, heading_text)
     # add the anchor to the global context set of anchors
     # note that this can overwrite an existing anchor
     add_anchor(c.glob, id, c.rpath)

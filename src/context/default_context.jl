@@ -1,5 +1,5 @@
 #=
-header_link    -- make headers into links
+heading_link    -- make headers into links
 keep_path      -- don't insert `index.html` at the end of the path for these files
                   e.g. ["foo/bar.md", "foo/bar.html", "foo/"]
 layout         -- head * (<tag>content * pg_foot<tag>) * foot
@@ -29,11 +29,11 @@ const DefaultGlobalVars = Vars(
     :robots_disallow  => String[],
     :generate_robots  => true,
     :generate_sitemap => true,
-    # Headers
-    :header_class      => "",
-    :header_link       => true,
-    :header_link_class => "",
-    :header_post       => "",
+    # Headings
+    :heading_class      => "",
+    :heading_link       => true,
+    :heading_link_class => "",
+    :heading_post       => "",
     # General classes
     :toc_class         => "toc",
     :anchor_class      => "anchor",
@@ -135,7 +135,7 @@ const DefaultLocalVars = Vars(
     :_setvar            => Set{Symbol}(),
     # set of anchor ids defined on the page (used to check removals)
     :_anchors           => Set{String}(),
-    # references (note: headers are part of context, see ctx.headers)
+    # references (note: headings are part of context, see ctx.headings)
     :_refrefs           => LittleDict{String, String}(),
     :_eqrefs            => LittleDict{String, Int}("__cntr__" => 0),
     :_bibrefs           => LittleDict{String, String}(),

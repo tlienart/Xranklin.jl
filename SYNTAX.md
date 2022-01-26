@@ -67,7 +67,7 @@ Mixed
 ### Headers
 
 * `# ...`, `## ...` etc
-* injects a link unless `:header_link` (see also `:header_class`, `:header_link_class`)
+* injects a link unless `:heading_link` (see also `:heading_class`, `:heading_link_class`)
 
 ### Raw HTML
 
