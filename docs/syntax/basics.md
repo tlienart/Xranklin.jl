@@ -9,7 +9,7 @@ menu_title = "Basics"
 +++
 
 <!-- avoid having dummy example headers in the toc -->
-{{rm_headers level_1 level_2 level_3 a_text a_text__2}}
+{{rm_headings level_1 level_2 level_3 a_text a_text__2}}
 
 ## Overview
 

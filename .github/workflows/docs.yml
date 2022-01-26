@@ -16,7 +16,6 @@ jobs:
           path: |
                 docs/__cache
                 ~/.julia
-                ~/.julia/Xranklin
                 ~/.cache/pip
           key: ${{ runner.os }}-franklin-cache-${{ github.sha }}
           restore-keys: ${{ runner.os }}-franklin-cache-

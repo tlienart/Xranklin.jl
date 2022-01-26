@@ -1,8 +1,8 @@
-function hfun_rm_headers(ps::Vector{String})
+function hfun_rm_headings(ps::Vector{String})
     c = cur_lc()
     for h in ps
-        if h in keys(c.headers)
-            delete!(c.headers, h)
+        if h in keys(c.headings)
+            delete!(c.headings, h)
         end
     end
     return ""
