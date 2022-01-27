@@ -113,3 +113,49 @@ function _hfun_insert(p::String, base::String;
     # (and it's on the user to check that's fine)
     return read(fpath, String)
 end
+
+
+"""
+    {{taglist}}
+
+Current list corresponding to the ambient tag.
+"""
+function hfun_taglist(; tohtml::Bool=true)::String
+    tohtml || return
+    gc = cur_gc()
+    c  = IOBuffer()
+    write(c, "<ul>")
+    id     = locvar(:tag_id)
+    tag    = gc.tags[id]
+    rpaths = collect(tag.locs)
+
+    # sort the rpaths by date (either given or take ctime otherwise)
+    sorter(rp) = begin
+        pd = getvarfrom(:date, rp)
+        if pd === nothing
+            lc = gc.children_contexts[rp]
+            ct = lc.vars[:_creation_time]
+            pd = Date(Dates.unix2datetime(ct))
+        end
+        return pd
+    end
+    sort!(rpaths, by=sorter, rev=true)
+
+    # write each item
+    for rp in rpaths
+        title = getvarfrom(:title, rp, "")
+        if isempty(title)
+            title = "/$rp/"
+        end
+        url = unixify(rp)
+        write(c, """
+            <li>
+              <a href="$(get_rurl(rp))">$title</a>
+            </li>
+            """)
+    end
+
+    # finalise
+    write(c, "</ul>")
+    return String(take!(c))
+end

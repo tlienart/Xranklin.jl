@@ -35,6 +35,7 @@ const INTERNAL_HFUNS = [
     # /input.jl
     :fill,
     :insert, :include,
+    :taglist,
     # /hyperrefs.jl
     :toc,
     :eqref,

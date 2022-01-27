@@ -92,7 +92,7 @@ function get_opath(fpair::Pair{String,String}, case::Symbol)::String
     # file is index.html or 404.html or in keep_path --> keep the path
     # otherwise if file is page.md  --> .../page/index.html
     if case in (:md, :html)
-        fname = splitext(file)[1]
+        fname = noext(file)
         skip = fname ∈ ("index", "404") ||
                endswith(fname, "/index") ||
                keep_path(fpath)
@@ -158,7 +158,8 @@ end
     unixify(rpath)
 
 Take a path and return a unix version of the path (i.e. with forward slashes).
-The path returned necessarily ends with a '/'.
+If `rpath` has an extension, the path is returned as is, otherwise the path
+is returned with a final `/`.
 """
 function unixify(rpath::String)
     isempty(rpath) && return "/"
@@ -169,4 +170,20 @@ function unixify(rpath::String)
     # if it doesn't, add one and return
     endswith(rpath, '/') || return rpath * "/"
     return rpath
+end
+
+
+"""
+    get_rurl(rpath)
+
+Return the relative url corresponding to `rpath` for instance
+
+* foo/bar/baz.md -> /foo/bar/baz/
+"""
+function get_rurl(rpath::String)
+    rp = noext(rpath)
+    rp = replace(rp, r"index$" => "")
+    rp = unixify(rp)
+    startswith(rp, '/') && return rp
+    return "/$rp"
 end

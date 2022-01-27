@@ -46,6 +46,7 @@ export html, latex
 
 # Access contexts
 export getvar, getvarfrom, getlvar, getgvar, setlvar!, setgvar!, assetpath
+export get_page_tags
 export cur_lc, cur_gc
 export auto_cell_name
 export locvar, globvar, pagevar  # LEGACY
@@ -76,6 +77,7 @@ include("html_utils.jl")
 include("context/types.jl")
 include("context/context.jl")
 include("context/anchors.jl")
+include("context/tags.jl")
 include("context/default_context.jl")
 
 include("context/code/modules.jl")
@@ -110,9 +112,9 @@ include("convert/markdown/rules/utils.jl")
 include("convert/markdown/rules/text.jl")
 include("convert/markdown/rules/list.jl")
 include("convert/markdown/rules/table.jl")
-include("convert/markdown/rules/header.jl")
+include("convert/markdown/rules/heading.jl")
 include("convert/markdown/rules/code.jl")
-include("convert/markdown/rules/maths.jl")
+include("convert/markdown/rules/math.jl")
 include("convert/markdown/rules/link.jl")
 
 # ===> POSTPROCESSING

@@ -81,11 +81,14 @@ The kwarg `reset_notebook` is passed in the context of `ignore_cache`.
 
 ## Return
 
-The vector of anchors from `lc` before it was reset. This will allow us to
-establish whether anchors have changed on the page and, if so, to re-trigger
-pages that may depend upon those enchors.
+The set of anchors from `lc` before they were reset. This will allow us to
+establish whether any anchor has changed on the page and, if so, to
+re-trigger pages that may depend upon those.
 """
-function setup_page_context(lc::LocalContext; reset_notebook=false)::Set{String}
+function setup_page_context(
+            lc::LocalContext;
+            reset_notebook=false
+            )::Set{String}
     # set it as current context in case it isn't
     set_current_local_context(lc)
     bk_anchors = copy(lc.anchors)
@@ -93,6 +96,7 @@ function setup_page_context(lc::LocalContext; reset_notebook=false)::Set{String}
     # Reset page counters and variables (headers etc)
     empty!(lc.headings)
     empty!(lc.anchors)
+    # empty!(lc.tags)
     eqrefs(lc)["__cntr__"] = 0
     setvar!(lc, :_auto_cell_counter, 0)
 
@@ -124,8 +128,7 @@ function process_md_file_io!(
     crumbs("process_md_file_io!", fpath)
 
     # path of the file relative to path(:folder)
-    rpath  = get_rpath(fpath)
-    ropath = get_ropath(opath)
+    rpath = get_rpath(fpath)
 
     # CONTEXT
     # -------
@@ -135,7 +138,8 @@ function process_md_file_io!(
             gc.children_contexts[rpath] :
             DefaultLocalContext(gc; rpath)
 
-    bk_anchors = setup_page_context(lc)
+    bk_anchors   = setup_page_context(lc)
+    bk_tags_dict = get_page_tags(lc)
 
     # get markdown and compute the hash of it so that we can check whether
     # the content has changed since the last time we saw it (if there was
@@ -144,12 +148,7 @@ function process_md_file_io!(
     page_hash       = hash(page_content_md)
     lc.page_hash[]  = page_hash
 
-    # set meta parameters
-    s = stat(fpath)
-    setvar!(lc, :_relative_path, rpath)
-    setvar!(lc, :_relative_url, unixify(ropath))
-    setvar!(lc, :_creation_time, s.ctime)
-    setvar!(lc, :_modification_time, s.mtime)
+    set_meta_parameters(lc, fpath, opath)
 
     # if we're in the initial pass, there may be cached representation of
     # the hash of the page, of the vars and of the code notebooks that can
@@ -196,13 +195,38 @@ function process_md_file_io!(
                     _process_md_file_latex(lc, page_content_md))::String
     end
 
+    #
+    # HTML WRITE
+    #
     write(io, output)
 
+    #
+    # ANCHORS
+    #
     # check whether any anchor has been removed by comparing
     # to 'bk_anchors'.
     for id in setdiff(bk_anchors, lc.anchors)
         rm_anchor(gc, id, lc.rpath)
     end
+
+    #
+    # TAGS
+    #
+    tags_dict = get_page_tags(lc)
+
+    old_keys = keys(bk_tags_dict)
+    new_keys = keys(tags_dict)
+    # check whether any tag has been removed by comparing
+    # to 'bk_tags'
+    for id in setdiff(old_keys, new_keys)
+        rm_tag(gc, id, lc.rpath)
+    end
+    # do the opposite and add any new tags
+    for id in setdiff(new_keys, old_keys)
+        name = tags_dict[id]
+        add_tag(gc, id, name, lc.rpath)
+    end
+
     return
 end
 

@@ -150,7 +150,7 @@ html_code_block(b::Block, c::LocalContext) = begin
     post = ""
     if ci.exec
         if ci.lang == "julia"
-            imgdir_base  = mkpath(path(:site) / "assets" / splitext(c.rpath)[1])
+            imgdir_base  = mkpath(path(:site) / "assets" / noext(c.rpath))
             imgdir_html  = mkpath(imgdir_base / "figs-html")
             imgdir_latex = mkpath(imgdir_base / "figs-latex")
             eval_code_cell!(

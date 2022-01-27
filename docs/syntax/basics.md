@@ -8,7 +8,7 @@ header = "Markdown basics"
 menu_title = "Basics"
 +++
 
-<!-- avoid having dummy example headers in the toc -->
+<!-- avoid having dummy example headings in the toc -->
 {{rm_headings level_1 level_2 level_3 a_text a_text__2}}
 
 ## Overview
@@ -89,7 +89,7 @@ This allows to easily link to parts of a page (as well as across pages).
 For instance `[link](#headings)` will give: [link](#headings).
 See also the [section on links](#links) below.
 
-If the text of a header is unique, the anchor will generally be just that text, in lowercase,
+If the text of a heading is unique, the anchor will generally be just that text, in lowercase,
 after replacing spaces and special characters by '`_`'.
 So for instance if there's a unique heading `My Heading` the associated anchor will
 be `#my_heading`. If there's several heading with the same text, the second heading
@@ -292,8 +292,8 @@ For this, you can use the _autolink_ syntax `<location>`:
 
 ### Internal links
 
-Every header in Franklin automatically has an anchor attached to it for easy reference.
-For instance the current header corresponds to the anchor id `internal_links`.
+Every heading in Franklin automatically has an anchor attached to it for easy reference.
+For instance the current heading corresponds to the anchor id `internal_links`.
 To link to such an anchor, the same syntax as for links can be used except
 the path is `#id`, so for instance:
 
@@ -307,7 +307,7 @@ For instance:
 * `This Is AN anchor Name` → `this_is_an_anchor_name`
 * `anchor α: _foo_` → `anchor_foo`
 
-You can check the generated id by hovering on the header or inspecting the HTML.
+You can check the generated id by hovering on the heading or inspecting the HTML.
 Alternatively, you can use global linking (see [next point](#global_internal_links)).
 
 You can place anchors anywhere you want with `\label{anchor name}`:
@@ -321,11 +321,11 @@ You can place anchors anywhere you want with `\label{anchor name}`:
 ### Global internal links
 
 Franklin allows to link globally **across** pages by using `##` instead of `#`.
-For instance, there is a header "_Cache and packages_" defined on the page `/syntax/code/`,
+For instance, there is a heading "_Cache and packages_" defined on the page `/syntax/code/`,
 and it can be linked to with:
 
 \showmd{
-  all three forms link to the same header:
+  all three forms link to the same heading:
 
   * [explicit](/syntax/code/#cache_and_packages)
   * [implicit](##cache_and_packages)

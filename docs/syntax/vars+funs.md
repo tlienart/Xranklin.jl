@@ -175,7 +175,7 @@ You don't have to use or set any of those unless you find one useful.
 | `mintoclevel` | `1` | minimum heading level to add to the table of contents |
 | `maxtoclevel` | `6` | maximum heading level to add to the table of contents |
 | `showall` | `true` | show the output of every executed code blocks |
-| `fn_title` | `"Notes"` | header of the footnotes section |
+| `fn_title` | `"Notes"` | heading of the footnotes section |
 
 \\
 There's also a number of "internal" page variables that are set and used by Franklin,
@@ -239,10 +239,10 @@ might be irrelevant for you.
 | `robots_disallow` | `String[]` | relative paths of files that should disallow robots |
 | `generate_robots` | `true` | whether to generate `robots.txt` |
 | `generate_sitemap` | `true` | whether to generate a sitemap |
-| `header_class` | `""` | class to add to headers (converted from `## ...`) |
-| `header_link`  | `true` | whether to make headers into links |
-| `header_link_class` | `""` | class of the header links if any |
-| `header_post` | `""` | HTML that should be placed after every heading if any (can contain `{{...}}`) |
+| `heading_class` | `""` | class to add to headings (converted from `## ...`) |
+| `heading_link`  | `true` | whether to make headings into links |
+| `heading_link_class` | `""` | class of the heading links if any |
+| `heading_post` | `""` | HTML that should be placed after every heading if any (can contain `{{...}}`) |
 | `toc_class` | `"toc"` | class of the table of contents |
 | `anchor_class` | `"anchor"` | class of the page anchors |
 | `anchor_math_class` | `"anchor-math"` | class of anchors in math environment |
@@ -259,7 +259,7 @@ might be irrelevant for you.
 | `rss_website_descr` | `""` | |
 | `rss_file`          | `"feed"` | file name for the RSS feed |
 | `rss_full_content`  | false | whether to insert the full page content on RSS items |
-| `tag_page_path`  | `"tag"` | tags will be at `/tag/...`|
+| `tags_prefix`  | `"tags"` | tags will be at `/tags/...`|
 | `tabs_tospaces`  | `2` | conversion tabs to spaces in list creation |
 
 

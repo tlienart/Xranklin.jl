@@ -52,7 +52,7 @@ end
 
 Change the file extension of a filename.
 """
-change_ext(fn, ext=".html") = splitext(fn)[1] * ext
+change_ext(fn, ext=".html") = noext(fn) * ext
 
 """
     noext(fpath)
@@ -83,7 +83,7 @@ function match_url(base::AbstractString, cand::AbstractString)
     elseif endswith(scand, "/")
         scand = scand[1:prevind(scand, lastindex(scand))]
     end
-    return splitext(scand)[1] == sbase
+    return noext(scand) == sbase
 end
 
 

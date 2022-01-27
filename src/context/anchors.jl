@@ -88,7 +88,7 @@ function get_anchor(gc::GlobalContext, id::String, rpath::String)::String
         # 1. start with a `/` so it's not appended to the current path
         # 2. use the unixified relative path to the source
         # 3. add the anchor on that page
-        target = '/' * unixify(splitext(last(a.locs))[1]) * "#$(a.id)"
+        target = '/' * unixify(noext(last(a.locs))) * "#$(a.id)"
         return target
     end
     # this is only used in FP and otherwise has no effect
@@ -112,19 +112,19 @@ removed location was the last one.
 function rm_anchor(gc::GlobalContext, id::String, rpath::String)
     crumbs("rm_anchor", "$id (from $rpath)")
     # this check should be superfluous
-    if id in keys(gc.anchors)
-        locs = gc.anchors[id].locs
-        cloc = last(locs)
-        reqs = copy(gc.anchors[id].reqs)
-        prev = copy(locs)
-        empty!(locs)
-        append!(locs, [l for l in prev if l != rpath])
-        if isempty(locs)
-            delete!(gc.anchors, id)
-        end
-        for rp in reqs
-            reprocess(rp, gc; msg="(depends on updated anchor)")
-        end
+    id in keys(gc.anchors) || return
+    # recover the locs and the last relevant loc
+    locs = gc.anchors[id].locs
+    cloc = last(locs)
+    reqs = copy(gc.anchors[id].reqs)
+    prev = copy(locs)
+    empty!(locs)
+    append!(locs, [l for l in prev if l != rpath])
+    if isempty(locs)
+        delete!(gc.anchors, id)
+    end
+    for rp in reqs
+        reprocess(rp, gc; msg="(depends on updated anchor)")
     end
     return
 end

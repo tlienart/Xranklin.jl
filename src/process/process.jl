@@ -28,7 +28,8 @@ function process_file(
             t::Float64=0.0;             # compare modif time
             skip_files::Vector{Pair{String, String}}=Pair{String, String}[],
             initial_pass::Bool=false,
-            final::Bool=false
+            final::Bool=false,
+            reproc::Bool=false
             )
     crumbs("process_file", "$(fpair.first) => $(fpair.second)")
 
@@ -55,10 +56,11 @@ function process_file(
     # 2. the file is something else (e.g. an image) then Franklin will just
     #   copy it over to the appropriate location
     #
+    off = ifelse(reproc, "... ", "")
     if case in (:md, :html)
         rpath = get_rpath(fpath)
         start = time(); @info """
-            ⌛ processing $(hl(str_fmt(rpath), :cyan))
+            $(off)⌛ processing $(hl(str_fmt(rpath), :cyan))
             """
 
         if case == :md
@@ -86,7 +88,7 @@ function process_file(
         #
         ropath = "__site" / get_ropath(opath)
         @info """
-            ... [process] ✔ $(hl(time_fmt(time()-start))), wrote $(hl(str_fmt(ropath), :cyan))
+            $(off)... [process] ✔ $(hl(time_fmt(time()-start))), wrote $(hl(str_fmt(ropath), :cyan))
             """
 
     else
@@ -102,6 +104,17 @@ end
 
 process_file(fpair::Pair{String,String}, case::Symbol, t::Float64=0.0; kw...) =
     process_file(cur_gc(), fpair, case, t; kw...)
+
+
+function set_meta_parameters(lc::LocalContext, fpath::String, opath::String)
+    rpath  = get_rpath(fpath)
+    ropath = get_ropath(opath)
+    s = stat(fpath)
+    setvar!(lc, :_relative_path, rpath)
+    setvar!(lc, :_relative_url, unixify(ropath))
+    setvar!(lc, :_creation_time, s.ctime)
+    setvar!(lc, :_modification_time, s.mtime)
+end
 
 
 # ------------ #
@@ -130,7 +143,7 @@ function reprocess(
     start = time(); @info """
         ⌛ [reprocess] $(hl(str_fmt(rpath), :cyan)) $msg
         """
-    process_file(gc, fpair, case; final)
+    process_file(gc, fpair, case; final, reproc=true)
     δt = time() - start; @info """
         ... ✔ [reprocess] $(hl(time_fmt(δt)))
         """

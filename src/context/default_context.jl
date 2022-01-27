@@ -17,6 +17,7 @@ const DefaultGlobalVars = Vars(
     :layout_head         => "_layout/head.html",
     :layout_foot         => "_layout/foot.html",
     :layout_page_foot    => "_layout/page_foot.html",
+    :layout_tag          => "_layout/tag.html",
     :layout_head_lx      => "_layout/latex/head.tex",
     :parse_script_blocks => true,  # see html2; possibly disable DBB in <script>
     # File management
@@ -57,7 +58,7 @@ const DefaultGlobalVars = Vars(
     :rss_file          => "feed",
     :rss_full_content  => false,
     # Tags
-    :tag_page_path => "tag",
+    :tags_prefix       => "tags",
     # Misc
     :tabs_to_spaces => 2,   # \t -> ' ' conversion (see convert_list)
     # Paths related

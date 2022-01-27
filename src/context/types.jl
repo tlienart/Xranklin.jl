@@ -163,3 +163,22 @@ struct Anchor
 end
 
 Anchor(id::String, loc::String) = Anchor(id, [loc], Set{String}())
+
+
+"""
+    Tag
+
+See tags.jl, eltype of one of the fields of GC.
+
+Fields
+------
+    * id: the id of the tag (e.g.: 'foo_bar')
+    * locs: set of rpaths that indicate this tag.
+"""
+struct Tag
+    id::String
+    name::String
+    locs::Set{String}
+end
+
+Tag(id::String, name::String, loc::String) = Tag(id, name, Set([loc]))

@@ -20,18 +20,12 @@ function process_html_file(
     crumbs("process_html_file", fpath)
 
     rpath  = get_rpath(fpath)
-    ropath = get_ropath(opath)
     in_gc  = rpath in keys(gc.children_contexts)
     lc     = in_gc ?
                gc.children_contexts[rpath] :
                DefaultLocalContext(gc; rpath)
 
-    # set meta parameters
-    s = stat(fpath)
-    setvar!(lc, :_relative_path, rpath)
-    setvar!(lc, :_relative_url, unixify(ropath))
-    setvar!(lc, :_creation_time, s.ctime)
-    setvar!(lc, :_modification_time, s.mtime)
+    set_meta_parameters(lc, fpath, opath)
 
     open(opath, "w") do outf
         process_html_file_io!(outf, lc, fpath)
