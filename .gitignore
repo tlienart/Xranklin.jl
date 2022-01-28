@@ -2,10 +2,7 @@
 Manifest.toml
 test/_output
 basic.log
+docs/__*
 test/_demo/__*
-docs/__site/
-docs/__cache/
-abc/__site/
-abc/__cache/
-abc_min/__site/
-abc_min/__cache/
+test/abc/__*
+test/abc_min/__*

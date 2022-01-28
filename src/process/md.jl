@@ -61,16 +61,121 @@ function process_md_file(
         opath, initial_pass, in_gc, kw...
     )
 
-    if io.size == 0
-        return
-    else
-        open(opath, "w") do outf
-            write(outf, seekstart(io))
+    # paginated or not, write the base unless there's nothing to write
+    # if there's nothing to write, there's also no pagination so we can
+    # stop early but in all cases start by cleaning up the paginated dirs
+    # so that we don't end up with spurious  dirs
+    odir = dirname(opath)
+    _cleanup_paginated(odir)
+    # this early stop can happen if process_md_file_io was interrupted early
+    # see the page hash checks
+    io.size == 0 && return
+    # Base
+    #   index.md     -> index.html
+    #   foo/index.md -> foo/index.html
+    #   foo/bar.md   -> foo/bar/index.html
+    open(opath, "w") do outf
+        write(outf, seekstart(io))
+    end
+
+    #
+    # PAGINATION
+    # > if there is pagination, we take the file at `opath` and
+    # rewrite it (to resolve PAGINATOR_TOKEN) n+1 time where n is
+    # the number of pages.
+    # For instance if there's a pagination with effectively 3 pages,
+    # then 4 pages will be written (the base page, then pages 1,2,3).
+    #
+    paginator_name = getlvar(:_paginator_name)
+    isempty(paginator_name) ?
+        _not_paginated(gc, rpath, odir) :
+        _paginated(gc, rpath, opath, paginator_name)
+
+    return
+end
+
+
+"""
+    _cleanup_paginated(odir)
+
+Remove all `odir/k/` dirs to avoid ever having spurious such dirs.
+Re-creating these dirs and the file in it takes negligible time.
+"""
+function _cleanup_paginated(odir::String)
+    # remove all pagination folders from odir
+    # we're looking for folders that look like '/1/', '/2/' etc.
+    # so their name is all numeric, does not start with 0 and
+    # it's a directory --> remove
+    for e in readdir(odir)
+        if all(isnumeric, e) && first(elem) != '0'
+            dp = odir / e
+            isdir(dp) && rm(dp, recursive=true)
         end
     end
     return
 end
 
+
+"""
+    _not_paginated(gc, rpath, odir)
+
+Handles the non-paginated case. Checks if the page was previously paginated,
+if it wasn't, do nothing. Otherwise, update `gc.paginated` to reflect that
+it's not paginated anymore.
+"""
+function _not_paginated(gc::GlobalContext, rpath::String, odir::String)
+    rpath in gc.paginated || return
+    setdiff!(gc.paginated, rpath)
+    return
+end
+
+
+"""
+    _paginated(gc, rpath, opath, paginator_name)
+
+Handles the paginated case. It takes the base file `odir/index.html` and
+rewrites it to match the `/1/` case by replacing the `PAGINATOR_TOKEN`
+(so `odir/index.html` and `odir/1/index.html` are identical). It then
+goes on to write the other pages as needed.
+"""
+function _paginated(gc::GlobalContext, rpath::String, opath::String,
+                    paginator_name::String)
+    # recover the corresponding local context
+    lc   = gc.children_contexts[rpath]
+    iter = getvar(lc, Symbol(paginator_name)) |> collect
+    npp  = getvar(lc, :_paginator_npp, 10)
+    odir = dirname(opath)
+
+    # how many pages?
+    niter = length(iter)
+    npg   = ceil(Int, niter / npp)
+
+    # base content (contains the PAGINATOR_TOKEN)
+    ctt = read(opath, String)
+
+    # repeatedly write the content replacing the PAGINATOR_TOKEN
+    for pgi = 1:npg
+        # range of items we should put on page 'pgi'
+        sta_i = (pgi - 1) * npp + 1
+        end_i = min(sta_i + npp - 1, niter)
+        rge_i = sta_i:end_i
+        # form the insertion
+        ins_i = prod(String(e) for e in iter[rge_i])
+        # process it in the local context
+        ins_i = html(ins_i, lc)
+        # form the page with inserted content
+        ctt_i = replace(ctt, PAGINATOR_TOKEN => ins_i)
+        # write the file
+        dst = mkpath(odir / string(pgi))
+        write(dst / "index.html", ctt_i)
+    end
+    # copy the `odir/1/index.html` (which must exist) to odir/index.html
+    cp(odir / "1" / "index.html", odir / "index.html", force=true)
+    return
+end
+
+
+# ------------------------------------------------------------------------
 
 """
     setup_page_context(lc; reset_notebook)

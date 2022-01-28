@@ -1,13 +1,13 @@
 
 <!-- PAGE CORE ENDS HERE -->
 
-  {{ifhasmath}}
+  {{hasmath}}
     <script src="/libs/katex/katex.min.js"></script>
     <script src="/libs/katex/auto-render.min.js"></script>
     <script>renderMathInElement(document.body)</script>
   {{end}}
 
-  {{ifhascode}}
+  {{hascode}}
     <script src="/libs/highlight/highlight.min.js"></script>
     <script>hljs.initHighlightingOnLoad();hljs.configure({tabReplace: '    '});</script>
   {{end}}
