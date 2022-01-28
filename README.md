@@ -90,6 +90,7 @@ jobs:
 **Changes**:
 
 * page variable definitions, move from `@def x = ...` to `+++ ... +++` blocks (see [docs](https://tlienart.github.io/Xranklin.jl/syntax/vars+funs/)), `@def` will still work but will not allow multi-line assignments, generally `+++...+++` are preferred now
+* `@delay` is removed (it's not required anymore)
 * `lxfuns` now take arguments as `hfuns` (a list of parameters corresponding to the braces) see [this example](https://github.com/tlienart/Xranklin.jl/blob/3eb0ce295f0505a7c0519558392d95c2e72fa52d/src/convert/markdown/lxfuns/misc.jl#L1-L11)
 * `envfuns` now take arguments differently, see [this example](https://github.com/tlienart/Xranklin.jl/blob/3eb0ce295f0505a7c0519558392d95c2e72fa52d/src/convert/markdown/envfuns/math.jl#L20-L29)
 
