@@ -28,13 +28,13 @@ Here's a suggested workflow:
 2. clone the repo locally, and add `Xranklin` to your environment with `Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");`
 3. `cd` to the repo and do `using Xranklin; serve(debug=true)`, this will generate a lot of output,
 4. if you have errors, check the migration points below to see if the error can be quickly fixed, if not, open an issue
-  1. indicate your OS, Julia version, link to the repo and to the commit that failed if not the latest
-  1. indicate the patch version of Xranklin,
-  1. copy paste the error and previous few lines in the issue,
+   * indicate your OS, Julia version, link to the repo and to the commit that failed if not the latest
+   * indicate the patch version of Xranklin,
+   * copy paste the error and previous few lines in the issue,
 5. assuming things work locally, test the deployment
-  1. make sure you adjust `prepath` in `config.md`
-  1. create or change the `.github/workflows/deploy.yml` to the script below
-  1. check if it deploys successfully (check in the repo settings that `Pages` consume `gh-pages`)
+   * make sure you adjust `prepath` in `config.md`
+   * create or change the `.github/workflows/deploy.yml` to the script below
+   * check if it deploys successfully (check in the repo settings that `Pages` consume `gh-pages`)
 6. thoughts, feedback, open an issue
 7. thanks a lot!!
 
