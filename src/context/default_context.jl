@@ -141,7 +141,10 @@ const DefaultLocalVars = Vars(
     :_eqrefs            => LittleDict{String, Int}("__cntr__" => 0),
     :_bibrefs           => LittleDict{String, String}(),
     # cell counter
-    :_auto_cell_counter => 0
+    :_auto_cell_counter => 0,
+    # pagination
+    :_paginator_name    => "",
+    :_paginator_npp     => 10,
 )
 const DefaultLocalVarsAlias = Alias(
     :fd_rpath     => :_relative_path,
@@ -193,5 +196,3 @@ bibrefs() = bibrefs(cur_lc())
 
 refrefs(c::Context) = c.vars[:_refrefs]::LittleDict{String, String}
 refrefs()           = merge(refrefs(cur_gc()), refrefs(cur_lc()))
-
-relative_url_curpage() = getlvar(:_relative_url, "")

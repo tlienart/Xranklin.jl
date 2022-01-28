@@ -35,7 +35,9 @@ const INTERNAL_HFUNS = [
     # /input.jl
     :fill,
     :insert, :include,
+    # /tags_pagination.jl
     :taglist,
+    :paginate,
     # /hyperrefs.jl
     :toc,
     :eqref,
@@ -66,9 +68,13 @@ _hfun_failed_latex(p::VS) = latex_failed(
 
 
 """
-Helper function to check the number of arguments in a hfun.
+    _hfun_check_nargs(n, p; kmin, kmax)
+
+Helper function to check the number of arguments in a hfun `n` with a vector
+of parameters `p` and an expected number of arguments between `kmin` and
+`kmax`. If only `kmin` is set then exactly that many arguments are expected.
 """
-function _hfun_check_nargs(n::Symbol, p::VS; kmin::Int=0, kmax::Int=kmin)
+function _hfun_check_nargs(n::Symbol, p::VS; k::Int=0, kmin::Int=k, kmax::Int=k)
     np = length(p)
     if !(kmin ≤ np ≤ kmax)
         rge = ifelse(kmin == kmax, "$kmin", "[$kmin, $kmax]")

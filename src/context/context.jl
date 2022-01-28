@@ -94,6 +94,7 @@ Fields:
     nb_code:            notebook associated with utils.jl
     anchors:            dictionary of all anchors {id => Anchor}
     tags:               dictionary of all tags {id => Tag}
+    paginated:          set of pages `{rpath}` which are paginated
     children_contexts:  associated local contexts {rpath => lc}
     to_trigger:         set of dependent pages to trigger after updating GC
                          (e.g. if config redefines a var used by some pages)
@@ -121,6 +122,7 @@ struct GlobalContext{LC<:Context} <: Context
     nb_code::CodeNotebook
     anchors::LittleDict{String, Anchor}
     tags::LittleDict{String, Tag}
+    paginated::Set{String}
     children_contexts::LittleDict{String, LC}
     to_trigger::Set{String}
     init_trigger::Set{String}
@@ -210,6 +212,7 @@ function GlobalContext(vars=Vars(), defs=LxDefs(); alias=Alias())
     # rest
     anchors      = LittleDict{String, Anchor}()
     tags         = LittleDict{String, Tag}()
+    paginated    = Set{String}()
     children     = LittleDict{String, LocalContext}()
     to_trigger   = Set{String}()
     init_trigger = Set{String}()
@@ -222,6 +225,7 @@ function GlobalContext(vars=Vars(), defs=LxDefs(); alias=Alias())
         code_nb,
         anchors,
         tags,
+        paginated,
         children,
         to_trigger,
         init_trigger

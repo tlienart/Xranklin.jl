@@ -96,3 +96,6 @@ assetpath(s...) = begin
     mkpath(dirname(p))
     p
 end
+
+# see hfun_paginate
+const PAGINATOR_TOKEN = "%##PAGINATOR##%"

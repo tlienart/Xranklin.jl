@@ -74,17 +74,19 @@ include("html_utils.jl")
 # the ordering here is a bit awkard but we want contexts to point
 # to 'Notebook' objects which are tied to code environment.
 
-include("context/types.jl")
-include("context/context.jl")
-include("context/anchors.jl")
-include("context/tags.jl")
-include("context/default_context.jl")
+p = "context"
+include("$p/types.jl")
+include("$p/context.jl")
+include("$p/anchors.jl")
+include("$p/tags.jl")
+include("$p/default_context.jl")
 
-include("context/code/modules.jl")
-include("context/code/notebook.jl")
-include("context/code/serialize.jl")
-include("context/code/notebook_vars.jl")
-include("context/code/notebook_code.jl")
+p = "context/code"
+include("$p/modules.jl")
+include("$p/notebook.jl")
+include("$p/serialize.jl")
+include("$p/notebook_vars.jl")
+include("$p/notebook_code.jl")
 
 # ------------------------------------------------------------------------
 
@@ -93,52 +95,61 @@ include("convert/regex.jl")
 # ===> MARKDOWN
 
 # >> LxFuns
-include("convert/markdown/lxfuns/utils.jl")
-include("convert/markdown/lxfuns/hyperrefs.jl")
-include("convert/markdown/lxfuns/show.jl")
-include("convert/markdown/lxfuns/misc.jl")
+p = "convert/markdown/lxfuns/"
+include("$p/utils.jl")
+include("$p/hyperrefs.jl")
+include("$p/show.jl")
+include("$p/misc.jl")
 
-include("convert/markdown/envfuns/utils.jl")
-include("convert/markdown/envfuns/math.jl")
+p = "convert/markdown/envfuns/"
+include("$p/utils.jl")
+include("$p/math.jl")
 
 # >> LxObjects
-include("convert/markdown/latex_objects.jl")
+p = "convert/markdown"
+include("$p/latex_objects.jl")
 
 # >> Core
-include("convert/markdown/md_core.jl")
+include("$p/md_core.jl")
 
 # >> Rules
-include("convert/markdown/rules/utils.jl")
-include("convert/markdown/rules/text.jl")
-include("convert/markdown/rules/list.jl")
-include("convert/markdown/rules/table.jl")
-include("convert/markdown/rules/heading.jl")
-include("convert/markdown/rules/code.jl")
-include("convert/markdown/rules/math.jl")
-include("convert/markdown/rules/link.jl")
+p = "convert/markdown/rules/"
+include("$p/utils.jl")
+include("$p/text.jl")
+include("$p/list.jl")
+include("$p/table.jl")
+include("$p/heading.jl")
+include("$p/code.jl")
+include("$p/math.jl")
+include("$p/link.jl")
 
 # ===> POSTPROCESSING
 
-include("convert/postprocess/hfuns/utils.jl")
-include("convert/postprocess/hfuns/input.jl")
-include("convert/postprocess/hfuns/hyperref.jl")
-include("convert/postprocess/hfuns/evalstr.jl")
-include("convert/postprocess/hfuns/henv.jl")
+p = "convert/postprocess/hfuns"
+include("$p/utils.jl")
+include("$p/input.jl")
+include("$p/hyperref.jl")
+include("$p/evalstr.jl")
+include("$p/henv.jl")
+include("$p/tags_pagination.jl")
 
-include("convert/postprocess/utils.jl")
-include("convert/postprocess/html2.jl")
-include("convert/postprocess/latex2.jl")
+p = "convert/postprocess"
+include("$p/utils.jl")
+include("$p/html2.jl")
+include("$p/latex2.jl")
 
 # ------------------------------------------------------------------------
 
-include("process/process.jl")
-include("process/config_utils.jl")
-include("process/md.jl")
-include("process/html.jl")
-include("process/tex.jl")
+p = "process"
+include("$p/process.jl")
+include("$p/config_utils.jl")
+include("$p/md.jl")
+include("$p/html.jl")
+include("$p/tex.jl")
 
-include("build/paths.jl")
-include("build/watch.jl")
-include("build/serve.jl")
+p = "build"
+include("$p/paths.jl")
+include("$p/watch.jl")
+include("$p/serve.jl")
 
-end # module
+end
