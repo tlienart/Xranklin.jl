@@ -138,7 +138,7 @@
         <div id="margin-toc">
           
             <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
-            <div class="toc"><ol><li><a href="#basic_folder_structure"> Basic folder structure</a><ol><li><a href="#index_file"> Index file</a></li><li><a href="#config_file"> Config file</a></li><li><a href="#layout_files"> Layout files</a></li></ol></li><li><a href="#site_and_cache_folders"> Site and cache folders</a><ol><li><a href="#site_or_build_folder"> Site or build folder</a></li></ol></li></ol></div>
+            <div class="toc"><ol><li><a href="#basic_folder_structure"> Basic folder structure</a><ol><li><a href="#index_file"> Index file</a></li><li><a href="#config_file"> Config file</a></li><li><a href="#layout_files"> Layout files</a></li></ol></li><li><a href="#site_and_cache_folders"> Site and cache folders</a><ol><li><a href="#site_folder"> Site folder</a></li><li><a href="#cache_folder"> Cache folder</a></li><li><a href="#paths_in_franklin"> Paths in Franklin</a></li></ol></li></ol></div>
           
       </div>
     </div>
@@ -155,7 +155,9 @@
 └── index.md       # or index.html</code></pre>
 <p>where <code>TestWebsite</code> is the title of the website folder.
 Let's go over what these different files do.</p>
-<h3 id="index_file" ><a href="#index_file"> Index file</a></h3><p>The <code>index.md</code> file is what Franklin will convert into your website's landing page.
+<p>Paths on this page are all meant relative to the website folder so for instance if
+we talk about <code>foo/bar.md</code> it's located at <code>TestWebsite/foo/bar.md</code>.</p>
+<h3 id="index_file" ><a href="#index_file"> Index file</a></h3><p>The root <code>index.md</code> file is what Franklin will convert into your website's landing page.
 So, for instance, if the content of <code>index.md</code> is</p>
 <pre><code class="markdown"># Hello
 
@@ -166,9 +168,11 @@ will contain matching HTML like:</p>
   &lt;h1&gt;Hello&lt;/h1&gt;
   &lt;p&gt;Some text.&lt;/p&gt;
 ...</code></pre>
-<p>In some cases you might want to have full control over the landing page and write it directly in HTML.
-In such cases, simply remove the file <code>index.md</code> and write a file <code>index.html</code> instead.</p>
-<h3 id="config_file" ><a href="#config_file"> Config file</a></h3><p>The config file is where you can define global <a href="/Xranklin.jl/syntax/vars+funs/">page variables</a>
+<p>In some cases you might want to have full control over the landing page
+and write it directly in HTML.
+In such cases, simply remove the file <code>index.md</code> and write a file
+<code>index.html</code> instead.</p>
+<h3 id="config_file" ><a href="#config_file"> Config file</a></h3><p>The <code>config.md</code> file is where you can define global <a href="/Xranklin.jl/syntax/vars+funs/">page variables</a>
 and <a href="/Xranklin.jl/syntax/extensions/">commands</a>.
 As a quick idea of what the <code>config.md</code> file can be used to do, this is where you might
 specify who the author of the website is, or what it's about:</p>
@@ -179,11 +183,13 @@ descr = &quot;&quot;&quot;
   &quot;&quot;&quot;
 +++</code></pre>
 <p>It is also the place where you will define the <code>base_url_prefix</code> (or <code>prepath</code>)
-which is <strong>crucial</strong> to get your site to <a href="/Xranklin.jl/workflow/deployment/">deploy</a> properly.</p>
+which is <strong>crucial</strong> to get your site to <a href="/Xranklin.jl/workflow/deployment/">deploy properly</a>.</p>
 <fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
 
-The <code>config.md</code> file is the only <code>.md</code> file in your website folder that won't get converted into a <code>.html</code> file by default. Franklin considers it as a special file.
-If you <strong>do</strong> want to have a page with relative URL <code>/config/</code>, you can do so by writing a file at <code>/config/index.md</code>.
+The <code>config.md</code> file is the only <code>.md</code> file in your website folder that won't get
+converted into a <code>.html</code> file by default. Franklin considers it as a special file.
+If you <strong>do</strong> want to have a page with relative URL <code>/config/</code>, you can do so by
+writing a file at <code>/config/index.md</code>.
 
 </fieldset><h3 id="layout_files" ><a href="#layout_files"> Layout files</a></h3><p>The <code>_layout</code> folder will usually contain a <code>head.html</code> and <code>foot.html</code> which are placed respectively at the top and bottom of each generated HTML page (cf. the <a href="/Xranklin.jl/workflow/getting_started/#page_structure">page structure</a> diagram).</p>
 <p>These files are where you should indicate the base layout of your pages and, for instance, where you might indicate what CSS or JS to load on pages.
@@ -207,7 +213,7 @@ And when the server is interrupted, Franklin generates or updates a <code>__cach
 │   └── head.html
 ├── config.md
 └── index.md</code></pre>
-<h3 id="site_or_build_folder" ><a href="#site_or_build_folder"> Site or build folder</a></h3><p>The <code>__site</code> folder is where all files that correspond to your actual website are placed.
+<h3 id="site_folder" ><a href="#site_folder"> Site folder</a></h3><p>The <code>__site</code> folder is where all files that correspond to your actual website are placed.
 Deploying a Franklin website then simply amounts to placing the content of this <code>__site</code> folder on some server (see also <a href="/Xranklin.jl/workflow/deployment/">the docs on deployment</a> for much more on this).</p>
 <p>In the example above, there is a single file in <code>__site</code>: the <code>index.html</code> which is the landing page of the website.
 To fix ideas, let's recall that this file <code>index.html</code> is generated out of</p>
@@ -217,6 +223,39 @@ To fix ideas, let's recall that this file <code>index.html</code> is generated o
 <li><code>_layout/foot.html</code>.</li>
 </ul>
 <p>If you had other <code>.md</code> files</p>
+<h3 id="cache_folder" ><a href="#cache_folder"> Cache folder</a></h3><h3 id="paths_in_franklin" ><a href="#paths_in_franklin"> Paths in Franklin</a></h3><p>The table below helps understanding how a file placed in the website folder is connected
+to files in <code>__site</code> and <code>__cache</code>.
+The files between brackets are optionally generated depending on the context.
+For the URLs, recall that if we write <code>/foo/bar/</code> the browser resolves this as <code>/foo/bar/index.html</code>.</p>
+<table class="pure-table">
+<thead>
+<th > Source file </th>
+<th > Site (in <code>__site</code>) </th>
+<th > Cache (in <code>__cache</code>) </th>
+<th > URL </th>
+</thead>
+<tbody>
+<tr>
+<td > <code>index.md</code> </td>
+<td > <code>index.html</code> </td>
+<td > <code>index/pg.hash</code>, (<code>index/nbc.cache</code>, <code>index/nbv.cache</code>) </td>
+<td > <code>/</code> </td>
+</tr>
+<tr>
+<td > <code>foo.md</code> (or <code>foo/index.md</code>) </td>
+<td > <code>foo/index.html</code> </td>
+<td > <code>foo/pg.hash</code> (<code>foo/nbc.cache</code>, <code>foo/nbv.cache</code>) </td>
+<td > <code>/foo/</code> </td>
+</tr>
+<tr>
+<td > <code>foo/bar.md</code> </td>
+<td > <code>foo/bar/index.html</code> </td>
+<td > <code>foo/bar/pg.hash</code>, (<code>foo/bar/nbc.cache</code>, <code>foo/bar/nbv.cache</code>) </td>
+<td > <code>/foo/bar/</code> </td>
+</tr>
+</tbody>
+</table>
+<p>Observe that there is an ambiguity between a file placed at <code>foo.md</code> and <code>foo/index.md</code>; you should pick one of the two based on what makes most sense for your folder structure but you should not use both.</p>
 
 
 
