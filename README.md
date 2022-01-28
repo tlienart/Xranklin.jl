@@ -24,7 +24,7 @@ Most of what's offered by Franklin is also offered by Xranklin (apart from what'
 
 Here's a suggested workflow:
 
-1. duplicate the repo and give me collaborator access to that repo (to speed up debugging),
+1. duplicate an existing Franklin-repo and give me collaborator access to that duplicated repo (to speed up debugging),
 2. clone the repo locally, and add `Xranklin` to your environment with `Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");`
 3. `cd` to the repo and do `using Xranklin; serve(debug=true)`, this will generate a lot of output,
 4. if you have errors, check the migration points below to see if the error can be quickly fixed, if not, open an issue
