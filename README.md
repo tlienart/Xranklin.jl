@@ -1,198 +1,124 @@
-# Structure
-
+# Xranklin
 
 [![CI Actions Status](https://github.com/tlienart/Xranklin.jl/workflows/CI/badge.svg)](https://github.com/tlienart/Xranklin.jl/actions)
 [![codecov](https://codecov.io/gh/tlienart/Xranklin.jl/branch/main/graph/badge.svg?token=7gUn1zIEXw)](https://codecov.io/gh/tlienart/Xranklin.jl)
 
-## Ongoing
+## About
 
-* set of pages with one global context, test children contexts, pruning etc,
-* continuous update, check proper updating triggers, no delays
-* code blocks (also add native python if PyCall is imported)
-  * use `output_path` / `code_out`
-* tags
-* utils
-* list of all warning messages and explaination / what to do
+This repo contains the code for the next minor (and, once properly tested, major) version of
+[Franklin.jl](https://github.com/tlienart/Franklin.jl).
+The code has basically been written from scratch and your help is needed to uncover bugs and
+problems.
 
-* mode where can "test" only a subset of pages
-* `MIME"text/html"` as base type is ok but not for latex output where it should be `MIME"text/latex"` which, for instance, is supported by DataFrames. This should be carried from context (unfortunately). This can be worked on later but basically you'd want a different representation based on whether you're outputting to HTML or LaTeX. For images in both cases you'd want to save the pictures to a location and include them. // note LaTeX output has to be a full path from scratch because of this MIME stuff... unless there's no picture. But this can't be guaranteed...
+Most of what's offered by Franklin is also offered by Xranklin (apart from what's listed in [this issue](https://github.com/tlienart/Xranklin.jl/issues/65) which we should make as precise as possible).
 
-## More tests
+## How to help test this?
 
-* header rules
-* md definitions
-* code blocks
-* 🔺🔺🔺 dependencies (pagevar/defs/reprocessing) + do we need `@delay` anymore?
+**Assumptions**:
+* you're familiar with Franklin and already have a website repo that works,
+* you're using GitHub and GitHub deployment (if not, it's also great, but you'll be more on your own for now),
+* you're using Julia 1.6+
+* your editor uses LF (lines end with `\n`, this is only a concern for you if you're on Windows but if you use a modern editor, it should be the default or easy to set)
 
-## Goals
+Here's a suggested workflow:
 
-* use FranklinParser.jl
-* remove dependency on HTTP
-* use concrete types and inferrable in-out relations where possible
-* remove deps on Literate, make it optional, same as Pluto
+1. duplicate the repo and give me collaborator access to that repo (to speed up debugging),
+2. clone the repo locally, and add `Xranklin` to your environment with `Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");`
+3. `cd` to the repo and do `using Xranklin; serve(debug=true)`, this will generate a lot of output,
+4. if you have errors, check the migration points below to see if the error can be quickly fixed, if not, open an issue
+  1. indicate your OS, Julia version, link to the repo and to the commit that failed if not the latest
+  1. indicate the patch version of Xranklin,
+  1. copy paste the error and previous few lines in the issue,
+5. assuming things work locally, test the deployment
+  1. make sure you adjust `prepath` in `config.md`
+  1. create or change the `.github/workflows/deploy.yml` to the script below
+  1. check if it deploys successfully (check in the repo settings that `Pages` consume `gh-pages`)
+6. thoughts, feedback, open an issue
+7. thanks a lot!!
 
-## Todo
+<details>
+  <summary>Click here to expand the github deploy script</summary>
 
-* [ ] need to check whether the CommonMark footnote rule is sufficient, if it is then we should remove the relevant block from FranklinParser as it's not useful.
-* [ ] ordering of parsing, when are `{{...}}` resolved, see issue
-* [ ] test rule overriding in utils (`Xranklin.html_hk`...)
-* [ ] when recursing, ignore mddefs
+```yaml
+name: Build and Deploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
 
-## Important Notes
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+                __cache
+                ~/.julia
+          key: ${{ runner.os }}-franklin-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-franklin-cache-
 
-* command names and environment names should be distinct. Cannot have `\newcommand{\foo}{...}` and `\newenvironment{foo}{...}{...}`; only the last one will be picked up.
-* requires Julia >= 1.5
+      # Julia
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: 1.7
 
---
+      # Website build
+      - run: julia -e '
+          using Pkg; Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
+          using Xranklin; build();'
 
-## Context
+      # Deployment and caching
+      - run: touch __site/.nojekyll
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        with:
+          BRANCH: gh-pages
+          FOLDER: __site
+```
 
-* when a page gets processed, the global context deps should be updated. So at the end of the page processing, there should be a list of global variables accessed on that page currently that should then query the global context, update it (so that if a page does or does not depend on some variables anymore, gc gets updated...)
+## Migration notes
 
-## Conversion MD > (HTML, LaTeX)
+[**Link to the new docs**](https://tlienart.github.io/Xranklin.jl/), the docs are being built so expect rough edges but if you find things that can be added or explained better, please open issues. Don't worry too much about layout issues for now.
 
-Add 🌴 for the ones that are explicitly tested
-Add ✅ for the ones that are also in one of the test md pages.
-Add 🚨 for the ones that are thoroughly tested (including potential errors / ambiguities).
+**Changes**:
 
-* text
-  * [x] bold, italic 🌴 ✅ 🚨
-  * [x] line break 🌴 ✅
-  * [x] horizontal rules 🌴 ✅
-  * [x] comment 🌴 ✅
-  * [x] header 🌴 ✅
-  * [x] html entities 🌴 ✅
-  * [x] escaped chars `{ }` etc 🌴 ✅
-  * [x] emoji (pasted and coded)🌴 ✅
-  * [x] links ✅
-  * [ ] footnotes
-  * [ ] images
-  * lists
-    * [x] unordered ✅
-    * [x] ordered ✅
-    * [x] nested ✅
-    * [ ] list item with injection
-  * [x] div 🌴 ✅
-  * [x] raw HTML ✅
-* md-definition
-  * [ ] toml block
-  * [ ] `@def`
-* tables
-  * [ ] basic
-  * [ ] cell item with injection
-* hfun
-  * [ ] double brace injection
-  * [ ] function
-* code
-  * [x] inline ✅
-  * [x] block plain ✅
-  * [x] block lang ✅
-  * [ ] block executed
-* maths
-  * [x] inline ✅
-  * [x] display ✅  (**note**: we number by default for `$$` and `\[...\]`).
-  * [ ] env
-    * [ ] `equation`
-    * [ ] `align`,
-    * [ ] `equation*`,
-    * [ ] `align*`
-* latex
-  * newcommand
-    * [x] basic one ✅
-    * [x] test nargs ✅
-    * [ ] test dedent (e.g. can have an indented def)
-    * [ ] test problems
-  * newenv
-    * [x] very basic one
-    * [x] test nargs
-    * [ ] test problems
-  * commands
-    * [x] basic one with args ✅
-    * [x] nesting
-    * [ ] basic one with args in maths env
-    * [ ] test problems
-  * environments
-    * [x] basic one with args
-    * [x] nesting
-    * [ ] test problems
-  * special commands
-    * [ ] toc
+* page variable definitions, move from `@def x = ...` to `+++ ... +++` blocks (see [docs](https://tlienart.github.io/Xranklin.jl/syntax/vars+funs/)), `@def` will still work but will not allow multi-line assignments, generally `+++...+++` are preferred now
+* `lxfuns` now take arguments as `hfuns` (a list of parameters corresponding to the braces) see [this example](https://github.com/tlienart/Xranklin.jl/blob/3eb0ce295f0505a7c0519558392d95c2e72fa52d/src/convert/markdown/lxfuns/misc.jl#L1-L11)
+* `envfuns` now take arguments differently, see [this example](https://github.com/tlienart/Xranklin.jl/blob/3eb0ce295f0505a7c0519558392d95c2e72fa52d/src/convert/markdown/envfuns/math.jl#L20-L29)
 
-## Parts from Franklin
+This has not yet been migrated and so you shouldn't expect it to work (see also [this issue](https://github.com/tlienart/Xranklin.jl/issues/65))
 
-### Functions ported
+* RSS generation
+* sitemap generation
+* robots generation
+* slug
+* lunr
+* `keep_path`
 
-### Files considered
+---
 
-* [ ] include("build.jl") # check if user has Node/minify
-* [ ] include("regexes.jl")
+## Dev Notes
 
-* [ ] include("utils/warnings.jl")
-* [ ] include("utils/errors.jl")
-* [ ] include("utils/paths.jl")
-* [ ] include("utils/vars.jl")
-* [ ] include("utils/misc.jl")
-* [ ] include("utils/html.jl")
+### Breaking changes from Franklin
 
-* [ ] include("parser/tokens.jl")
-* [ ] include("parser/ocblocks.jl")
+* `lx_fun` now take args as `hfuns` so `lx_foo(p::Vector{String})`
+* `@def` do not accept multiline assignments anymore, generally prefer `+++...+++` blocks
+* hard assumption of LF (i.e. end of lines are `\n` and not `\r\n`) (_LF Assumption_)
 
-* [ ] include("parser/markdown/tokens.jl")
-* [ ] include("parser/markdown/indent.jl")
-* [ ] include("parser/markdown/validate.jl")
+**Notes**
+* (**LF Assumption**) this could be relaxed, not sure how many people would have an issue;
+also for it to make sense would need to test on a windows box.
+To relax, update `FranklinParser` to have a token for `\r\n`, and update things with occurrences
+of `\n` (including the `process_line_return` function). Potentially having an editor with `\r\n`
+will not make things fail (since we'll capture the `\n`) but it's not tested.
 
-* [ ] include("parser/latex/tokens.jl")
-* [ ] include("parser/latex/blocks.jl")
+### LaTeX
 
-* [ ] include("parser/html/tokens.jl")
-* [ ] include("parser/html/blocks.jl")
-
-* [ ] include("eval/module.jl")
-* [ ] include("eval/run.jl")
-* [ ] include("eval/codeblock.jl")
-* [ ] include("eval/io.jl")
-* [ ] include("eval/literate.jl")
-
-* [ ] include("converter/markdown/blocks.jl")
-* [ ] include("converter/markdown/utils.jl")
-* [ ] include("converter/markdown/mddefs.jl")
-* [ ] include("converter/markdown/tags.jl")
-* [ ] include("converter/markdown/md.jl")
-
-* [ ] include("converter/latex/latex.jl")
-* [ ] include("converter/latex/objects.jl")
-* [ ] include("converter/latex/hyperrefs.jl")
-* [ ] include("converter/latex/io.jl")
-
-* [ ] include("converter/html/functions.jl")
-* [ ] include("converter/html/html.jl")
-* [ ] include("converter/html/blocks.jl")
-* [ ] include("converter/html/link_fixer.jl")
-* [ ] include("converter/html/prerender.jl")
-
-* [ ] include("manager/rss_generator.jl")
-* [ ] include("manager/sitemap_generator.jl")
-* [ ] include("manager/robots_generator.jl")
-* [ ] include("manager/write_page.jl")
-* [ ] **include("manager/dir_utils.jl")**
-  * [x] TrackedFiles
-  * [x] scan_input_dir!
-  * [x] add_if_new_file
-  * [x] should_ignore
-  * [ ] prepare output dir
-  * [x] form output path
-  * [x] out path
-  * [x] keep path
-  * [ ] form custom output path
-* [ ] **include("manager/file_utils.jl")**
-  * [x] process_config
-  * [-] include external config _not necessary, use process_config_
-  * [ ] process_utils
-  * [ ] process_file
-  * [ ] process_file_err
-  * [x] change_ext
-  * [x] get_rpath
-  * [ ] set_cur_rpath _maybe not necessary_
-* [ ] include("manager/franklin.jl")
-* [ ] include("manager/extras.jl")
-* [ ] include("manager/post_processing.jl")
+* hyperrefs
+* booktabs (for tables)
+* csquotes (for blockquotes)

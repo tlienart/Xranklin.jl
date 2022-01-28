@@ -171,6 +171,7 @@ Same as serve but with `final=true` by default. Note that if final is given
 again in the kw then that will take precedence.
 """
 build(d; kw...) = serve(d, final=true, kw...)
+build(; kw...)  = serve(; kw...)
 
 
 """
