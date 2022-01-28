@@ -80,6 +80,8 @@ jobs:
           BRANCH: gh-pages
           FOLDER: __site
 ```
+</details>
+
 
 ## Migration notes
 
