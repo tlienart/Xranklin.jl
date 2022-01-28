@@ -1,3 +1,7 @@
+<!--
+ LAST REVISION: Jan 28, 2022  (XXX incomplete)
+ -->
+
 +++
 showtoc = true
 header = "Folder Structure"
@@ -21,9 +25,12 @@ TestWebsite
 where `TestWebsite` is the title of the website folder.
 Let's go over what these different files do.
 
+Paths on this page are all meant relative to the website folder so for instance if
+we talk about `foo/bar.md` it's located at `TestWebsite/foo/bar.md`.
+
 ### Index file
 
-The `index.md` file is what Franklin will convert into your website's landing page.
+The root `index.md` file is what Franklin will convert into your website's landing page.
 So, for instance, if the content of `index.md` is
 
 ```markdown
@@ -42,13 +49,15 @@ will contain matching HTML like:
 ...
 ```
 
-In some cases you might want to have full control over the landing page and write it directly in HTML.
-In such cases, simply remove the file `index.md` and write a file `index.html` instead.
+In some cases you might want to have full control over the landing page
+and write it directly in HTML.
+In such cases, simply remove the file `index.md` and write a file
+`index.html` instead.
 
 
 ### Config file
 
-The config file is where you can define global [page variables](/syntax/vars+funs/)
+The `config.md` file is where you can define global [page variables](/syntax/vars+funs/)
 and [commands](/syntax/extensions/).
 As a quick idea of what the `config.md` file can be used to do, this is where you might
 specify who the author of the website is, or what it's about:
@@ -63,11 +72,13 @@ descr = """
 ```
 
 It is also the place where you will define the `base_url_prefix` (or `prepath`)
-which is **crucial** to get your site to [deploy](/workflow/deployment/) properly.
+which is **crucial** to get your site to [deploy properly](/workflow/deployment/).
 
 \note{
-  The `config.md` file is the only `.md` file in your website folder that won't get converted into a `.html` file by default. Franklin considers it as a special file.
-  If you **do** want to have a page with relative URL `/config/`, you can do so by writing a file at `/config/index.md`.
+  The `config.md` file is the only `.md` file in your website folder that won't get
+  converted into a `.html` file by default. Franklin considers it as a special file.
+  If you **do** want to have a page with relative URL `/config/`, you can do so by
+  writing a file at `/config/index.md`.
 }
 
 
@@ -106,7 +117,7 @@ TestWebsite
 └── index.md
 ```
 
-### Site or build folder
+### Site folder
 
 The `__site` folder is where all files that correspond to your actual website are placed.
 Deploying a Franklin website then simply amounts to placing the content of this `__site` folder on some server (see also [the docs on deployment](/workflow/deployment/) for much more on this).
@@ -119,3 +130,20 @@ To fix ideas, let's recall that this file `index.html` is generated out of
 * `_layout/foot.html`.
 
 If you had other `.md` files
+
+### Cache folder
+
+### Paths in Franklin
+
+The table below helps understanding how a file placed in the website folder is connected
+to files in `__site` and `__cache`.
+The files between brackets are optionally generated depending on the context.
+For the URLs, recall that if we write `/foo/bar/` the browser resolves this as `/foo/bar/index.html`.
+
+| Source file | Site (in `__site`) | Cache (in `__cache`) | URL |
+| -- | -- | -- | -- |
+| `index.md` | `index.html` | `index/pg.hash`, (`index/nbc.cache`, `index/nbv.cache`) | `/` |
+| `foo.md` (or `foo/index.md`) | `foo/index.html` | `foo/pg.hash` (`foo/nbc.cache`, `foo/nbv.cache`) | `/foo/` |
+| `foo/bar.md` | `foo/bar/index.html` | `foo/bar/pg.hash`, (`foo/bar/nbc.cache`, `foo/bar/nbv.cache`) | `/foo/bar/` |
+
+Observe that there is an ambiguity between a file placed at `foo.md` and `foo/index.md`; you should pick one of the two based on what makes most sense for your folder structure but you should not use both.
