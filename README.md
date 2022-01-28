@@ -12,6 +12,8 @@ problems.
 
 Most of what's offered by Franklin is also offered by Xranklin (apart from what's listed in [this issue](https://github.com/tlienart/Xranklin.jl/issues/65) which we should make as precise as possible).
 
+[**Link to the new docs**](https://tlienart.github.io/Xranklin.jl/) (under active construction).
+
 ## How to help test this?
 
 **Assumptions**:
