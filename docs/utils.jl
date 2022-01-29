@@ -1,3 +1,6 @@
+import Literate
+
+
 function hfun_rm_headings(ps::Vector{String})
     c = cur_lc()
     for h in ps

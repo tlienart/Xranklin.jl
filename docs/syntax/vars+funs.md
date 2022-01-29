@@ -80,7 +80,7 @@ and use code to define variables:
 
   Build-date: {{todays_date}}.
 }
-\skip
+\lskip
 
 ### Usage
 
@@ -116,7 +116,7 @@ you would have to consider what `repr(obj)` returns.
   * b: {{b}}
   * c: {{c}}
 }
-\skip
+\lskip
 
 ### Local and global contexts
 
@@ -163,7 +163,7 @@ You don't have to use or set any of those unless you find one useful.
 
 ### Local variables
 
-\skip
+\lskip
 
 | Variable name | Default value | Purpose / comment |
 | ------------- | ------------- | ------- |
@@ -210,7 +210,7 @@ For legacy purposes, a number of these variables have aliases (which can be used
 | `hasmath` | `_hasmath` |
 | `hascode` | `_hascode` |
 
-\skip
+\lskip
 
 
 ### Global variables (XXX)
@@ -226,13 +226,13 @@ might be irrelevant for you.
 | `content_tag`    | `"div"` | the HTML tag which will wrap the content (can be empty) |
 | `content_class`  | `"franklin-content"` | the class of the content wrapper |
 | `content_id`     | `""`    | the id of the content wrapper |
-| `"autosavefigs"` | `true`  | whether to automatically save figures |
-| `"autoshowfigs"` | `true`  | whether to automatically show figures |
-| `"layout_head"`  | `"_layout/head.html"` | the path to the layout head file (see also [page structure](/workflow/page_structure/)) |
-| `"layout_foot"`  | `"_layout/foot.html"` | the path to the layout foot file |
-| `"layout_page_foot"` | `"_layout/page_foot.html"` | the path to the page foot file |
-| `"layout_head_lx"` | `"_layout/latex/head.tex"` | the path to the LaTeX preamble |
-| `"parse_script_blocks"` | `true` | whether to parse `<script>` blocks |
+| `autosavefigs` | `true`  | whether to automatically save figures |
+| `autoshowfigs` | `true`  | whether to automatically show figures |
+| `layout_head`  | `"_layout/head.html"` | the path to the layout head file (see also [page structure](/workflow/page_structure/)) |
+| `layout_foot`  | `"_layout/foot.html"` | the path to the layout foot file |
+| `layout_page_foot` | `"_layout/page_foot.html"` | the path to the page foot file |
+| `layout_head_lx` | `"_layout/latex/head.tex"` | the path to the LaTeX preamble |
+| `parse_script_blocks` | `true` | whether to parse `<script>` blocks |
 | `ignore_base` | `["LICENSE.md", "README.md", ...]` | base list of strings or regexes of files and directories to ignore |
 | `ignore` | `[]` | complements `ignore_base` |
 | `keep_path` | `String[]` | relative paths of files that should have their build path be identical to their source path |

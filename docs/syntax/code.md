@@ -62,7 +62,7 @@ the code block if it's not `nothing`.
   [PyCall] or [RCall] to execute Python or R code.
   This is [illustrated in the examples](#executing_python_code).
 }
-\skip
+\lskip
 
 ## Syntax for executable code blocks
 
@@ -132,7 +132,7 @@ you can put `#hideall` in the code.
   ```
 }
 
-\skip
+\lskip
 
 ## Understanding how things work
 
@@ -367,7 +367,7 @@ We can use the type `Foo` by indicating it is defined in `Utils` and the custom 
 \note{
   Remember that you can refer to any object defined in `utils.jl` with the syntax `Utils.$name_of_object`.
 }
-\skip
+\lskip
 
 ### Showing the output as Markdown
 
@@ -401,7 +401,7 @@ capture a trimmed stacktrace of the problem which will be displayed:
   sqrt(-1)
   ```
 }
-\skip
+\lskip
 
 ### In what path does the code run?
 
@@ -451,7 +451,7 @@ You can actually see it [here](/405.html).
   environment. Do use `Utils.path(:folder)` or `Utils.path(:site)`
   as your base path and use `joinpath` to point to the specific location you care about.
 }
-\skip
+\lskip
 
 ## Using packages
 
@@ -474,7 +474,7 @@ using DataFrames
 df = DataFrame(A=1:4, B=["M", "F", "F", "M"])
 ```
 
-\skip
+\lskip
 
 ### Cache and packages
 

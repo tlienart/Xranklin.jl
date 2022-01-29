@@ -98,6 +98,7 @@ jobs:
 
 This has not yet been migrated and so you shouldn't expect it to work (see also [this issue](https://github.com/tlienart/Xranklin.jl/issues/65))
 
+* Literate files
 * RSS generation
 * sitemap generation
 * robots generation

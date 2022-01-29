@@ -35,6 +35,7 @@ menu = [
     ],
   "engine" => [
     "build_passes",
+    "cache",
   ],
 ]
 
@@ -65,13 +66,16 @@ github = "https://github.com/tlienart/Franklin.jl"
 [franklin-repo]: https://github.com/tlienart/Franklin.jl
 [liveserver]: https://github.com/tlienart/LiveServer.jl
 
+[page vars]: /syntax/vars+funs/
+[code eval]: /syntax/code/
+
 <!-- GLOBAL COMMANDS -->
 
 \newcommand{\emdash}{&#8212;}
 
-\newcommand{\skip}{
+\newcommand{\lskip}{
   ~~~
-  <p></p>
+  <div style="height:1em;"></div>
   ~~~
 }
 

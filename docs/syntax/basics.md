@@ -42,7 +42,7 @@ and you can nest emphasis styles:
   _italic **bold+italic**_
 }
 
-\skip
+\lskip
 
 ### Paragraphs
 
@@ -69,7 +69,7 @@ you can use a double backslash as in LaTeX:
   ABC \\ DEF
 }
 
-\skip
+\lskip
 
 ### Headings
 
@@ -172,7 +172,7 @@ You can also nest blockquotes (make sure you skip a line after the nested block 
 
 }
 
-\skip
+\lskip
 
 ## Lists
 
@@ -369,7 +369,7 @@ add these references in your `config.md` to make them globally available.
   ![a flamingo][flamingo]
 }
 
-\skip
+\lskip
 
 ## Code
 

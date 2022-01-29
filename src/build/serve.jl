@@ -98,7 +98,7 @@ function serve(d::String = pwd();
 
     # ---------------------------------------------------------------
     # Start the build loop
-    if !final || !single
+    if !any((single, final))
         loop = (cntr, watcher) -> build_loop(cntr, watcher, wf)
         # start LiveServer
         LiveServer.serve(
