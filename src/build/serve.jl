@@ -119,6 +119,13 @@ function serve(d::String = pwd();
     # re-evaluated at the start.
     start = time()
     @info "📓 serializing $(hl("config", :cyan))..."
+    # keep track of literate hashes
+    push!(
+        gc.nb_vars.code_pairs,
+        VarsCodePair(
+            ("", [VarPair((:_literate_hashes, gc.vars[:_literate_hashes]))])
+        )
+    )
     serialize_notebook(gc.nb_vars, path(:cache) / "gnbv.cache")
     futils = path(:folder) / "utils.jl"
     if isfile(futils)
@@ -219,7 +226,7 @@ function full_pass(
     # utils or config specifically
     if initial_pass
         process_utils(gc)
-        process_config(gc)
+        process_config(gc; initial_pass=true)
 
     elseif config_changed
         # just reconsider config
@@ -398,11 +405,19 @@ function build_loop(
                 # NOTE in this case gc is re-instantiated!
                 full_pass(gc, watched_files; utils_changed=true)
 
-            # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-            # TODO
-            #  - special case for literate or pluto or weave files
-            # (see Franklin)
-            # # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            elseif case == :literate
+                # go over all MD watched files and trigger if they have a
+                # \\literate{rpath}
+                r = Regex("\\\\literate{$(replace(rpath, "_literate/" => ""))}")
+                for (fp2, _) in watched_files[:md]
+                    f2  = joinpath(fp2...)
+                    rp2 = get_rpath(f2)
+                    s   = read(f2, String)
+                    if match(r, s) !== nothing
+                        msg *= " → triggering '$rp2' [literate file changed]"; @info msg
+                        process_file(gc, fp2, :md, cur_t)
+                    end
+                end
 
             # it's a standard file, process just that one
             else

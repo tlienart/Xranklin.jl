@@ -12,7 +12,13 @@ const TrackedFiles = LittleDict{Pair{String, String}, Float64}
 
 new_wf() = LittleDict{Symbol, TrackedFiles}(
     e => TrackedFiles()
-    for e in (:other, :infra, :md, :html, :literate)
+    for e in (
+        :other,
+        :infra,
+        :md,
+        :html,
+        :literate
+    )
 )
 
 

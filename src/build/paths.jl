@@ -171,6 +171,7 @@ function unixify(rpath::String)
     endswith(rpath, '/') || return rpath * "/"
     return rpath
 end
+unixify(s::SS) = unixify(string(s))
 
 
 """

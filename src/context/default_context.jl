@@ -62,6 +62,7 @@ const DefaultGlobalVars = Vars(
     # Literate
     :literate_mdstrings => false,
     :literate_credits   => false,
+    :_literate_hashes   => LittleDict{String, UInt64}(),
     # Misc
     :tabs_to_spaces => 2,   # \t -> ' ' conversion (see convert_list)
     # Paths related

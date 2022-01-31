@@ -32,6 +32,7 @@ menu = [
     # "plots",
     "vars+funs",
     "utils",
+    "literate",
     ],
   "engine" => [
     "build_passes",

@@ -107,8 +107,8 @@ function process_config(gc::GlobalContext; initial_pass::Bool=false)
     return
 end
 
-process_config(config::String) = process_config(config, cur_gc())
-process_config() = process_config(cur_gc())
+process_config(config::String; kw...) = process_config(config, cur_gc(); kw...)
+process_config(; kw...) = process_config(cur_gc(); kw...)
 
 
 # ------------- #

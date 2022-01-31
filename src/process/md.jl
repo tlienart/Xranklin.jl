@@ -275,12 +275,37 @@ function process_md_file_io!(
             initial_cache_used = true
         end
 
-        # page hasn't changed since last time --> early stop
+        # page hasn't changed since last time --> early stop unless the page
+        # depends on one or more literate files in which case we check whether
+        # those have changed
         if isfile(pgc) && (read(pgc, UInt64) == page_hash) && isfile(opath)
-            @info """
-                👀 page '$rpath' hasn't changed, skipping the conversion...
-                """
-            return
+            should_skip = true
+            r = Regex("\\\\literate{(.*)}")
+            for m in eachmatch(r, page_content_md)
+                rp = strip(m.captures[1])
+                lp = joinpath(path(:literate) / rp)
+                rp = unixify(rp)
+                lh = gc.vars[:_literate_hashes]::LittleDict
+
+                change = !isfile(lp)   ||
+                         rp ∉ keys(lh) ||
+                         hash(read(lp, String)) != lh[rp]
+                if change
+                    should_skip = false
+                    @info """
+                        👀 ❗ page '$rpath' hasn't changed but depends on at
+                        least one literate file that has changed.
+                        """
+                    break # no need to check other ones, we'll retrigger anyway
+                end
+            end
+
+            if should_skip
+                @info """
+                    👀 page '$rpath' hasn't changed, skipping the conversion...
+                    """
+                return
+            end
         end
     else
         # reset the notebook counters at the top

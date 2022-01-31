@@ -17,13 +17,13 @@ Try to find a literate file, resolve it and return it.
     to the `_layout` folder)
 2. if there is no `_literate` folder, the `rpath` is taken to be relative to
     the website folder
-3. the `rpath` must end with `.jl`
+3. the `rpath` must end with `.jl` and must not start with a `/`
 4. it is recommended to have a `_literate` folder to not have files flying around.
 """
 function lx_literate(p::VS; tohtml::Bool=true)::String
     c = _lx_check_nargs(:literate, p, 1)
     isempty(c) || return c
-    rpath = unixify(p[1])
+    rpath = unixify(strip(p[1]))
     if !endswith(rpath, ".jl")
         @warn """
             \\literate{...}
@@ -33,7 +33,6 @@ function lx_literate(p::VS; tohtml::Bool=true)::String
     end
 
     # try to form the full path to the literate file and check it's there
-    rpath = replace(rpath,  r"^[/\\\\]" => "")
     fpath = ""
     if isdir(path(:literate))
         fpath = path(:literate) / rpath
@@ -49,8 +48,8 @@ function lx_literate(p::VS; tohtml::Bool=true)::String
         return failed_lxc("literate", p)
     end
 
-    # here fpath is the full path to
-    return _process_literate_file(fpath)
+    # here fpath is the full path to an existing literate script
+    return _process_literate_file(rpath, fpath)
 end
 
 
@@ -61,11 +60,11 @@ const LITERATE_JULIA_FENCE_R = Regex(LITERATE_JULIA_FENCE)
 
 
 """
-    _process_literate_file(fpath)
+    _process_literate_file(rpath, fpath)
 
 Helper function to process a literate file located at `fpath`.
 """
-function _process_literate_file(fpath::String)::String
+function _process_literate_file(rpath::String, fpath::String)::String
     # check if Literate.jl is loaded, otherwise interrupt
     if !env(:literate)
         if (:Literate ∉ names(cur_utils_module(), imported=true))
@@ -94,13 +93,16 @@ function _process_literate_file(fpath::String)::String
         return failed_lxc("literate", p)
     end
 
-    lc    = cur_lc()
+    lc = cur_lc()
+    gc = lc.glob
+    gc.vars[:_literate_hashes][rpath] = hash(read(fpath, String))
 
     # Disable the logging
     pre_log_level = Base.CoreLogging._min_enabled_level[]
     Logging.disable_logging(Logging.Warn)
 
-    # output the markdown
+    # output the markdown (this is a reasonably safe operation which
+    # shouldn't fail, it's just writing a file with some modifiers.
     ofile = L.markdown(
         fpath, mktempdir();
         flavor      = L.FranklinFlavor(),
