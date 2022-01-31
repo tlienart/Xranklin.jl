@@ -75,10 +75,6 @@ function serve(d::String = pwd();
     # check if there's a utils/config file and process, this must happen
     # prior to everything as it defines 'ignore' for instance which is
     # needed in the watched_files step
-    # NOTE: if utils has changed, everything will be wiped as well given that
-    # utils is potentially loaded everywhere. See process_utils. This is why
-    # process_utils returns a GC which might be different
-    process_utils(gc)
     process_config(gc)
 
     # scrape the folder to collect all files that should be watched for
@@ -92,6 +88,7 @@ function serve(d::String = pwd();
         Pkg.activate(pf)
         Pkg.instantiate()
     end
+    process_utils(gc)
 
     # do the initial build
     full_pass(gc, wf; final)
