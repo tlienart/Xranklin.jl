@@ -10,6 +10,7 @@ import REPL: softscope
 import Pkg
 import Serialization: serialize, deserialize
 import Logging
+import TOML
 
 # ------------------------------------------------------------------------
 # external dependencies part of the Franklin universe
@@ -60,6 +61,7 @@ const FRANKLIN_ENV = LittleDict{Symbol, Any}(
     :cur_global_ctx    => nothing,        # current global context
     :cur_local_ctx     => nothing,        # current local context
     :skipped_files     => Set{String}(),
+    :literate          => false,          # whether literate is loaded in utils
 )
 env(s::Symbol)        = FRANKLIN_ENV[s]
 setenv!(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
@@ -99,6 +101,7 @@ p = "convert/markdown/lxfuns/"
 include("$p/utils.jl")
 include("$p/hyperrefs.jl")
 include("$p/show.jl")
+include("$p/literate.jl")
 include("$p/misc.jl")
 
 p = "convert/markdown/envfuns/"

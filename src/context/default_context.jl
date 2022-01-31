@@ -59,6 +59,9 @@ const DefaultGlobalVars = Vars(
     :rss_full_content  => false,
     # Tags
     :tags_prefix       => "tags",
+    # Literate
+    :literate_mdstrings => false,
+    :literate_credits   => false,
     # Misc
     :tabs_to_spaces => 2,   # \t -> ' ' conversion (see convert_list)
     # Paths related
