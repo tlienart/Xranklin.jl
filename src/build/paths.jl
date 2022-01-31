@@ -76,7 +76,8 @@ get_ropath(fpath::String) = fpath[(getgvar(:_idx_ropath)::Int):end]
 
 
 """
-    get_opath
+    get_opath(fpair, case)
+    get_opath(fpath)
 
 Given a file pair, form the output path (where the derived file will be
 written/copied).
@@ -103,7 +104,6 @@ function get_opath(fpair::Pair{String,String}, case::Symbol)::String
     isdir(outdir) || mkpath(outdir)
     return outpath
 end
-
 function get_opath(fpath::String)::String
     d, f = splitdir(fpath)
     ext  = splitext(f)[2]
