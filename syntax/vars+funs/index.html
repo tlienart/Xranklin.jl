@@ -92,6 +92,11 @@
         Advanced
     </a>
 </li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/syntax/literate/" class="pure-menu-link">
+        Literate.jl
+    </a>
+</li>
 </ul><div class="submenu-title">
     Engine
 </div>
@@ -99,6 +104,11 @@
 <li class="pure-menu-item">
     <a href="/Xranklin.jl/engine/build_passes/" class="pure-menu-link">
         Page build passes
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/engine/cache/" class="pure-menu-link">
+        Cache
     </a>
 </li>
 </ul>
@@ -223,10 +233,10 @@ Build-date: &lbrace;&lbrace;todays_date&rbrace;&rbrace;.</code></pre>
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Build-date: 2022-01-26.</fieldset>
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Build-date: 2022-01-31.</fieldset>
 
 </div>
-<p></p><h3 id="usage" ><a href="#usage"> Usage</a></h3><p>Page variables can be used with the following syntax:</p>
+<div style="height:1em;"></div><h3 id="usage" ><a href="#usage"> Usage</a></h3><p>Page variables can be used with the following syntax:</p>
 <pre><code class="julia">&lbrace;&lbrace;name_of_function name_of_var_1 ...&rbrace;&rbrace;</code></pre>
 <p>The case <code>&lbrace;&lbrace;name_of_var&rbrace;&rbrace;</code> is a shortcut for <code>&lbrace;&lbrace;fill name_of_var&rbrace;&rbrace;</code>.
 Note that if there is a clash between the name of a var and the name of a function, the function
@@ -267,7 +277,7 @@ c = Dict(:a =&gt; 5, :b =&gt; 7)
 </fieldset>
 
 </div>
-<p></p><h3 id="local_and_global_contexts" ><a href="#local_and_global_contexts"> Local and global contexts</a></h3><p>In a Franklin session there is a <em>global</em> (site-wide) context and a set of <em>local</em> (page-related)
+<div style="height:1em;"></div><h3 id="local_and_global_contexts" ><a href="#local_and_global_contexts"> Local and global contexts</a></h3><p>In a Franklin session there is a <em>global</em> (site-wide) context and a set of <em>local</em> (page-related)
 contexts which are attached to it.
 Page variables can be assigned at both levels.
 You have already seen how to do so at a page-level by just adding a <code>+++...+++</code> block in
@@ -305,7 +315,7 @@ You can add a <code>/</code> at the start and a <code>.md</code> at the end but 
 <h2 id="default_variables" ><a href="#default_variables"> Default variables</a></h2><p>Franklin defines a number of page variables with default values that
 you can use and overwrite.
 You don't have to use or set any of those unless you find one useful.</p>
-<h3 id="local_variables" ><a href="#local_variables"> Local variables</a></h3><p></p><table class="pure-table">
+<h3 id="local_variables" ><a href="#local_variables"> Local variables</a></h3><div style="height:1em;"></div><table class="pure-table">
 <thead>
 <th > Variable name </th>
 <th > Default value </th>
@@ -472,7 +482,7 @@ For legacy purposes, a number of these variables have aliases (which can be used
 </tr>
 </tbody>
 </table>
-<p></p><h3 id="global_variables_(xxx)" ><a href="#global_variables_(xxx)"> Global variables (XXX)</a></h3><p>Just as with default local variables, you might find it useful to access or set some of those though many
+<div style="height:1em;"></div><h3 id="global_variables_(xxx)" ><a href="#global_variables_(xxx)"> Global variables (XXX)</a></h3><p>Just as with default local variables, you might find it useful to access or set some of those though many
 might be irrelevant for you.</p>
 <table class="pure-table">
 <thead>
@@ -507,37 +517,37 @@ might be irrelevant for you.</p>
 <td > the id of the content wrapper </td>
 </tr>
 <tr>
-<td > <code>&quot;autosavefigs&quot;</code> </td>
+<td > <code>autosavefigs</code> </td>
 <td > <code>true</code>  </td>
 <td > whether to automatically save figures </td>
 </tr>
 <tr>
-<td > <code>&quot;autoshowfigs&quot;</code> </td>
+<td > <code>autoshowfigs</code> </td>
 <td > <code>true</code>  </td>
 <td > whether to automatically show figures </td>
 </tr>
 <tr>
-<td > <code>&quot;layout_head&quot;</code>  </td>
+<td > <code>layout_head</code>  </td>
 <td > <code>&quot;_layout/head.html&quot;</code> </td>
 <td > the path to the layout head file (see also <a href="/Xranklin.jl/workflow/page_structure/">page structure</a>) </td>
 </tr>
 <tr>
-<td > <code>&quot;layout_foot&quot;</code>  </td>
+<td > <code>layout_foot</code>  </td>
 <td > <code>&quot;_layout/foot.html&quot;</code> </td>
 <td > the path to the layout foot file </td>
 </tr>
 <tr>
-<td > <code>&quot;layout_page_foot&quot;</code> </td>
+<td > <code>layout_page_foot</code> </td>
 <td > <code>&quot;_layout/page_foot.html&quot;</code> </td>
 <td > the path to the page foot file </td>
 </tr>
 <tr>
-<td > <code>&quot;layout_head_lx&quot;</code> </td>
+<td > <code>layout_head_lx</code> </td>
 <td > <code>&quot;_layout/latex/head.tex&quot;</code> </td>
 <td > the path to the LaTeX preamble </td>
 </tr>
 <tr>
-<td > <code>&quot;parse_script_blocks&quot;</code> </td>
+<td > <code>parse_script_blocks</code> </td>
 <td > <code>true</code> </td>
 <td > whether to parse <code>&lt;script&gt;</code> blocks </td>
 </tr>
