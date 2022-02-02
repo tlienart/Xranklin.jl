@@ -99,3 +99,22 @@ end
 
 # see hfun_paginate
 const PAGINATOR_TOKEN = "%##PAGINATOR##%"
+
+
+"""
+    filehash(fpath)
+
+Compute a hash of a file that can be stored between sessions to check whether
+two files have changed. For instance this can be used to check whether a
+literate file has changed since last time the site was built.
+
+Note that between two static files (e.g. two images), it's better to use
+`filecmp` as it is significantly faster and can break early if the files
+don't look identical.
+
+In short: within session where you may have to check whether a file in
+location A is identical to a file in location B, one should  use `filecmp`.
+Across sessions, where we want to check whether a given file has changed,
+we store the filehash and compare.
+"""
+filehash(fpath::String) = open(crc32c, fpath)

@@ -41,6 +41,13 @@ is_easily_serializable(::Module)   = false
 is_easily_serializable(::Ref)      = false
 is_easily_serializable(::Ptr)      = false
 
+# Types that are imported by Franklin should be considered easily serialisable
+# as well because Franklin loads them and so the deserialization will work fine
+# within a Franklin environment
+is_easily_serializable(::LittleDict{A, B}) where {A, B} =
+    all(is_easily_serializable, (A, B))
+is_easily_serializable(::Type{LittleDict{A,B,C,D}}) where {A,B,C,D} =
+    all(is_easily_serializable, (A, B, C, D))
 
 """
     serialize_notebook(nb, fpath)

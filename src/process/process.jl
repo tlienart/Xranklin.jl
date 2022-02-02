@@ -37,11 +37,10 @@ function process_file(
     fpath = joinpath(fpair...)
 
     # Check whether the file should be ignored
-    # -> if it's a layout, literate or rss file it gets processed separately
+    # -> if it's a layout or rss file it gets processed separately
     # -> if it's marked as "to be skipped"
-    skip = startswith(fpath, path(:layout))    ||  # no copy
-           startswith(fpath, path(:literate))  ||  # no copy
-           startswith(fpath, path(:rss))       ||  # no copy
+    skip = startswith(fpath, path(:layout)) ||  # no copy
+           startswith(fpath, path(:rss))    ||  # no copy
            fpair in skip_files                     # skip
     skip && return
 

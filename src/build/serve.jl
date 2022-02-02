@@ -16,6 +16,9 @@ Runs Franklin in the current directory.
     final (Bool): whether it's the build (e.g. for CI or publication), in this
                   case all links are adjusted to reflect the 'prepath'.
     single (Bool): do a single build pass and stop.
+
+### Debugging options
+
     debug (Bool): whether to display debugging messages.
     cleanup (Bool): whether to destroy the context objects, when debugging this
                     can be useful to explore local and global variables.
@@ -31,15 +34,18 @@ Runs Franklin in the current directory.
 
 """
 function serve(d::String = pwd();
-            #
+
+            # Main kwargs
             dir::String    = d,
             folder::String = dir,
             clear::Bool    = false,
             final::Bool    = false,
             single::Bool   = final,
+
             # Debugging options
             debug::Bool   = false,
             cleanup::Bool = true,
+
             # LiveServer options
             port::Int    = 8000,
             host::String = "127.0.0.1",
@@ -94,16 +100,17 @@ function serve(d::String = pwd();
     full_pass(gc, wf; final)
 
     # ---------------------------------------------------------------
-    # Start the build loop
+    # Start the build loop unless we're in single pass mode (single)
+    # or in final build mode (final).
     if !any((single, final))
         loop = (cntr, watcher) -> build_loop(cntr, watcher, wf)
         # start LiveServer
         LiveServer.serve(
-            port=port,
-            coreloopfun=loop,
-            dir=path(:site),
-            host=host,
-            launch_browser=launch
+            port           = port,
+            coreloopfun    = loop,
+            dir            = path(:site),
+            host           = host,
+            launch_browser = launch
         )
         println("") # skip a line to pass the '^C' character
     end
@@ -116,13 +123,9 @@ function serve(d::String = pwd();
     # re-evaluated at the start.
     start = time()
     @info "📓 serializing $(hl("config", :cyan))..."
+    mkpath(path(:cache))
     # keep track of literate hashes
-    push!(
-        gc.nb_vars.code_pairs,
-        VarsCodePair(
-            ("", [VarPair((:_literate_hashes, gc.vars[:_literate_hashes]))])
-        )
-    )
+    serialize(path(:cache) / "gdm.cache", gc.deps_map)
     serialize_notebook(gc.nb_vars, path(:cache) / "gnbv.cache")
     futils = path(:folder) / "utils.jl"
     if isfile(futils)
@@ -224,6 +227,14 @@ function full_pass(
     if initial_pass
         process_utils(gc)
         process_config(gc; initial_pass=true)
+        # discard the saved hash of files 'page.md' which depend on
+        # something like 'literate.jl' which would have changed.
+        # This will ensure 'pages.md' gets re-processed and considers the
+        # latest 'literate.jl'.
+        for rp in have_changed_deps(gc.deps_map)
+            pgh = path(:cache) / noext(rp) / "pg.hash"
+            rm(pgh, force=true)
+        end
 
     elseif config_changed
         # just reconsider config
@@ -354,6 +365,8 @@ function build_loop(
                 # delete corresponding output file if it exists
                 opath = get_opath(fpath)
                 isfile(opath) && rm(opath)
+                # if the file was in the depsmap, remove it
+                delete!(gc.deps_map, rpath)
             end
         end
         # scan the directory and add the new files to the watched_files
@@ -402,18 +415,14 @@ function build_loop(
                 # NOTE in this case gc is re-instantiated!
                 full_pass(gc, watched_files; utils_changed=true)
 
-            elseif case == :literate
-                # go over all MD watched files and trigger if they have a
-                # \\literate{rpath}
-                r = Regex("\\\\literate{$(replace(rpath, "_literate/" => ""))}")
-                for (fp2, _) in watched_files[:md]
-                    f2  = joinpath(fp2...)
-                    rp2 = get_rpath(f2)
-                    s   = read(f2, String)
-                    if match(r, s) !== nothing
-                        msg *= " → triggering '$rp2' [literate file changed]"; @info msg
-                        process_file(gc, fp2, :md, cur_t)
-                    end
+            # if it's a dependent file
+            elseif rpath in gc.deps_map.bwd_keys
+                # trigger all pages that require this dependency
+                for rp in gc.deps_map.bwd[rpath]
+                    ft = splitdir(path(:folder) / rp)
+                    fp = ft[1] => ft[2]
+                    msg *= " → triggering '$rp' [dependent file changed]"; @info msg
+                    process_file(gc, fp, :md, cur_t)
                 end
 
             # it's a standard file, process just that one

@@ -76,11 +76,9 @@ function update_files_to_watch!(
                 # the full website
                 add_if_new_file!(wf[:infra], fpair, in_loop)
 
+            # if it's in assets, even with a .md or .html, just copy over
             elseif startswith(fpath, path(:assets))
                 add_if_new_file!(wf[:other], fpair, in_loop)
-
-            elseif startswith(fpath, path(:literate))
-                add_if_new_file!(wf[:literate], fpair, in_loop)
 
             elseif fext == ".md"
                 add_if_new_file!(wf[:md], fpair, in_loop)

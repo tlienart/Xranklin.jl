@@ -22,7 +22,6 @@ function set_paths!(gc::GlobalContext, folder::String)
     P[:layout]     = f / "_layout"
     P[:libs]       = f / "_libs"
     P[:rss]        = f / "_rss"          # optional/generated
-    P[:literate]   = f / "_literate"     # optional
 
     # output
     P[:site]  = f / "__site"
@@ -124,8 +123,7 @@ function form_output_base_path(base::String)::String
     if startswith(base, path(:assets)) ||
        startswith(base, path(:css))    ||
        startswith(base, path(:layout)) ||
-       startswith(base, path(:libs))   ||
-       startswith(base, path(:literate))
+       startswith(base, path(:libs))
        # for special folders, strip away the preceding `_`
        return path(:site) / lstrip(get_rpath(base), '_')
    end
