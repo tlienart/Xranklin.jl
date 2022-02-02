@@ -1,8 +1,24 @@
 #=
 NOTE:
 
-we use the Literate convention here with quadruple backticks (this was introduced
+1. we use the Literate convention here with quadruple backticks (this was introduced
 in v2.9 which is the minimal version allowed).
+
+2. the logic here could be copied and adapted for other files like Pluto,
+    PlutoStaticHTML, Weave etc. The key bit is the registration of the file
+    to the global context's dependency map.
+
+For point (2) there's a line
+
+```
+push!(gc.deps_map, lc.rpath, rpath)
+```
+
+This adds a dependendent file `rpath` to a page file `lc.rpath`.
+More exlicitly it amounts to
+
+push!(dependency_map, page.md, literate.jl)
+
 =#
 
 """
