@@ -13,4 +13,4 @@ Everything below the horizontal line comes from the conversion of a Literate scr
 
 ---
 
-\literate{example.jl}
+\literate{_assets/literate/example.jl}

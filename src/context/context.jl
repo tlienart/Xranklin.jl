@@ -27,10 +27,10 @@ Notebook for vars assignments.
 
 ## Fields
 
-    mdl:        the module in which code gets evaluated
-    cntr_refs:  keeps track of the evaluated "cell number" when sequentially
-                 evaluating code
-    code_pairs: keeps track of [(code => vnames)]
+    mdl:          the module in which code gets evaluated
+    cntr_refs:    keeps track of the evaluated "cell number" when sequentially
+                   evaluating code
+    code_pairs:   keeps track of [(code => vnames)]
     is_stale_ref: whether the notebook was loaded from cache.
 """
 struct VarsNotebook <: Notebook
@@ -47,17 +47,19 @@ Notebook for code.
 
 ## Fields
 
-Same as VarsNotebook with
+Same as VarsNotebook with additionally
 
     code_map:     keeps track of {code_name => cntr}
     is_stale_ref: keeps track of whether the notebook was loaded from cache.
-                  If it was loaded from cache and a cell changes, all previous
-                  cell will have to be re-evaluated.
+                   If it was loaded from cache and a cell changes, all
+                   previous cells will have to be re-evaluated.
 """
 struct CodeNotebook <: Notebook
+    # see VarsNotebook
     mdl::Module
     cntr_ref::Ref{Int}
     code_pairs::CodeCodePairs
+    # specific ones
     code_map::LittleDict{String, Int}
     is_stale_ref::Ref{Bool}
 end
@@ -72,7 +74,7 @@ fresh_notebook!(nb::Notebook) = (nb.is_stale_ref[] = false;)
 # ------------------------------ #
 
 # allows to have several varname for the same effect (e.g. prepath, base_url_prefix)
-const Alias  = LittleDict{Symbol, Symbol}
+const Alias = LittleDict{Symbol, Symbol}
 
 abstract type Context end
 
@@ -101,6 +103,9 @@ Fields:
     init_retrigger:     set of pages to trigger a second time after the initial
                          full pass so they have access to everything defined in
                          the full pass (e.g. all anchors).
+    deps_map:           data structure keeping track of what markdown pages
+                         depends on what files (e.g. literate scripts) and vice
+                         versa, to check whether a page needs to be updated.
 
 Note: generally it is 'to_trigger' that is used. The logic there is that when
 a page queries directly from GC we know that arrow (pg -> GC) and so when
@@ -126,6 +131,7 @@ struct GlobalContext{LC<:Context} <: Context
     children_contexts::LittleDict{String, LC}
     to_trigger::Set{String}
     init_trigger::Set{String}
+    deps_map::DepsMap
 end
 
 
@@ -216,6 +222,7 @@ function GlobalContext(vars=Vars(), defs=LxDefs(); alias=Alias())
     children     = LittleDict{String, LocalContext}()
     to_trigger   = Set{String}()
     init_trigger = Set{String}()
+    deps_map     = DepsMap()
 
     return GlobalContext(
         vars,
@@ -228,7 +235,8 @@ function GlobalContext(vars=Vars(), defs=LxDefs(); alias=Alias())
         paginated,
         children,
         to_trigger,
-        init_trigger
+        init_trigger,
+        deps_map
     )
 end
 

@@ -11,6 +11,8 @@ import Pkg
 import Serialization: serialize, deserialize
 import Logging
 import TOML
+import CRC32c: crc32c
+import Base: push!, delete!, merge!
 
 # ------------------------------------------------------------------------
 # external dependencies part of the Franklin universe
@@ -78,6 +80,7 @@ include("html_utils.jl")
 
 p = "context"
 include("$p/types.jl")
+include("$p/deps_map.jl")
 include("$p/context.jl")
 include("$p/anchors.jl")
 include("$p/tags.jl")

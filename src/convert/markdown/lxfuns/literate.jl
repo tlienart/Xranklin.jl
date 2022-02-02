@@ -12,13 +12,9 @@ Try to find a literate file, resolve it and return it.
 
 ## Notes
 
-1. the `rpath` is assumed to be relative to the `_literate` folder provided
-    there is a `_literate` folder. (Same behaviour as `{{insert ..}}` with respect
-    to the `_layout` folder)
-2. if there is no `_literate` folder, the `rpath` is taken to be relative to
-    the website folder
-3. the `rpath` must end with `.jl` and must not start with a `/`
-4. it is recommended to have a `_literate` folder to not have files flying around.
+1. the `rpath` is taken relative to the website folder
+2. the `rpath` must end with `.jl` and must not start with a `/`
+3. it is recommended to have a dedicated 'literate' folder but not mandatory
 """
 function lx_literate(p::VS; tohtml::Bool=true)::String
     c = _lx_check_nargs(:literate, p, 1)
@@ -33,12 +29,7 @@ function lx_literate(p::VS; tohtml::Bool=true)::String
     end
 
     # try to form the full path to the literate file and check it's there
-    fpath = ""
-    if isdir(path(:literate))
-        fpath = path(:literate) / rpath
-    else
-        fpath = path(:folder) / rpath
-    end
+    fpath = path(:folder) / rpath
     if !isfile(fpath)
         @warn """
             \\literate{...}
@@ -53,16 +44,22 @@ function lx_literate(p::VS; tohtml::Bool=true)::String
 end
 
 
+# assumes Literate 2.9+ with the quad-backticks convention.
 const LITERATE_FENCER        = "julialit"
 const LITERATE_JULIA_FENCE   = "````$LITERATE_FENCER"
 const LITERATE_JULIA_FENCE_L = length(LITERATE_JULIA_FENCE)
 const LITERATE_JULIA_FENCE_R = Regex(LITERATE_JULIA_FENCE)
 
+const LITERATE_CONFIG = Dict(
+    "codefence" => (LITERATE_JULIA_FENCE => "````")
+    )
+
 
 """
     _process_literate_file(rpath, fpath)
 
-Helper function to process a literate file located at `fpath`.
+Helper function to process a literate file located at `rpath` (`fpath`).
+We pass `fpath` because it's already been resolved.
 """
 function _process_literate_file(rpath::String, fpath::String)::String
     # check if Literate.jl is loaded, otherwise interrupt
@@ -80,7 +77,8 @@ function _process_literate_file(rpath::String, fpath::String)::String
     end
     L = cur_utils_module().Literate
 
-    # check the version
+    # check the version, we want a version after 2.9 as that's the one that
+    # introduced the 4-backticks fence (as opposed to 3 earlier).
     literate_toml    = (pathof(L) |> dirname  |> dirname) / "Project.toml"
     literate_version = VersionNumber(
                             TOML.parsefile(literate_toml)["version"])
@@ -95,7 +93,8 @@ function _process_literate_file(rpath::String, fpath::String)::String
 
     lc = cur_lc()
     gc = lc.glob
-    gc.vars[:_literate_hashes][rpath] = hash(read(fpath, String))
+    # add the dependency lc.rpath <=> literate rpath
+    push!(gc.deps_map, lc.rpath, rpath)
 
     # Disable the logging
     pre_log_level = Base.CoreLogging._min_enabled_level[]
@@ -107,9 +106,7 @@ function _process_literate_file(rpath::String, fpath::String)::String
         fpath, mktempdir();
         flavor      = L.FranklinFlavor(),
         mdstrings   = getvar(lc, :literate_mdstrings, false),
-        config      = Dict(
-            "codefence" => (LITERATE_JULIA_FENCE => "````")
-            ),
+        config      = LITERATE_CONFIG,
         preprocess  = s -> replace(s, r"#hide\s*?\n" => "# hide\n"),
         postprocess = _postprocess_literate_script,
         credit      = getvar(lc, :literate_credits, false),

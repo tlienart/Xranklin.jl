@@ -4,6 +4,7 @@ authors = ["Thibaut Lienart <tlienart@me.com>"]
 version = "0.1.0"
 
 [deps]
+CRC32c = "8bf52ea8-c179-5cab-976a-9e18b702a9bc"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 FranklinParser = "796511e7-1510-466f-ad0c-1823c64bcafa"
 FranklinTemplates = "3a985190-f512-4703-8d38-2a7944ed5916"

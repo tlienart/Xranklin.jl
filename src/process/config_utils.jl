@@ -30,8 +30,10 @@ function process_config(
 
     # try to load from cache if relevant
     if initial_pass
-        fpv = path(:cache) / "gnbv.cache"
-        isfile(fpv) && load_vars_cache!(gc, fpv)
+        fpdm = path(:cache) / "gdm.cache"
+        fpv  = path(:cache) / "gnbv.cache"
+        isfile(fpdm) && merge!(gc.deps_map, deserialize(fpdm))
+        isfile(fpv)  && load_vars_cache!(gc, fpv)
     end
 
     # keep track of current lxdefs to see if the config.md redefines

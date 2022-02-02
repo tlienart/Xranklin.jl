@@ -249,6 +249,8 @@ function process_md_file_io!(
     # get markdown and compute the hash of it so that we can check whether
     # the content has changed since the last time we saw it (if there was
     # a last time).
+    # NOTE: we don't use `filehash` here because we need to read the page
+    # content anyway, so might as well compute the hash from it
     page_content_md = read(fpath, String)
     page_hash       = hash(page_content_md)
     lc.page_hash[]  = page_hash
@@ -263,7 +265,7 @@ function process_md_file_io!(
         bp  = path(:cache) / noext(rpath)
         fpv = bp / "nbv.cache"
         fpc = bp / "nbc.cache"
-        pgc = bp / "pg.hash"
+        pgh = bp / "pg.hash"
 
         if isfile(fpv)
             load_vars_cache!(lc, fpv)
@@ -275,37 +277,14 @@ function process_md_file_io!(
             initial_cache_used = true
         end
 
-        # page hasn't changed since last time --> early stop unless the page
-        # depends on one or more literate files in which case we check whether
-        # those have changed
-        if isfile(pgc) && (read(pgc, UInt64) == page_hash) && isfile(opath)
-            should_skip = true
-            r = Regex("\\\\literate{(.*)}")
-            for m in eachmatch(r, page_content_md)
-                rp = strip(m.captures[1])
-                lp = joinpath(path(:literate) / rp)
-                rp = unixify(rp)
-                lh = gc.vars[:_literate_hashes]::LittleDict
-
-                change = !isfile(lp)   ||
-                         rp ∉ keys(lh) ||
-                         hash(read(lp, String)) != lh[rp]
-                if change
-                    should_skip = false
-                    @info """
-                        👀 ❗ page '$rpath' hasn't changed but depends on at
-                        least one literate file that has changed.
-                        """
-                    break # no need to check other ones, we'll retrigger anyway
-                end
-            end
-
-            if should_skip
-                @info """
-                    👀 page '$rpath' hasn't changed, skipping the conversion...
-                    """
-                return
-            end
+        # page hasn't changed since last time --> early stop
+        # NOTE: this path is voided if the page depends on files which have
+        # changed. See check_deps_map.
+        if isfile(pgh) && (read(pgh, UInt64) == page_hash) && isfile(opath)
+            @info """
+                👀 page '$rpath' hasn't changed, skipping the conversion...
+                """
+            return
         end
     else
         # reset the notebook counters at the top
