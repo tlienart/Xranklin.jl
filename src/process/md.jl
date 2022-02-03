@@ -107,7 +107,7 @@ function _cleanup_paginated(odir::String)
     # so their name is all numeric, does not start with 0 and
     # it's a directory --> remove
     for e in readdir(odir)
-        if all(isnumeric, e) && first(elem) != '0'
+        if all(isnumeric, e) && first(e) != '0'
             dp = odir / e
             isdir(dp) && rm(dp, recursive=true)
         end
@@ -201,9 +201,9 @@ function setup_page_context(
     # Reset page counters and variables (headers etc)
     empty!(lc.headings)
     empty!(lc.anchors)
-    # empty!(lc.tags)
     eqrefs(lc)["__cntr__"] = 0
     setvar!(lc, :_auto_cell_counter, 0)
+    setvar!(lc, :_paginator_name, "")
 
     # in the context of "ignore_cache", reset the notebook
     reset_notebook && reset_code_notebook!(lc)
