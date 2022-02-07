@@ -89,7 +89,7 @@
 </li>
 <li class="pure-menu-item">
     <a href="/Xranklin.jl/syntax/utils/" class="pure-menu-link">
-        Advanced
+        Utils
     </a>
 </li>
 <li class="pure-menu-item">
@@ -148,7 +148,7 @@
         <div id="margin-toc">
           
             <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
-            <div class="toc"><ol><li><a href="#overview"> Overview</a></li><li><a href="#example"> Example</a><ol><li><a href="#rational_numbers"> Rational numbers</a></li></ol></li></ol></div>
+            <div class="toc"><ol><li><a href="#overview"> Overview</a></li><li><a href="#example"> Example</a><ol><li><a href="#rational_numbers"> Rational numbers</a></li><li><a href="#plots"> Plots</a></li></ol></li></ol></div>
           
       </div>
     </div>
@@ -166,7 +166,24 @@ x = 1//3
 y = 2//5</code></pre>
 <div class="code-output"><pre><code class="code-result language-plaintext">2//5</code></pre></div><p>When adding <code>x</code> and <code>y</code> together we obtain a new rational number:</p>
 <pre><code class="julia">z = x + y</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">11//15</code></pre></div>
+<div class="code-output"><pre><code class="code-result language-plaintext">11//15</code></pre></div><h3 id="plots" ><a href="#plots"> Plots</a></h3><p>Here's another "cell" with a plot:</p>
+<pre><code class="julia">using PyPlot
+x = range(0, pi, length=250)
+y = @. exp(-x * sin(x^2))
+figure(figsize=(8, 6))
+plot(x, y)
+gcf()</code></pre>
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/assets/syntax/literate/figs-html/__autofig_15918792189080208384.svg">
+</div><p>Or here one with a printout</p>
+<pre><code class="julia">for i in 1:5
+    println(&quot;*&quot;^i)
+end</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">*
+**
+***
+****
+*****
+</code></pre></div>
 
 
 
