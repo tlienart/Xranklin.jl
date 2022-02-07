@@ -282,7 +282,7 @@ function process_md_file_io!(
         # changed. See check_deps_map.
         if isfile(pgh) && (read(pgh, UInt64) == page_hash) && isfile(opath)
             @info """
-                👀 page '$rpath' hasn't changed, skipping the conversion...
+                ⏩ page '$rpath' hasn't changed, skipping the conversion...
                 """
             return
         end

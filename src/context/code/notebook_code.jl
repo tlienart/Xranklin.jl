@@ -1,68 +1,69 @@
 """
-    eval_code_cell!(ctx, cell_code; kw...)
+    eval_code_cell!(ctx, cell_code, cell_name; kw...)
 
 Evaluate the content of a cell we know runs some code.
 
 ## Args
 
-    ctx:       context in which the code is evaluated.
+    ctx:       context in which the code is evaluated
     cell_code: the code to evaluate
+    cell_name: the name of the cell (possibly generated)
 
 ## Kwargs
 
-    cell_name:     the name of the code cell if any
     imgdir_html:   the directory used to save images for HTML output
     imgdir_latex:  the directory used to save images for LaTeX output
 
 """
 function eval_code_cell!(
-            ctx::Context, cell_code::SS;
-            cell_name::String="",
+            ctx::Context, cell_code::SS, cell_name::String;
             imgdir_html::String=tempdir(),
             imgdir_latex::String=tempdir(),
             )::Nothing
 
+    # stop early if there's no code to evaluate
     isempty(cell_code) && return
 
-    nb   = ctx.nb_code
-    cntr = counter(nb)
-    code = cell_code |> strip |> string
+    # recover the notebook context, the cell index we're looking at
+    # and the hash of the code (used for autofigs)
+    nb         = ctx.nb_code
+    cell_index = counter(nb)
+    cell_code  = string(cell_code)
+    cell_hash  = hash(cell_code) |> string
 
-    # skip cell if previously seen and unchanged though check in case the
-    # cell name changed and if so, adjust
-    if isunchanged(nb, cntr, code)
-        @info "  ⏩  skipping cell $cell_name (unchanged)"
-        for (name, i) in nb.code_map
-            if i == cntr
-                if name != cell_name
-                    pop!(nb.code_map, name)
-                    nb.code_map[cell_name] = cntr
-                end
-                break
-            end
+    # if the cell_index is within the range of cell indexes (i.e. there
+    # is already a cell at that index), we replace the name with the current
+    # cell name to guarantee we're using the latest name.
+    if cell_index <= length(nb.code_names)
+        nb.code_names[cell_index] = cell_name
+        # skip cell if previously seen and unchanged
+        if isunchanged(nb, cell_index, cell_code)
+            @info "  ⏩  skipping cell $cell_name (unchanged)"
+            increment!(nb)
+            return
         end
-        increment!(nb)
-        return
+    else
+        push!(nb.code_names, cell_name)
     end
 
+    # we now have some code that we should evaluate, first we check
+    # whether the notebook is stale (e.g. if was loaded from cache)
+    # If that's the case, then the entire notebook is re-run to make
+    # sure all cells have been executed once so that the cell we have
+    # now has the full notebook context.
     if isstale(nb)
         start = time(); @info """
               ❗ code notebook stale, refreshing...
-            """
+              """
         # reeval all previous cells, we don't need to
-        # keep track of their vars or whatever as they haven't changed
-        tempc = 1
-        while tempc < cntr
-            cell_name = findfirst(cm.second == tempc for cm in nb.code_map)
-            if cell_name === nothing
-                cell_name = ""
-            end
+        # keep track of vars assignments or whatever as they
+        # can't have changed
+        for tmp_idx = 1:cell_index-1
             _eval_code_cell(
                 nb.mdl,
-                nb.code_pairs[tempc].code,
-                cell_name
+                nb.code_pairs[tmp_idx].code,
+                nb.code_names[tmp_idx]
             )
-            tempc += 1
         end
         δt = time() - start; @info """
             ... [code notebook refresh] ✓ $(hl(time_fmt(δt)))"
@@ -70,65 +71,23 @@ function eval_code_cell!(
         fresh_notebook!(nb)
     end
 
-    # eval cell
-    @info "  ⏯️  evaluating cell $cell_name..."
-    std_out, std_err, result = _eval_code_cell(nb.mdl, code, cell_name)
-
+    # Form autofigs paths
     autosavefigs = getvar(ctx, :autosavefigs, true)
     autoshowfigs = getvar(ctx, :autoshowfigs, true)
-    fig_id       = "__autofig_$(hash(code))"
-    fpath_html   = imgdir_html / fig_id
+    fig_id       = "__autofig_$(cell_hash)"
+    fpath_html   = imgdir_html  / fig_id
     fpath_latex  = imgdir_latex / fig_id
     fig_html     = (save=autosavefigs, show=autoshowfigs, fpath=fpath_html)
     fig_latex    = (save=autosavefigs, show=autoshowfigs, fpath=fpath_latex)
 
-    # form the string representation of the cell. This is in  two  parts
-    # (1) the stdout (output) if there's a println for instance
-    # (2) the show(result) which can be overwritten by the user if they
-    #     want specific objects to have a specific HTML or LaTeX repr
-    io_html  = IOBuffer()
-    io_latex = IOBuffer()
-    io_raw   = IOBuffer()
-    if !isempty(std_out)
-        write(io_html,
-            "<pre><code class=\"code-stdout language-plaintext\">",
-            std_out,
-            "</code></pre>"
-        )
-        write(io_latex, std_out)
-        write(io_raw, std_out, "\n")
-    end
-    if !isempty(std_err)
-        write(io_html,
-            "<pre><code class=\"code-stderr language-plaintext\">",
-            std_err,
-            "</code></pre>"
-        )
-        write(io_latex, std_out)
-    end
+    # evaluate the cell and capture the output
+    @info "  ⏯️  evaluating cell $cell_name..."
+    code_outp = _eval_code_cell(nb.mdl, cell_code, cell_name)
+    code_repr = _form_code_repr(code_outp, fig_html, fig_latex)
+    code_pair = CodeCodePair((cell_code, code_repr))
 
-    crumbs("eval_code_cell!", "[output to io]")
-
-    append_result_html!(io_html, result, fig_html)
-    append_result_latex!(io_latex, result, fig_latex)
-    isnothing(result) || write(io_raw, repr(result))
-
-    code_repr = CodeRepr(
-        String.(take!.((io_html, io_latex, io_raw)))
-    )
-
-    crumbs("eval_code_cell!", "[formed repr]")
-
-    # if an id was given, keep track (if none was given, the empty string
-    # links to lots of stuff, like "ans" in a way)
-    nb.code_map[cell_name] = cntr
-
-    return finish_cell_eval!(nb, CodeCodePair((code, code_repr)))
+    return finish_cell_eval!(nb, code_pair)
 end
-
-
-const Captured = NamedTuple{     (:std_out, :std_err, :result),
-                            Tuple{ String,    String,  T} where T }
 
 
 """
@@ -140,15 +99,21 @@ shown).
 
 # Return
 
-NamedTuple
-    * value
-    * output
+    * std_out::String
+    * std_err::String
+    * result::T where T
 """
-function _eval_code_cell(mdl::Module, code::String, cell_name::String)::Captured
+function _eval_code_cell(
+                mdl::Module,
+                code::String,
+                cell_name::String
+                )::Tuple
+
     start = time(); @debug """
-    ⏳ evaluating code cell... $(
-        hl(isempty(cell_name) ? "" : "($cell_name)", :light_green))
-    """
+        ⏳ evaluating code cell... $(hl(
+            isempty(cell_name) ? "" : "($cell_name)",
+            :light_green))
+        """
     std_out = ""
     std_err = ""
     result  = nothing
@@ -192,7 +157,7 @@ function _eval_code_cell(mdl::Module, code::String, cell_name::String)::Captured
         @warn msg
         env(:strict_parsing)::Bool && throw(msg)
 
-        return (; std_out, std_err, result)
+        return (std_out, std_err, result)
     end
 
     δt = time() - start; @debug """
@@ -213,7 +178,7 @@ function _eval_code_cell(mdl::Module, code::String, cell_name::String)::Captured
 
         is_show && (result = nothing)
     end
-    return (; std_out, std_err, result)
+    return std_out, std_err, result
 end
 
 """
@@ -238,6 +203,60 @@ end
 
 
 """
+    _form_code_repr(...)
+
+Helper function to get a representation of the evaluation of a code cell.
+
+## Steps
+
+    1. representation of stdout if not empty
+    2. representation of stderr if not empty
+    3. representation of result if not nothing
+"""
+function _form_code_repr(
+            output::Tuple{String,String,<:Any}, fig_html::NT, fig_latex::NT
+            )::CodeRepr where NT <: NamedTuple
+
+    # extract the raw stuff from the output tuple (from _eval_code_cell)
+    std_out, std_err, result  = output
+    io_html, io_latex, io_raw = IOBuffer(), IOBuffer(), IOBuffer()
+
+    # (1) Representation of STDOUT (printout in a div)
+    if !isempty(std_out)
+        write(io_html,
+            "<pre><code class=\"code-stdout language-plaintext\">",
+            std_out,
+            "</code></pre>"
+        )
+        write(io_latex, std_out)
+        write(io_raw,   std_out, "\n")
+    end
+
+    # (2) Representation of STDERR (printout in a div)
+    if !isempty(std_err)
+        write(io_html,
+            "<pre><code class=\"code-stderr language-plaintext\">",
+            std_err,
+            "</code></pre>"
+        )
+        write(io_latex, std_out)
+    end
+
+    # (3) Representation of the result
+    if !isnothing(result)
+        # If there's a non-empty result, keep track of what it looks like
+        write(io_raw, repr(result))
+
+        append_result_html!(io_html, result, fig_html)
+        append_result_latex!(io_latex, result, fig_latex)
+    end
+    return CodeRepr(
+        String.(take!.((io_html, io_latex, io_raw)))
+    )
+end
+
+
+"""
     append_result_html!(io, result, fpath)
 
 Append a string representation of the `result` to `io` when writing HTML.
@@ -249,7 +268,6 @@ Users can also overwrite this default saving of files by overloading the
 HTML mime show or writing their own code in the cell.
 """
 function append_result_html!(io::IOBuffer, result::R, fig::NamedTuple) where R
-    R === Nothing && return
 
     Utils = cur_utils_module()
     if isdefined(Utils, :html_show) && hasmethod(Utils.html_show, (R,))
@@ -284,7 +302,6 @@ Same as the one for HTML but for LaTeX.
 Note: SVG support in LaTeX is not straightforward (depends on other tools).
 """
 function append_result_latex!(io::IOBuffer, result::R, fig::NamedTuple) where R
-    R === Nothing && return
 
     Utils = cur_utils_module()
     if isdefined(Utils, :latex_show) && hasmethod(Utils.latex_show, (R,))

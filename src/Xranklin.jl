@@ -51,6 +51,7 @@ export html, latex
 export getvar, getvarfrom, getlvar, getgvar, setlvar!, setgvar!, assetpath
 export get_page_tags
 export cur_lc, cur_gc
+export attach
 export auto_cell_name
 export locvar, globvar, pagevar  # LEGACY
 

@@ -26,7 +26,7 @@ page variable `ignore_cache` is used for instance.
 function reset_code_notebook!(c::LocalContext)
     reset_counter!(c.nb_code)
     empty!(c.nb_code.code_pairs)
-    empty!(c.nb_code.code_map)
+    empty!(c.nb_code.code_names)
     fresh_notebook!(c.nb_code)
     return
 end

@@ -43,11 +43,12 @@ Includes an anchor with a name so that it can be referenced elsewhere.
 function lx_label(p::VS; tohtml::Bool=true)::String
     c = _lx_check_nargs(:label, p, 1)
     isempty(c) || return c
-    tohtml     || return "\\label{$(p[1])}"
+    # -------------------------------
+    tohtml || return "\\label{$(p[1])}"
     # here we have a non empty label for a HTML output
     id = string_to_anchor(p[1])
-    # keep track of the anchor, note that if there is already one with that
-    # exact same id, then it will be overwritten!
+    # keep track of the anchor, note that if there is already one
+    # with that exact same id, then it will be overwritten!
     lc = cur_lc()
     add_anchor(lc.glob, id, lc.rpath)
     class = getvar(lc.glob, :anchor_class, "anchor")
@@ -67,9 +68,10 @@ Example: \\biblabel{fukumizu04}{Fukumizu et al. (2004)}
 function lx_biblabel(p::VS; tohtml::Bool=true)::String
     c = _lx_check_nargs(:biblabel, p, 2)
     isempty(c) || return c
-
-    # TODO in LaTeX could be with \bibitem but they need to be placed inside
-    # a \begin{thebibliography} ... \end{thebibliography}
+    # ----------------------------------
+    # TODO in LaTeX could be with \bibitem but they need
+    # to be placed inside a \begin{thebibliography} ...
+    # \end{thebibliography}
     tohtml || return ""
 
     if tohtml
@@ -91,13 +93,16 @@ Refer to an equation possibly defined later.
 function lx_eqref(p::VS; tohtml::Bool=true)::String
     c = _lx_check_nargs(:eqref, p, 1)
     isempty(c) || return c
-    tohtml     || return "\\eqref{$(p[1])}"
-
+    # -------------------------------
+    tohtml || return "\\eqref{$(p[1])}"
     ids   = string_to_anchor.(string.(split(p[1], ',')))
-    inner = prod("{{eqref $id}}$(ifelse(i < length(ids), ", ", ""))"
-                 for (i, id) in enumerate(ids))
+    inner = prod(
+        "{{eqref $id}}$(ifelse(i < length(ids), ", ", ""))"
+        for (i, id) in enumerate(ids)
+    )
     return "(" * inner * ")"
 end
+
 
 """
     \\cite{s|id} or \\citet{s|id}
@@ -108,9 +113,8 @@ function lx_cite(p::VS; tohtml::Bool=true, wp::Bool=false)::String
     s = ifelse(wp, :citep, :cite)
     c = _lx_check_nargs(s, p, 1)
     isempty(c) || return c
-
+    # --------------------------
     tohtml || return ifelse(wp, "\\citep{$(p[1])}", "\\cite{$(p[1])}")
-
     ids   = string_to_anchor.(string.(split(p[1], ',')))
     inner = prod("{{cite $id}}$(ifelse(i < length(ids), ", ", ""))"
                  for (i, id) in enumerate(ids))

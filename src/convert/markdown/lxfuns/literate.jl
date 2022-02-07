@@ -35,6 +35,7 @@ Try to find a literate file, resolve it and return it.
 function lx_literate(p::VS; tohtml::Bool=true)::String
     c = _lx_check_nargs(:literate, p, 1)
     isempty(c) || return c
+    # ----------------------------------
     rpath = unixify(strip(p[1]))
     if !endswith(rpath, ".jl")
         @warn """
@@ -107,10 +108,9 @@ function _process_literate_file(rpath::String, fpath::String)::String
         return failed_lxc("literate", p)
     end
 
-    lc = cur_lc()
-    gc = lc.glob
     # add the dependency lc.rpath <=> literate rpath
-    push!(gc.deps_map, lc.rpath, rpath)
+    lc = cur_lc()
+    attach(lc, rpath)
 
     # Disable the logging
     pre_log_level = Base.CoreLogging._min_enabled_level[]

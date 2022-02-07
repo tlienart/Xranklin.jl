@@ -60,6 +60,22 @@ latex_code_inline(b::Block, c::LocalContext) = (
 #
 # BLOCK
 #
+# entry points: html_code_block / latex_code_block
+# overview:
+#   - _code_info() --> CodeInfo {name, lang, code, exec, auto}
+#                       (auto name attributed here if relevant)
+#   - if exec
+#       => call eval_code_cell!(...)
+#   - if auto
+#       => call lx_show(...)
+#   - ...
+#
+# eval_code_cell!(...)
+#   - unchanged code at the cell counter
+#       >
+#
+#
+# XXX what's going on with changes of names and pop! stuff and cellname=""
 
 """
     _strip(s)
@@ -154,10 +170,8 @@ html_code_block(b::Block, c::LocalContext) = begin
             imgdir_html  = mkpath(imgdir_base / "figs-html")
             imgdir_latex = mkpath(imgdir_base / "figs-latex")
             eval_code_cell!(
-                c, ci.code;
-                cell_name=ci.name,
-                imgdir_html,
-                imgdir_latex
+                c, ci.code, ci.name;
+                imgdir_html, imgdir_latex
             )
         end
         if ci.auto
@@ -176,7 +190,7 @@ latex_code_block(b::Block, c::LocalContext) = begin
     ci = _code_info(b, c)
     if ci.exec
         if ci.lang == "julia"
-            eval_code_cell!(c, ci.code; cell_name=ci.name)
+            eval_code_cell!(c, ci.code, ci.name)
         end
         if ci.auto
             post = lx_show([ci.name]; tohtml=false)

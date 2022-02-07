@@ -7,8 +7,6 @@ const CodeCodePair = NamedTuple{(:code, :repr),  Tuple{String, CodeRepr}}
 const VarsCodePairs = Vector{VarsCodePair}
 const CodeCodePairs = Vector{CodeCodePair}
 
-const CodeMap = LittleDict{String, Int}
-
 
 """
     Notebook
@@ -39,6 +37,9 @@ struct VarsNotebook <: Notebook
     code_pairs::VarsCodePairs
     is_stale_ref::Ref{Bool}
 end
+VarsNotebook(mdl::Module) =
+    VarsNotebook(mdl, Ref(1), VarsCodePairs(), Ref(false))
+
 
 """
     CodeNotebook
@@ -49,7 +50,7 @@ Notebook for code.
 
 Same as VarsNotebook with additionally
 
-    code_map:     keeps track of {code_name => cntr}
+    code_names:   list of code block names in sequential order.
     is_stale_ref: keeps track of whether the notebook was loaded from cache.
                    If it was loaded from cache and a cell changes, all
                    previous cells will have to be re-evaluated.
@@ -60,9 +61,12 @@ struct CodeNotebook <: Notebook
     cntr_ref::Ref{Int}
     code_pairs::CodeCodePairs
     # specific ones
-    code_map::LittleDict{String, Int}
+    code_names::Vector{String}
     is_stale_ref::Ref{Bool}
 end
+CodeNotebook(mdl::Module) =
+    CodeNotebook(mdl, Ref(1), CodeCodePairs(), String[], Ref(false))
+
 
 isstale(nb::Notebook)         = nb.is_stale_ref[]
 stale_notebook!(nb::Notebook) = (nb.is_stale_ref[] = true;)
@@ -211,10 +215,10 @@ function GlobalContext(vars=Vars(), defs=LxDefs(); alias=Alias())
     parent_module(wipe=true)
     # vars notebook
     mdl     = submodule(modulename("__global_vars", true), wipe=true)
-    vars_nb = VarsNotebook(mdl, Ref(1), VarsCodePairs(), Ref(false))
+    vars_nb = VarsNotebook(mdl)
     # utils notebook
     mdl = submodule(modulename("__global_utils", true), wipe=true)
-    code_nb = CodeNotebook(mdl, Ref(1), CodeCodePairs(), CodeMap(), Ref(false))
+    code_nb = CodeNotebook(mdl)
     # rest
     anchors      = LittleDict{String, Anchor}()
     tags         = LittleDict{String, Tag}()
@@ -268,10 +272,10 @@ setdef!(gc::GlobalContext, n::String, d) = setdef!(gc.lxdefs, n, d)
 function LocalContext(glob, vars, defs, headings, rpath="", alias=Alias())
     # vars notebook
     mdl = submodule(modulename("$(rpath)_vars", true), wipe=true, utils=true)
-    vars_nb  = VarsNotebook(mdl, Ref(1), VarsCodePairs(), Ref(false))
+    vars_nb  = VarsNotebook(mdl)
     # code notebook
     mdl = submodule(modulename("$(rpath)_code", true), wipe=true, utils=true)
-    code_nb  = CodeNotebook(mdl, Ref(1), CodeCodePairs(), CodeMap(), Ref(false))
+    code_nb  = CodeNotebook(mdl)
     # req vars (keep track of what is requested by this page)
     req_vars = LittleDict{String, Set{Symbol}}(
         "__global" => Set{Symbol}()
@@ -448,6 +452,20 @@ getgvar(n::Symbol, d=nothing) = getvar(cur_gc(), n, d)
 getlvar(n::Symbol, d=nothing) = getvar(cur_lc(), n, d)
 
 cur_utils_module() = cur_gc().nb_code.mdl
+
+# ---------------- #
+# DEPS MAP RELATED #
+# ---------------- #
+"""
+    attach(lc, dep_rpath)
+
+Add the dependency `lc` to `dep` to the global dependency map.
+"""
+attach(lc::LocalContext, dep_rpath::String) =
+    push!(lc.glob.deps_map, lc.rpath, dep_rpath)
+
+attach(dep_rpath::String) = attach(cur_lc(), dep_rpath)
+
 
 # ---------------------- #
 # LEGACY ACCESS COMMANDS #

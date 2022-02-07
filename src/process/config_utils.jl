@@ -140,7 +140,7 @@ function process_utils(
         ⌛ processing utils.jl
         """
 
-    eval_code_cell!(gc, subs(utils); cell_name="utils")
+    eval_code_cell!(gc, strip(utils), "utils")
 
     @info """
         ... [utils.jl] ✔ $(hl(time_fmt(time()-start)))

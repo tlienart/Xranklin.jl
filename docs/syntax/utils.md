@@ -1,7 +1,7 @@
 +++
 showtoc = true
 header = "Defining HTML functions and LaTeX commands with code"
-menu_title = "Advanced"
+menu_title = "Utils"
 +++
 
 ## Overview

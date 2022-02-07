@@ -97,7 +97,6 @@ end
         html_show(f::Foo) = "<span>Foo: $(f.x)</span>"
         """
     X.process_utils(utils, gc)
-    lc = X.DefaultLocalContext(gc)
 
     s = raw"""
         ```:ex
@@ -105,20 +104,21 @@ end
         ```
         \show{ex}
         """
-    h = html(s, lc, nop=true)
+    h = html(s, X.DefaultLocalContext(gc), nop=true)
     @test isapproxstr(h, """
         <pre><code class="julia">1</code></pre>
         <div class="code-output">
             <span>Int: 1</span>
         </div>
         """)
+
     s = raw"""
         ```:ex
         Utils.Foo(1)
         ```
         \show{ex}
         """
-    h = html(s, lc, nop=true)
+    h = html(s, X.DefaultLocalContext(gc), nop=true)
     @test isapproxstr(h, """
         <pre><code class="julia">Utils.Foo(1)</code></pre>
         <div class="code-output">
@@ -143,13 +143,14 @@ end
             <span>Bar: 1</span>
         </div>
         """)
+
     s = raw"""
         ```:ex
         5
         ```
         \show{ex}
         """
-    h = html(s, lc, nop=true)
+    h = html(s, X.DefaultLocalContext(gc), nop=true)
     @test isapproxstr(h, """
         <pre><code class="julia">5</code></pre>
         <div class="code-output">

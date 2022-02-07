@@ -58,7 +58,6 @@ function html2(parts::Vector{Block}, c::Context)::String
         # -----------------------------
         # Double Brace Block processing
         # -----------------------------
-
         cb = strip(content(b))
 
         # empty double brace -> write as empty (will be reconsidered at the end

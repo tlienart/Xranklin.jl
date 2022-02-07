@@ -49,6 +49,7 @@ is_easily_serializable(::LittleDict{A, B}) where {A, B} =
 is_easily_serializable(::Type{LittleDict{A,B,C,D}}) where {A,B,C,D} =
     all(is_easily_serializable, (A, B, C, D))
 
+
 """
     serialize_notebook(nb, fpath)
 
@@ -83,9 +84,16 @@ function serialize_notebook(nb::CodeNotebook, fpath::String)::Nothing
         return
     end
     mkpath(splitdir(fpath)[1])
-    serialize(fpath, (code_pairs=nb.code_pairs, code_map=nb.code_map))
+    serialize(
+        fpath,
+        (
+            code_pairs=nb.code_pairs,
+            code_names=nb.code_names
+        )
+    )
     return
 end
+
 
 
 """
@@ -104,14 +112,14 @@ existing code cells are modified or new code cells added
 function load_vars_cache!(ctx::Context, fpath::String)
     start = time(); @info """
           🔄  loading vars cache $(hl(str_fmt(get_rpath(fpath)), :cyan))
-        """
+          """
     nb = ctx.nb_vars
     try
         append!(nb.code_pairs, deserialize(fpath))
     catch
         # deserialization failed because of changed julia version or something of the sorts
         @info """
-            ... [load vars] ❌ (deserialization failed, usually due to Julia version switch).
+            ... [load vars] ❌ (deserialization failed, cache will be ignored).
             """
         return
     end
@@ -136,13 +144,13 @@ function load_code_cache!(ctx::Context, fpath::String)
         """
     nb = ctx.nb_code
     try
-        code_pairs, code_map = deserialize(fpath)
+        code_pairs, code_names = deserialize(fpath)
         append!(nb.code_pairs, code_pairs)
-        merge!(nb.code_map, code_map)
+        append!(nb.code_names, code_names)
     catch
         # deserialization failed because of changed julia version or something of the sorts
         @info """
-            ... [load code] ❌ (deserialization failed, usually due to Julia version switch).
+            ... [load vars] ❌ (deserialization failed, cache will be ignored).
             """
         return
     end

@@ -20,7 +20,7 @@ DepsMap() = DepsMap(
     LittleDict{String, UInt32}()
 )
 
-function push!(dm::DepsMap, a::String, b::String)
+function push!(dm::DepsMap, a::String, b::String)::Nothing
     @debug "➕ adding dependency '$a' <=> '$b'."
     # Forward (add file 'b' to dependencies of a)
     if a in dm.fwd_keys
@@ -41,7 +41,7 @@ function push!(dm::DepsMap, a::String, b::String)
     return
 end
 
-function delete!(dm::DepsMap, c::String)
+function delete!(dm::DepsMap, c::String)::Nothing
     msg = "🗑️ removing $c from the gc.deps_map as it was deleted."
     if c in dm.fwd_keys
         @info msg
@@ -71,7 +71,7 @@ function delete!(dm::DepsMap, c::String)
     return
 end
 
-function merge!(dm::DepsMap, dm2::DepsMap)
+function merge!(dm::DepsMap, dm2::DepsMap)::Nothing
     merge!(dm.fwd, dm2.fwd)
     union!(dm.fwd_keys, dm2.fwd_keys)
     merge!(dm.bwd, dm2.bwd)
