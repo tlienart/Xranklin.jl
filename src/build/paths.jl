@@ -153,6 +153,49 @@ end
 
 
 """
+    check_slug(lc, opath)
+
+Check if the context defines a slug, if so move the file at `opath` to the
+location corresponding to it.
+If a file already exists at the slug path, a warning will be shown but the
+file will be overwritten.
+
+## Note
+
+A slug is assumed to be in unix format (with forward slashes such as `a/b`).
+Pre and post backslash are ignored. The path is appended to the `__site/`
+folder. If a `.html` extension is given, that exact file path is written
+otherwise it's ignored.
+
+    * aa/bb.html --> __site/aa/bb.html
+    * aa/bb/     --> __site/aa/bb/index.html
+    * aa/bb      --> __site/aa/bb/index.html
+    * /aa/bb/    --> __site/aa/bb/index.html
+
+## Return
+
+The possibly modified `opath`.
+
+"""
+function check_slug(lc::LocalContext, opath::String)::String
+    isfile(opath) || return opath
+    slug = getvar(lc, :slug, "")
+    slug = strip(slug, '/')
+    isempty(slug) && return opath
+
+    if !endswith(slug, ".html")
+        slug = splitext(slug)[1] / "index.html"
+    end
+    new_opath = path(:site) / slug
+    mkpath(dirname(new_opath))
+
+    # copy the file at the new location so it can be attained
+    cp(opath, new_opath, force=true)
+    return new_opath
+end
+
+
+"""
     unixify(rpath)
 
 Take a path and return a unix version of the path (i.e. with forward slashes).
@@ -186,3 +229,5 @@ function get_rurl(rpath::String)
     startswith(rp, '/') && return rp
     return "/$rp"
 end
+get_rurl(lc::LocalContext) = get_rurl(lc.rpath)
+get_rurl() = get_rurl(cur_lc())

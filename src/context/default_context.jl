@@ -96,58 +96,61 @@ robots_disallow: disallow the current page
 =#
 const DefaultLocalVars = Vars(
     # General
-    :title              => nothing,
-    :date               => Dates.Date(1),
-    :lang               => "julia",
-    :tags               => String[],
-    :prerender          => true,
-    :slug               => "",
-    :ignore_cache       => false,
+    :title        => nothing,
+    :date         => Dates.Date(1),
+    :lang         => "julia",
+    :tags         => String[],
+    # :prerender    => true,
+    :slug         => "",
+    :ignore_cache => false,
     # toc
-    :mintoclevel        => 1,
-    :maxtoclevel        => 6,
+    :mintoclevel => 1,
+    :maxtoclevel => 6,
     # code
-    :reeval             => false,
-    :showall            => true,
+    :showall => true,
+    # footnotes
+    :fn_title => "Notes",
     # rss
-    :rss_descr          => "",
-    :rss_title          => "",
-    :rss_author         => "",
-    :rss_category       => "",
-    :rss_comments       => "",
-    :rss_enclosure      => "",
-    :rss_pubdate        => Dates.Date(1),
+    :rss_descr     => "",
+    :rss_title     => "",
+    :rss_author    => "",
+    :rss_category  => "",
+    :rss_comments  => "",
+    :rss_enclosure => "",
+    :rss_pubdate   => Dates.Date(1),
     # sitemap
     :sitemap_changefreq => "monthly",
     :sitemap_priority   => 0.5,
     :sitemap_exclude    => false,
     # robots
-    :robots_disallow    => false,
+    :robots_disallow => false,
     # latex config
-    :latex_img_opts     => "width=0.5\\textwidth",
-    # footnotes
-    :fn_title           => "Notes",
+    :latex_img_opts => "width=0.5\\textwidth",
+
     #
-    :_hasmath           => false,
-    :_hascode           => false,
+    # INTERNAL VARIABLES
+    #
+    :_hasmath => false,
+    :_hascode => false,
     # meta
+    :_output_path       => "",
     :_relative_path     => "",
     :_relative_url      => "",
     :_creation_time     => 0.0,
     :_modification_time => 0.0,
     # mddefs related
-    :_setvar            => Set{Symbol}(),
+    :_setvar => Set{Symbol}(),
     # set of anchor ids defined on the page (used to check removals)
-    :_anchors           => Set{String}(),
+    :_anchors => Set{String}(),
     # references (note: headings are part of context, see ctx.headings)
-    :_refrefs           => LittleDict{String, String}(),
-    :_eqrefs            => LittleDict{String, Int}("__cntr__" => 0),
-    :_bibrefs           => LittleDict{String, String}(),
+    :_refrefs => LittleDict{String, String}(),
+    :_eqrefs  => LittleDict{String, Int}("__cntr__" => 0),
+    :_bibrefs => LittleDict{String, String}(),
     # cell counter
     :_auto_cell_counter => 0,
     # pagination
-    :_paginator_name    => "",
-    :_paginator_npp     => 10,
+    :_paginator_name => "",
+    :_paginator_npp  => 10,
 )
 const DefaultLocalVarsAlias = Alias(
     :fd_rpath     => :_relative_path,

@@ -361,10 +361,19 @@ function build_loop(
             rpath = get_rpath(fpath)
             if !isfile(fpath)
                 delete!(d, fp)
-                delete!(gc.children_contexts, rpath)
-                # delete corresponding output file if it exists
+                # remove output files associated with fp
+                # in the case of a slug, this needs to be re-done as there
+                # will be two dependent files (one at opath, one at slug)
                 opath = get_opath(fpath)
                 isfile(opath) && rm(opath)
+                if rpath in keys(gc.children_contexts)
+                    lc = gc.children_contexts[rpath]
+                    if !isempty(getvar(lc, :slug, ""))
+                        opath2 = getvar(lc, :_output_path, "")
+                        isfile(opath2) && rm(opath2)
+                    end
+                    delete!(gc.children_contexts, rpath)
+                end
                 # if the file was in the depsmap, remove it
                 delete!(gc.deps_map, rpath)
             end

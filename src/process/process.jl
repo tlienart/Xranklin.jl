@@ -63,15 +63,28 @@ function process_file(
             """
 
         if case == :md
+            # process the file and write the result at 'opath'
             process_md_file(gc, fpath, opath; initial_pass)
 
+            # recover the context associated with that page and check if the
+            # output path needs to be corrected to take a 'slug' into account
+            # and *copy* that file over to an additional location matching
+            # the slug. The original output path is kept (a few things rely
+            # on this such as the possibility to skip files early).
+            lc    = gc.children_contexts[rpath]
+            opath = check_slug(lc, opath)
+            # adjust the meta parameters associated with that context so
+            # that if, for instance, a hfun requests the relative URL,
+            # it points to the appropriate new one.
+            set_meta_parameters(lc, fpath, opath)
+
             #
-            # If we're not in the initial pass, we need to reprocess all pages that
-            # depend upon definitions from this page which may have changed now that
-            # we just re-processed it.
+            # If we're not in the initial pass, we need to reprocess all pages
+            # that depend upon definitions from this page which may have
+            # changed now that we just re-processed it.
             #
             if !initial_pass
-                for pg in gc.children_contexts[rpath].to_trigger
+                for pg in lc.to_trigger
                     reprocess(pg, gc; skip_files, msg="(depends on updated vars)")
                 end
             end
@@ -109,6 +122,7 @@ function set_meta_parameters(lc::LocalContext, fpath::String, opath::String)
     rpath  = get_rpath(fpath)
     ropath = get_ropath(opath)
     s = stat(fpath)
+    setvar!(lc, :_output_path, opath)
     setvar!(lc, :_relative_path, rpath)
     setvar!(lc, :_relative_url, unixify(ropath))
     setvar!(lc, :_creation_time, s.ctime)

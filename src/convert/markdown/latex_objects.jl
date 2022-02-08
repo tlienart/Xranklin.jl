@@ -32,9 +32,9 @@ function process_latex_objects!(
             blocks[i], n = try_form_lxdef(block, i, blocks, ctx)
         elseif block.name == :LX_COMMAND
             blocks[i], n = try_resolve_lxcom(i, blocks, ctx; tohtml)
-        elseif block.name == :CU_BRACKETS
-            # stray braces
-            blocks[i], n = Block(:RAW_INLINE, block.ss), 0
+        # elseif block.name == :CU_BRACKETS
+        #     # stray braces
+        #     blocks[i], n = block, 0
         end
         append!(index_to_remove, i+1:i+n)
         i += n + 1

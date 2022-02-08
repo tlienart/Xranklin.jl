@@ -163,7 +163,7 @@ For URLs, recall that if we write `/foo/bar/` the browser resolves this as `/foo
 \lskip
 
 
-| Source | `__site/` | URL |
+| Source | `__site/` folder | URL |
 | -- | -- | -- | -- |
 | `index.md` | `index.html`  | `/` |
 | `foo.md` (or `foo/index.md`) | `foo/index.html` | `/foo/` |
@@ -181,8 +181,8 @@ For URLs, recall that if we write `/foo/bar/` the browser resolves this as `/foo
 Observe that there is an ambiguity between a file placed at `foo.md` and `foo/index.md`.
 You should pick one of the two based on what makes most sense for your folder structure, but you should not use both simultaneously.
 
-**Note**: in some cases you will want some paths to be maintained. This can be done with the global page variable `:keep_path`. For instance with things like Google Analytics, you may have to prove ownership of your site by placing a custom HTML file in a given location (see [this tutorial](https://support.google.com/webmasters/answer/9008080#html_verification)).
-For such cases you would add `the/path.html` in `keep_path` and Franklin would respect that:
+**Note**: in some cases you will want some paths to be maintained. This can be done with the global page variable `keep_path`. For instance with things like Google Analytics, you may have to prove ownership of your site by placing a custom HTML file in a given location (see [this tutorial](https://support.google.com/webmasters/answer/9008080#html_verification)).
+For such cases you would indicate `keep_path=["the/path.html"]` and Franklin would respect that:
 
 ```plaintext
 # source
@@ -195,17 +195,30 @@ keep_path = ["the/path.html"]
 the/path.html    # (instead of the/path/index.html)
 ```
 
+Further to the global page variable `keep_path`, you can also use the page variable `slug` which
+offers you a way to indicate a secondary output path for a file thereby making it available at
+another URL. The table below should clarify this:
+
+| Source | Slug | "`__site/`" folder | URL |
+| ------ | ---- | --------- | --- |
+| `foo/bar.md` | `slug="biz/baz"` | {`foo/bar/index.html`, `biz/baz/index.html`} | {`/foo/bar/`, `/biz/baz/`} |
+| `foo/bar.md` | `slug="biz/baz.html"` | {`foo/bar/index.html`, `biz/baz.html`} | {`/foo/bar/`, `/biz/baz.html`} |
+
+\lskip
+
 To close off this point about paths, here's a short summary of how source files can generate cache files, you should generally not have to worry about this but might be curious:
 
 \lskip
 
-| Source | `__cache/` |
+| Source | "`__cache/`" folder |
 | -- | -- |
 | `index.md` | `index/pg.hash`, (`index/nbc.cache`, `index/nbv.cache`) |
 | `foo.md` | `foo/pg.hash` (`foo/nbc.cache`, `foo/nbv.cache`) |
 | `foo/bar.md` | `foo/bar/pg.hash`, (`foo/bar/nbc.cache`, `foo/bar/nbv.cache`) |
 
 \lskip
+
+If you're interested about what the cache does and how it works, check out [this section](/engine/cache/).
 
 ## Other pages
 

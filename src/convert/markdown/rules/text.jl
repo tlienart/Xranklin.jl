@@ -44,6 +44,10 @@ latex_raw_latex(b, _) = content(b)
 html_dbb(b, _)  = string(b.ss)  # will be post-processed in html2
 latex_dbb(b, _) = string(b.ss)  # will be post-processed in latex2
 
+# stray {...} (e.g. if used to make an enumeration indep of latex)
+html_cu_brackets(b, c)  = "{"   * rhtml(b, c; nop=true)  * "}"
+latex_cu_brackets(b, c) = "\\{" * rlatex(b, c; nop=true) * "\\}"
+
 #
 # BLOCK (not inline)
 #

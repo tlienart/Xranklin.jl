@@ -29,10 +29,14 @@ menu = [
     "basics",
     "extensions",
     "code",
-    # "plots",
     "vars+funs",
     "utils",
+    ],
+  "extras" => [
+    "tags",
     "literate",
+    # "plots",
+    # "rss",
     ],
   "engine" => [
     "build_passes",

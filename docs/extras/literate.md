@@ -2,7 +2,6 @@
 showtoc = true
 header = "Using Literate with Franklin"
 menu_title = "Literate.jl"
-# ignore_cache = true
 +++
 
 ## Overview

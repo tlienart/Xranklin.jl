@@ -170,14 +170,31 @@ You don't have to use or set any of those unless you find one useful.
 | `title` | `nothing` | title of the page |
 | `date` | `Dates.Date(1)` | publication date of the page |
 | `lang` | `"julia"` | default language of executed code blocks |
-| `tags` | `String[]` | tags for the page |
+| `tags` | `String[]` | tags for the page (see [tags](/extras/tags/)) |
+| `slug` | `""` | slug for the page (see below) |
 | `ignore_cache` | `Bool` | if `true` re-evaluate all the code on the page on first pass |
 | `mintoclevel` | `1` | minimum heading level to add to the table of contents |
 | `maxtoclevel` | `6` | maximum heading level to add to the table of contents |
 | `showall` | `true` | show the output of every executed code blocks |
 | `fn_title` | `"Notes"` | heading of the footnotes section |
 
-\\
+\lskip
+
+The `slug` variable allows you to specify an explicit secondary output location
+for the page.
+For instance if you're currently working on a page `a/b/c.md`, the default output
+path will be such that the relevant page can be addressed at `/a/b/c/`.
+However if you specify `slug = "c/d"` then that page will also be available at `/c/d/`.
+You can also specify a path with a `.html` extension in which case exactly that path
+will be used:
+
+* `slug = "c/d"` → the page will also be available at `/c/d/`
+* `slug = "c/d.html"` → the page will also be available at `/c/d.html`
+
+For more on the topic you might want to read about [default paths in Franklin](##Paths in Franklin).
+Check also the `keep_path` global variable in the [next section](#global_variables).
+
+<!-- \\
 There's also a number of "internal" page variables that are set and used by Franklin,
 you might sometimes find those useful to build more advanced functionalities but
 you should typically not set them yourself unless you're sure of what you're doing.
@@ -208,12 +225,11 @@ For legacy purposes, a number of these variables have aliases (which can be used
 | `fd_mtime` | `_modification_time` |
 | `reeval` | `ignore_cache` |
 | `hasmath` | `_hasmath` |
-| `hascode` | `_hascode` |
-
-\lskip
+| `hascode` | `_hascode` | -->
 
 
-### Global variables (XXX)
+
+### Global variables
 
 Just as with default local variables, you might find it useful to access or set some of those though many
 might be irrelevant for you.
