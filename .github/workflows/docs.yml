@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - main
+env:
+  SITE_FOLDER: "docs"
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -25,7 +28,7 @@ jobs:
       - name: Install python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: 3.8
       - run: pip install numpy matplotlib
 
       # Julia
@@ -39,12 +42,12 @@ jobs:
           using Pkg;
           Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
           using Xranklin;
-          build("docs");'
+          build("$SITE_FOLDER");'
 
       # Deployment and caching
-      - run: touch docs/__site/.nojekyll
+      - run: touch $SITE_FOLDER/__site/.nojekyll
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
           BRANCH: gh-pages
-          FOLDER: docs/__site
+          FOLDER: $SITE_FOLDER/__site
