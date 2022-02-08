@@ -94,7 +94,7 @@
 </li>
 <li class="pure-menu-item">
     <a href="/Xranklin.jl/syntax/literate/" class="pure-menu-link">
-        Literate.jl
+        nothing
     </a>
 </li>
 </ul><div class="submenu-title">
@@ -258,7 +258,7 @@ For URLs, recall that if we write <code>/foo/bar/</code> the browser resolves th
 <div style="height:1em;"></div><table class="pure-table">
 <thead>
 <th > Source </th>
-<th > <code>__site/</code> </th>
+<th > <code>__site/</code> folder </th>
 <th > URL </th>
 </thead>
 <tbody>
@@ -316,8 +316,8 @@ For URLs, recall that if we write <code>/foo/bar/</code> the browser resolves th
 </table>
 <div style="height:1em;"></div><p>Observe that there is an ambiguity between a file placed at <code>foo.md</code> and <code>foo/index.md</code>.
 You should pick one of the two based on what makes most sense for your folder structure, but you should not use both simultaneously.</p>
-<p><strong>Note</strong>: in some cases you will want some paths to be maintained. This can be done with the global page variable <code>:keep_path</code>. For instance with things like Google Analytics, you may have to prove ownership of your site by placing a custom HTML file in a given location (see <a href="https://support.google.com/webmasters/answer/9008080#html_verification">this tutorial</a>).
-For such cases you would add <code>the/path.html</code> in <code>keep_path</code> and Franklin would respect that:</p>
+<p><strong>Note</strong>: in some cases you will want some paths to be maintained. This can be done with the global page variable <code>keep_path</code>. For instance with things like Google Analytics, you may have to prove ownership of your site by placing a custom HTML file in a given location (see <a href="https://support.google.com/webmasters/answer/9008080#html_verification">this tutorial</a>).
+For such cases you would indicate <code>keep_path=[&quot;the/path.html&quot;]</code> and Franklin would respect that:</p>
 <pre><code class="plaintext"># source
 the/path.html
 
@@ -326,11 +326,36 @@ keep_path = [&quot;the/path.html&quot;]
 
 # output in __site/
 the/path.html    # (instead of the/path/index.html)</code></pre>
-<p>To close off this point about paths, here's a short summary of how source files can generate cache files, you should generally not have to worry about this but might be curious:</p>
+<p>Further to the global page variable <code>keep_path</code>, you can also use the page variable <code>slug</code> which
+offers you a way to indicate a secondary output path for a file thereby making it available at
+another URL. The table below should clarify this:</p>
+<table class="pure-table">
+<thead>
+<th > Source </th>
+<th > Slug </th>
+<th > "<code>__site/</code>" folder </th>
+<th > URL </th>
+</thead>
+<tbody>
+<tr>
+<td > <code>foo/bar.md</code> </td>
+<td > <code>slug=&quot;biz/baz&quot;</code> </td>
+<td > {<code>foo/bar/index.html</code>, <code>biz/baz/index.html</code>} </td>
+<td > {<code>/foo/bar/</code>, <code>/biz/baz/</code>} </td>
+</tr>
+<tr>
+<td > <code>foo/bar.md</code> </td>
+<td > <code>slug=&quot;biz/baz.html&quot;</code> </td>
+<td > {<code>foo/bar/index.html</code>, <code>biz/baz.html</code>} </td>
+<td > {<code>/foo/bar/</code>, <code>/biz/baz.html</code>} </td>
+</tr>
+</tbody>
+</table>
+<div style="height:1em;"></div><p>To close off this point about paths, here's a short summary of how source files can generate cache files, you should generally not have to worry about this but might be curious:</p>
 <div style="height:1em;"></div><table class="pure-table">
 <thead>
 <th > Source </th>
-<th > <code>__cache/</code> </th>
+<th > "<code>__cache/</code>" folder </th>
 </thead>
 <tbody>
 <tr>
@@ -347,7 +372,8 @@ the/path.html    # (instead of the/path/index.html)</code></pre>
 </tr>
 </tbody>
 </table>
-<div style="height:1em;"></div><h2 id="other_pages" ><a href="#other_pages"> Other pages</a></h2><h2 id="css_and_js" ><a href="#css_and_js"> CSS and JS</a></h2><h2 id="assets" ><a href="#assets"> Assets</a></h2><h2 id="literate" ><a href="#literate"> Literate</a></h2>
+<div style="height:1em;"></div><p>If you're interested about what the cache does and how it works, check out <a href="/Xranklin.jl/engine/cache/">this section</a>.</p>
+<h2 id="other_pages" ><a href="#other_pages"> Other pages</a></h2><h2 id="css_and_js" ><a href="#css_and_js"> CSS and JS</a></h2><h2 id="assets" ><a href="#assets"> Assets</a></h2><h2 id="literate" ><a href="#literate"> Literate</a></h2>
 
 
 

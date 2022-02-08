@@ -249,7 +249,12 @@ body { counter-reset: eqnum; }
 Menu extra design
 --- */
 .pure-menu-link {
-  padding-left: 2em;
+  padding-left: 1.25em;
+  padding-top: .25em;
+  padding-bottom: .25em;
+}
+.pure-menu-link::before {
+  content: "⋅";
 }
 .pure-menu-link:hover {
   background-color: var(--col-xlight);

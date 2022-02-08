@@ -94,7 +94,7 @@
 </li>
 <li class="pure-menu-item">
     <a href="/Xranklin.jl/syntax/literate/" class="pure-menu-link">
-        Literate.jl
+        nothing
     </a>
 </li>
 </ul><div class="submenu-title">
@@ -148,7 +148,7 @@
         <div id="margin-toc">
           
             <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
-            <div class="toc"><ol><li><a href="#overview"> Overview</a></li><li><a href="#page_variables_basics"> Page variables basics</a><ol><li><a href="#assignment"> Assignment</a></li><li><a href="#usage"> Usage</a></li><li><a href="#local_and_global_contexts"> Local and global contexts</a></li><li><a href="#accessing_variables_defined_on_another_page"> Accessing variables defined on another page</a></li></ol></li><li><a href="#default_variables"> Default variables</a><ol><li><a href="#local_variables"> Local variables</a></li><li><a href="#global_variables_(xxx)"> Global variables (XXX)</a></li></ol></li><li><a href="#html_functions_and_environments"> HTML functions and environments</a><ol><li><a href="#default_functions"> Default functions</a></li><li><a href="#(xxx)_environments_conditionals"> (XXX) Environments: conditionals</a></li><li><a href="#(xxx)_environments_loops"> (XXX) Environments: loops</a></li><li><a href="#e_strings"> E-strings</a></li><li><a href="#more_customisation"> More customisation</a></li></ol></li></ol></div>
+            <div class="toc"><ol><li><a href="#overview"> Overview</a></li><li><a href="#page_variables_basics"> Page variables basics</a><ol><li><a href="#assignment"> Assignment</a></li><li><a href="#usage"> Usage</a></li><li><a href="#local_and_global_contexts"> Local and global contexts</a></li><li><a href="#accessing_variables_defined_on_another_page"> Accessing variables defined on another page</a></li></ol></li><li><a href="#default_variables"> Default variables</a><ol><li><a href="#local_variables"> Local variables</a></li><li><a href="#global_variables"> Global variables</a></li></ol></li><li><a href="#html_functions_and_environments"> HTML functions and environments</a><ol><li><a href="#default_functions"> Default functions</a></li><li><a href="#(xxx)_environments_conditionals"> (XXX) Environments: conditionals</a></li><li><a href="#(xxx)_environments_loops"> (XXX) Environments: loops</a></li><li><a href="#e_strings"> E-strings</a></li><li><a href="#more_customisation"> More customisation</a></li></ol></li></ol></div>
           
       </div>
     </div>
@@ -340,7 +340,12 @@ You don't have to use or set any of those unless you find one useful.</p>
 <tr>
 <td > <code>tags</code> </td>
 <td > <code>String[]</code> </td>
-<td > tags for the page </td>
+<td > tags for the page (see <a href="/Xranklin.jl/extras/tags/">tags</a>) </td>
+</tr>
+<tr>
+<td > <code>slug</code> </td>
+<td > <code>&quot;&quot;</code> </td>
+<td > slug for the page (see below) </td>
 </tr>
 <tr>
 <td > <code>ignore_cache</code> </td>
@@ -369,120 +374,20 @@ You don't have to use or set any of those unless you find one useful.</p>
 </tr>
 </tbody>
 </table>
-<p><br>
-
-There's also a number of "internal" page variables that are set and used by Franklin,
-you might sometimes find those useful to build more advanced functionalities but
-you should typically not set them yourself unless you're sure of what you're doing.</p>
-<table class="pure-table">
-<thead>
-<th > Variable name </th>
-<th > Default value </th>
-<th > Purpose / comment </th>
-</thead>
-<tbody>
-<tr>
-<td > <code>_hasmath</code>  </td>
-<td > <code>false</code> </td>
-<td > whether the page has math </td>
-</tr>
-<tr>
-<td > <code>_hascode</code>  </td>
-<td > <code>false</code> </td>
-<td > whether the page has code </td>
-</tr>
-<tr>
-<td > <code>_relative_path</code> </td>
-<td > <code>&quot;&quot;</code> </td>
-<td > relative path to the current page (e.g. <code>/foo/bar.md</code>) </td>
-</tr>
-<tr>
-<td > <code>_relative_url</code>  </td>
-<td > <code>&quot;&quot;</code> </td>
-<td > relative url to the current page (e.g. <code>/foo/bar/</code>) </td>
-</tr>
-<tr>
-<td > <code>_creation_time</code> </td>
-<td > <code>0.0</code> </td>
-<td > timestamp at page creation </td>
-</tr>
-<tr>
-<td > <code>_modification_time</code>  </td>
-<td > <code>0.0</code> </td>
-<td > timestamp at last page modification </td>
-</tr>
-<tr>
-<td > <code>_setvar</code>        </td>
-<td > <code>Set&lbrace;Symbol&rbrace;()</code> </td>
-<td > set of variables assigned on the page </td>
-</tr>
-<tr>
-<td > <code>_anchors</code>       </td>
-<td > <code>Set&lbrace;String&rbrace;()</code> </td>
-<td > set of anchor ids defined on the page </td>
-</tr>
-<tr>
-<td > <code>_refrefs</code>       </td>
-<td > <code>LittleDict()</code>  </td>
-<td > reference links defined on the page </td>
-</tr>
-<tr>
-<td > <code>_eqrefs</code>        </td>
-<td > <code>LittleDict()</code>  </td>
-<td > equation references </td>
-</tr>
-<tr>
-<td > <code>_bibrefs</code>       </td>
-<td > <code>LittleDict()</code>  </td>
-<td > bibliography references </td>
-</tr>
-<tr>
-<td > <code>_auto_cell_counter</code>  </td>
-<td > <code>0</code> </td>
-<td > counter for executed code cells for automatic naming </td>
-</tr>
-</tbody>
-</table>
-<p><br>
-
-For legacy purposes, a number of these variables have aliases (which can be used):</p>
-<table class="pure-table">
-<thead>
-<th > Alias </th>
-<th > Variable name </th>
-</thead>
-<tbody>
-<tr>
-<td > <code>fd_rpath</code> </td>
-<td > <code>_relative_path</code> </td>
-</tr>
-<tr>
-<td > <code>fd_url</code> </td>
-<td > <code>_relative_url</code> </td>
-</tr>
-<tr>
-<td > <code>fd_ctime</code> </td>
-<td > <code>_creation_time</code> </td>
-</tr>
-<tr>
-<td > <code>fd_mtime</code> </td>
-<td > <code>_modification_time</code> </td>
-</tr>
-<tr>
-<td > <code>reeval</code> </td>
-<td > <code>ignore_cache</code> </td>
-</tr>
-<tr>
-<td > <code>hasmath</code> </td>
-<td > <code>_hasmath</code> </td>
-</tr>
-<tr>
-<td > <code>hascode</code> </td>
-<td > <code>_hascode</code> </td>
-</tr>
-</tbody>
-</table>
-<div style="height:1em;"></div><h3 id="global_variables_(xxx)" ><a href="#global_variables_(xxx)"> Global variables (XXX)</a></h3><p>Just as with default local variables, you might find it useful to access or set some of those though many
+<div style="height:1em;"></div><p>The <code>slug</code> variable allows you to specify an explicit secondary output location
+for the page.
+For instance if you're currently working on a page <code>a/b/c.md</code>, the default output
+path will be such that the relevant page can be addressed at <code>/a/b/c/</code>.
+However if you specify <code>slug = &quot;c/d&quot;</code> then that page will also be available at <code>/c/d/</code>.
+You can also specify a path with a <code>.html</code> extension in which case exactly that path
+will be used:</p>
+<ul>
+<li><code>slug = &quot;c/d&quot;</code> → the page will also be available at <code>/c/d/</code></li>
+<li><code>slug = &quot;c/d.html&quot;</code> → the page will also be available at <code>/c/d.html</code></li>
+</ul>
+<p>For more on the topic you might want to read about <a href="/Xranklin.jl/workflow/folder_structure/#paths_in_franklin">default paths in Franklin</a>.
+Check also the <code>keep_path</code> global variable in the <a href="#global_variables">next section</a>.</p>
+<h3 id="global_variables" ><a href="#global_variables"> Global variables</a></h3><p>Just as with default local variables, you might find it useful to access or set some of those though many
 might be irrelevant for you.</p>
 <table class="pure-table">
 <thead>
