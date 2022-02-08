@@ -15,7 +15,8 @@ jobs:
         with:
           path: |
                 docs/__cache
-                ~/.julia
+                ~/.julia/artifacts
+                ~/.julia/packages
                 ~/.cache/pip
           key: ${{ runner.os }}-franklin-cache-${{ github.sha }}
           restore-keys: ${{ runner.os }}-franklin-cache-
