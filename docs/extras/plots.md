@@ -61,7 +61,7 @@ y = @. sinc(x) * exp(-1/x^2);
 
 Note how we need to use `gcf()` here so that the result of the code cell &mdash; a figure &mdash;
 is showable as a SVG.
-
+<!-- 
 ## Plots
 
 \showmd{
@@ -69,7 +69,7 @@ is showable as a SVG.
   import Plots
 
   Plots.plot(x, y, label="Hello", size=(500, 300))
-  ```
+  ``` -->
 }
 
 <!-- ## PGFPlotsX
