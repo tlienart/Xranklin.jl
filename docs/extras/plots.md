@@ -41,17 +41,10 @@ This is a follow up from code but with more examples to do with plotting specifi
   time.
 }
 
-## Plots
-
-\showmd{
-  ```!
-  import Plots
-  x = range(-1, 1, length=250)
-  y = @. sinc(x) * exp(-1/x^2)
-
-  Plots.plot(x, y, label="Hello", size=(500, 300))
-  ```
-}
+```!
+x = range(-1, 1, length=250)
+y = @. sinc(x) * exp(-1/x^2);
+```
 
 ## PyPlot
 
@@ -68,6 +61,16 @@ This is a follow up from code but with more examples to do with plotting specifi
 
 Note how we need to use `gcf()` here so that the result of the code cell &mdash; a figure &mdash;
 is showable as a SVG.
+
+## Plots
+
+\showmd{
+  ```!
+  import Plots
+
+  Plots.plot(x, y, label="Hello", size=(500, 300))
+  ```
+}
 
 <!-- ## PGFPlotsX
 
@@ -86,7 +89,7 @@ PGFPlotsX.@pgf PGFPlotsX.Axis(
     )
 )
 ``` -->
-
+<!--
 ## PlotlyJS
 
 ~~~
@@ -166,4 +169,4 @@ show(io, MIME"text/html"(), JSServe.Slider(1:3))
 String(take!(io))
 ```
 
-\htmlshow{wgl}
+\htmlshow{wgl} -->
