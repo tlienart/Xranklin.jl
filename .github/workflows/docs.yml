@@ -37,12 +37,17 @@ jobs:
         with:
           version: 1.7
 
+      - name: Binary dependencies for Makie
+        run: sudo apt-get update && sudo apt-get install -y xorg-dev mesa-utils xvfb libgl1 freeglut3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
+
       # Website build
-      - run: julia -e '
-          using Pkg;
-          Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
-          using Xranklin;
-          build("${{ env.SITE_FOLDER }}");'
+      - run: >
+          DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24'
+          julia -e '
+            using Pkg;
+            Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
+            using Xranklin;
+            build("${{ env.SITE_FOLDER }}");'
 
       # Deployment and caching
       - run: touch ${{ env.SITE_FOLDER }}/__site/.nojekyll
