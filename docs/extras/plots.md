@@ -69,7 +69,7 @@ This is a follow up from code but with more examples to do with plotting specifi
 Note how we need to use `gcf()` here so that the result of the code cell &mdash; a figure &mdash;
 is showable as a SVG.
 
-## PGFPlotsX
+<!-- ## PGFPlotsX
 
 Requires you to have `lualatex` installed (also on CI) + `pdf2svg`
 
@@ -85,7 +85,7 @@ PGFPlotsX.@pgf PGFPlotsX.Axis(
       PGFPlotsX.Expression("x^2 - x + 4")
     )
 )
-```
+``` -->
 
 ## PlotlyJS
 
