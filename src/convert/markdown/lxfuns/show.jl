@@ -25,6 +25,20 @@ end
 
 
 """
+    \\htmlshow{cell_name}
+
+Show string of cell output as raw HTML.
+"""
+function lx_htmlshow(p::VS; tohtml::Bool=true)::String
+    c = _lx_check_nargs(:show, p, 1)
+    isempty(c) || return c
+    # ------------------------------
+    return _resolve_show("htmlshow", p; case=:raw)
+end
+
+
+
+"""
     _resolve_show(command, p; case)
 
 Helper function for `\\show` and `\\mdshow`.
@@ -56,7 +70,13 @@ function _resolve_show(
         return re.latex
 
     elseif case == :rhtml
-        return rhtml(re.raw, ctx)
+        io = IOBuffer()
+        println(io, re.raw)
+        return rhtml(String(take!(io)), ctx)
+
+    elseif case == :raw
+        return re.raw
+
     end
 
     return rlatex(re.raw, ctx)

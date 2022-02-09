@@ -19,6 +19,7 @@ function eval_code_cell!(
             ctx::Context, cell_code::SS, cell_name::String;
             imgdir_html::String=tempdir(),
             imgdir_latex::String=tempdir(),
+            force::Bool=false
             )::Nothing
 
     # stop early if there's no code to evaluate
@@ -37,7 +38,7 @@ function eval_code_cell!(
     if cell_index <= length(nb.code_names)
         nb.code_names[cell_index] = cell_name
         # skip cell if previously seen and unchanged
-        if isunchanged(nb, cell_index, cell_code)
+        if isunchanged(nb, cell_index, cell_code) && !force
             @info "  ⏩  skipping cell $cell_name (unchanged)"
             increment!(nb)
             return
@@ -245,8 +246,8 @@ function _form_code_repr(
     # (3) Representation of the result
     if !isnothing(result)
         # If there's a non-empty result, keep track of what it looks like
-        write(io_raw, repr(result))
-
+        write(io_raw, ifelse(result isa AbstractString, string(result), repr(result)))
+        # Check if there's a dedicated show or a custom show available
         append_result_html!(io_html, result, fig_html)
         append_result_latex!(io_latex, result, fig_latex)
     end

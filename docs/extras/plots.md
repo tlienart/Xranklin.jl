@@ -1,10 +1,17 @@
 <!--
 
-Currently hidden, this might be better in a separate demo page.
+Last edit: Feb 9
+
+* PyPlot.jl
+* Plots.jl
+* Makie - CairoMakie
+* Makie - GLMakie
+* Makie - WGLMakie
+* PG
 
  -->
 
-<!-- +++
++++
 showtoc = true
 header = "Plots"
 menu_title = header
@@ -15,6 +22,10 @@ menu_title = header
 img.code-figure {
   max-width: 600px;
   min-width: 350px;
+}
+
+.code-stdout {
+  visibility: hidden;
 }
 </style>
 ~~~
@@ -38,18 +49,18 @@ This is a follow up from code but with more examples to do with plotting specifi
   x = range(-1, 1, length=250)
   y = @. sinc(x) * exp(-1/x^2)
 
-  Plots.plot(x, y, label="Hello", size=(500, 500))
+  Plots.plot(x, y, label="Hello", size=(500, 300))
   ```
 }
+
 ## PyPlot
 
 \showmd{
   ```!
   import PyPlot
 
-  PyPlot.figure(figsize=(8, 6))
+  PyPlot.figure(figsize=(6, 4))
   PyPlot.plot(x, y, lw=3, label="Hello")
-  PyPlot.axis("off")
   PyPlot.legend()
   PyPlot.gcf()
   ```
@@ -58,21 +69,20 @@ This is a follow up from code but with more examples to do with plotting specifi
 Note how we need to use `gcf()` here so that the result of the code cell &mdash; a figure &mdash;
 is showable as a SVG.
 
-
 ## PGFPlotsX
 
 Requires you to have `lualatex` installed (also on CI) + `pdf2svg`
 
 ```!
 using LaTeXStrings
-using PGFPlotsX
-@pgf Axis(
+import PGFPlotsX
+PGFPlotsX.@pgf PGFPlotsX.Axis(
     {
-        xlabel = L"x",
-        ylabel = L"f(x) = x^2 - x + 4"
+      xlabel = L"x",
+      ylabel = L"f(x) = x^2 - x + 4"
     },
-    Plot(
-        Expression("x^2 - x + 4")
+    PGFPlotsX.Plot(
+      PGFPlotsX.Expression("x^2 - x + 4")
     )
 )
 ```
@@ -102,11 +112,13 @@ using PGFPlotsX
 ~~~
 
 ```!
-using PlotlyJS
-p=plot(
-     scatter(x=1:10, y=rand(10), mode="markers"),
-     Layout(title="Responsive Plots")
-     )
+import PlotlyJS
+p=PlotlyJS.plot(
+    PlotlyJS.scatter(x=1:10, y=rand(10), mode="markers"),
+    PlotlyJS.Layout(
+      title="Responsive Plots"
+    )
+)
 opath = mkpath(joinpath(Utils.path(:site), "assets", "figs"))
 PlotlyJS.savejson(p, joinpath(opath, "plotlyjs_ex.json"));
 ```
@@ -118,4 +130,38 @@ PlotlyJS.savejson(p, joinpath(opath, "plotlyjs_ex.json"));
 graphDiv = document.getElementById("foobar");
 plotlyPromise = PlotlyJS_json(graphDiv, "/assets/figs/plotlyjs_ex.json")
 </script>
-~~~ -->
+~~~
+
+## CairoMakie
+
+```!
+import CairoMakie
+CairoMakie.activate!()
+x = range(0, 10, length=100)
+y1 = sin.(x)
+y2 = cos.(x)
+
+CairoMakie.scatter(x, y1, color = :red, markersize = range(5, 15, length=100))
+CairoMakie.scatter!(x, y2, color = range(0, 1, length=100), colormap = :thermal)
+
+CairoMakie.current_figure()
+```
+
+For many more, see the wonderful [Beautiful Makie](https://lazarusa.github.io/BeautifulMakie/)
+site by [Lazaro Alonso](https://github.com/lazarusA).
+
+## WGLMakie
+
+```!wgl
+import WGLMakie, JSServe
+WGLMakie.activate!()
+
+io = IOBuffer()
+show(io, MIME"text/html"(), JSServe.Page(exportable=true, offline=true))
+show(io, MIME"text/html"(), WGLMakie.scatter(1:4))
+show(io, MIME"text/html"(), WGLMakie.surface(rand(4,4)))
+show(io, MIME"text/html"(), JSServe.Slider(1:3))
+String(take!(io))
+```
+
+\htmlshow{wgl}

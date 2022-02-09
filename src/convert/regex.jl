@@ -16,7 +16,7 @@ const MATH_LABEL_PAT = r"\\label{(.*?)}"
 const CODE_INFO_PAT = r"^\`+(\S+)?"
 
 "Language getter"
-const CODE_LANG_PAT = r"([^\!\:]+)?([\!\:])?(\S+)?"
+const CODE_LANG_PAT = r"([^\!\:]+)?([\!\:]{1,2})?(\S+)?"
 
 "Check end of code block to see if should be hidden or not.
 This is fragile if people do something silly like `x = 5 # foo ; # bar`"

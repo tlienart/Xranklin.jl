@@ -6,7 +6,7 @@ const INTERNAL_LXFUNS = Symbol[
     :label, :biblabel,
     :reflink,
     # /show.jl (a coderepr)
-    :show, :mdshow,
+    :show, :mdshow, :htmlshow,
     # /literate.jl
     :literate,
     # /misc.jl

@@ -90,9 +90,10 @@ struct CodeInfo
     code::SS
     exec::Bool
     auto::Bool
+    force::Bool
 end
-CodeInfo(; name="", lang="", code=subs(""), exec=false, auto=false) =
-    CodeInfo(name, lang, code, exec, auto)
+CodeInfo(; name="", lang="", code=subs(""), exec=false, auto=false, force=false) =
+    CodeInfo(name, lang, code, exec, auto, force)
 
 """
     _code_info(b)
@@ -108,6 +109,10 @@ The different cases are:
 * lang!ex | lang:ex  - executed, named, explicit language (with colon is for legacy)
 
 Return a CodeInfo.
+
+If the "!" or ":" is doubled (i.e. "!!" or "::") the cell will be evaluated
+in all scenarios. This can be useful for debugging or force-refreshing a
+cell but should otherwise not be used.
 """
 function _code_info(b::Block, ctx::LocalContext)
     info = match(CODE_INFO_PAT, b.ss).captures[1]
@@ -118,9 +123,10 @@ function _code_info(b::Block, ctx::LocalContext)
     cb   = content(b)
     code = subs(cb, nextind(cb, lastindex(info)), lastindex(cb)) |> _strip
 
-    name = ""
-    exec = false
-    auto = false
+    name  = ""
+    exec  = false
+    auto  = false
+    force = false
 
     l, e, n = match(CODE_LANG_PAT, info)
 
@@ -137,8 +143,11 @@ function _code_info(b::Block, ctx::LocalContext)
             name = auto_cell_name(ctx)
             auto = true
         end
+        if length(e) == 2
+            force = true
+        end
     end
-    return CodeInfo(; name, lang, code, exec, auto)
+    return CodeInfo(; name, lang, code, exec, auto, force)
 end
 
 """
@@ -171,7 +180,7 @@ html_code_block(b::Block, c::LocalContext) = begin
             imgdir_latex = mkpath(imgdir_base / "figs-latex")
             eval_code_cell!(
                 c, ci.code, ci.name;
-                imgdir_html, imgdir_latex
+                imgdir_html, imgdir_latex, force=ci.force
             )
         end
         if ci.auto
@@ -190,7 +199,7 @@ latex_code_block(b::Block, c::LocalContext) = begin
     ci = _code_info(b, c)
     if ci.exec
         if ci.lang == "julia"
-            eval_code_cell!(c, ci.code, ci.name)
+            eval_code_cell!(c, ci.code, ci.name; force=ci.force)
         end
         if ci.auto
             post = lx_show([ci.name]; tohtml=false)
