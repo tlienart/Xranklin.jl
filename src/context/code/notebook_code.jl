@@ -246,7 +246,12 @@ function _form_code_repr(
     # (3) Representation of the result
     if !isnothing(result)
         # If there's a non-empty result, keep track of what it looks like
-        write(io_raw, result isa AbstractString ? string(result) : repr(result))
+        write(
+            io_raw,
+            result isa AbstractString ?
+                string(result) :
+                Base.@invokelatest Base.repr(result)
+        )
         # Check if there's a dedicated show or a custom show available
         append_result_html!(io_html, result, fig_html)
         append_result_latex!(io_latex, result, fig_latex)
