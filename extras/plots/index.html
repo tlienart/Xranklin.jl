@@ -8,8 +8,6 @@
   
 
   
-    <link rel="stylesheet" href="/Xranklin.jl/libs/highlight/github.min.css">
-  
 
 
   <link rel="stylesheet" href="/Xranklin.jl/css/pure.css">
@@ -148,7 +146,7 @@
         <div id="margin-toc">
           
             <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
-            <div class="toc"><ol><li><a href="#pyplot"> PyPlot</a></li></ol></div>
+            
           
       </div>
     </div>
@@ -156,92 +154,7 @@
     
     <div id="main-left-content">
       
-<style>
-img.code-figure {
-  max-width: 600px;
-  min-width: 350px;
-}
-
-.code-stdout {
-  visibility: hidden;
-}
-</style><p>This is a follow up from code but with more examples to do with plotting specifically.</p>
-<fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
-
-While you can use packages as you want, remember that if you use CI (e.g. GitHub action)
-then all these packages must be installed every time CI is run which can take a while
-if you have a lot of big packages.For Plots for instance, PyPlot is nice because the installation from scratch takes little
-time.
-
-</fieldset><pre><code class="julia">x = range(-1, 1, length=250)
-y = @. sinc(x) * exp(-1/x^2);</code></pre>
-<h2 id="pyplot" ><a href="#pyplot"> PyPlot</a></h2><div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
-import PyPlot
-
-PyPlot.figure(figsize=(6, 4))
-PyPlot.plot(x, y, lw=3, label=&quot;Hello&quot;)
-PyPlot.legend()
-PyPlot.gcf()
-```</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">import PyPlot
-
-PyPlot.figure(figsize=(6, 4))
-PyPlot.plot(x, y, lw=3, label=&quot;Hello&quot;)
-PyPlot.legend()
-PyPlot.gcf()</code></pre>
-<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: Failed to precompile PyPlot [d330b81b-6aea-500a-939a-2ce795aea3ee] to /home/runner/.julia/compiled/v1.7/PyPlot/jl_xWW2Ex.
-Stacktrace:
-  [1] error(s::String)
-    @ Base ./error.jl:33
-  [2] compilecache(pkg::Base.PkgId, path::String, internal_stderr::IO, internal_stdout::IO, ignore_loaded_modules::Bool)
-    @ Base ./loading.jl:1466
-  [3] compilecache(pkg::Base.PkgId, path::String)
-    @ Base ./loading.jl:1410
-  [4] _require(pkg::Base.PkgId)
-    @ Base ./loading.jl:1120
-  [5] require(uuidkey::Base.PkgId)
-    @ Base ./loading.jl:1013
-  [6] require(into::Module, mod::Symbol)
-    @ Base ./loading.jl:997
-  [7] eval
-    @ ./boot.jl:373 [inlined]
-  [8] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
-    @ Base ./loading.jl:1196
-  [9] include_string
-    @ ./loading.jl:1180 [inlined]
- [10] #42
-    @ ~/.julia/packages/Xranklin/EOXBi/src/context/code/notebook_code.jl:128 [inlined]
- [11] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#42#43"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, Base.PipeEndpoint, Base.PipeEndpoint})()
-    @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:118
- [12] with_logstate(f::Function, logstate::Any)
-    @ Base.CoreLogging ./logging.jl:511
- [13] with_logger
-    @ ./logging.jl:623 [inlined]
- [14] capture(f::Xranklin.var"#42#43"{Module, String}; rethrow::Type, color::Bool)
-    @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:116
- [15] capture
-    @ ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:75 [inlined]
- [16] _eval_code_cell(mdl::Module, code::String, cell_name::String)
-    @ Xranklin ~/.julia/packages/Xranklin/EOXBi/src/context/code/notebook_code.jl:127
- [17] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/EOXBi/src/context/code/notebook_code.jl:86
- [18] html_code_block(b::FranklinParser.Block, c::Xranklin.LocalContext)
-    @ Xranklin ~/.julia/packages/Xranklin/EOXBi/src/convert/markdown/rules/code.jl:181</code></pre></div></fieldset>
-
-</div><p>Note how we need to use <code>gcf()</code> here so that the result of the code cell &mdash; a figure &mdash;
-is showable as a SVG.
-
-}</p>
+<p>}</p>
 
 
 
@@ -262,9 +175,6 @@ is showable as a SVG.
 
   
 
-  
-    <script src="/Xranklin.jl/libs/highlight/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();hljs.configure({tabReplace: '    '});</script>
   
 
   
