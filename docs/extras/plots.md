@@ -152,6 +152,8 @@ site by [Lazaro Alonso](https://github.com/lazarusA).
 
 ## WGLMakie
 
+(Safari users will need to enable WebGL, see [link in the WGLMakie docs](https://makie.juliaplots.org/stable/documentation/backends/wglmakie/#troubleshooting))
+
 ```!wgl
 import WGLMakie, JSServe
 WGLMakie.activate!()
