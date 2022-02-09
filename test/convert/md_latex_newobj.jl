@@ -81,25 +81,25 @@ end
         """
     c = X.LocalContext(); h = html(s, c)
     @test isempty(c.lxdefs)
-    @test isapproxstr(h, """
-        <p>a <span style="color:red;" >[FAILED:]&gt;\\newcommand&lt;</span>{foo}</p>
-        """)
+    @test h // raw"""
+        <p>a <span style="color:red;">[FAILED:]&gt;\newcommand{foo}&lt;</span></p>
+        """
 
     s = raw"""
         a \newenvironment{foo}{bar} b
         """
     c = X.LocalContext(); h = html(s, c)
     @test isempty(c.lxdefs)
-    @test isapproxstr(h, """
-        <p>a <span style="color:red;">[FAILED:]&gt;\\newenvironment&lt;</span>{foo}{bar}b</p>
-        """)
+    @test h // raw"""
+        <p>a <span style="color:red;">[FAILED:]&gt;\newenvironment{foo}{bar}&lt;</span> b</p>
+        """
 
     # nargs block incorrect
     s = raw"""\newcommand{\bar} 2{hello}"""
     c = X.LocalContext(); h = html(s, c)
     @test isempty(c.lxdefs)
-    @test isapproxstr(h, """
-        <p><span style="color:red;">[FAILED:]&gt;\\newcommand&lt;</span>{\\bar} 2{hello}</p>
-        """)
+    @test h // raw"""
+        <p><span style="color:red;">[FAILED:]&gt;\newcommand{\bar}&lt;</span> 2{hello}</p>
+        """
     logall()
 end

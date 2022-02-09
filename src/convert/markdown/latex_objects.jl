@@ -32,9 +32,6 @@ function process_latex_objects!(
             blocks[i], n = try_form_lxdef(block, i, blocks, ctx)
         elseif block.name == :LX_COMMAND
             blocks[i], n = try_resolve_lxcom(i, blocks, ctx; tohtml)
-        # elseif block.name == :CU_BRACKETS
-        #     # stray braces
-        #     blocks[i], n = block, 0
         end
         append!(index_to_remove, i+1:i+n)
         i += n + 1
@@ -66,7 +63,8 @@ end
 function failed_block(bs::Vector{Block}, m::String)::Block
     env(:strict_parsing) && throw(m)
     @warn m
-    return Block(:FAILED, prod(bi.ss for bi in bs))
+    s = parent_string(bs[1].ss)
+    return Block(:FAILED, subs(s, from(bs[1]), to(bs[end])))
 end
 
 
@@ -94,6 +92,9 @@ function try_form_lxdef(
     case = ifelse(block.name == :LX_NEWCOMMAND, :com, :env)
     # find all brace blocks
     braces_idx = findall(p -> p.name == :CU_BRACKETS, @view blocks[i+1:end])
+    # used for error handling
+    maxi = _get_next_bad(case, braces_idx)
+    berr = blocks[i:i+maxi]
 
     # --------------------------------
     # CHECK if there are enough braces
@@ -103,7 +104,7 @@ function try_form_lxdef(
         m = """
             Not enough braces found after a \\newcommand or \\newenvironment.
             """
-        return failed_block(block, m), 0
+        return failed_block(berr, m), maxi
     end
     naming_idx = i + braces_idx[1]
     naming     = blocks[naming_idx]
@@ -138,7 +139,7 @@ function try_form_lxdef(
             nextb     = blocks[next_idx]
             pre_space = true
         else
-            return failed_block(block, next_bad), 0
+            return failed_block(berr, next_bad), maxi
         end
     end
 
@@ -163,13 +164,13 @@ function try_form_lxdef(
             nextb      = blocks[next_idx]
             post_space = true
         else
-            return failed_block(block, next_bad), 0
+            return failed_block(berr, next_bad), maxi
         end
     end
 
     # Now the next brace must be a brace otherwise fail
     if nextb.name != :CU_BRACKETS
-        return failed_block(block, next_bad), 0
+        return failed_block(berr, next_bad), maxi
     end
     def = content(nextb) |> dedent |> strip |> String
 
@@ -191,10 +192,10 @@ function try_form_lxdef(
     if next_idx + 1 <= n_blocks
         nextb = blocks[next_idx + 1]
     else
-        return failed_block(block, next_bad), 0
+        return failed_block(berr, next_bad), maxi
     end
     if nextb.name != :CU_BRACKETS
-        return failed_block(block, next_bad), 0
+        return failed_block(berr, next_bad), maxi
     end
     pre  = def
     post = content(nextb) |> dedent |> strip |> String
@@ -205,6 +206,21 @@ function try_form_lxdef(
     # see skips earlier for command, one more brace here
     skips = 3 + pre_space + has_nargs + post_space
     return Block(:COMMENT, subs("")), skips
+end
+
+
+function _get_next_bad(case::Symbol, braces_idx::Vector{Int})
+    # The failed block should encompass the brace(s) which are immediately
+    # after the `\\new*` indicator
+    # --> newcommand there's 0 or 1 braces to englobe
+    # --> newenvironment there's 0, 1 or 2 braces to take
+    nmax = ifelse(case == :env, 2, 1)
+    maxi = 0
+    for (k, idx) in enumerate(first(braces_idx, nmax))
+        k   != idx && break
+        maxi = k
+    end
+    return maxi
 end
 
 
