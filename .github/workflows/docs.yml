@@ -31,9 +31,6 @@ jobs:
           python-version: 3.8
       - run: pip install numpy matplotlib
 
-      # Deps for GLMakie
-      - run: sudo apt-get update && sudo apt-get install -y xorg-dev mesa-utils xvfb libgl1 freeglut3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
-
       # Julia
       - name: Install Julia
         uses: julia-actions/setup-julia@v1
