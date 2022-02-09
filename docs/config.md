@@ -35,7 +35,7 @@ menu = [
   "extras" => [
     "tags",
     "literate",
-    "plots",
+    # "plots",
     # "rss",
     ],
   "engine" => [

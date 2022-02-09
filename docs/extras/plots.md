@@ -11,7 +11,7 @@ Last edit: Feb 9
 
  -->
 
-+++
+<!-- +++
 showtoc = true
 header = "Plots"
 menu_title = header
@@ -60,8 +60,8 @@ y = @. sinc(x) * exp(-1/x^2);
 }
 
 Note how we need to use `gcf()` here so that the result of the code cell &mdash; a figure &mdash;
-is showable as a SVG.
-<!-- 
+is showable as a SVG. -->
+<!--
 ## Plots
 
 \showmd{
