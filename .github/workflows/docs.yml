@@ -42,7 +42,7 @@ jobs:
 
       # Website build
       - run: >
-          DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24';
+          DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24'
           julia -e '
             using Pkg;
             Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
