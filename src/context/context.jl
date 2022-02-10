@@ -480,5 +480,10 @@ function globvar(n::Union{Symbol,String}; default=nothing)
 end
 
 function pagevar(s::String, n::Union{Symbol,String}; default=nothing)
-    return getvarfrom(Symbol(n), s, default)
+    return getvarfrom(
+        Symbol(n),
+        ifelse(endswith(s, ".md"), s, s * ".md"),
+        default
+    )
 end
+pagevar(s::SS, n; kw...) = pagevar(string(s), n; kw...)

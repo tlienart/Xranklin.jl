@@ -78,18 +78,18 @@ end
 @testset "pagevar" begin
     X.setenv!(:cur_local_ctx, nothing)
     gc = X.GlobalContext()
-    lc1 = X.LocalContext(gc, rpath="C1")
+    lc1 = X.LocalContext(gc, rpath="C1.md")
     X.setvar!(lc1, :a, 123)
-    lc2 = X.LocalContext(gc, rpath="C2")
+    lc2 = X.LocalContext(gc, rpath="C2.md")
     X.setvar!(lc2, :b, 321)
     X.set_current_local_context(lc2)
-    @test getvarfrom(:a, "C1", 0) == 123
-    @test getvarfrom(:b, "C2", 0) == 321  # dumb but should work
+    @test getvarfrom(:a, "C1.md", 0) == 123
+    @test getvarfrom(:b, "C2.md", 0) == 321  # dumb but should work
 
-    @test "C1" in keys(lc2.req_vars)
-    @test lc2.req_vars["C1"] == Set([:a])
+    @test "C1.md" in keys(lc2.req_vars)
+    @test lc2.req_vars["C1.md"] == Set([:a])
 
-    @test pagevar("C1", :a) == 123
+    @test pagevar("C1.md", :a) == 123
 end
 
 

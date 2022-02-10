@@ -118,6 +118,7 @@ function math(md::SS, c::LocalContext; kw...)
     c.is_recursive[] = c.is_math[] = false
     return r
 end
+math(md::String, c; kw...) = math(subs(md), c; kw...)
 math(b::Block, c; kw...)   = math(content(b), c; kw...)
 
 

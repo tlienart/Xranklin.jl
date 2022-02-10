@@ -3,7 +3,7 @@ using Xranklin: (/)
 using Test
 using Dates
 using Logging
-using Images
+using Colors
 using OrderedCollections
 import Base: (//)
 
@@ -63,3 +63,10 @@ function readpg(rpath)
 end
 
 estr(s) = Xranklin._eval_str(Xranklin.subs(s))
+
+function lc_with_utils(utils="")
+    gc = X.DefaultGlobalContext()
+    X.process_utils(utils, gc)
+    lc = X.DefaultLocalContext(gc)
+    return lc
+end
