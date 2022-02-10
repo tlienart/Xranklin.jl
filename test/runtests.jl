@@ -46,9 +46,13 @@ end
     include(p/"henv.jl")
 end
 
-@testset "Env/LxFuns" begin
-    p = "convert/"
-    include(p/"")
+@testset "EnvFuns" begin
+    p = "convert/envfuns"
+    include(p/"math.jl")
+end
+
+@testset "LxFuns" begin
+    p = "convert/lxfuns"
 end
 
 @testset "build" begin
