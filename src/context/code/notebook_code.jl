@@ -172,12 +172,15 @@ function _eval_code_cell(
     else
         # Check if the last expression is a show and if so set the returned
         # value to nothing to avoid double shows
-        lex = last(parse_code(code))
-        is_show = isa(lex, Expr) &&
-                    length(lex.args) > 1 &&
-                    lex.args[1] == Symbol("@show")
+        pc  = parse_code(code)
+        if !isempty(pc)
+            lex = last(pc)
+            is_show = isa(lex, Expr) &&
+                        length(lex.args) > 1 &&
+                        lex.args[1] == Symbol("@show")
 
-        is_show && (result = nothing)
+            is_show && (result = nothing)
+        end
     end
     return std_out, std_err, result
 end
