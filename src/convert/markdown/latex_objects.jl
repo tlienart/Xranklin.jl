@@ -32,6 +32,8 @@ function process_latex_objects!(
             blocks[i], n = try_form_lxdef(block, i, blocks, ctx)
         elseif block.name == :LX_COMMAND
             blocks[i], n = try_resolve_lxcom(i, blocks, ctx; tohtml)
+        elseif startswith(string(block.name), "ENV_")
+            blocks[i], n = try_resolve_lxenv([block], ctx; tohtml), 0
         end
         append!(index_to_remove, i+1:i+n)
         i += n + 1
@@ -345,8 +347,8 @@ Note that if we're here we've already been through is_in_utils though either
 the definition is in the utils module or it's internal but it exists.
 """
 function from_utils(n::Symbol, i::Int, blocks::Vector{Block}, ctx::LocalContext;
-                    isenv=false, tohtml=true)
-    args = next_adjacent_brackets(i, blocks, ctx; tohtml)
+                    isenv=false, tohtml=true, brackets=Block[])
+    args = String[]
     if isenv
         fsymb    = Symbol("env_$n")
         kind     = :RAW_BLOCK
@@ -356,15 +358,34 @@ function from_utils(n::Symbol, i::Int, blocks::Vector{Block}, ctx::LocalContext;
         # ---> env is "..."
         # ---> args above is {foo}{bar}{baz}
         # ---> args after is ["...", "bar", "baz"]
-        args     = [_env_content(blocks, length(args) - 1), args[3:end]...]
+        first_non_adjacent = 0
+        for i = 2:length(brackets)
+            if prev_index(brackets[i]) != to(brackets[i-1])
+                first_non_adjacent = i
+                break
+            end
+        end
+        # first one is the name
+        args_brackets = brackets[2:first_non_adjacent-1]
+        # resolve args brackets (see next_adjacent_brackets)
+        recursion = ifelse(tohtml, rhtml, rlatex)
+        args_str  = [recursion(b, ctx; nop=true) for b in args_brackets]
+
+        # construct the string form of the brackets to send to the function
+        args = [_env_content(blocks[1], length(args_str)), args_str...]
+
     else
+        args     = next_adjacent_brackets(i, blocks, ctx; tohtml)
         fsymb    = Symbol("lx_$n")
         kind     = :RAW_INLINE
         internal = n in INTERNAL_LXFUNS
+
     end
+
     mdl = ifelse(internal, @__MODULE__, ctx.glob.nb_code.mdl)
     f   = getproperty(mdl, fsymb)
     o   = outputof(f, args; tohtml)
+
     return Block(kind, subs(o)), length(args)
 end
 
@@ -410,6 +431,10 @@ function normalize_env_name(oname::SS)::String
 end
 
 
+const CUB_TMPL = LittleDict{Symbol,FP.BlockTemplate}(e.opening => e for e in [
+   FP.BlockTemplate(:CU_BRACKETS, :CU_BRACKET_OPEN, :CU_BRACKET_CLOSE, nesting=true),
+   ])
+
 """
     try_resolve_lxenv(...)
 
@@ -428,6 +453,13 @@ function try_resolve_lxenv(
             tohtml::Bool=true
             )::Block
     crumbs("try_resolve_lxenv")
+
+    # recover the brackets {...} inside the environment (to read arguments)
+    # there's necessarily at least two brackets (with env name)
+    it       = blocks[1].inner_tokens
+    brackets = Block[]
+    FP._find_blocks!(brackets, it, CUB_TMPL)
+
     # Process:
     # 1. look for definition --> fail if none + not in math mode + not envfun
     #       (if envfun, greedily pass all subsequent braces and call)
@@ -435,9 +467,10 @@ function try_resolve_lxenv(
     #       or not all braces
     # 3. assemble into string, dedent and resolve
     # ------------------------------------------------------------------------
-    oname = content(blocks[2])
+    oname = content(brackets[1])
     name  = normalize_env_name(oname)
 
+    # name doesn't look good
     if !isascii(name)
         return failed_block(
             blocks,
@@ -445,18 +478,28 @@ function try_resolve_lxenv(
         )
     end
 
+    # no def for that name
     if !hasdef(ctx, name)
         nsymb = Symbol(name)
-        if is_in_utils(nsymb; isenv=true)
-            block, _ = from_utils(nsymb, 1, blocks, ctx; isenv=true, tohtml)
+
+        if is_in_utils(nsymb; isenv=true) && !is_math(ctx)
+            block, _ = from_utils(nsymb, 1, blocks, ctx;
+                                  isenv=true, tohtml, brackets)
             return block
-        elseif ctx.is_math[]
-            return Block(:RAW_BLOCK, cand.ss)
+
+        elseif is_math(ctx)
+            # resolve the inner part (e.g. if there are commands in it)
+            re_s = "\\begin{$name}" *
+                   math(_env_content(blocks[1]), ctx; tohtml) *
+                   "\\end{$name}"
+            return Block(:RAW_BLOCK, subs(re_s))
         end
 
         m = "Environment '$(name)' used before it was defined."
-        failed_block(blocks, m)
+        return failed_block(blocks, m)
     end
+
+    # recover the def
     lxdef = getdef(ctx, name)
 
     # runtime check; lxdef should NOT be a LxDef{String} otherwise
@@ -473,9 +516,7 @@ function try_resolve_lxenv(
     # 2 -- get nargs
     #
     nargs = lxdef.nargs
-    if ( 2+nargs > lastindex(blocks) ||
-         any(e -> e.name != :CU_BRACKETS, @view blocks[3:2+nargs])
-        )
+    if length(brackets) < nargs + 2
 
         m = "Not enough braces to resolve environment '$env_name'."
         return failed_block(blocks, m)
@@ -487,27 +528,32 @@ function try_resolve_lxenv(
     post = def.second
 
     @inbounds for j in 1:nargs
-        c    = content(blocks[2+j])
+        c    = content(brackets[j + 1])
         pre  = replace(pre,  "#$j" => c)
         post = replace(post, "#$j" => c)
     end
     recursion = ifelse(tohtml, rhtml, rlatex)
-    r  = _env_content(blocks, nargs)
+    r  = _env_content(blocks[1], nargs)
     r2 = recursion(pre * r * post, ctx)
     return Block(:RAW_BLOCK, subs(r2))
 end
 
 
 """
-    _env_content(blocks, nargs)
+    _env_content(block, nargs)
 
-Helper function to extract the content of an environment e.g.
+Helper function to extract the content of an environment block e.g.
 `\\begin{foo}bar\\end{foo}` will get `bar`. The `nargs` is the number of
 argument braces expected for that environment.
 """
-function _env_content(blocks::Vector{Block}, nargs::Int)::String
-    s = parent_string(blocks[1])
-    r = subs(s, next_index(blocks[2+nargs]), prev_index(blocks[end-1]))
-    r = r |> dedent |> strip
+function _env_content(block::Block, nargs::Int=0)::String
+    s  = parent_string(block)
+    it = block.inner_tokens
+    i1 = [i for i in eachindex(it) if it[i].name == :CU_BRACKET_CLOSE][nargs + 1]
+    i2 = [i for i in eachindex(it) if it[i].name == :LX_END][end]
+    t1 = it[i1]
+    t2 = it[i2]
+    r  = subs(s, next_index(t1), prev_index(t2))
+    r  = r |> dedent |> strip
     return string(r)
 end

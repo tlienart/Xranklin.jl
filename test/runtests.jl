@@ -49,6 +49,7 @@ end
 @testset "EnvFuns" begin
     p = "convert/envfuns"
     include(p/"math.jl")
+    include(p/"utils.jl")
 end
 
 @testset "LxFuns" begin

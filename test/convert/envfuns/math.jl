@@ -85,3 +85,19 @@ end
         \\]</div>
         """)
 end
+
+@testset "with command" begin
+    s = raw"""
+        \newcommand{\reason}[1]{\quad\text{#1}}
+
+        \begin{align}
+            1 = 1 \reason{tautology}
+        \end{align}
+        """
+    h = html(s)
+    @test isapproxstr(h, raw"""
+               \[
+                 \begin{aligned}1 = 1 \quad\text{ tautology}\end{aligned}
+               \]
+               """)
+end
