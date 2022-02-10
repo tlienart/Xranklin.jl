@@ -68,22 +68,25 @@ end
 
 @testset "figure" begin
     d, gc = testdir()
-    s = raw"""
-        ```julia:ex
-        using Images
-        rand(Gray, 2, 2)
-        ```
-        \show{ex}
+    c = """
+        using Colors
+        c1 = colorant"red"
         """
-    h = html(s, X.DefaultLocalContext(gc), nop=true)
+    s = """
+        ```julia:ex
+        $c
+        ```
+        \\show{ex}
+        """
+    ch = c |> strip |> hash
+    h  = html(s, X.DefaultLocalContext(gc), nop=true)
     @test isapproxstr(h, """
-        <pre><code class="julia">using Images
-        rand(Gray, 2, 2)</code></pre>
-        <div class="code-output">
-          <img class="code-figure" src="/assets/figs-html/__autofig_911582796084046168.svg">
+        <pre><code class="julia">using Colors
+        c1 = colorant&quot;red&quot;</code></pre>
+        <div class="code-output"><img class="code-figure" src="/assets/figs-html/__autofig_$ch.svg">
         </div>
         """)
-    @test isfile(d / "__site" / "assets" / "figs-html" / "__autofig_911582796084046168.svg")
+    @test isfile(d / "__site" / "assets" / "figs-html" / "__autofig_$ch.svg")
 end
 
 @testset "custom show" begin

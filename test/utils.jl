@@ -3,7 +3,7 @@ using Xranklin: (/)
 using Test
 using Dates
 using Logging
-using Images
+using Colors
 using OrderedCollections
 import Base: (//)
 
