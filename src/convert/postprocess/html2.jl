@@ -76,7 +76,7 @@ function html2(parts::Vector{Block}, c::Context)::String
                     check that the code in the e-string is valid and that
                     variables are prefixed with a \$.
                     """
-                write(io, hfun_failed(cb |> string))
+                write(io, hfun_failed([cb |> string]))
             else
                 sv = string(v)
                 if isempty(sv)
