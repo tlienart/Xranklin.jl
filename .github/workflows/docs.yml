@@ -3,6 +3,7 @@ name: Build and Deploy
 env:
   SITE_FOLDER: "docs"
   CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
+  PYTHON: ""
 
 on:
   push:
@@ -33,13 +34,6 @@ jobs:
         uses: julia-actions/setup-julia@v1
         with:
           version: 1.7
-
-      # Python
-      - name: Install python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - run: pip install numpy matplotlib
 
       # Website build
       - run: julia -e '
