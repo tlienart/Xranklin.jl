@@ -28,7 +28,7 @@ jobs:
                 ~/.julia/packages
                 ~/.cache/pip
           key: ${{ runner.os }}-${{ env.CACHE_KEY }}-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-${{ env.CACHE_KEY }}-
+          restore-keys: ${{ runner.os }}-${{ env.rCACHE_KEY }}-
 
       # Julia
       - name: Install Julia
