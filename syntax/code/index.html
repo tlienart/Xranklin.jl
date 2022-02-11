@@ -309,7 +309,7 @@ randstring(5)
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">randstring(5)</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">"6pZVg"</code></pre></div></fieldset>
+<div class="code-output"><pre><code class="code-result language-plaintext">"3MwIb"</code></pre></div></fieldset>
 
 </div><div class="trim">
 
@@ -553,7 +553,7 @@ y = @. sin(exp(x)) * sinc(x)
 figure(figsize=(8, 6))
 plot(x, y)
 gcf()</code></pre>
-<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: Failed to precompile PyPlot [d330b81b-6aea-500a-939a-2ce795aea3ee] to /home/runner/.julia/compiled/v1.7/PyPlot/jl_aMhRbF.
+<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: Failed to precompile PyPlot [d330b81b-6aea-500a-939a-2ce795aea3ee] to /home/runner/.julia/compiled/v1.7/PyPlot/jl_xjb3DG.
 Stacktrace:
    [1] error(s::String)
      @ Base ./error.jl:33
@@ -574,7 +574,7 @@ Stacktrace:
    [9] include_string
      @ ./loading.jl:1180 [inlined]
   [10] #47
-     @ ~/.julia/packages/Xranklin/T9trr/src/context/code/notebook_code.jl:128 [inlined]
+     @ ~/.julia/packages/Xranklin/C0dHp/src/context/code/notebook_code.jl:128 [inlined]
   [11] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#47#48"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, Base.PipeEndpoint, Base.PipeEndpoint})()
      @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:118
   [12] with_logstate(f::Function, logstate::Any)
@@ -586,11 +586,11 @@ Stacktrace:
   [15] capture
      @ ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:75 [inlined]
   [16] _eval_code_cell(mdl::Module, code::String, cell_name::String)
-     @ Xranklin ~/.julia/packages/Xranklin/T9trr/src/context/code/notebook_code.jl:127
+     @ Xranklin ~/.julia/packages/Xranklin/C0dHp/src/context/code/notebook_code.jl:127
   [17] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool)
-     @ Xranklin ~/.julia/packages/Xranklin/T9trr/src/context/code/notebook_code.jl:86
+     @ Xranklin ~/.julia/packages/Xranklin/C0dHp/src/context/code/notebook_code.jl:86
   [18] html_code_block(b::FranklinParser.Block, c::Xranklin.LocalContext)
-     @ Xranklin ~/.julia/packages/Xranklin/T9trr/src/convert/markdown/rules/code.jl:181
+     @ Xranklin ~/.julia/packages/Xranklin/C0dHp/src/convert/markdown/rules/code.jl:181
 </code></pre></div><p>Note that it's the figure object that is showable as SVG in Pyplot and so we must do
 <code>gcf()</code> here to have it be the effective result of the cell and have the plot shown.</p>
 <h3 id="custom_show" ><a href="#custom_show"> Custom show</a></h3><p>If you have defined a custom <code>html_show(r)</code> in your <code>Utils</code> that accepts an object of the type
@@ -1120,7 +1120,7 @@ np.random.seed(2)
 x = np.random.randn(5)
 r = np.linalg.norm(x) / len(x)
 np.round(r, 2)</code></pre>
-<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: Failed to precompile PyCall [438e738f-606a-5dbb-bf0a-cddfbfd45ab0] to /home/runner/.julia/compiled/v1.7/PyCall/jl_euCaaI.
+<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: Failed to precompile PyCall [438e738f-606a-5dbb-bf0a-cddfbfd45ab0] to /home/runner/.julia/compiled/v1.7/PyCall/jl_FNLVMG.
 Stacktrace:
    [1] error(s::String)
      @ Base ./error.jl:33
@@ -1141,7 +1141,7 @@ Stacktrace:
    [9] include_string
      @ ./loading.jl:1180 [inlined]
   [10] #47
-     @ ~/.julia/packages/Xranklin/T9trr/src/context/code/notebook_code.jl:128 [inlined]
+     @ ~/.julia/packages/Xranklin/C0dHp/src/context/code/notebook_code.jl:128 [inlined]
   [11] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#47#48"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, Base.PipeEndpoint, Base.PipeEndpoint})()
      @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:118
   [12] with_logstate(f::Function, logstate::Any)
@@ -1153,11 +1153,11 @@ Stacktrace:
   [15] capture
      @ ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:75 [inlined]
   [16] _eval_code_cell(mdl::Module, code::String, cell_name::String)
-     @ Xranklin ~/.julia/packages/Xranklin/T9trr/src/context/code/notebook_code.jl:127
+     @ Xranklin ~/.julia/packages/Xranklin/C0dHp/src/context/code/notebook_code.jl:127
   [17] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool)
-     @ Xranklin ~/.julia/packages/Xranklin/T9trr/src/context/code/notebook_code.jl:86
+     @ Xranklin ~/.julia/packages/Xranklin/C0dHp/src/context/code/notebook_code.jl:86
   [18] html_code_block(b::FranklinParser.Block, c::Xranklin.LocalContext)
-     @ Xranklin ~/.julia/packages/Xranklin/T9trr/src/convert/markdown/rules/code.jl:181
+     @ Xranklin ~/.julia/packages/Xranklin/C0dHp/src/convert/markdown/rules/code.jl:181
 </code></pre></div></fieldset>
 
 </div><p>The <code>replace</code> line in the code block adds a <code>res = ...</code> before the last line
