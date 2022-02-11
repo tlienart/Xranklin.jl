@@ -23,7 +23,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-                docs/__cache
+                ${{ env.SITE_FOLDER }}/__cache
                 ~/.julia/artifacts
                 ~/.julia/packages
                 ~/.cache/pip
