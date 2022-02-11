@@ -82,6 +82,7 @@ function serialize_gc(c::GlobalContext)
 end
 
 function deserialize_gc(gc::GlobalContext)
+    @info "📓 de-serializing $(hl("global context", :cyan))..."
     nt = deserialize(gc_cache_path())
     merge!(gc.anchors,   nt.anchors)
     merge!(gc.tags,      nt.tags)
@@ -90,6 +91,8 @@ function deserialize_gc(gc::GlobalContext)
 
     # recover the children if the cache exists
     for rp in nt.children
+        endswith(rp, ".md") || continue
+        @info "📓 de-serializing $(hl("local context of $(str_fmt(rp))", :cyan))..."
         isfile(lc_cache_path(rp)) && deserialize_lc(rp, gc)
     end
 

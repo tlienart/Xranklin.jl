@@ -72,7 +72,7 @@ function serve(d::String = pwd();
     current = path(:folder) / "utils.jl"
 
     # if clear, destroy output directories if any
-    if clear || !filecmp(cached, current)
+    if clear || (any(isfile, (cached, current)) && !filecmp(cached, current))
         for odir in (path(:site), path(:pdf), path(:cache))
             rm(odir; force=true, recursive=true)
         end

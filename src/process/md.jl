@@ -47,14 +47,13 @@ function process_md_file(
     #    (if it's already in the gc children contexts); this may happen if an
     #`   earlier file processing was triggered by getvarfrom
     rpath = get_rpath(fpath)
-    in_gc = rpath in keys(gc.children_contexts)
 
     # otherwise process the page and write to opath if there is anything
     # to write (if the page hasn't changed, nothing new will be written)
     io = IOBuffer()
     process_md_file_io!(
         io, gc, fpath;
-        opath, initial_pass, in_gc, kw...
+        opath, initial_pass, kw...
     )
 
     # paginated or not, write the base unless there's nothing to write
@@ -223,7 +222,6 @@ function process_md_file_io!(
             fpath::String;
             opath::String="",
             initial_pass::Bool=false,
-            in_gc::Bool=false,
             tohtml::Bool=true
             )::Nothing
     crumbs("process_md_file_io!", fpath)
@@ -235,9 +233,8 @@ function process_md_file_io!(
     # -------
     # retrieve the context from gc's children if it exists or
     # create it if it doesn't
-    lc = in_gc ?
-            gc.children_contexts[rpath] :
-            DefaultLocalContext(gc; rpath)
+    in_gc = rpath in keys(gc.children_contexts)
+    lc = in_gc ? gc.children_contexts[rpath] : DefaultLocalContext(gc; rpath)
 
     from_cache    = false
     previous_hash = zero(UInt64)
