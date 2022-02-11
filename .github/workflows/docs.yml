@@ -4,6 +4,7 @@ env:
   SITE_FOLDER: "docs"
   CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
   PYTHON: ""
+  CACHE_KEY: "franklin-01"
 
 on:
   push:
@@ -26,8 +27,8 @@ jobs:
                 ~/.julia/artifacts
                 ~/.julia/packages
                 ~/.cache/pip
-          key: ${{ runner.os }}-franklin-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-franklin-cache-
+          key: ${{ runner.os }}-${{ env.CACHE_KEY }}-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ env.CACHE_KEY }}-
 
       # Julia
       - name: Install Julia
