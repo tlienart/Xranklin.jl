@@ -173,6 +173,7 @@ See tags.jl, eltype of one of the fields of GC.
 Fields
 ------
     * id: the id of the tag (e.g.: 'foo_bar')
+    * name: full tag name (e.g. "Foo Bar")
     * locs: set of rpaths that indicate this tag.
 """
 struct Tag
