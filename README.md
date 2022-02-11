@@ -104,6 +104,30 @@ This has not yet been migrated and so you shouldn't expect it to work (see also 
 * slug
 * lunr
 
+### Iterative process
+
+It helps to use `ignore = ...` in your `config.md` to avoid trying to build your full site
+at once which will be very helpful in gradually debugging things. For instance you may have
+something like
+
+```
+ignore = ["posts/", "about/", "foo/bar.md"]
+```
+
+to indicate that the directories `posts/` and `about/` as well as the file `foo/bar.md` should be ignored.
+
+### Quirks
+
+Now that there's a `__cache` folder generated alongside the `__site` folder, add it to your
+`.gitignore` file so it doesn't get pushed.
+So it will look something like this:
+
+```
+__site/
+__cache/
+.DS_Store  # if you're on mac
+```
+
 ---
 
 ## Dev Notes
