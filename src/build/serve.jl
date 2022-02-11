@@ -78,7 +78,7 @@ function serve(d::String = pwd();
         end
     else
         # try to load previously-serialised contexts if any
-        isdir(path(:cache)) && deserialize_gc(gc)
+        isfile(gc_cache_path()) && deserialize_gc(gc)
     end
 
     # check if there's a config file and process it, this must happen
