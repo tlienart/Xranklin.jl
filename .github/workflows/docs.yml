@@ -24,6 +24,7 @@ jobs:
                 docs/__cache
                 ~/.julia/artifacts
                 ~/.julia/packages
+                ~/.cache/pip
           key: ${{ runner.os }}-franklin-cache-${{ github.sha }}
           restore-keys: ${{ runner.os }}-franklin-cache-
 
@@ -33,11 +34,12 @@ jobs:
         with:
           version: 1.7
 
+      # Python3
+      - run: pip install matplotlib
+
       # Website build
       - run: julia -e '
                 using Pkg;
-                Pkg.add("Conda");
-                import Conda; Conda.add("matplotlib");
                 Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
                 using Xranklin;
                 build("${{ env.SITE_FOLDER }}"; clear=${{ env.CLEAR_CACHE }});'
