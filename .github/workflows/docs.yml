@@ -45,6 +45,8 @@ jobs:
       - run: julia -e '
                 using Pkg;
                 Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
+                ENV["PYTHON"] = "/usr/bin/python3.8";
+                Pkg.add("PyCall"); Pkg.build("PyCall");
                 using Xranklin;
                 build("${{ env.SITE_FOLDER }}"; clear=${{ env.CLEAR_CACHE }});'
 
