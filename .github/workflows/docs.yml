@@ -2,7 +2,7 @@ name: Build and Deploy
 
 env:
   SITE_FOLDER: "docs"
-  CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]')" }}
+  CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
 
 on:
   push:
