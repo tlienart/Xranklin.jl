@@ -76,9 +76,12 @@ function serve(d::String = pwd();
         for odir in (path(:site), path(:pdf), path(:cache))
             rm(odir; force=true, recursive=true)
         end
+    else
+        # try to load previously-serialised contexts if any
+        isdir(path(:cache)) && deserialize_gc(gc)
     end
 
-    # check if there's a utils/config file and process, this must happen
+    # check if there's a config file and process it, this must happen
     # prior to everything as it defines 'ignore' for instance which is
     # needed in the watched_files step
     process_config(gc)
@@ -94,9 +97,9 @@ function serve(d::String = pwd();
         Pkg.activate(pf)
         Pkg.instantiate()
     end
-    process_utils(gc)
 
     # do the initial build
+    process_utils(gc)
     full_pass(gc, wf; final)
 
     # ---------------------------------------------------------------
@@ -116,38 +119,8 @@ function serve(d::String = pwd();
     end
 
     # ---------------------------------------------------------------
-    # Finalize
-    # > go through every page and serialize them; this only needs
-    # to be done at the end. For the global setting, we don't
-    # serialize the code notebook (utils) since it always needs to be
-    # re-evaluated at the start.
-    start = time()
-    @info "📓 serializing $(hl("config", :cyan))..."
-    mkpath(path(:cache))
-    # keep track of literate hashes
-    serialize(path(:cache) / "gdm.cache", gc.deps_map)
-    serialize_notebook(gc.nb_vars, path(:cache) / "gnbv.cache")
-    futils = path(:folder) / "utils.jl"
-    if isfile(futils)
-        @info "📓 serializing $(hl("utils", :cyan))..."
-        cp(futils, path(:cache) / "utils.jl", force=true)
-    end
-    for (rp, ctx) in gc.children_contexts
-        # ignore .html pages
-        endswith(rp, ".md") || continue
-        @info "📓 serializing $(hl(str_fmt(rp), :cyan))..."
-        bp = path(:cache) / noext(rp)
-        mkpath(bp)
-        serialize_notebook(ctx.nb_vars, bp / "nbv.cache")
-        serialize_notebook(ctx.nb_code, bp / "nbc.cache")
-        open(bp / "pg.hash", "w") do f
-            write(f, ctx.page_hash[])
-        end
-    end
-    δt = time() - start; @info """
-        💡 $(hl("serializing done", :yellow)) $(hl(time_fmt(δt), :red))
-        """
-    println("")
+    # Finalise by caching notebooks etc
+    serialize_contexts(gc)
 
     # ---------------------------------------------------------------
     # Cleanup:
@@ -179,6 +152,33 @@ again in the kw then that will take precedence.
 """
 build(d; kw...) = serve(d, final=true, kw...)
 build(; kw...)  = serve(; final=true, kw...)
+
+
+"""
+    serialize_contexts(gc)
+
+...
+"""
+function serialize_contexts(gc::GlobalContext)::Nothing
+    start = time()
+
+    # Create cache folder & serialise gc + all serialisable lc
+    mkpath(path(:cache))
+    serialize_gc(gc)
+
+    # if utils changes from one to next, amounts to "clear"
+    futils = path(:folder) / "utils.jl"
+    if isfile(futils)
+        @info "📓 keep copy of $(hl("utils", :cyan))..."
+        cp(futils, path(:cache) / "utils.jl", force=true)
+    end
+
+    δt = time() - start; @info """
+        💡 $(hl("serializing done", :yellow)) $(hl(time_fmt(δt), :red))
+        """
+    println("")
+    return
+end
 
 
 """
@@ -225,8 +225,6 @@ function full_pass(
     # depending on the case, we'll have to re-consider
     # utils or config specifically
     if initial_pass
-        process_utils(gc)
-        process_config(gc; initial_pass=true)
         # discard the saved hash of files 'page.md' which depend on
         # something like 'literate.jl' which would have changed.
         # This will ensure 'pages.md' gets re-processed and considers the

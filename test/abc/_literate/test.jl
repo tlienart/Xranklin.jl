@@ -13,7 +13,7 @@ z = x + y * 2
 
 # A
 
-println("foo")
+println("foo-bar")
 z * 2
 
 # B

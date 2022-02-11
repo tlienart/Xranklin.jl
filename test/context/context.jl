@@ -39,7 +39,7 @@ end
 
     # dependencies
     @test lc.req_vars["__global"] == Set([:a])
-    @test lc.req_lxdefs["__global"] == Set(["abc"])
+    @test lc.req_lxdefs == Set(["abc"])
 
     # children contexts
     @test gc.children_contexts["REQ"] === lc
