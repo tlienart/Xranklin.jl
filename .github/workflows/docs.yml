@@ -34,8 +34,12 @@ jobs:
         with:
           version: 1.7
 
-      # Python3
-      - run: pip install matplotlib
+      # Python
+      - name: Install python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - run: pip install numpy matplotlib
 
       # Website build
       - run: julia -e '
