@@ -1,10 +1,14 @@
 name: Build and Deploy
+
+env:
+  SITE_FOLDER: "docs"
+  CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]')" }}
+
 on:
   push:
     branches:
       - main
-env:
-  SITE_FOLDER: "docs"
+      - master
 
 jobs:
   build-and-deploy:
@@ -37,18 +41,12 @@ jobs:
         with:
           version: 1.7
 
-      # - name: Binary dependencies for Makie
-      #   run: sudo apt-get install -y xorg-dev mesa-utils xvfb libgl1 freeglut3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
-      #
-      # >
-      #     DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24'
-
       # Website build
       - run: julia -e '
                 using Pkg;
                 Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
                 using Xranklin;
-                build("${{ env.SITE_FOLDER }}", clear=true);'
+                build("${{ env.SITE_FOLDER }}"; clear=${{ env.CLEAR_CACHE }});'
 
       # Deployment and caching
       - run: touch ${{ env.SITE_FOLDER }}/__site/.nojekyll
