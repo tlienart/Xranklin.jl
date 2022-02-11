@@ -85,3 +85,6 @@ end
 @testset "bug fixes" begin
     include("bugs/latex.jl")
 end
+
+spurious_assets = dirname(dirname(pathof(Xranklin))) / "assets"
+rm(spurious_assets, recursive=true, force=true)
