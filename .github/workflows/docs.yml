@@ -25,7 +25,7 @@ jobs:
                 ~/.julia/artifacts
                 ~/.julia/packages
                 ~/.cache/pip
-          key: ${{ runner.os }}-franklin-cache-${{ github.sha }}
+          key: ${{ runner.os }}-franklin-${{ github.sha }}
           restore-keys: ${{ runner.os }}-franklin-cache-
 
       # Julia
