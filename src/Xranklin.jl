@@ -49,7 +49,7 @@ export html, latex
 
 # Access contexts
 export getvar, getvarfrom, getlvar, getgvar, setlvar!, setgvar!, assetpath
-export get_page_tags
+export get_page_tags, get_all_tags
 export cur_lc, cur_gc, get_rurl
 export attach
 export auto_cell_name

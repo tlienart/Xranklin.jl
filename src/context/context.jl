@@ -247,7 +247,13 @@ end
 
 function getvar(gc::GlobalContext, n::Symbol, d=nothing)
     n = get(gc.vars_aliases, n, n)
-    return getvar(gc.vars, n, d)
+    r = getvar(gc.vars, n, d)
+    # if there's an active LC, indicate that there was a requested var
+    if !isnothing(env(:cur_local_ctx))
+        lc = cur_lc()
+        union!(lc.req_vars["__global"], [n])
+    end
+    return r
 end
 
 function setvar!(gc::GlobalContext, n::Symbol, v)
