@@ -24,16 +24,8 @@ jobs:
                 docs/__cache
                 ~/.julia/artifacts
                 ~/.julia/packages
-                ~/.cache/pip
           key: ${{ runner.os }}-franklin-cache-${{ github.sha }}
           restore-keys: ${{ runner.os }}-franklin-cache-
-
-      # Python
-      - name: Install python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - run: pip install numpy matplotlib
 
       # Julia
       - name: Install Julia
@@ -44,9 +36,9 @@ jobs:
       # Website build
       - run: julia -e '
                 using Pkg;
+                Pkg.add("Conda");
+                import Conda; Conda.add("matplotlib");
                 Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
-                ENV["PYTHON"] = "/usr/bin/python3.8";
-                Pkg.add("PyCall"); Pkg.build("PyCall");
                 using Xranklin;
                 build("${{ env.SITE_FOLDER }}"; clear=${{ env.CLEAR_CACHE }});'
 
