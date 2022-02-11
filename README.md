@@ -95,6 +95,7 @@ jobs:
 * `@delay` is removed (it's not required anymore)
 * `lxfuns` now take arguments as `hfuns` (a list of parameters corresponding to the braces) see [this example](https://github.com/tlienart/Xranklin.jl/blob/3eb0ce295f0505a7c0519558392d95c2e72fa52d/src/convert/markdown/lxfuns/misc.jl#L1-L11)
 * `envfuns` now take arguments differently, see [this example](https://github.com/tlienart/Xranklin.jl/blob/3eb0ce295f0505a7c0519558392d95c2e72fa52d/src/convert/markdown/envfuns/math.jl#L20-L29)
+* `Dates` is **not** available by default, you have to explicitly add `using Dates` in your `utils.jl` or in your `+++...+++` blocks in order to be able to call things like `Date(2022,2,1)`
 
 This has not yet been migrated and so you shouldn't expect it to work (see also [this issue](https://github.com/tlienart/Xranklin.jl/issues/65))
 
