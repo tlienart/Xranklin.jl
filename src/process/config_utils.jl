@@ -16,25 +16,13 @@ Process a configuration string into a given global context object. The
 configuration can be given explicitly as a string to allow for
 pre-configuration (e.g. a Utils package generating a default config).
 """
-function process_config(
-            config::String,
-            gc::GlobalContext;
-            initial_pass::Bool=false
-            )
+function process_config(config::String, gc::GlobalContext)
     crumbs("process_config")
 
     # ensure we're in the relevant gc
     set_current_global_context(gc)
     # set the notebook counters at the top
     reset_notebook_counters!(gc)
-
-    # try to load from cache if relevant
-    if initial_pass
-        fpdm = path(:cache) / "gdm.cache"
-        fpv  = path(:cache) / "gnbv.cache"
-        isfile(fpdm) && merge!(gc.deps_map, deserialize(fpdm))
-        isfile(fpv)  && load_vars_cache!(gc, fpv)
-    end
 
     # keep track of current lxdefs to see if the config.md redefines
     # them; if that's the case (either changed or removed) update all
@@ -47,6 +35,11 @@ function process_config(
     empty!(gc.lxdefs)
 
     # -------------------------------------------
+    # Effective config processing: run html as
+    # usual for a .md file except that we ignore
+    # the resulting HTML; we just use that to
+    # populate fields such as lxdefs etc
+    #
     start = time(); @info """
         ⌛ processing config.md
         """
@@ -75,20 +68,17 @@ function process_config(
         end
     end
 
-    # go over the old lxdefs and check the ones that either have been
-    # removed or updated
+    # -----------------------------------------------------
+    # Check if any lxdefs were updated and, if so, mark all
+    # pages that use this lxdef as to be triggered.
     updated_lxdefs = [
         (@debug "✋ lxdef $n has changed"; n)
         for (n, h) in old_lxdefs
-
         if n ∉ keys(gc.lxdefs) || h != hash(gc.lxdefs[n].def)
     ]
-
-    # if there are updated lxdefs, find the pages which this might affect
-    # and mark them for re-processing
     if !isempty(updated_lxdefs)
         for (rpath, ctx) in gc.children_contexts
-            if anymatch(ctx.req_lxdefs["__global"], updated_lxdefs)
+            if anymatch(ctx.req_lxdefs, updated_lxdefs)
                 union!(gc.to_trigger, [rpath])
             end
         end
@@ -96,10 +86,10 @@ function process_config(
     return
 end
 
-function process_config(gc::GlobalContext; initial_pass::Bool=false)
+function process_config(gc::GlobalContext)
     config_path = path(:folder) / "config.md"
     if isfile(config_path)
-        process_config(read(config_path, String), gc; initial_pass)
+        process_config(read(config_path, String), gc)
     else
         @warn """
             Process config

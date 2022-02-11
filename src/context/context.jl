@@ -124,9 +124,9 @@ they can 'find' the right provider page. That's what the init_trigger
 is for.
 """
 struct GlobalContext{LC<:Context} <: Context
-    vars::Vars
-    lxdefs::LxDefs
-    vars_aliases::Alias
+    vars::Vars                              # {symbol => any}
+    lxdefs::LxDefs                          # [LxD]
+    vars_aliases::Alias                     # {symbol => symbol}
     nb_vars::VarsNotebook
     nb_code::CodeNotebook
     anchors::LittleDict{String, Anchor}
@@ -158,21 +158,18 @@ Fields:
     is_recursive:     whether we're in a recursive context
     is_math:          whether we're recursing in a math environment
     req_vars:         mapping {pg => set of vars requested from pg}
-    req_lxdefs:       mapping {pg => set of defs requested from pg}
+    req_lxdefs:       set of lxdefs names requested by the page from global
     vars_aliases:     other accepted names for default variables
     nb_vars:          notebook associated with markdown defs
     nb_code:          notebook associated with the page code
     to_trigger:       set of dependent pages to trigger after updating LC
 
-Note: for req_lxdefs, there is only one other context from which one can get
-def, the global context, but we use the same structure for symmetry with
-req_vars (for which it does make sense to request variables from other pages).
 """
 struct LocalContext <: Context
     glob::GlobalContext
-    vars::Vars
-    lxdefs::LxDefs
-    headings::PageHeadings
+    vars::Vars                      # LD{Symbol, Any}
+    lxdefs::LxDefs                  # LD{String, LD}
+    headings::PageHeadings          # LD{String, ...}
     rpath::String
     anchors::Set{String}
     # chars
@@ -180,7 +177,7 @@ struct LocalContext <: Context
     is_math::Ref{Bool}
     # stores
     req_vars::LittleDict{String, Set{Symbol}}
-    req_lxdefs::LittleDict{String, Set{String}}
+    req_lxdefs::Set{String}
     vars_aliases::Alias
     # notebooks
     nb_vars::VarsNotebook
@@ -280,9 +277,7 @@ function LocalContext(glob, vars, defs, headings, rpath="", alias=Alias())
     req_vars = LittleDict{String, Set{Symbol}}(
         "__global" => Set{Symbol}()
     )
-    req_defs = LittleDict{String, Set{String}}(
-        "__global" => Set{String}()
-    )
+    req_defs   = Set{String}()
     anchors    = Set{String}()
     to_trigger = Set{String}()
     page_hash  = Ref(hash(""))
@@ -362,7 +357,7 @@ hasdef(lc::LocalContext, n::String) =
 
 function getdef(lc::LocalContext, n::String)
     if n ∉ keys(lc.lxdefs) && hasdef(lc.glob, n)
-        union!(lc.req_lxdefs["__global"], [n])
+        union!(lc.req_lxdefs, [n])
         return getdef(lc.glob, n)
     end
     return getdef(lc.lxdefs, n)

@@ -18,7 +18,7 @@ end
     include(p/"modules.jl")
     include(p/"notebook_vars.jl")
     include(p/"notebook_code.jl")
-    include(p/"serialize.jl")
+    # include(p/"serialize.jl")
     include(p/"code-show.jl")
 end
 

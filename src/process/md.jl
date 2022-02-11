@@ -48,10 +48,6 @@ function process_md_file(
     #`   earlier file processing was triggered by getvarfrom
     rpath = get_rpath(fpath)
     in_gc = rpath in keys(gc.children_contexts)
-    if initial_pass && in_gc
-        @debug "🚀 skipping $rpath (page already processed)."
-        return
-    end
 
     # otherwise process the page and write to opath if there is anything
     # to write (if the page hasn't changed, nothing new will be written)
@@ -243,6 +239,13 @@ function process_md_file_io!(
             gc.children_contexts[rpath] :
             DefaultLocalContext(gc; rpath)
 
+    from_cache    = false
+    previous_hash = zero(UInt64)
+    if initial_pass && in_gc
+        from_cache    = true
+        previous_hash = lc.page_hash[]
+    end
+
     bk_anchors   = setup_page_context(lc)
     bk_tags_dict = get_page_tags(lc)
 
@@ -257,39 +260,21 @@ function process_md_file_io!(
 
     set_meta_parameters(lc, fpath, opath)
 
-    # if we're in the initial pass, there may be cached representation of
-    # the hash of the page, of the vars and of the code notebooks that can
-    # be loaded and leveraged.
-    initial_cache_used = false
-    if initial_pass
-        bp  = path(:cache) / noext(rpath)
-        fpv = bp / "nbv.cache"
-        fpc = bp / "nbc.cache"
-        pgh = bp / "pg.hash"
-
-        if isfile(fpv)
-            load_vars_cache!(lc, fpv)
-            initial_cache_used = true
-        end
-
-        if isfile(fpc)
-            load_code_cache!(lc, fpc)
-            initial_cache_used = true
-        end
-
-        # page hasn't changed since last time --> early stop
-        # NOTE: this path is voided if the page depends on files which have
-        # changed. See check_deps_map.
-        if isfile(pgh) && (read(pgh, UInt64) == page_hash) && isfile(opath)
+    if previous_hash == page_hash
+        # this is only possible if we're on the initial pass AND the
+        # LC was loaded from cache (so that in_gc is true)
+        # additionally it looks like the page hasn't changed, we just
+        # check whether the output path is there and if so we skip
+        if isfile(opath)
             @info """
                 ⏩ page '$rpath' hasn't changed, skipping the conversion...
                 """
             return
         end
-    else
-        # reset the notebook counters at the top
-        reset_notebook_counters!(lc)
     end
+
+    # reset the notebook counters at the top (they may already be there)
+    reset_notebook_counters!(lc)
 
     output = (tohtml ?
                 _process_md_file_html(lc, page_content_md) :
@@ -297,7 +282,7 @@ function process_md_file_io!(
 
     # only here do we know whether `ignore_cache` was set to 'true'
     # if that's the case, reset the code notebook and re-evaluate.
-    if initial_cache_used && getvar(lc, :ignore_cache, false)
+    if from_cache && getvar(lc, :ignore_cache, false)
         setup_page_context(lc, reset_notebook=true)
         output = (tohtml ?
                     _process_md_file_html(lc, page_content_md) :
