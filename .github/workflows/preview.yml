@@ -23,7 +23,7 @@ env:
   # as is and use the setup-python action along with pip as shown below
   # if you do want to use Conda.jl; change to "" and remove the
   # setup-python step
-  PYTHON: ""
+  PYTHON: "python"
 
 jobs:
   preview:
@@ -40,6 +40,8 @@ jobs:
                 ${{ env.SITE_FOLDER }}/__site
                 ~/.julia/artifacts
                 ~/.julia/packages
+                !~/.julia/packages/PyPlot
+                !~/.julia/packages/PyCall
           key: ${{ runner.os }}-${{ env.CACHE_KEY }}-${{ github.sha }}
           restore-keys: ${{ runner.os }}-${{ env.CACHE_KEY }}-
 
@@ -48,6 +50,13 @@ jobs:
         uses: julia-actions/setup-julia@v1
         with:
           version: 1.7
+
+      # Python
+      - name: Install python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - run: pip matplotlib
 
       # Website build
       - run: julia -e '
