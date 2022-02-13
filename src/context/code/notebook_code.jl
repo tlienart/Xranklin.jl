@@ -295,8 +295,8 @@ Users can also overwrite this default saving of files by overloading the
 HTML mime show or writing their own code in the cell.
 """
 function append_result_html!(io::IOBuffer, result::R, fig::NamedTuple) where R
-
-    Utils = cur_utils_module()
+    figshow = false
+    Utils   = cur_utils_module()
     if isdefined(Utils, :html_show) && hasmethod(Utils.html_show, (R,))
         write(io, Utils.html_show(result))
 
@@ -305,12 +305,14 @@ function append_result_html!(io::IOBuffer, result::R, fig::NamedTuple) where R
         fig.show && write(io, """
                 <img class="code-figure" src="/$(get_ropath(fig.fpath)).svg">
                 """)
+        figshow = true
 
     elseif fig.save && hasmethod(Base.show, (IO, MIME"image/png", R))
         _write_img(result, fig.fpath * ".png", MIME("image/png"))
         fig.show && write(io, """
                 <img class="code-figure" src="/$(get_ropath(fig.fpath)).png">
                 """)
+        figshow = true
 
     else
         write(io, """<pre><code class="code-result language-plaintext">""")
@@ -318,7 +320,7 @@ function append_result_html!(io::IOBuffer, result::R, fig::NamedTuple) where R
         Base.@invokelatest Base.show(io, result)
         write(io, """</code></pre>""")
     end
-    return
+    return figshow
 end
 
 """
