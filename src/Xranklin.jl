@@ -92,7 +92,6 @@ include("$p/default_context.jl")
 p = "context/code"
 include("$p/modules.jl")
 include("$p/notebook.jl")
-include("$p/serialize.jl")
 include("$p/notebook_vars.jl")
 include("$p/notebook_code.jl")
 

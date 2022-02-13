@@ -4,7 +4,7 @@ env:
   SITE_FOLDER: "docs"
   CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
   BASE_URL_PREFIX: "Xranklin.jl/preview/"
-  CACHE_KEY: "franklin-preview-aa"
+  CACHE_KEY: "franklin-preview-0"
   PYTHON: "python"
 
 on:
