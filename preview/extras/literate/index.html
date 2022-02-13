@@ -182,44 +182,8 @@ y = @. exp(-x * sin(x^2))
 figure(figsize=(8, 6))
 plot(x, y)
 gcf()</code></pre>
-<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: Failed to precompile PyPlot [d330b81b-6aea-500a-939a-2ce795aea3ee] to /home/runner/.julia/compiled/v1.7/PyPlot/jl_nSC0h7.
-Stacktrace:
-  [1] error(s::String)
-    @ Base ./error.jl:33
-  [2] compilecache(pkg::Base.PkgId, path::String, internal_stderr::IO, internal_stdout::IO, ignore_loaded_modules::Bool)
-    @ Base ./loading.jl:1466
-  [3] compilecache(pkg::Base.PkgId, path::String)
-    @ Base ./loading.jl:1410
-  [4] _require(pkg::Base.PkgId)
-    @ Base ./loading.jl:1120
-  [5] require(uuidkey::Base.PkgId)
-    @ Base ./loading.jl:1013
-  [6] require(into::Module, mod::Symbol)
-    @ Base ./loading.jl:997
-  [7] eval
-    @ ./boot.jl:373 [inlined]
-  [8] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
-    @ Base ./loading.jl:1196
-  [9] include_string
-    @ ./loading.jl:1180 [inlined]
- [10] #47
-    @ ~/.julia/packages/Xranklin/hEjxu/src/context/code/notebook_code.jl:128 [inlined]
- [11] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#47#48"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, Base.PipeEndpoint, Base.PipeEndpoint})()
-    @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:118
- [12] with_logstate(f::Function, logstate::Any)
-    @ Base.CoreLogging ./logging.jl:511
- [13] with_logger
-    @ ./logging.jl:623 [inlined]
- [14] capture(f::Xranklin.var"#47#48"{Module, String}; rethrow::Type, color::Bool)
-    @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:116
- [15] capture
-    @ ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:75 [inlined]
- [16] _eval_code_cell(mdl::Module, code::String, cell_name::String)
-    @ Xranklin ~/.julia/packages/Xranklin/hEjxu/src/context/code/notebook_code.jl:127
- [17] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/hEjxu/src/context/code/notebook_code.jl:86
- [18] html_code_block(b::FranklinParser.Block, c::Xranklin.LocalContext)
-    @ Xranklin ~/.julia/packages/Xranklin/hEjxu/src/convert/markdown/rules/code.jl:181</code></pre></div><p>Or here one with a printout</p>
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/preview/assets/extras/literate/figs-html/__autofig_15918792189080208384.svg">
+</div><p>Or here one with a printout</p>
 <pre><code class="julia">for i in 1:5
     println(&quot;*&quot;^i)
 end</code></pre>
