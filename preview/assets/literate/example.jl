@@ -17,7 +17,7 @@ z = x + y
 using PyPlot
 x = range(0, pi, length=250)
 y = @. exp(-x * sin(x^2))
-figure(figsize=(8, 6))
+figure(figsize=(6, 4))
 plot(x, y)
 gcf()
 
