@@ -71,17 +71,18 @@ function serialize_gc(c::GlobalContext)
     open(gc_cache_path(), "w") do outf
         serialize(outf, nt)
     end
-    @info "... [gc] ✓"
-
+    @info "... [global context] ✓"
+    nc = length(c.children_contexts)
+    @info "📓 serializing $(hl("$nc local context", :cyan))..."
     for (rp, lc) in c.children_contexts
         endswith(rp, ".md") || continue
-        @info "📓 serializing $(hl("local context of $(str_fmt(rp))", :cyan))..."
         serialize_lc(lc)
     end
     return
 end
 
 function deserialize_gc(gc::GlobalContext)
+
     @info "📓 de-serializing $(hl("global context", :cyan))..."
     nt = deserialize(gc_cache_path())
     merge!(gc.anchors,   nt.anchors)
@@ -90,9 +91,10 @@ function deserialize_gc(gc::GlobalContext)
     merge!(gc.deps_map,  nt.deps_map)
 
     # recover the children if the cache exists
+    nc = length(nt.children)
+    @info "📓 de-serializing $(hl("$nc local contexts", :cyan))..."
     for rp in nt.children
         endswith(rp, ".md") || continue
-        @info "📓 de-serializing $(hl("local context of $(str_fmt(rp))", :cyan))..."
         isfile(lc_cache_path(rp)) && deserialize_lc(rp, gc)
     end
 

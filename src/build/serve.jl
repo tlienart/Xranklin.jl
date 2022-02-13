@@ -77,8 +77,12 @@ function serve(d::String = pwd();
             rm(odir; force=true, recursive=true)
         end
     else
+        start = time()
         # try to load previously-serialised contexts if any
         isfile(gc_cache_path()) && deserialize_gc(gc)
+        δt = time() - start; @info """
+            💡 $(hl("de-serialization done", :yellow)) $(hl(time_fmt(δt), :red))
+            """
     end
 
     # check if there's a config file and process it, this must happen
