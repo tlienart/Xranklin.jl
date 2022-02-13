@@ -7,8 +7,7 @@
 
 This repo contains the code for the next minor (and, once properly tested, major) version of
 [Franklin.jl](https://github.com/tlienart/Franklin.jl).
-The code has basically been written from scratch and your help is needed to uncover bugs and
-problems.
+The code has basically been written from scratch and your help is needed to uncover bugs and problems.
 
 Most of what's offered by Franklin is also offered by Xranklin (apart from what's listed in [this issue](https://github.com/tlienart/Xranklin.jl/issues/65) which we should make as precise as possible).
 
