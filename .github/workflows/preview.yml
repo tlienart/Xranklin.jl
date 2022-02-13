@@ -1,12 +1,19 @@
 name: Preview
 
+on:
+  push:
+    branches:
+      - preview
+
 env:
-  # Adjust this
+  # ADJUST THE FOLLOWING
+  # where is the site folder, use "" if the repo root is
   SITE_FOLDER: "docs"
+  # if it's a personal site, use "" otherwise use the name of the repo
   BASE_URL_PREFIX: "Xranklin.jl"
+  # if it's not a preview, use ""
   PREVIEW: "preview"
-  BRANCH: "preview"
-  # You shouldn't have to adjust these
+  # DON'T CHANGE THE FOLLOWING UNLESS YOU HAVE GOOD REASONS TO
   # >> amounts to build(clear=true)
   CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
   # >> change the digit at the end if, for some reason, you believe
@@ -17,11 +24,6 @@ env:
   # if you do want to use Conda.jl; change to "" and remove the
   # setup-python step
   PYTHON: "python"
-
-on:
-  push:
-    branches:
-      - ${{ env.BRANCH }}
 
 jobs:
   preview:
@@ -60,7 +62,7 @@ jobs:
                 using Pkg;
                 Pkg.add(
                   url="https://github.com/tlienart/Xranklin.jl",
-                  rev="${{ env.BRANCH }}"
+                  rev="${{ github.head_ref }}"
                   );
                 using Xranklin;
                 build("${{ env.SITE_FOLDER }}";
