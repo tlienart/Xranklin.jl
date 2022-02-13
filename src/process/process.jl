@@ -196,9 +196,5 @@ function adjust_base_url(gc::GlobalContext, rpath::String, opath::String)
     open(opath, "w") do outf
         write(outf, replace(old, PREPATH_FIX_PAT => ss))
     end
-
-    # reset the page hash so that the page gets reprocessed next time
-    # because now the output has links that are not in sync with the input
-    gc.children_contexts[rpath].page_hash[] = hash("")
     return
 end
