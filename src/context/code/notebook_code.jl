@@ -276,7 +276,8 @@ function _form_code_repr(
     # see note
     if figshow
         hrepr = replace(hrepr,
-                    "class=\"code-stdout" => "class=\"code-stdout fig-stdout")
+                    "<pre><code class=\"code-stdout" =>
+                    "<pre class=\"fig-stdout\"><code class=\"code-stdout")
     end
 
     return CodeRepr((hrepr, lrepr, rrepr))

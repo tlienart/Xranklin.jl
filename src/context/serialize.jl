@@ -80,6 +80,7 @@ function serialize_lc(c::LocalContext)
     open(fp, "w") do outf
         serialize(outf, nt)
     end
+    @show (c.rpath, c.page_hash[])
     @info "... [lc of $(c.rpath)] ✓"
     return
 end
