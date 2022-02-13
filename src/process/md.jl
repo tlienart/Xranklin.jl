@@ -257,7 +257,7 @@ function process_md_file_io!(
 
     set_meta_parameters(lc, fpath, opath)
 
-    hprint("-"^50, :yellow)
+    hprint("^"^50, :yellow)
     @show rpath
     @show keys(gc.children_contexts)
     @show in_gc

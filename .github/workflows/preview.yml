@@ -49,7 +49,9 @@ jobs:
                 using Pkg;
                 Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="preview");
                 using Xranklin;
-                build("${{ env.SITE_FOLDER }}"; clear=${{ env.CLEAR_CACHE }});'
+                build("${{ env.SITE_FOLDER }}";
+                      clear=${{ env.CLEAR_CACHE }},
+                      prefix="${{ env.BASE_URL_PREFIX }}");'
 
       # Deployment and caching
       - run: touch ${{ env.SITE_FOLDER }}/__site/.nojekyll
