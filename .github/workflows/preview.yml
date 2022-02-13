@@ -3,7 +3,7 @@ name: Preview
 on:
   push:
     branches:
-      - preview
+      - preview   # note: check rev= in build (Xranklin specific)
 
 env:
   # ADJUST THE FOLLOWING
@@ -62,7 +62,7 @@ jobs:
                 using Pkg;
                 Pkg.add(
                   url="https://github.com/tlienart/Xranklin.jl",
-                  rev="${{ github.head_ref }}"
+                  rev="preview"
                   );
                 using Xranklin;
                 build("${{ env.SITE_FOLDER }}";
