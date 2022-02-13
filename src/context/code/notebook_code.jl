@@ -279,7 +279,7 @@ function _form_code_repr(
                     "class=\"code-stdout" => "class=\"code-stdout fig-stdout")
     end
 
-    return CodeRepr(hrepr, lrepr, rrepr)
+    return CodeRepr((hrepr, lrepr, rrepr))
 end
 
 
