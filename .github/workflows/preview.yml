@@ -5,7 +5,7 @@ env:
   CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
   BASE_URL_PREFIX: "Xranklin.jl/preview/"
   CACHE_KEY: "franklin-preview-aa"
-  PYTHON: "" # force use of Conda.jl
+  PYTHON: "python"
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
                 ${{ env.SITE_FOLDER }}/__site
                 ~/.julia/artifacts
                 ~/.julia/packages
-                ~/.julia/conda
+                ~/.cache/pip
           key: ${{ runner.os }}-${{ env.CACHE_KEY }}-${{ github.sha }}
           restore-keys: ${{ runner.os }}-${{ env.CACHE_KEY }}-
 
@@ -36,6 +36,13 @@ jobs:
         uses: julia-actions/setup-julia@v1
         with:
           version: 1.7
+
+      # Python
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - run: pip install matplotlib
 
       # Website build
       - run: julia -e '
