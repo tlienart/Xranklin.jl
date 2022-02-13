@@ -216,6 +216,16 @@ Helper function to get a representation of the evaluation of a code cell.
     1. representation of stdout if not empty
     2. representation of stderr if not empty
     3. representation of result if not nothing
+
+## Note for figs
+
+For figs which have a Base.show (via an import so any that would be generated
+from a package such as Plots.jl, PyPlot.jl, etc), there is sometimes an info
+printed to stdout about the installation of dependencies or some such (e.g.
+Conda install matplotlib). This is unsightly. To reduce the nuisance, if
+the function append_result_html returns "true", then we alter the stdout
+representation and add a class "fig-stdout" which can more readily be
+suppressed or enabled by the user via CSS (and will be suppressed by default).
 """
 function _form_code_repr(
             output::Tuple{String,String,<:Any}, fig_html::NT, fig_latex::NT
@@ -247,6 +257,7 @@ function _form_code_repr(
     end
 
     # (3) Representation of the result
+    figshow = false
     if !isnothing(result)
         # If there's a non-empty result, keep track of what it looks like
         write(
@@ -256,12 +267,16 @@ function _form_code_repr(
                 Base.@invokelatest Base.repr(result)
         )
         # Check if there's a dedicated show or a custom show available
-        append_result_html!(io_html, result, fig_html)
+        figshow = append_result_html!(io_html, result, fig_html)
         append_result_latex!(io_latex, result, fig_latex)
     end
-    return CodeRepr(
-        String.(take!.((io_html, io_latex, io_raw)))
-    )
+
+    hrepr, lrepr, rrepr = String.(take!.((io_html, io_latex, io_raw)))
+
+    # see note
+    if figshow
+
+    return CodeRepr(hrepr, lrepr, rrepr)
 end
 
 

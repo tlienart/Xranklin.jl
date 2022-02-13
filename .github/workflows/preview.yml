@@ -40,7 +40,7 @@ jobs:
       # Website build
       - run: julia -e '
                 using Pkg;
-                Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
+                Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="preview");
                 using Xranklin;
                 build("${{ env.SITE_FOLDER }}"; clear=${{ env.CLEAR_CACHE }});'
 
@@ -51,4 +51,4 @@ jobs:
         with:
           BRANCH: gh-pages
           FOLDER: ${{ env.SITE_FOLDER }}/__site
-          TARGET_FOLDER: "preview/"
+          TARGET-FOLDER: "preview/"
