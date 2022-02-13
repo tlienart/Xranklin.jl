@@ -24,6 +24,7 @@ jobs:
         with:
           path: |
                 ${{ env.SITE_FOLDER }}/__cache
+                ${{ env.SITE_FOLDER }}/__site
                 ~/.julia/artifacts
                 ~/.julia/packages
                 ~/.julia/conda
