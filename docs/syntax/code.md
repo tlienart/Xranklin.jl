@@ -332,7 +332,7 @@ Here's another example with PyPlot (and you could use any other plotting library
 using PyPlot
 x = range(0, pi, length=500)
 y = @. sin(exp(x)) * sinc(x)
-figure(figsize=(8, 6))
+figure(figsize=(6, 4))
 plot(x, y)
 gcf()
 ```
