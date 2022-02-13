@@ -95,6 +95,12 @@ function deserialize_lc(rp::String, gc::GlobalContext)
     union!(lc.req_lxdefs, nt.req_lxdefs)
     union!(lc.to_trigger, nt.to_trigger)
     lc.page_hash[] = nt.page_hash
+
+    hprint("^"^50, :yellow)
+    @show rp
+    @show nt.page_hash
+    hprint("-"^50, :yellow)
+
     return lc
 end
 

@@ -67,10 +67,10 @@ jobs:
                 using Xranklin;
                 build("${{ env.SITE_FOLDER }}";
                       clear=${{ env.CLEAR_CACHE }},
-                      prefix="joinpath(
-                        ${{ env.BASE_URL_PREFIX }},
-                        ${{ env.PREVIEW }}
-                        )"
+                      prefix=joinpath(
+                        "${{ env.BASE_URL_PREFIX }}",
+                        "${{ env.PREVIEW }}"
+                        )
                       );'
 
       # Deployment and caching
