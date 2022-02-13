@@ -257,6 +257,17 @@ function process_md_file_io!(
 
     set_meta_parameters(lc, fpath, opath)
 
+    hprint("-"^50, :yellow)
+    @show rpath
+    @show keys(gc.children_contexts)
+    @show in_gc
+    @show from_cache
+    @show previous_hash
+    @show page_hash
+    @show opath
+    @show isfile(opath)
+    hprint("-"^50, :yellow)
+
     if previous_hash == page_hash
         # this is only possible if we're on the initial pass AND the
         # LC was loaded from cache (so that in_gc is true)

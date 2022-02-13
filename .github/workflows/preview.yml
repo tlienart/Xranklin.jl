@@ -5,6 +5,7 @@ env:
   CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
   BASE_URL_PREFIX: "Xranklin.jl/preview/"
   CACHE_KEY: "franklin-preview-aa"
+  PYTHON: "" # force use of Conda.jl
 
 on:
   push:

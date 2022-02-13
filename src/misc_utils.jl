@@ -17,11 +17,12 @@ Make a string coloured and printable within a macro such as `@info`.
 Courtesy of Andrey Oskin on discourse.
 Allowed colours are the ones of `printstyled`.
 """
-function hl(o, c::Symbol=:light_magenta)
+function hl(s, c::Symbol=:light_magenta)
     io = IOBuffer()
-    printstyled(IOContext(io, :color => true), o, color=c)
+    printstyled(IOContext(io, :color => true), s, color=c)
     return io |> take! |> String
 end
+hprint(a...) = println(hl(a...))
 
 """
     time_fmt(δt)
