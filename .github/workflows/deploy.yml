@@ -1,0 +1,53 @@
+name: Build and Deploy
+
+env:
+  SITE_FOLDER: "docs"
+  CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
+  BASE_URL_PREFIX: "Xranklin.jl"
+  CACHE_KEY: "franklin-aa"
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+                ${{ env.SITE_FOLDER }}/__cache
+                ${{ env.SITE_FOLDER }}/__site
+                ~/.julia/artifacts
+                ~/.julia/packages
+                ~/.julia/conda
+          key: ${{ runner.os }}-${{ env.CACHE_KEY }}-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ env.CACHE_KEY }}-
+
+      # Julia
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: 1.7
+
+      # Website build
+      - run: julia -e '
+                using Pkg;
+                Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
+                using Xranklin;
+                build("${{ env.SITE_FOLDER }}"; clear=${{ env.CLEAR_CACHE }});'
+
+      # Deployment and caching
+      - run: touch ${{ env.SITE_FOLDER }}/__site/.nojekyll
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        with:
+          BRANCH: gh-pages
+          FOLDER: ${{ env.SITE_FOLDER }}/__site

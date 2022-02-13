@@ -1,19 +1,18 @@
-name: Build and Deploy
+name: Preview
 
 env:
   SITE_FOLDER: "docs"
   CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
-  PYTHON: ""
-  CACHE_KEY: "franklin-aa"
+  BASE_URL_PREFIX: "Xranklin.jl/preview/"
+  CACHE_KEY: "franklin-preview-aa"
 
 on:
   push:
     branches:
-      - main
-      - master
+      - preview
 
 jobs:
-  build-and-deploy:
+  preview:
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
@@ -51,3 +50,4 @@ jobs:
         with:
           BRANCH: gh-pages
           FOLDER: ${{ env.SITE_FOLDER }}/__site
+          TARGET_FOLDER: "preview/"

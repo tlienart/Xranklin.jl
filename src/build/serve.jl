@@ -17,6 +17,9 @@ Runs Franklin in the current directory.
                   case all links are adjusted to reflect the 'prepath'.
     single (Bool): do a single build pass and stop.
 
+    prepath/prefix/base_url_prefix: override the base url prefix (e.g. from
+                                    the deploy.yml.
+
 ### Debugging options
 
     debug (Bool): whether to display debugging messages.
@@ -41,6 +44,11 @@ function serve(d::String = pwd();
             clear::Bool    = false,
             final::Bool    = false,
             single::Bool   = final,
+
+            # Base url prefix / prepath optional override
+            prepath::String = "",
+            prefix::String = "",
+            base_url_prefix::String = ifelse(isempty(prepath), prefix, prepath),
 
             # Debugging options
             debug::Bool   = false,
@@ -89,6 +97,7 @@ function serve(d::String = pwd();
     # prior to everything as it defines 'ignore' for instance which is
     # needed in the watched_files step
     process_config(gc)
+    isempty(base_url_prefix) || setvar!(gc, :base_url_prefix, base_url_prefix)
 
     # scrape the folder to collect all files that should be watched for
     # changes; this set will be updated in the loop if new files get
