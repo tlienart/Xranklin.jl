@@ -6,9 +6,16 @@ env:
   BASE_URL_PREFIX: "Xranklin.jl"
   PREVIEW: "preview"
   BRANCH: "preview"
-  # You shouldn't have to adjust anything else
+  # You shouldn't have to adjust these
+  # >> amounts to build(clear=true)
   CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
+  # >> change the digit at the end if, for some reason, you believe
+  # that the cache used by the github action has an issue
   CACHE_KEY: "franklin-preview-0"
+  # >> if you use PyCall/PyPlot and don't want to use Conda, leave this
+  # as is and use the setup-python action along with pip as shown below
+  # if you do want to use Conda.jl; change to "" and remove the
+  # setup-python step
   PYTHON: "python"
 
 on:
