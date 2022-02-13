@@ -1,16 +1,20 @@
 name: Preview
 
 env:
+  # Adjust this
   SITE_FOLDER: "docs"
+  BASE_URL_PREFIX: "Xranklin.jl"
+  PREVIEW: "preview"
+  BRANCH: "preview"
+  # You shouldn't have to adjust anything else
   CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
-  BASE_URL_PREFIX: "Xranklin.jl/preview/"
   CACHE_KEY: "franklin-preview-0"
   PYTHON: "python"
 
 on:
   push:
     branches:
-      - preview
+      - ${{ env.BRANCH }}
 
 jobs:
   preview:
@@ -47,11 +51,18 @@ jobs:
       # Website build
       - run: julia -e '
                 using Pkg;
-                Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="preview");
+                Pkg.add(
+                  url="https://github.com/tlienart/Xranklin.jl",
+                  rev="${{ env.BRANCH }}"
+                  );
                 using Xranklin;
                 build("${{ env.SITE_FOLDER }}";
                       clear=${{ env.CLEAR_CACHE }},
-                      prefix="${{ env.BASE_URL_PREFIX }}");'
+                      prefix="joinpath(
+                        ${{ env.BASE_URL_PREFIX }},
+                        ${{ env.PREVIEW }}
+                        )"
+                      );'
 
       # Deployment and caching
       - run: touch ${{ env.SITE_FOLDER }}/__site/.nojekyll
@@ -60,4 +71,4 @@ jobs:
         with:
           BRANCH: gh-pages
           FOLDER: ${{ env.SITE_FOLDER }}/__site
-          TARGET-FOLDER: "preview/"
+          TARGET-FOLDER: "${{ env.PREVIEW }}"
