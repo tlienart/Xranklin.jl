@@ -55,3 +55,10 @@ _click on the '&check;' sign to know more_
 * \goto{/workflow/#creating_your_website} Live preview of modifications,
 * \goto{/workflow/#publication_step} Simple publication step to deploy the website
 @@
+
+## Quick start
+
+To install Franklin with Julia *≥ 1.5*, in a Julia REPL do
+
+* hit \kbd{]} to enter package mode,
+* write `add Franklin` and press \kbd{enter}.
