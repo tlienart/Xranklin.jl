@@ -30,6 +30,7 @@ function process_html_file(
     open(opath, "w") do outf
         process_html_file_io!(outf, lc, fpath)
     end
+    setvar!(lc, :_applied_base_url_prefix, "")
     return
 end
 

@@ -123,7 +123,7 @@ Insert a link if the reference exists otherwise just insert `[title]`.
 """
 function hfun_link_a(p::VS)::String
     ref, title = p
-    title      = strip(title, '\"') |> string
+    title      = sstrip(title, '\"')
     refrefs_   = refrefs()
     keysrefs   = keys(refrefs_)
     ref ∈ keysrefs || return "[$title]"

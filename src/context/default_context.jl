@@ -151,6 +151,8 @@ const DefaultLocalVars = Vars(
     # pagination
     :_paginator_name => "",
     :_paginator_npp  => 10,
+    # Check if a base url prefix was applied
+    :_applied_base_url_prefix => "",
 )
 const DefaultLocalVarsAlias = Alias(
     :fd_rpath     => :_relative_path,
