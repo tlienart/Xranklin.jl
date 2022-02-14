@@ -313,7 +313,7 @@ randstring(5)
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">randstring(5)</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">"zZG14"</code></pre></div></fieldset>
+<div class="code-output"><pre><code class="code-result language-plaintext">"VJZ6l"</code></pre></div></fieldset>
 
 </div><div class="trim">
 
@@ -1068,11 +1068,12 @@ The simple example below shows how that can work (you could do something similar
 &rbrace;
 
 \pycode&lbrace;
-  import numpy as np
-  np.random.seed(2)
-  x = np.random.randn(5)
-  r = np.linalg.norm(x) / len(x)
-  np.round(r, 2)
+  import pandas as pd
+  df = pd.DataFrame(&lbrace;
+    &quot;A&quot;: [&quot;Alice&quot;, &quot;Bob&quot;],
+    &quot;B&quot;: [2, 3]
+    &rbrace;)
+  df[&quot;B&quot;].mean()
 &rbrace;</code></pre>
 </fieldset>
 
@@ -1082,12 +1083,32 @@ The simple example below shows how that can work (you could do something similar
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="python">import numpy as np
-np.random.seed(2)
-x = np.random.randn(5)
-r = np.linalg.norm(x) / len(x)
-np.round(r, 2)</code></pre>
-<div class="code-output"><pre><code class="code-stdout language-plaintext">0.65
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="python">import pandas as pd
+df = pd.DataFrame(&lbrace;
+  &quot;A&quot;: [&quot;Alice&quot;, &quot;Bob&quot;],
+  &quot;B&quot;: [2, 3]
+  &rbrace;)
+df[&quot;B&quot;].mean()</code></pre>
+<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: PyError ($(Expr(:escape, :(ccall(#= /home/runner/.julia/packages/PyCall/L0fLP/src/pyeval.jl:38 =# @pysym(:PyEval_EvalCode), PyPtr, (PyPtr, PyPtr, PyPtr), o, globals, locals))))) <class 'ModuleNotFoundError'>
+ModuleNotFoundError("No module named 'pandas'")
+  File "/home/runner/.julia/packages/PyCall/L0fLP/src/pyeval.jl", line 1, in <module>
+    const Py_single_input = 256  # from Python.h
+
+Stacktrace:
+  [1] pyerr_check
+    @ ~/.julia/packages/PyCall/L0fLP/src/exception.jl:62 [inlined]
+  [2] pyerr_check
+    @ ~/.julia/packages/PyCall/L0fLP/src/exception.jl:66 [inlined]
+  [3] _handle_error(msg::String)
+    @ PyCall ~/.julia/packages/PyCall/L0fLP/src/exception.jl:83
+  [4] macro expansion
+    @ ~/.julia/packages/PyCall/L0fLP/src/exception.jl:97 [inlined]
+  [5] #117
+    @ ~/.julia/packages/PyCall/L0fLP/src/pyeval.jl:38 [inlined]
+  [6] disable_sigint
+    @ ./c.jl:458 [inlined]
+  [7] pyeval_(s::String, globals::PyCall.PyDict{String, PyCall.PyObject, true}, locals::PyCall.PyDict{String, PyCall.PyObject, true}, input_type::Int64, fname::String)
+    @ PyCall ~/.julia/packages/PyCall/L0fLP/src/pyeval.jl:37
 </code></pre></div></fieldset>
 
 </div><p>The <code>replace</code> line in the code block adds a <code>res = ...</code> before the last line
