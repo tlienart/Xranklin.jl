@@ -19,11 +19,6 @@ env:
   # >> change the digit at the end if, for some reason, you believe
   # that the cache used by the github action has an issue
   CACHE_KEY: "franklin-preview-1b"
-  # >> if you use PyCall/PyPlot and don't want to use Conda, leave this
-  # as is and use the setup-python action along with pip as shown below
-  # if you do want to use Conda.jl; change to "" and remove the
-  # setup-python step
-  PYTHON: "python"
 
 jobs:
   preview:
