@@ -767,8 +767,8 @@ The simple example below shows how that can work (you could do something similar
   \pycode{
     import pandas as pd
     df = pd.DataFrame({
-      "A": ["Alice", "Bob"],
-      "B": [2, 3]
+      "A": ["Alice", "Bob", "Jane"],
+      "B": [2, 3, 4]
       })
     df["B"].mean()
   }
