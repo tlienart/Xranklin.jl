@@ -765,11 +765,12 @@ The simple example below shows how that can work (you could do something similar
   }
 
   \pycode{
-    import numpy as np
-    np.random.seed(2)
-    x = np.random.randn(5)
-    r = np.linalg.norm(x) / len(x)
-    np.round(r, 2)
+    import pandas as pd
+    df = pd.DataFrame({
+      "A": ["Alice", "Bob"],
+      "B": [2, 3]
+      })
+    df["B"].mean()
   }
 
 }

@@ -18,7 +18,7 @@ env:
   CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
   # >> change the digit at the end if, for some reason, you believe
   # that the cache used by the github action has an issue
-  CACHE_KEY: "franklin-preview-1b"
+  CACHE_KEY: "franklin-preview-2"
 
 jobs:
   preview:
@@ -27,7 +27,7 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v2
 
-      - name: Cache
+      - name: Cache 📖
         uses: actions/cache@v2
         with:
           path: |
@@ -48,14 +48,18 @@ jobs:
           version: 1.7
 
       # Python
-      - name: Install python
+      - name: Install Python 🐍
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
-      - run: pip install matplotlib
+      - name: Python libs and path 🐍
+        run: pip install matplotlib pandas
 
       # Website build
-      - run: julia -e '
+      - name: Building website 🚧
+      - run: |
+             export PYTHON=$(which python);
+             julia -e '
                 using Pkg;
                 Pkg.add(
                   url="https://github.com/tlienart/Xranklin.jl",
