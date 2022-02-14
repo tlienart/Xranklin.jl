@@ -313,7 +313,7 @@ randstring(5)
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">randstring(5)</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">"VsZwd"</code></pre></div></fieldset>
+<div class="code-output"><pre><code class="code-result language-plaintext">"jXYbB"</code></pre></div></fieldset>
 
 </div><div class="trim">
 
@@ -557,8 +557,44 @@ y = @. sin(exp(x)) * sinc(x)
 figure(figsize=(6, 4))
 plot(x, y)
 gcf()</code></pre>
-<div class="code-output"><img class="code-figure" src="/Xranklin.jl/preview/assets/syntax/code/figs-html/__autofig_1458796918183576839.svg">
-</div><p>Note that it's the figure object that is showable as SVG in Pyplot and so we must do
+<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: Failed to precompile PyPlot [d330b81b-6aea-500a-939a-2ce795aea3ee] to /home/runner/.julia/compiled/v1.7/PyPlot/jl_XQ8cyg.
+Stacktrace:
+  [1] error(s::String)
+    @ Base ./error.jl:33
+  [2] compilecache(pkg::Base.PkgId, path::String, internal_stderr::IO, internal_stdout::IO, ignore_loaded_modules::Bool)
+    @ Base ./loading.jl:1466
+  [3] compilecache(pkg::Base.PkgId, path::String)
+    @ Base ./loading.jl:1410
+  [4] _require(pkg::Base.PkgId)
+    @ Base ./loading.jl:1120
+  [5] require(uuidkey::Base.PkgId)
+    @ Base ./loading.jl:1013
+  [6] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:997
+  [7] eval
+    @ ./boot.jl:373 [inlined]
+  [8] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
+    @ Base ./loading.jl:1196
+  [9] include_string
+    @ ./loading.jl:1180 [inlined]
+ [10] #47
+    @ ~/.julia/packages/Xranklin/7ieR2/src/context/code/notebook_code.jl:128 [inlined]
+ [11] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#47#48"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, Base.PipeEndpoint, Base.PipeEndpoint})()
+    @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:118
+ [12] with_logstate(f::Function, logstate::Any)
+    @ Base.CoreLogging ./logging.jl:511
+ [13] with_logger
+    @ ./logging.jl:623 [inlined]
+ [14] capture(f::Xranklin.var"#47#48"{Module, String}; rethrow::Type, color::Bool)
+    @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:116
+ [15] capture
+    @ ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:75 [inlined]
+ [16] _eval_code_cell(mdl::Module, code::String, cell_name::String)
+    @ Xranklin ~/.julia/packages/Xranklin/7ieR2/src/context/code/notebook_code.jl:127
+ [17] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/7ieR2/src/context/code/notebook_code.jl:86
+ [18] html_code_block(b::FranklinParser.Block, c::Xranklin.LocalContext)
+    @ Xranklin ~/.julia/packages/Xranklin/7ieR2/src/convert/markdown/rules/code.jl:181</code></pre></div><p>Note that it's the figure object that is showable as SVG in Pyplot and so we must do
 <code>gcf()</code> here to have it be the effective result of the cell and have the plot shown.</p>
 <h3 id="custom_show" ><a href="#custom_show"> Custom show</a></h3><p>If you have defined a custom <code>html_show(r)</code> in your <code>Utils</code> that accepts an object of the type
 of the result of a code block and returns a string, then that will be used to represent the
@@ -639,13 +675,13 @@ sqrt(-1)
 <div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: DomainError with -1.0:
 sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).
 Stacktrace:
-   [1] throw_complex_domainerror(f::Symbol, x::Float64)
-     @ Base.Math ./math.jl:33
-   [2] sqrt
-     @ ./math.jl:567 [inlined]
-   [3] sqrt(x::Int64)
-     @ Base.Math ./math.jl:1221
- </code></pre></div></fieldset>
+  [1] throw_complex_domainerror(f::Symbol, x::Float64)
+    @ Base.Math ./math.jl:33
+  [2] sqrt
+    @ ./math.jl:567 [inlined]
+  [3] sqrt(x::Int64)
+    @ Base.Math ./math.jl:1221
+</code></pre></div></fieldset>
 
 </div>
 <div style="height:1em;"></div><h3 id="in_what_path_does_the_code_run?" ><a href="#in_what_path_does_the_code_run?"> In what path does the code run?</a></h3><p>In the same path as where <code>serve</code> was called.
@@ -1070,8 +1106,8 @@ The simple example below shows how that can work (you could do something similar
 \pycode&lbrace;
   import pandas as pd
   df = pd.DataFrame(&lbrace;
-    &quot;A&quot;: [&quot;Alice&quot;, &quot;Bob&quot;],
-    &quot;B&quot;: [2, 3]
+    &quot;A&quot;: [&quot;Alice&quot;, &quot;Bob&quot;, &quot;Jane&quot;],
+    &quot;B&quot;: [2, 3, 4]
     &rbrace;)
   df[&quot;B&quot;].mean()
 &rbrace;</code></pre>
@@ -1085,12 +1121,48 @@ The simple example below shows how that can work (you could do something similar
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="python">import pandas as pd
 df = pd.DataFrame(&lbrace;
-  &quot;A&quot;: [&quot;Alice&quot;, &quot;Bob&quot;],
-  &quot;B&quot;: [2, 3]
+  &quot;A&quot;: [&quot;Alice&quot;, &quot;Bob&quot;, &quot;Jane&quot;],
+  &quot;B&quot;: [2, 3, 4]
   &rbrace;)
 df[&quot;B&quot;].mean()</code></pre>
-<div class="code-output"><pre><code class="code-stdout language-plaintext">2.5
-</code></pre></div></fieldset>
+<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: Failed to precompile PyCall [438e738f-606a-5dbb-bf0a-cddfbfd45ab0] to /home/runner/.julia/compiled/v1.7/PyCall/jl_FdHp7f.
+Stacktrace:
+  [1] error(s::String)
+    @ Base ./error.jl:33
+  [2] compilecache(pkg::Base.PkgId, path::String, internal_stderr::IO, internal_stdout::IO, ignore_loaded_modules::Bool)
+    @ Base ./loading.jl:1466
+  [3] compilecache(pkg::Base.PkgId, path::String)
+    @ Base ./loading.jl:1410
+  [4] _require(pkg::Base.PkgId)
+    @ Base ./loading.jl:1120
+  [5] require(uuidkey::Base.PkgId)
+    @ Base ./loading.jl:1013
+  [6] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:997
+  [7] eval
+    @ ./boot.jl:373 [inlined]
+  [8] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
+    @ Base ./loading.jl:1196
+  [9] include_string
+    @ ./loading.jl:1180 [inlined]
+ [10] #47
+    @ ~/.julia/packages/Xranklin/7ieR2/src/context/code/notebook_code.jl:128 [inlined]
+ [11] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#47#48"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, Base.PipeEndpoint, Base.PipeEndpoint})()
+    @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:118
+ [12] with_logstate(f::Function, logstate::Any)
+    @ Base.CoreLogging ./logging.jl:511
+ [13] with_logger
+    @ ./logging.jl:623 [inlined]
+ [14] capture(f::Xranklin.var"#47#48"{Module, String}; rethrow::Type, color::Bool)
+    @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:116
+ [15] capture
+    @ ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:75 [inlined]
+ [16] _eval_code_cell(mdl::Module, code::String, cell_name::String)
+    @ Xranklin ~/.julia/packages/Xranklin/7ieR2/src/context/code/notebook_code.jl:127
+ [17] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/7ieR2/src/context/code/notebook_code.jl:86
+ [18] html_code_block(b::FranklinParser.Block, c::Xranklin.LocalContext)
+    @ Xranklin ~/.julia/packages/Xranklin/7ieR2/src/convert/markdown/rules/code.jl:181</code></pre></div></fieldset>
 
 </div><p>The <code>replace</code> line in the code block adds a <code>res = ...</code> before the last line
 so that the result can be shown, cf. the <a href="https://github.com/JuliaPy/PyCall.jl">PyCall</a> docs.</p>
