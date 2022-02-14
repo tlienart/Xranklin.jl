@@ -18,7 +18,7 @@ env:
   CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
   # >> change the digit at the end if, for some reason, you believe
   # that the cache used by the github action has an issue
-  CACHE_KEY: "franklin-preview-2"
+  CACHE_KEY: "franklin-preview-3"
 
 jobs:
   preview:
