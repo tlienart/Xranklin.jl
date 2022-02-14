@@ -16,6 +16,10 @@
   <link rel="stylesheet" href="/Xranklin.jl/css/layout.css">
   <link rel="stylesheet" href="/Xranklin.jl/css/extras.css">
 
+  <style>
+  .fig-stdout { visibility: hidden; height: 0; margin: 0; }
+  </style>
+
 </head>
 <body>
 
@@ -179,10 +183,10 @@ y = 2//5</code></pre>
 <pre><code class="julia">using PyPlot
 x = range(0, pi, length=250)
 y = @. exp(-x * sin(x^2))
-figure(figsize=(8, 6))
+figure(figsize=(6, 4))
 plot(x, y)
 gcf()</code></pre>
-<div class="code-output"><img class="code-figure" src="/Xranklin.jl/assets/extras/literate/figs-html/__autofig_15918792189080208384.svg">
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/assets/extras/literate/figs-html/__autofig_9386637273362986331.svg">
 </div><p>Or here one with a printout</p>
 <pre><code class="julia">for i in 1:5
     println(&quot;*&quot;^i)
