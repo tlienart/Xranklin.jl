@@ -1,0 +1,1131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Franklin">
+
+  
+
+  
+    <link rel="stylesheet" href="/Xranklin.jl/preview/libs/highlight/github.min.css">
+  
+
+
+  <link rel="stylesheet" href="/Xranklin.jl/preview/css/pure.css">
+  <link rel="stylesheet" href="/Xranklin.jl/preview/css/layout.css">
+  <link rel="stylesheet" href="/Xranklin.jl/preview/css/extras.css">
+
+  <style>
+  .fig-stdout { visibility: hidden; height: 0; margin: 0; }
+  </style>
+
+</head>
+<body>
+
+<a id="menu-burger" href="#menu"></a>
+
+<div id="top-bar">
+
+  <div id="top-bar-nav">
+    <a href="/Xranklin.jl/preview/">
+      <img src="/Xranklin.jl/preview/assets/icons/franklin.svg" alt="franklin">
+    </a>
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <input class="search-input" name="q" placeholder="Search the docs..." type="text">
+      <input type="submit" value="🔍" formaction="/Xranklin.jl/preview/search/index.html">
+    </form>
+  </div>
+</div>
+
+<div id="layout">
+
+  
+  <div id="layout-left-menu">
+    <div id="menu-content">
+      <div class="submenu-title">
+    Workflow
+</div>
+<ul class="pure-menu-list">
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/workflow/getting_started/" class="pure-menu-link">
+        Getting Started
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/workflow/folder_structure/" class="pure-menu-link">
+        Folder Structure
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/workflow/adapting_layout/" class="pure-menu-link">
+        Adapting a layout
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/workflow/deployment/" class="pure-menu-link">
+        Deployment
+    </a>
+</li>
+</ul><div class="submenu-title">
+    Syntax
+</div>
+<ul class="pure-menu-list">
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/syntax/basics/" class="pure-menu-link">
+        Basics
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/syntax/extensions/" class="pure-menu-link">
+        Extensions
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/syntax/code/" class="pure-menu-link">
+        Code blocks
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/syntax/vars+funs/" class="pure-menu-link">
+        Page Variables
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/syntax/utils/" class="pure-menu-link">
+        Utils
+    </a>
+</li>
+</ul><div class="submenu-title">
+    Extras
+</div>
+<ul class="pure-menu-list">
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/extras/tags/" class="pure-menu-link">
+        Tags
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/extras/literate/" class="pure-menu-link">
+        Literate.jl
+    </a>
+</li>
+</ul><div class="submenu-title">
+    Engine
+</div>
+<ul class="pure-menu-list">
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/engine/build_passes/" class="pure-menu-link">
+        Page build passes
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/engine/cache/" class="pure-menu-link">
+        Cache
+    </a>
+</li>
+</ul>
+
+      <div id="menu-logos">
+        <a href="/Xranklin.jl/preview/"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+  <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"/>
+</svg>
+</a> &nbsp;
+        <a href="#"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M8 10a.5.5 0 0 0 .5-.5V3.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 3.707V9.5a.5.5 0 0 0 .5.5zm-7 2.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5z"/>
+</svg>
+</a> &nbsp;
+        <a href="https://github.com/tlienart/Franklin.jl"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+  <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+</svg>
+</a>
+      </div>
+
+    </div>
+  </div>
+
+  
+  <div id="layout-main">
+
+    
+    <div id="main-top-header">
+      <div id="main-top-header-content">
+        
+          <h1>Code blocks</h1>
+        
+      </div>
+    </div>
+
+    
+    <div id="main-right-margin">
+        <div id="margin-toc">
+          
+            <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
+            <div class="toc"><ol><li><a href="#overview"> Overview</a></li><li><a href="#syntax_for_executable_code_blocks"> Syntax for executable code blocks</a><ol><li><a href="#hiding_lines_of_code"> Hiding lines of code</a></li></ol></li><li><a href="#understanding_how_things_work"> Understanding how things work</a><ol><li><a href="#what_to_do_when_things_go_wrong"> What to do when things go wrong</a></li></ol></li><li><a href="#output_of_executable_code_blocks"> Output of executable code blocks</a><ol><li><a href="#nothing_to_show"> Nothing to show</a></li><li><a href="#default_show"> Default show</a></li><li><a href="#showable_as_svg_or_png"> Showable as SVG or PNG</a></li><li><a href="#custom_show"> Custom show</a></li><li><a href="#showing_the_output_as_markdown"> Showing the output as Markdown</a></li><li><a href="#what_if_the_code_errors?"> What if the code errors?</a></li><li><a href="#in_what_path_does_the_code_run?"> In what path does the code run?</a></li></ol></li><li><a href="#using_packages"> Using packages</a><ol><li><a href="#cache_and_packages"> Cache and packages</a></li></ol></li><li><a href="#more_examples"> More examples</a><ol><li><a href="#generating_a_table"> Generating a table</a></li><li><a href="#generating_svg"> Generating SVG</a></li><li><a href="#team_cards"> Team cards</a></li><li><a href="#executing_python_code"> Executing Python code</a></li></ol></li></ol></div>
+          
+      </div>
+    </div>
+
+    
+    <div id="main-left-content">
+      
+<style>
+img.code-figure {
+  max-width: 50%;
+}
+</style><h2 id="overview" ><a href="#overview"> Overview</a></h2><p>Franklin supports executing Julia code blocks and using or showing their output.
+Here is a basic example:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```julia:example
+# a very simple code 'cell'
+a = 1
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia"># a very simple code 'cell'
+a = 1</code></pre>
+</fieldset>
+
+</div><p>At a high level, this both shows the code on the webpage (as illustrated above)
+and also uses the running Julia session to execute the code so that the output
+can be shown somewhere else via the <code>\show</code> command:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\show&lbrace;example&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="code-output"><pre><code class="code-result language-plaintext">1</code></pre></div></fieldset>
+
+</div><p>The orange box helps indicate what corresponds to the output of an executed code cell.
+This is just the styling we use on the present site though, you can of course control this
+yourself by styling the class <code>.code-output</code> or one of the more specific sub-classes (see <a href="#output_of_executable_code_blocks">the section on code output</a>).</p>
+<p>The syntax</p>
+<pre><code class="markdown">```julia:name
+...
+```</code></pre>
+<p>identifies a fenced code block as "executable" and assigns a name '<code>name</code>' which
+allows to refer specifically to the output of that code block.</p>
+<p>The command <code>\show&lbrace;name&rbrace;</code> then displays <code>stdout</code>, <code>stderr</code> and the result of
+the code block if it's not <code>nothing</code>.</p>
+<fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+
+At the moment, only Julia code can be executed, though of course you can use
+<a href="https://github.com/JuliaPy/PyCall.jl">PyCall</a> or <a href="https://github.com/JuliaInterop/RCall.jl">RCall</a> to execute Python or R code.
+This is <a href="#executing_python_code">illustrated in the examples</a>.
+
+</fieldset>
+<div style="height:1em;"></div><h2 id="syntax_for_executable_code_blocks" ><a href="#syntax_for_executable_code_blocks"> Syntax for executable code blocks</a></h2><p>Beyond the syntax introduced briefly above, there are several other ways of indicating
+that a fenced code block should be executed:</p>
+<ul>
+<li><code>&#96;&#96;&#96;</code><code>julia:name</code> &mdash; the language and the name of the block are explicit,</li>
+<li><code>&#96;&#96;&#96;</code><code>:name</code> &mdash; the language is implicit, the name of the block is explicit,</li>
+<li><code>&#96;&#96;&#96;</code><code>:</code> &mdash; the language and the name are implicit.</li>
+</ul>
+<p>For all these you can also swap the colon ('<code>:</code>') with an exclamation mark ('<code>!</code>') with
+the same effect (see examples below).</p>
+<p>When the language is implicit, it is taken from the page variable <code>lang</code> (with default
+ <code>&quot;julia&quot;</code>).
+When the name is implicit, a name is automatically generated and the output is placed
+directly below the code.</p>
+<p>Here's an example with implicit language and explicit name:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```:abc
+println(&quot;hello&quot;)
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">println(&quot;hello&quot;)</code></pre>
+</fieldset>
+
+</div><div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\show&lbrace;abc&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="code-output"><pre><code class="code-stdout language-plaintext">hello
+</code></pre></div></fieldset>
+
+</div><p>And here's an example with implicit language and implicit name (the output is shown
+  automatically below the code):</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+1//2^2
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">1//2^2</code></pre>
+<div class="code-output"><pre><code class="code-result language-plaintext">1//4</code></pre></div></fieldset>
+
+</div><p>Unless you intend to show the code output somewhere else than below the code block,
+or use a custom method to show the code output, this last syntax (where everything is implicit)
+is likely the one you will want to use most often.</p>
+<h3 id="hiding_lines_of_code" ><a href="#hiding_lines_of_code"> Hiding lines of code</a></h3><p>In some cases an executable code cell might need some lines of code to work which you don't
+want to show.
+You can indicate that a line should be hidden by adding <code>#hide</code> to it (letter case and whitespace
+  don't matter).
+If you want to hide an entire code cell (e.g. you're just interested in the output)
+you can put <code>#hideall</code> in the code.</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+using Random #hide
+randstring(5)
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">randstring(5)</code></pre>
+<div class="code-output"><pre><code class="code-result language-plaintext">"v5cTt"</code></pre></div></fieldset>
+
+</div><div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+#hideall
+a = 5
+b = 7
+println(a+b)
+true
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="code-output"><pre><code class="code-stdout language-plaintext">12
+</code></pre><pre><code class="code-result language-plaintext">true</code></pre></div></fieldset>
+
+</div><div style="height:1em;"></div><h2 id="understanding_how_things_work" ><a href="#understanding_how_things_work"> Understanding how things work</a></h2><p>Each page can be seen as one "notebook".
+All executed code blocks on the page are executed in one sandbox module
+attached to that page and <strong>share the same scope</strong>.
+That sandbox module also loads the content of <code>utils.jl</code> as a <code>Utils</code> module
+and so all objects defined there can be accessed in any code block via
+<code>Utils.$name</code> (see also <a href="/Xranklin.jl/preview/syntax/utils/">the page on Utils</a>).</p>
+<p>To illustrate the scoping, consider these two consecutive cells:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+#hideall
+x = 3;
+```
+
+```!
+y = x
+@show y
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">y = x
+@show y</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">y = 3
+</code></pre></div></fieldset>
+
+</div><p>When a code block is executed, the code string as well as the output strings are
+cached.
+This allows for code blocks to not be systematically re-executed if they don't need to be.
+The cached representation can however be considered <em>stale</em> in which case the code block
+will be re-evaluated as soon as the page changes.
+When adding or modifying a code block, every code block below that one are considered stale,
+and so will be re-executed.</p>
+<p>Since <code>Utils</code> is loaded into the sandbox module attached to a page, if <code>utils.jl</code> changes,
+the entirety of each page's "notebook" will be marked as stale and will be re-run to guarantee
+that it uses the latest definitions from <code>Utils</code> (even if it doesn't use <code>Utils</code> at all).
+In that sense changing <code>utils.jl</code> amounts to clearing the entire cache and re-building
+the website (see also <a href="/Xranklin.jl/preview/syntax/utils/">the page discussing Utils</a>).</p>
+<h3 id="what_to_do_when_things_go_wrong" ><a href="#what_to_do_when_things_go_wrong"> What to do when things go wrong</a></h3><p>While hopefully this shouldn't happen too often, two things can go wrong:</p>
+<ol>
+<li>some code fails in an un-expected way (e.g.: it calls objects which it should have access to but doesn't seem to),</li>
+<li>the output of an auto-cell is incorrect (either wasn't refreshed or some other random output that you didn't expect).</li>
+</ol>
+<p>In both cases, clearing the cache should resolve the issue.
+You can do this in two ways:</p>
+<ol>
+<li>interrupt the server, add the <a href="/Xranklin.jl/preview/syntax/vars+funs/">page variable</a> <code>ignore_cache = true</code> and re-start the server,</li>
+<li>interrupt the server and restart it with the argument <code>clear = true</code>.</li>
+</ol>
+<p>In the first case, only the cache associated with the current page will be ignored and only that
+page will be (completely) re-evaluated.
+In the second case, the whole site is re-built from scratch.</p>
+<p>In any case, if you can reproduce what led to the problem, kindly open an issue on GitHub.</p>
+<h2 id="output_of_executable_code_blocks" ><a href="#output_of_executable_code_blocks"> Output of executable code blocks</a></h2><p>When evaluating a code block, Franklin captures <code>stdout</code>, <code>stderr</code> and, if the code
+doesn't fail, the result of the execution.
+When using the command <code>\show</code>, the output is placed in the following HTML:</p>
+<pre><code class="html">&lt;div class=&quot;code-output&quot;&gt;
+
+  &lt;!-- If stdout is not empty --&gt;
+  &lt;pre&gt;&lt;code clas=&quot;code-stdout language-plaintext&quot;&gt;
+    ...captured stdout...
+  &lt;/code&gt;&lt;/pre&gt;
+
+  &lt;!-- if stderr is not empty --&gt;
+  &lt;pre&gt;&lt;code class=&quot;code-stderr language-plaintext&quot;&gt;
+    ...captured stderr...
+  &lt;/code&gt;&lt;/pre&gt;
+
+  &lt;!-- if result is not nothing --&gt;
+   ...appropriate representation of the result...
+&lt;/div&gt;</code></pre>
+<p>If the code block didn't fail, the <em>appropriate representation</em> of a result that is
+not <code>nothing</code> is obtained by considering the following cases in order:</p>
+<ol>
+<li>there is a custom <code>html_show</code> function for <code>typeof(result)</code> that is defined
+in your <code>Utils</code>: the string returned by the call to that function is then added,</li>
+<li>the object can be shown as an SVG or PNG image: the image is automatically saved to
+an appropriate location and shown (with priority to the SVG output),</li>
+<li>the output of <code>Base.show(result)</code> is added in a <code>&lt;pre&gt;&lt;code...</code> block.</li>
+</ol>
+<p>Note that you can always suppress the display of a code block result by
+adding a final '<code>;</code>' to the code.
+These different cases are illustrated further below.</p>
+<fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+
+When capturing <code>stdout</code> during a code-cell evaluation, the logging level is
+such that <code>@info</code> and <code>@warn</code> won't show up.
+This is to prevent getting spurious information being shown on your website from
+packages precompiling upon CI deployment. 
+<br>
+
+Long story short: avoid using these macros in your code cells.
+
+</fieldset><p>You can also overwrite the <code>\show</code> command by defining a custom
+<code>lx_show</code> function in your utils (see <a href="/Xranklin.jl/preview/syntax/utils/">how to define latex commands</a>) if you
+want to handle the output in your own way (or define your own alternative command that does it).</p>
+<h3 id="nothing_to_show" ><a href="#nothing_to_show"> Nothing to show</a></h3><p>Nothing will be shown beyond <code>stdout</code> if</p>
+<ul>
+<li>the last command in the code block is a <code>@show</code> or returns <code>nothing</code></li>
+<li>the last command in the code block is followed by '<code>;</code>'</li>
+</ul>
+<p>For instance</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+a = 1//2
+@show a   # ==&gt; last command is a show
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">a = 1//2
+@show a   # ==&gt; last command is a show</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">a = 1//2
+</code></pre></div></fieldset>
+
+</div><div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+println(&quot;hello&quot;)
+1;       # ==&gt;  ';' suppresses the output
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">println(&quot;hello&quot;)
+1;       # ==&gt;  ';' suppresses the output</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">hello
+</code></pre></div></fieldset>
+
+</div><h3 id="default_show" ><a href="#default_show"> Default show</a></h3><p>For a result that is not showable as an image or doesn't have a custom show, <code>Base.show</code>
+will be applied with a result similar to what you would get in the Julia REPL:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+true
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">true</code></pre>
+<div class="code-output"><pre><code class="code-result language-plaintext">true</code></pre></div></fieldset>
+
+</div><div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+[1, 2, 3]
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">[1, 2, 3]</code></pre>
+<div class="code-output"><pre><code class="code-result language-plaintext">[1, 2, 3]</code></pre></div></fieldset>
+
+</div><h3 id="showable_as_svg_or_png" ><a href="#showable_as_svg_or_png"> Showable as SVG or PNG</a></h3><p>If the result is showable as SVG or PNG then a relevant file (<code>.svg</code> or <code>.png</code>) is
+generated and the image is inserted with</p>
+<pre><code class="html">&lt;img class=&quot;code-figure&quot; src=&quot;...generated_path_to_img...&quot;&gt;</code></pre>
+<p>For instance:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+using Luxor
+@drawsvg juliacircles()
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">using Luxor
+@drawsvg juliacircles()</code></pre>
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/preview/assets/syntax/code/figs-html/__autofig_10012904553771893789.svg">
+</div></fieldset>
+
+</div><p>If you inspect the HTML, you will see that the image displayed corresponds to a generated path that looks like</p>
+<pre><code class="plaintext">/assets/syntax/code/figs-html/__autofig_10012904553771893789.svg</code></pre>
+<p>The generated path is built as</p>
+<pre><code class="plaintext">/assets/[relative-path]/figs-html/[gen]</code></pre>
+<p>where <code>relative-path</code> is the relative path to the page with the code and
+<code>gen</code> is built out of the hash of the code that generated the image:</p>
+<pre><code class="julia">hash(&quot;&quot;&quot;
+  using Luxor
+  @drawsvg juliacircles()
+  &quot;&quot;&quot; |&gt; strip
+  ) |&gt; string</code></pre>
+<div class="code-output"><pre><code class="code-result language-plaintext">"10012904553771893789"</code></pre></div><p>Here's another example with PyPlot (and you could use any other plotting library such as
+  <a href="https://github.com/JuliaPlots/Plots.jl">Plots</a>,
+  <a href="https://github.com/JuliaPlots/PlotlyJS.jl">PlotlyJS</a>, etc.)</p>
+<pre><code class="julia">using PyPlot
+x = range(0, pi, length=500)
+y = @. sin(exp(x)) * sinc(x)
+figure(figsize=(6, 4))
+plot(x, y)
+gcf()</code></pre>
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/preview/assets/syntax/code/figs-html/__autofig_1458796918183576839.svg">
+</div><p>Note that it's the figure object that is showable as SVG in Pyplot and so we must do
+<code>gcf()</code> here to have it be the effective result of the cell and have the plot shown.</p>
+<h3 id="custom_show" ><a href="#custom_show"> Custom show</a></h3><p>If you have defined a custom <code>html_show(r)</code> in your <code>Utils</code> that accepts an object of the type
+of the result of a code block and returns a string, then that will be used to represent the
+result on the page.</p>
+<p>For instance in the <code>utils.jl</code> for the present website, we've defined</p>
+<pre><code class="julia">struct Foo
+    x::Int
+end
+html_show(f::Foo) = &quot;&lt;strong&gt;Foo: $(f.x)&lt;/strong&gt;&quot;</code></pre>
+<p>We can use the type <code>Foo</code> by indicating it is defined in <code>Utils</code> and the custom show method will be used:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+Utils.Foo(1)
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">Utils.Foo(1)</code></pre>
+<div class="code-output"><strong>Foo: 1</strong></div></fieldset>
+
+</div><fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+
+Remember that you can refer to any object defined in <code>utils.jl</code> with the syntax <code>Utils.$name_of_object</code>.
+
+</fieldset>
+<div style="height:1em;"></div><h3 id="showing_the_output_as_markdown" ><a href="#showing_the_output_as_markdown"> Showing the output as Markdown</a></h3><p>In some cases it can be convenient to use a code block to generate some markdown.
+One way is to define a <a href="/Xranklin.jl/preview/syntax/utils/">utils function</a> but you can also use the <code>\showmd</code> command
+which interprets the output of <code>stdout</code> and the string representation of the result as Markdown.</p>
+<p>Here's a simple illustration:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">````!ex-showmd
+#hideall
+println(&quot;```plaintext&quot;)
+for i in 1:5
+  println(&quot;*&quot;^i)
+end
+println(&quot;```&quot;)
+````
+
+\mdshow&lbrace;ex-showmd&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="plaintext">*
+**
+***
+****
+*****</code></pre></fieldset>
+
+</div><h3 id="what_if_the_code_errors?" ><a href="#what_if_the_code_errors?"> What if the code errors?</a></h3><p>If there's an error in the code, no result will be shown and <code>stderr</code> will
+capture a trimmed stacktrace of the problem which will be displayed:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+sqrt(-1)
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">sqrt(-1)</code></pre>
+<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: DomainError with -1.0:
+sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).
+Stacktrace:
+   [1] throw_complex_domainerror(f::Symbol, x::Float64)
+     @ Base.Math ./math.jl:33
+   [2] sqrt
+     @ ./math.jl:567 [inlined]
+   [3] sqrt(x::Int64)
+     @ Base.Math ./math.jl:1221
+ </code></pre></div></fieldset>
+
+</div>
+<div style="height:1em;"></div><h3 id="in_what_path_does_the_code_run?" ><a href="#in_what_path_does_the_code_run?"> In what path does the code run?</a></h3><p>In the same path as where <code>serve</code> was called.
+And since you can call <code>serve()</code> from within the site folder or from elsewhere specifying
+<code>serve(&quot;path/to/folder&quot;)</code>, this path can vary.
+As a consequence, if you want some code to do something with a path (e.g. read or write a file),
+you should use <code>Utils.path(:folder)</code> as the base path pointing to your website folder.
+You can also use <code>Utils.path(:site)</code> as the base path pointing to the website build folder.</p>
+<p>For instance let's say you want to save a DataFrame to a CSV that you can link to
+as an asset on your site:</p>
+<pre><code class="julia">using DataFrames, CSV
+build_dir  = Utils.path(:site)
+target_dir = mkpath(joinpath(build_dir, &quot;assets&quot;, &quot;data&quot;))
+df = DataFrame(A=1:4, B=[&quot;M&quot;, &quot;F&quot;, &quot;F&quot;, &quot;M&quot;])
+CSV.write(joinpath(target_dir, &quot;data1.csv&quot;), df);</code></pre>
+<p>this outputs nothing but it does save <code>data1.csv</code> in the build folder at location
+<code>/assets/data/</code> so that you could then link to it explicitly:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">click on [this link](/assets/data/data1.csv) to download the CSV corresponding
+to the dataframe above.</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>click on <a href="/Xranklin.jl/preview/assets/data/data1.csv">this link</a> to download the CSV corresponding
+to the dataframe above.</fieldset>
+
+</div><p>Another example is that you might want to write a file in the build dir:</p>
+<pre><code class="julia">build_dir = Utils.path(:site)
+open(joinpath(build_dir, &quot;405.html&quot;), &quot;w&quot;) do f
+  write(f, &quot;&quot;&quot;
+    Dummy page 405, &lt;a href=&quot;/&quot;&gt;return home&lt;/a&gt;
+    &quot;&quot;&quot;
+  )
+end;</code></pre>
+<p>The above code block writes a dummy HTLM page <code>405.html</code> in the build folder.
+You can actually see it <a href="/Xranklin.jl/preview/405.html">here</a>.</p>
+<fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+
+Do not use absolute paths since those might not exist in a continuous integration
+environment. Do use <code>Utils.path(:folder)</code> or <code>Utils.path(:site)</code>
+as your base path and use <code>joinpath</code> to point to the specific location you care about.
+
+</fieldset>
+<div style="height:1em;"></div><h2 id="using_packages" ><a href="#using_packages"> Using packages</a></h2><p>As already illustrated in a few examples above, you can use packages in executable code blocks.
+You should make sure that those packages are added to the environment corresponding to the
+website folder. For instance let's say you want to use <code>CSV</code> and <code>DataFrames</code>, you would do:</p>
+<pre><code class="julia-repl">julia&gt; using Pkg; Pkg.activate(&quot;path/to/website/folder&quot;)
+julia&gt; Pkg.add([&quot;CSV&quot;, &quot;DataFrames&quot;])</code></pre>
+<p>It's important your website folder has its dedicated environment.
+Especially if you use continuous integration (CI, e.g. GitHub Actions)
+to build and deploy the website as that CI will need a correct <code>Project.toml</code>
+to load the packages needed to properly build the website.</p>
+<pre><code class="julia">using DataFrames
+df = DataFrame(A=1:4, B=[&quot;M&quot;, &quot;F&quot;, &quot;F&quot;, &quot;M&quot;])</code></pre>
+<div class="code-output"><pre><code class="code-result language-plaintext">4×2 DataFrame
+ Row │ A      B
+     │ Int64  String
+─────┼───────────────
+   1 │     1  M
+   2 │     2  F
+   3 │     3  F
+   4 │     4  M</code></pre></div><div style="height:1em;"></div><h3 id="cache_and_packages" ><a href="#cache_and_packages"> Cache and packages</a></h3><p>If you start a new Julia session and have a page where some code uses a package
+(say <code>DataFrames</code>) and you add a new code block at the end of the page, only that
+code will be executed and, therefore, won't have access to <code>DataFrames</code> unless
+you re-evaluate the whole page <strong>or</strong> you explicitly add <code>using DataFrames</code> in that
+new cell (possibly with a <code># hide</code> if you don't want to show it multiple times).</p>
+<p>Alternatively, you can (same as when you encounter errors):</p>
+<ul>
+<li>set the current page to ignore the cache at the start of the server by setting
+the page variable <code>ignore_cache</code> to <code>true</code> and restart the server,</li>
+<li>clear the entire site cache.</li>
+</ul>
+<h2 id="more_examples" ><a href="#more_examples"> More examples</a></h2><p>You'll find here a few toy examples of what can be done with executed
+code cells, hopefully it will give you some inspiration for what you might do with
+them yourself!</p>
+<h3 id="generating_a_table" ><a href="#generating_a_table"> Generating a table</a></h3><p>In this example we use code to generate the Markdown representation of a table and use
+<code>\mdshow</code> to show the result.
+You could combine such an example with <code>CSV</code> to read data from a file for instance.</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!ex-gen-table
+#hideall
+names = (:Taimur, :Catherine, :Maria, :Arvind, :Jose, :Minjie)
+numbers = (1525, 5134, 4214, 9019, 8918, 5757)
+# header
+println( &quot;| Name  | Number  |&quot;)
+println( &quot;| :---  | :---    |&quot;)
+# all rows
+println.(&quot;| $name | $number |&quot;
+  for (name, number) in zip(names, numbers)
+);
+```
+\mdshow&lbrace;ex-gen-table&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><table class="pure-table">
+<thead>
+<th style="text-align:left;"> Name  </th>
+<th style="text-align:left;"> Number  </th>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;"> Taimur </td>
+<td style="text-align:left;"> 1525 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> Catherine </td>
+<td style="text-align:left;"> 5134 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> Maria </td>
+<td style="text-align:left;"> 4214 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> Arvind </td>
+<td style="text-align:left;"> 9019 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> Jose </td>
+<td style="text-align:left;"> 8918 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> Minjie </td>
+<td style="text-align:left;"> 5757 </td>
+</tr>
+</tbody>
+</table></fieldset>
+
+</div><h3 id="generating_svg" ><a href="#generating_svg"> Generating SVG</a></h3><p>Here we combine the use of <code>\mdshow</code> with a command that inputs some SVG.</p>
+<style>
+.ccols {
+  margin-top:1.5em;
+  margin-bottom:1.5em;
+  margin-left:auto;
+  margin-right:auto;
+  width: 60%;
+  text-align: center;}
+.ccols svg {
+  width:30px;}
+</style><div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\circle&rbrace;[1]&lbrace;
+  ~~~
+  &lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 4 4&quot;&gt;
+  &lt;circle cx=&quot;2&quot; cy=&quot;2&quot; r=&quot;1.5&quot; fill=&quot;#1&quot;/&gt;&lt;/svg&gt;
+  ~~~
+&rbrace;
+
+```!ex-gen-svg
+#hideall
+cols = (
+  :pink, :lightpink, :hotpink, :deeppink,
+  :mediumvioletred, :palevioletred, :coral,
+  :tomato, :orangered, :darkorange, :orange, :gold
+)
+print(&quot;@@ccols &quot;)
+print.(&quot;\\circle&lbrace;$c&rbrace;&quot; for c in cols)
+println(&quot;@@&quot;)
+```
+
+\mdshow&lbrace;ex-gen-svg&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="ccols"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4">
+<circle cx="2" cy="2" r="1.5" fill="pink"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4">
+<circle cx="2" cy="2" r="1.5" fill="lightpink"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4">
+<circle cx="2" cy="2" r="1.5" fill="hotpink"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4">
+<circle cx="2" cy="2" r="1.5" fill="deeppink"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4">
+<circle cx="2" cy="2" r="1.5" fill="mediumvioletred"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4">
+<circle cx="2" cy="2" r="1.5" fill="palevioletred"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4">
+<circle cx="2" cy="2" r="1.5" fill="coral"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4">
+<circle cx="2" cy="2" r="1.5" fill="tomato"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4">
+<circle cx="2" cy="2" r="1.5" fill="orangered"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4">
+<circle cx="2" cy="2" r="1.5" fill="darkorange"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4">
+<circle cx="2" cy="2" r="1.5" fill="orange"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4">
+<circle cx="2" cy="2" r="1.5" fill="gold"/></svg></div></fieldset>
+
+</div><p>The CSS corresponding to <code>ccols</code> is</p>
+<pre><code class="css">.ccols &lbrace;
+  margin-top:1.5em;
+  margin-bottom:1.5em;
+  margin-left:auto;
+  margin-right:auto;
+  width: 60%;
+  text-align: center;&rbrace;
+.ccols svg &lbrace;
+  width:30px;&rbrace;</code></pre>
+<h3 id="team_cards" ><a href="#team_cards"> Team cards</a></h3><p>You may want to have a page with responsive team cards for instance where every card would
+follow the same layout but the content would be different.
+There are multiple ways you can do this with Franklin and a simple one below
+(adapted from <a href="https://www.w3schools.com/howto/howto_css_team.asp">this tutorial</a>).
+The advantage of doing something like this is that it can help separate the content
+from the layout making both arguably easier to maintain.</p>
+<style>
+.column {
+  float:left;
+  width:30%;
+  margin-bottom:16px;
+  padding:0 8px; }
+@media (max-width:62rem) {
+  .column {
+    width:45%;
+    display:block; }
+  }
+@media (max-width:30rem){
+  .column {
+    width:95%;
+    display:block;}
+  }
+.card { box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); }
+.card img {
+  padding-left:0;
+  width: 100%; }
+.container { padding: 0 16px; }
+.container::after, .row::after{
+  content: "";
+  clear: both;
+  display: table; }
+.title { color: grey; }
+.vitae { margin-top: 0.5em; }
+.email {
+  font-family: courier;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em; }
+.button{
+  border: none;
+  outline: 0;
+  display: inline-block;
+  padding: 8px;
+  color: white;
+  background-color: #000;
+  text-align: center;
+  cursor: pointer;
+  width: 100%; }
+.button:hover{ background-color: #555; }
+</style><div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\card&rbrace;[5]&lbrace;
+  @@card
+    ![#1](/assets/eximg/team/!#2.jpg)
+    @@container
+      ~~~
+      &lt;h2&gt;#1&lt;/h2&gt;
+      ~~~
+      @@title #3 @@
+      @@vitae #4 @@
+      @@email #5 @@
+      ~~~
+      &lt;p&gt;&lt;button class=&quot;button&quot;&gt;Contact&lt;/button&gt;&lt;/p&gt;
+      ~~~
+    @@
+  @@
+&rbrace;
+
+```!ex-gen-teamcards
+#hideall
+team = [
+  (
+    name=&quot;Jane Doe&quot;,
+    pic=&quot;beth&quot;,
+    title=&quot;CEO &amp; Founder&quot;,
+    vitae=&quot;Phasellus eget enim eu lectus faucibus vestibulum&quot;,
+    email=&quot;example@example.com&quot;
+  ),
+  (
+    name=&quot;Mike Ross&quot;,
+    pic=&quot;rick&quot;,
+    title=&quot;Art Director&quot;,
+    vitae=&quot;Phasellus eget enim eu lectus faucibus vestibulum&quot;,
+    email=&quot;example@example.com&quot;
+  ),
+  (
+    name=&quot;John Doe&quot;,
+    pic=&quot;meseeks&quot;,
+    title=&quot;Designer&quot;,
+    vitae=&quot;Phasellus eget enim eu lectus faucibus vestibulum&quot;,
+    email=&quot;example@example.com&quot;
+  )
+]
+
+&quot;@@cards @@row&quot; |&gt; println
+for person in team
+  &quot;&quot;&quot;
+  @@column
+    \\card&lbrace;
+      $(person.name)&rbrace;&lbrace;
+      $(person.pic)&rbrace;&lbrace;
+      $(person.title)&rbrace;&lbrace;
+      $(person.vitae)&rbrace;&lbrace;
+      $(person.email)&rbrace;
+  @@
+  &quot;&quot;&quot; |&gt; println
+end
+println(&quot;@@ @@&quot;) # end of cards + row
+```
+
+\mdshow&lbrace;ex-gen-teamcards&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="cards"> <div class="row"><div class="column">  <div class="card">  <img src="/Xranklin.jl/preview/assets/eximg/team/beth.jpg" alt="Jane Doe">
+  <div class="container">    
+    <h2>Jane Doe</h2>
+    
+    <div class="title"><p> CEO & Founder </p>
+</div>    <div class="vitae"><p> Phasellus eget enim eu lectus faucibus vestibulum </p>
+</div>    <div class="email"><p> example@example.com </p>
+</div>    
+    <p><button class="button">Contact</button></p>
+    
+  </div></div></div><div class="column">  <div class="card">  <img src="/Xranklin.jl/preview/assets/eximg/team/rick.jpg" alt="Mike Ross">
+  <div class="container">    
+    <h2>Mike Ross</h2>
+    
+    <div class="title"><p> Art Director </p>
+</div>    <div class="vitae"><p> Phasellus eget enim eu lectus faucibus vestibulum </p>
+</div>    <div class="email"><p> example@example.com </p>
+</div>    
+    <p><button class="button">Contact</button></p>
+    
+  </div></div></div><div class="column">  <div class="card">  <img src="/Xranklin.jl/preview/assets/eximg/team/meseeks.jpg" alt="John Doe">
+  <div class="container">    
+    <h2>John Doe</h2>
+    
+    <div class="title"><p> Designer </p>
+</div>    <div class="vitae"><p> Phasellus eget enim eu lectus faucibus vestibulum </p>
+</div>    <div class="email"><p> example@example.com </p>
+</div>    
+    <p><button class="button">Contact</button></p>
+    
+  </div></div></div></div> </div></fieldset>
+
+</div><p>The CSS used here is</p>
+<pre><code class="css">.column &lbrace;
+  float:left;
+  width:30%;
+  margin-bottom:16px;
+  padding:0 8px; &rbrace;
+@media (max-width:62rem) &lbrace;
+  .column &lbrace;
+    width:45%;
+    display:block; &rbrace;
+  &rbrace;
+@media (max-width:30rem)&lbrace;
+  .column &lbrace;
+    width:95%;
+    display:block;&rbrace;
+  &rbrace;
+.card &lbrace; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); &rbrace;
+.card img &lbrace;
+  padding-left:0;
+  width: 100%; &rbrace;
+.container &lbrace; padding: 0 16px; &rbrace;
+.container::after, .row::after&lbrace;
+  content: &quot;&quot;;
+  clear: both;
+  display: table; &rbrace;
+.title &lbrace; color: grey; &rbrace;
+.vitae &lbrace; margin-top: 0.5em; &rbrace;
+.email &lbrace;
+  font-family: courier;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em; &rbrace;
+.button&lbrace;
+  border: none;
+  outline: 0;
+  display: inline-block;
+  padding: 8px;
+  color: white;
+  background-color: #000;
+  text-align: center;
+  cursor: pointer;
+  width: 100%; &rbrace;
+.button:hover&lbrace; background-color: #555; &rbrace;</code></pre>
+<h3 id="executing_python_code" ><a href="#executing_python_code"> Executing Python code</a></h3><p>Using <a href="https://github.com/JuliaPy/PyCall.jl">PyCall</a> you can evaluate Python code in Julia, and so you can do that in Franklin too.
+The simple example below shows how that can work (you could do something similar with <a href="https://github.com/JuliaInterop/RCall.jl">RCall</a> too).</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\pycode&rbrace;[1]&lbrace;
+  &lt;!-- Show python code block --&gt;
+  ```python
+  #1
+  ```
+  &lt;!-- Execute code with PyCall.jl --&gt;
+  ```!
+  #hideall
+  using PyCall
+  lines = replace(
+    &quot;&quot;&quot;#1&quot;&quot;&quot;,
+    r&quot;(^|\n)([^\n]+)\n?$&quot; =&gt; s&quot;\1res = \2&quot;
+  )
+  py&quot;&quot;&quot;
+  $$lines
+  &quot;&quot;&quot;
+  println(py&quot;res&quot;)
+  ```
+&rbrace;
+
+\pycode&lbrace;
+  import pandas as pd
+  df = pd.DataFrame(&lbrace;
+    &quot;A&quot;: [&quot;Alice&quot;, &quot;Bob&quot;],
+    &quot;B&quot;: [2, 3]
+    &rbrace;)
+  df[&quot;B&quot;].mean()
+&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="python">import pandas as pd
+df = pd.DataFrame(&lbrace;
+  &quot;A&quot;: [&quot;Alice&quot;, &quot;Bob&quot;],
+  &quot;B&quot;: [2, 3]
+  &rbrace;)
+df[&quot;B&quot;].mean()</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">2.5
+</code></pre></div></fieldset>
+
+</div><p>The <code>replace</code> line in the code block adds a <code>res = ...</code> before the last line
+so that the result can be shown, cf. the <a href="https://github.com/JuliaPy/PyCall.jl">PyCall</a> docs.</p>
+<fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+
+It's up to you to make sure that <a href="https://github.com/JuliaPy/PyCall.jl">PyCall</a> works well in your Julia session and that
+the Python environment it uses has the relevant libraries (e.g. <code>numpy</code>).
+
+</fieldset>
+
+
+
+      
+
+      <div id="pg-foot">
+        Website built with <a href="https://franklinjl.org">Franklin.jl</a>
+        and the <a href="https://julialang.org">Julia programming language</a>.
+      </div>
+
+      </div>   
+    </div>     
+  </div>       
+
+
+
+
+  
+
+  
+    <script src="/Xranklin.jl/preview/libs/highlight/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();hljs.configure({tabReplace: '    '});</script>
+  
+
+  
+  <script src="/Xranklin.jl/preview/libs/pure/ui.js"></script>
+
+  </body>
+</html>
