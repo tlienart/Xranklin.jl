@@ -57,7 +57,7 @@ jobs:
 
       # Website build
       - name: Building website 🚧
-      - run: |
+        run: |
              export PYTHON=$(which python);
              julia -e '
                 using Pkg;
@@ -74,8 +74,9 @@ jobs:
                         )
                       );'
 
-      # Deployment and caching
-      - run: touch ${{ env.SITE_FOLDER }}/__site/.nojekyll
+      # Deployment
+      - name: No Jekyll
+        run: touch ${{ env.SITE_FOLDER }}/__site/.nojekyll
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
