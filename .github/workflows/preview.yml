@@ -15,10 +15,10 @@ env:
   PREVIEW: "preview"
 
   # FLAGS FOR DEPENDENCIES INSTALLATION, ADJUST AS REQUIRED
-  # python deps, set to "" if none
+  # If use PyCall or PyPlot indicate libs here otherwise set to ""
   PYTHON_LIBS: "matplotlib pandas"
-  # whether Plots.jl is used
-  PLOTS: true
+  # If use Plots.jl indicate "xvfb-run" otherwise ""
+  PLOTS: "xvfb-run"
   # whether PGFPlotsX is used
   PGFPLOTSX: true
 
@@ -65,7 +65,15 @@ jobs:
 
       - if: ${{ env.PYTHON_LIBS != '' }}
         name: Install Python packages 🐍
-        run: pip install ${{ env.PYTHON_LIBS }}
+        run: |
+             pip install ${{ env.PYTHON_LIBS }}
+             export PYTHON=$(which python);
+
+      # QT dependencies for GR (Plots)
+      - if: ${{ env.PLOTS != '' }}
+        run: |
+             sudo apt-get update -y
+             sudo apt-get install -y qt5-default
 
       # ================ #
       # BUILDING WEBSITE #
@@ -79,9 +87,7 @@ jobs:
 
       # Building website
       - name: Building website 🚧
-        run: |
-             export PYTHON=$(which python);
-             julia -e '
+        run: ${{ env.PLOTS }} julia -e '
                 using Pkg; Pkg.add("PyCall"); Pkg.build("PyCall");
                 Pkg.add(
                   url="https://github.com/tlienart/Xranklin.jl",
