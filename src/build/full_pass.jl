@@ -38,6 +38,7 @@ function full_pass(
             )::Nothing
 
     initial_pass = !any((layout_changed, config_changed, utils_changed))
+    final && setvar!(gc, :_final, true)
 
     # depending on the case, we'll have to re-consider
     # utils or config specifically

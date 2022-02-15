@@ -1,6 +1,6 @@
 # Hello
 
-+++
+<!-- +++
 alist = [
   """
   * item **$i**
@@ -8,4 +8,16 @@ alist = [
 ]
 +++
 
-{{paginate alist 4}}
+{{paginate alist 4}} -->
+
+```!
+1+1
+```
+
+whatabout
+
+```!
+2+2
+```
+
+andhere
