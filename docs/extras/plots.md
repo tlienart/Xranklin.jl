@@ -44,7 +44,7 @@ This is a follow up from code but with more examples to do with plotting specifi
 Prepare something
 
 ```!
-x = range(-1, 1, length=250)
+x = range(-1, 1, length=300)
 y = @. sinc(x) * exp(-1/x^2);
 ```
 
