@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Franklin">
+
+  
+
+  
+    <link rel="stylesheet" href="/Xranklin.jl/preview/libs/highlight/github.min.css">
+  
+
+
+  <link rel="stylesheet" href="/Xranklin.jl/preview/css/pure.css">
+  <link rel="stylesheet" href="/Xranklin.jl/preview/css/layout.css">
+  <link rel="stylesheet" href="/Xranklin.jl/preview/css/extras.css">
+
+  
+  <style>
+  .fig-stdout { visibility: hidden; height: 0; margin: 0; }
+  </style>
+
+</head>
+<body>
+
+<a id="menu-burger" href="#menu"></a>
+
+<div id="top-bar">
+
+  <div id="top-bar-nav">
+    <a href="/Xranklin.jl/preview/">
+      <img src="/Xranklin.jl/preview/assets/icons/franklin.svg" alt="franklin">
+    </a>
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <input class="search-input" name="q" placeholder="Search the docs..." type="text">
+      <input type="submit" value="🔍" formaction="/Xranklin.jl/preview/search/index.html">
+    </form>
+  </div>
+</div>
+
+<div id="layout">
+
+  
+  <div id="layout-left-menu">
+    <div id="menu-content">
+      <div class="submenu-title">
+    Workflow
+</div>
+<ul class="pure-menu-list">
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/workflow/getting_started/" class="pure-menu-link">
+        Getting Started
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/workflow/folder_structure/" class="pure-menu-link">
+        Folder Structure
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/workflow/adapting_layout/" class="pure-menu-link">
+        Adapting a layout
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/workflow/deployment/" class="pure-menu-link">
+        Deployment
+    </a>
+</li>
+</ul><div class="submenu-title">
+    Syntax
+</div>
+<ul class="pure-menu-list">
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/syntax/basics/" class="pure-menu-link">
+        Basics
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/syntax/extensions/" class="pure-menu-link">
+        Extensions
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/syntax/code/" class="pure-menu-link">
+        Code blocks
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/syntax/vars+funs/" class="pure-menu-link">
+        Page Variables
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/syntax/utils/" class="pure-menu-link">
+        Utils
+    </a>
+</li>
+</ul><div class="submenu-title">
+    Extras
+</div>
+<ul class="pure-menu-list">
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/extras/tags/" class="pure-menu-link">
+        Tags
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/extras/literate/" class="pure-menu-link">
+        Literate.jl
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/extras/plots/" class="pure-menu-link">
+        Plots
+    </a>
+</li>
+</ul><div class="submenu-title">
+    Engine
+</div>
+<ul class="pure-menu-list">
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/engine/build_passes/" class="pure-menu-link">
+        Page build passes
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/preview/engine/cache/" class="pure-menu-link">
+        Cache
+    </a>
+</li>
+</ul>
+
+      <div id="menu-logos">
+        <a href="/Xranklin.jl/preview/"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+  <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"/>
+</svg>
+</a> &nbsp;
+        <a href="#"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M8 10a.5.5 0 0 0 .5-.5V3.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 3.707V9.5a.5.5 0 0 0 .5.5zm-7 2.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5z"/>
+</svg>
+</a> &nbsp;
+        <a href="https://github.com/tlienart/Franklin.jl"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+  <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+</svg>
+</a>
+      </div>
+
+    </div>
+  </div>
+
+  
+  <div id="layout-main">
+
+    
+    <div id="main-top-header">
+      <div id="main-top-header-content">
+        
+          <h1>Folder Structure</h1>
+        
+      </div>
+    </div>
+
+    
+    <div id="main-right-margin">
+        <div id="margin-toc">
+          
+            <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
+            <div class="toc"><ol><li><a href="#basic_folder_structure"> Basic folder structure</a><ol><li><a href="#index_file"> Index file</a></li><li><a href="#config_file"> Config file</a></li><li><a href="#layout_files"> Layout files</a></li></ol></li><li><a href="#site_and_cache_folders"> Site and cache folders</a><ol><li><a href="#site_folder"> Site folder</a></li><li><a href="#cache_folder"> Cache folder</a></li><li><a href="#paths_in_franklin"> Paths in Franklin</a></li></ol></li><li><a href="#other_pages"> Other pages</a></li><li><a href="#css_and_js"> CSS and JS</a></li><li><a href="#assets"> Assets</a></li><li><a href="#literate"> Literate</a></li></ol></div>
+          
+      </div>
+    </div>
+
+    
+    <div id="main-left-content">
+      
+<h2 id="basic_folder_structure" ><a href="#basic_folder_structure"> Basic folder structure</a></h2><p>A Franklin-compatible website folder will always have the following basic structure:</p>
+<pre><code class="plaintext">TestWebsite
+├── _layout
+│   ├── foot.html
+│   └── head.html
+├── config.md
+└── index.md       # or index.html</code></pre>
+<p>where <code>TestWebsite</code> is the title of the website folder.
+Let's go over what these different files do.</p>
+<p>Paths on this page are all meant relative to the website folder so for instance if
+we talk about <code>foo/bar.md</code> it's located at <code>TestWebsite/foo/bar.md</code>.</p>
+<h3 id="index_file" ><a href="#index_file"> Index file</a></h3><p>The root <code>index.md</code> file is what Franklin will convert into your website's landing page.
+So, for instance, if the content of <code>index.md</code> is</p>
+<pre><code class="markdown"># Hello
+
+Some text.</code></pre>
+<p>and that you start the server, the page you will see when navigating to <code>localhost:8000/</code>
+will contain matching HTML like:</p>
+<pre><code class="html">...
+  &lt;h1&gt;Hello&lt;/h1&gt;
+  &lt;p&gt;Some text.&lt;/p&gt;
+...</code></pre>
+<p>In some cases you might want to have full control over the landing page
+and write it directly in HTML.
+In such cases, simply remove the file <code>index.md</code> and write a file
+<code>index.html</code> instead.</p>
+<h3 id="config_file" ><a href="#config_file"> Config file</a></h3><p>The <code>config.md</code> file is where you can define global <a href="/Xranklin.jl/preview/syntax/vars+funs/">page variables</a>
+and <a href="/Xranklin.jl/preview/syntax/extensions/">commands</a>.
+As a quick idea of what the <code>config.md</code> file can be used to do, this is where you might
+specify who the author of the website is, or what it's about:</p>
+<pre><code class="plaintext">+++
+author = &quot;Zenobia&quot;
+descr = &quot;&quot;&quot;
+  This website is dedicated to Zenobia, a famous queen of Syria.
+  &quot;&quot;&quot;
++++</code></pre>
+<p>It is also the place where you will define the <code>base_url_prefix</code> (or <code>prepath</code>)
+which is <strong>crucial</strong> to get your site to <a href="/Xranklin.jl/preview/workflow/deployment/">deploy properly</a>.</p>
+<fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+
+The <code>config.md</code> file is the only <code>.md</code> file in your website folder that won't get
+converted into a <code>.html</code> file by default. Franklin considers it as a special file.
+If you <strong>do</strong> want to have a page with relative URL <code>/config/</code>, you can do so by
+writing a file at <code>/config/index.md</code>.
+
+</fieldset><h3 id="layout_files" ><a href="#layout_files"> Layout files</a></h3><p>The <code>_layout/</code> folder will usually contain a <code>head.html</code> and <code>foot.html</code> which are placed respectively at the top and bottom of each generated HTML page (cf. the <a href="/Xranklin.jl/preview/workflow/getting_started/#page_structure">page structure</a> diagram).</p>
+<p>These files are where you should indicate the base layout of your pages and, for instance, where you might indicate what CSS or JS to load on pages.
+See <a href="/Xranklin.jl/preview/workflow/adapting_layout/">how to adapt a layout</a> for more details on how to specify these files if you want to write your own layout.</p>
+<p>It is often convenient to split the layout of your site into components and each of these components may have its own layout file to complement the "head" and "foot" files.
+For instance you might define a menu in a file <code>menu.html</code> and refer to it in the <code>head.html</code> using <code>&lbrace;&lbrace;insert menu.html&rbrace;&rbrace;</code>.
+To understand how this works in details, you will need to read the section on <a href="/Xranklin.jl/preview/syntax/vars+funs/">page variables and HTML functions</a>).
+For now though, the point is just that there may be more files in <code>_layout/</code> than just the two basic ones.</p>
+<h2 id="site_and_cache_folders" ><a href="#site_and_cache_folders"> Site and cache folders</a></h2><p>When Franklin generates HTML pages, it places them in a <code>__site/</code> folder.
+And when the server is interrupted, Franklin generates (or updates) a <code>__cache/</code> folder.</p>
+<p>So after running <code>serve</code> and interrupting the server in the basic folder discussed at the previous point, the folder structure would look like</p>
+<pre><code class="plaintext">TestWebsite
+├── __cache
+│   ├── gnbv.cache
+│   └── index
+│       └── pg.hash
+├── __site
+│   └── index.html
+├── _layout
+│   ├── foot.html
+│   └── head.html
+├── config.md
+└── index.md</code></pre>
+<p>These two folders are explained below along with a summary of how paths work in Franklin.</p>
+<h3 id="site_folder" ><a href="#site_folder"> Site folder</a></h3><p>The <code>__site/</code> folder is where all files that correspond to your actual website are placed.
+Deploying a Franklin website simply amounts to placing the content of this <code>__site/</code> folder on some server (see also <a href="/Xranklin.jl/preview/workflow/deployment/">the docs on deployment</a> for much more on this).</p>
+<p>In the example above, there is a single file in <code>__site</code>: the <code>index.html</code> which is the landing page of the website.
+Recall that this file <code>index.html</code> is generated out of assembling and processing</p>
+<ul>
+<li><code>_layout/head.html</code>,</li>
+<li>the conversion of <code>index.md</code> to HTML by Franklin, and</li>
+<li><code>_layout/foot.html</code>.</li>
+</ul>
+<p>If you had other <code>.md</code> files next to <code>index.md</code>, these would also be converted and placed in <code>__site/</code>.
+See also the point below <a href="#paths_in_franklin">on paths</a> for a summary of where files end up.</p>
+<h3 id="cache_folder" ><a href="#cache_folder"> Cache folder</a></h3><p>The cache folder keeps track of a number of elements that may help speed up re-building your website.
+At a high-level the cache folder tries to:</p>
+<ul>
+<li>keep track of a hash of each page to see if they've changed since the last time they were built to reduce the need of having to re-build pages,</li>
+<li>keep track of all page variables defined on each page to avoid having to re-evaluate them,</li>
+<li>keep track of the output of all code blocks to try to avoid having to re-execute them.</li>
+</ul>
+<p>The use of the word <em>try</em> is important here, there are many cases where the cache will be ignored.
+Generally though, you shouldn't have to think about the <code>__cache/</code> folder.
+If you're curious, you can read more about it <a href="/Xranklin.jl/preview/engine/cache/">here</a>.</p>
+<p>A single page <code>foo.md</code> can generate between one and three cache files (see the next point for their location)</p>
+<ul>
+<li>a <code>pg.hash</code> which contains a hash of the page <code>foo.md</code>,</li>
+<li>a <code>nbv.cache</code> which contains a serialised version of the <a href="/Xranklin.jl/preview/syntax/vars+funs/">page variables</a> defined on the page,</li>
+<li>a <code>nbc.cache</code> which contains the string representation of <a href="/Xranklin.jl/preview/syntax/code/">evaluated code blocks</a> and the string representation of their results.</li>
+</ul>
+<h3 id="paths_in_franklin" ><a href="#paths_in_franklin"> Paths in Franklin</a></h3><p>The table below helps understanding how a file placed in the website folder is connected
+to files in <code>__site/</code> and <code>__cache/</code>.
+The files between brackets are optionally generated depending on the context.
+For URLs, recall that if we write <code>/foo/bar/</code> the browser resolves this as <code>/foo/bar/index.html</code> (so the source file is at <code>/foo/bar/index.html</code> but users can access the page at <code>/foo/bar/</code>).</p>
+<div style="height:1em;"></div><table class="pure-table">
+<thead>
+<th > Source </th>
+<th > <code>__site/</code> folder </th>
+<th > URL </th>
+</thead>
+<tbody>
+<tr>
+<td > <code>index.md</code> </td>
+<td > <code>index.html</code>  </td>
+<td > <code>/</code> </td>
+</tr>
+<tr>
+<td > <code>foo.md</code> (or <code>foo/index.md</code>) </td>
+<td > <code>foo/index.html</code> </td>
+<td > <code>/foo/</code> </td>
+</tr>
+<tr>
+<td > <code>foo/bar.md</code> </td>
+<td > <code>foo/bar/index.html</code> </td>
+<td > <code>/foo/bar/</code> </td>
+</tr>
+<tr>
+<td > <code>index.html</code> </td>
+<td > <code>index.html</code> </td>
+<td > <code>/</code> </td>
+</tr>
+<tr>
+<td > <code>foo.html</code>   </td>
+<td > <code>foo/index.html</code> </td>
+<td > <code>/foo/</code> </td>
+</tr>
+<tr>
+<td > <code>foo/bar.html</code> </td>
+<td > <code>foo/bar/index.html</code> </td>
+<td > <code>/foo/bar/</code> </td>
+</tr>
+<tr>
+<td > <code>a/b.xyz</code> </td>
+<td > <code>a/b.xyz</code> </td>
+<td > <code>/a/b.xyz</code> </td>
+</tr>
+<tr>
+<td > <code>_assets/a/b.xyz</code> </td>
+<td > <code>assets/a/b.xyz</code> </td>
+<td > <code>/assets/a/b.xyz</code> </td>
+</tr>
+<tr>
+<td > <code>_css/a.css</code> </td>
+<td > <code>css/a.css</code> </td>
+<td > <code>/css/a.css</code> </td>
+</tr>
+<tr>
+<td > <code>_libs/a.js</code> </td>
+<td > <code>libs/a.js</code> </td>
+<td > <code>/libs/a.js</code> </td>
+</tr>
+</tbody>
+</table>
+<div style="height:1em;"></div><p>Observe that there is an ambiguity between a file placed at <code>foo.md</code> and <code>foo/index.md</code>.
+You should pick one of the two based on what makes most sense for your folder structure, but you should not use both simultaneously.</p>
+<p><strong>Note</strong>: in some cases you will want some paths to be maintained. This can be done with the global page variable <code>keep_path</code>. For instance with things like Google Analytics, you may have to prove ownership of your site by placing a custom HTML file in a given location (see <a href="https://support.google.com/webmasters/answer/9008080#html_verification">this tutorial</a>).
+For such cases you would indicate <code>keep_path=[&quot;the/path.html&quot;]</code> and Franklin would respect that:</p>
+<pre><code class="plaintext"># source
+the/path.html
+
+# in config.md
+keep_path = [&quot;the/path.html&quot;]
+
+# output in __site/
+the/path.html    # (instead of the/path/index.html)</code></pre>
+<p>Further to the global page variable <code>keep_path</code>, you can also use the page variable <code>slug</code> which
+offers you a way to indicate a secondary output path for a file thereby making it available at
+another URL. The table below should clarify this:</p>
+<table class="pure-table">
+<thead>
+<th > Source </th>
+<th > Slug </th>
+<th > "<code>__site/</code>" folder </th>
+<th > URL </th>
+</thead>
+<tbody>
+<tr>
+<td > <code>foo/bar.md</code> </td>
+<td > <code>slug=&quot;biz/baz&quot;</code> </td>
+<td > {<code>foo/bar/index.html</code>, <code>biz/baz/index.html</code>} </td>
+<td > {<code>/foo/bar/</code>, <code>/biz/baz/</code>} </td>
+</tr>
+<tr>
+<td > <code>foo/bar.md</code> </td>
+<td > <code>slug=&quot;biz/baz.html&quot;</code> </td>
+<td > {<code>foo/bar/index.html</code>, <code>biz/baz.html</code>} </td>
+<td > {<code>/foo/bar/</code>, <code>/biz/baz.html</code>} </td>
+</tr>
+</tbody>
+</table>
+<div style="height:1em;"></div><p>To close off this point about paths, here's a short summary of how source files can generate cache files, you should generally not have to worry about this but might be curious:</p>
+<div style="height:1em;"></div><table class="pure-table">
+<thead>
+<th > Source </th>
+<th > "<code>__cache/</code>" folder </th>
+</thead>
+<tbody>
+<tr>
+<td > <code>index.md</code> </td>
+<td > <code>index/pg.hash</code>, (<code>index/nbc.cache</code>, <code>index/nbv.cache</code>) </td>
+</tr>
+<tr>
+<td > <code>foo.md</code> </td>
+<td > <code>foo/pg.hash</code> (<code>foo/nbc.cache</code>, <code>foo/nbv.cache</code>) </td>
+</tr>
+<tr>
+<td > <code>foo/bar.md</code> </td>
+<td > <code>foo/bar/pg.hash</code>, (<code>foo/bar/nbc.cache</code>, <code>foo/bar/nbv.cache</code>) </td>
+</tr>
+</tbody>
+</table>
+<div style="height:1em;"></div><p>If you're interested about what the cache does and how it works, check out <a href="/Xranklin.jl/preview/engine/cache/">this section</a>.</p>
+<h2 id="other_pages" ><a href="#other_pages"> Other pages</a></h2><h2 id="css_and_js" ><a href="#css_and_js"> CSS and JS</a></h2><h2 id="assets" ><a href="#assets"> Assets</a></h2><h2 id="literate" ><a href="#literate"> Literate</a></h2>
+
+
+
+      
+
+      <div id="pg-foot">
+        Website built with <a href="https://franklinjl.org">Franklin.jl</a>
+        and the <a href="https://julialang.org">Julia programming language</a>.
+      </div>
+
+      </div>   
+    </div>     
+  </div>       
+
+
+
+
+  
+
+  
+    <script src="/Xranklin.jl/preview/libs/highlight/highlight.min.js"></script>
+    <script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+  
+
+  
+  <script src="/Xranklin.jl/preview/libs/pure/ui.js"></script>
+
+  </body>
+</html>
