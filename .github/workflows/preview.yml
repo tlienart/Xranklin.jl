@@ -80,7 +80,6 @@ jobs:
       - if: ${{ env.LATEX }}
         name: Install LaTeX 🌴
         run: |
-          sudo add-apt-repository ppa:jonathonf/texlive-2019
           sudo apt-get update -qq
           sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
 
@@ -98,7 +97,7 @@ jobs:
       - name: Building website 🚧
         run: ${{ env.PLOTS }} julia -e '
                 using Pkg;
-                (isempty("${{ env.PYTHON_LIBS }}") || Pkg.add("PyCall"); Pkg.build("PyCall"););
+                isempty("${{ env.PYTHON_LIBS }}") || (Pkg.add("PyCall"); Pkg.build("PyCall"););
                 Pkg.add(
                   url="https://github.com/tlienart/Xranklin.jl",
                   rev="preview"
