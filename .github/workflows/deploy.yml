@@ -3,7 +3,7 @@ name: Preview
 on:
   push:
     branches:
-      - preview   # note: check rev= in build (Xranklin specific)
+      - main
 
 env:
   # ADJUST THE FOLLOWING
