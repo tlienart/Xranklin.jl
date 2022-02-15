@@ -1,4 +1,4 @@
-name: Preview
+name: Deploy
 
 on:
   push:
@@ -31,7 +31,7 @@ env:
   CACHE_KEY: "franklin-preview-cache"
 
 jobs:
-  preview:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
