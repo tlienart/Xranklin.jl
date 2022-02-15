@@ -162,7 +162,7 @@
         <div id="margin-toc">
           
             <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
-            <div class="toc"><ol><li><a href="#pyplot"> PyPlot</a></li><li><a href="#plots"> Plots</a></li></ol></div>
+            <div class="toc"><ol><li><a href="#pyplot"> PyPlot</a></li><li><a href="#plots"> Plots</a></li><li><a href="#cairomakie"> CairoMakie</a></li></ol></div>
           
       </div>
     </div>
@@ -187,13 +187,13 @@ then all these packages must be installed every time CI is run which can take a 
 if you have a lot of big packages.For Plots for instance, PyPlot is nice because the installation from scratch takes little
 time.
 
-</fieldset><p>Prepare something</p>
-<pre><code class="julia">x = range(-1, 1, length=300)
-y = @. sinc(x) * exp(-1/x^2);</code></pre>
-<h2 id="pyplot" ><a href="#pyplot"> PyPlot</a></h2><div class="trim">
+</fieldset><h2 id="pyplot" ><a href="#pyplot"> PyPlot</a></h2><div class="trim">
 
 <fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
 import PyPlot
+
+x = range(-1, 1, length=300)
+y = @. sinc(x) * exp(-1/x^2)
 
 PyPlot.figure(figsize=(6, 4))
 PyPlot.plot(x, y, lw=3, label=&quot;Hello&quot;)
@@ -210,11 +210,14 @@ PyPlot.gcf()
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">import PyPlot
 
+x = range(-1, 1, length=300)
+y = @. sinc(x) * exp(-1/x^2)
+
 PyPlot.figure(figsize=(6, 4))
 PyPlot.plot(x, y, lw=3, label=&quot;Hello&quot;)
 PyPlot.legend()
 PyPlot.gcf()</code></pre>
-<div class="code-output"><img class="code-figure" src="/Xranklin.jl/preview/assets/extras/plots/figs-html/__autofig_7218498177968902166.svg">
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/preview/assets/extras/plots/figs-html/__autofig_174736408173485404.svg">
 </div></fieldset>
 
 </div><p>Note how we need to use <code>gcf()</code> here so that the result of the code cell &mdash; a figure &mdash;
@@ -223,6 +226,9 @@ is showable as a SVG.</p>
 
 <fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
 import Plots
+
+x = range(-1, 1, length=300)
+y = @. sinc(x) * exp(-1/x^2)
 
 Plots.plot(x, y, label=&quot;Hello&quot;, size=(500, 300))
 ```</code></pre>
@@ -236,11 +242,48 @@ Plots.plot(x, y, label=&quot;Hello&quot;, size=(500, 300))
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">import Plots
 
+x = range(-1, 1, length=300)
+y = @. sinc(x) * exp(-1/x^2)
+
 Plots.plot(x, y, label=&quot;Hello&quot;, size=(500, 300))</code></pre>
-<div class="code-output"><img class="code-figure" src="/Xranklin.jl/preview/assets/extras/plots/figs-html/__autofig_15047459824246393367.svg">
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/preview/assets/extras/plots/figs-html/__autofig_15319033059231220481.svg">
 </div></fieldset>
 
-</div>
+</div><h2 id="cairomakie" ><a href="#cairomakie"> CairoMakie</a></h2><pre><code class="julia">import CairoMakie
+CairoMakie.activate!()
+
+x  = range(0, 10, length=100)
+y1 = sin.(x)
+y2 = cos.(x)
+
+CairoMakie.scatter(x, y1,
+  color      = :red,
+  markersize = range(5, 15, length=100)
+)
+CairoMakie.scatter!(x, y2,
+  color    = range(0, 1, length=100),
+  colormap = :thermal
+)
+
+CairoMakie.current_figure()</code></pre>
+<div class="code-output"><pre class="fig-stdout"><code class="code-stdout language-plaintext">┌ Warning: unknown command \Join
+└ @ MathTeXEngine ~/.julia/packages/MathTeXEngine/ZP0gS/src/parser/commands_registration.jl:48
+┌ Warning: precompile directive
+│     precompile(fbody, (Nothing, Nothing, Nothing, Nothing, Nothing, Al, Tuple{Bool, Bool}, Rect2f, Auto, Auto, Bool, Bool, Symbol, Symbol, Float64, Float64, Emptykwargs, Type{GridLayout}, Int, Int))
+│ failed. Please report an issue in GridLayoutBase (after checking for duplicates) or remove this directive.
+└ @ GridLayoutBase ~/.julia/packages/GridLayoutBase/CSLqD/src/precompile.jl:31
+┌ Warning: precompile directive
+│     precompile(fbody, (Nothing, Nothing, Nothing, Nothing, Nothing, Al, Tuple{Bool, Bool}, Rect2f, Auto, Auto, Bool, Bool, Symbol, Symbol, Float64, Float64, Emptykwargs, Type{GridLayout}, Int, Int))
+│ failed. Please report an issue in GridLayoutBase (after checking for duplicates) or remove this directive.
+└ @ GridLayoutBase ~/.julia/packages/GridLayoutBase/CSLqD/src/precompile.jl:31
+┌ Warning: precompile directive
+│     precompile(fbody, (Nothing, Nothing, Nothing, Nothing, Nothing, Al, Tuple{Bool, Bool}, Rect2f, Auto, Auto, Bool, Bool, Symbol, Symbol, Float64, Float64, Emptykwargs, Type{GridLayout}, Int, Int))
+│ failed. Please report an issue in GridLayoutBase (after checking for duplicates) or remove this directive.
+└ @ GridLayoutBase ~/.julia/packages/GridLayoutBase/CSLqD/src/precompile.jl:31
+</code></pre><img class="code-figure" src="/Xranklin.jl/preview/assets/extras/plots/figs-html/__autofig_18427540194170620253.svg">
+</div><p>For many more, see the wonderful <a href="https://lazarusa.github.io/BeautifulMakie/">Beautiful Makie</a>
+site by <a href="https://github.com/lazarusA">Lazaro Alonso</a>.</p>
+
 
 
 
