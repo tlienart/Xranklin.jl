@@ -81,7 +81,7 @@ jobs:
         name: Install LaTeX 🌴
         run: |
           sudo add-apt-repository ppa:jonathonf/texlive-2019
-          sudo apt-get install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
+          sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
 
       # ================ #
       # BUILDING WEBSITE #
