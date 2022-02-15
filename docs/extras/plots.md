@@ -2,12 +2,13 @@
 
 Last edit: Feb 15
 
-* PyPlot.jl
-* Plots.jl
-* Makie - CairoMakie
-* Makie - GLMakie
-* Makie - WGLMakie
-* PG
+* ✅ PyPlot.jl
+* ✅ Plots.jl
+* ✅ Makie - CairoMakie
+* ❌ Makie - GLMakie      NOTE: not tried
+* ✅ Makie - WGLMakie
+* ✅ PGFPlotsX
+* ✅ PlotlyJS
 
  -->
 
@@ -98,6 +99,8 @@ CairoMakie is the Cairo backend for [Makie.jl](https://github.com/JuliaPlots/Mak
 It is geared towards high-quality 2D plotting.
 See also the Franklin-based [Makie documentation](https://makie.juliaplots.org/stable/).
 
+\lskip
+
 \showmd{
 ```!
   import CairoMakie
@@ -138,6 +141,8 @@ Combined with [JSServe.jl](https://github.com/SimonDanisch/JSServe.jl) it can pr
 
 (Safari users will need to enable WebGL, see [link in the WGLMakie docs](https://makie.juliaplots.org/stable/documentation/backends/wglmakie/#troubleshooting))
 
+\lskip
+
 \showmd{
   ```!wgl
   import WGLMakie, JSServe
@@ -162,9 +167,12 @@ Combined with [JSServe.jl](https://github.com/SimonDanisch/JSServe.jl) it can pr
 
 You don't need to install anything specific in your GA script but remember to add `WGLMakie` to your environment.
 
-## PyPlot
+## PyPlot.jl
 
-[PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl)
+[PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl) is an interface to [matplotlib](https://matplotlib.org/) and is a great option if you're already familiar with that.
+
+\lskip
+
 
 \showmd{
   ```!
@@ -180,13 +188,44 @@ You don't need to install anything specific in your GA script but remember to ad
   ```
 }
 
-Note how we need to use `gcf()` here so that the result of the code cell &mdash; a figure &mdash;
-is showable as a SVG.
+Note how we need to use `gcf()` here, it returns a figure object which is showable as SVG (if you don't use it, nothing will be shown).
 
+### PyPlot with GA
 
-## PGFPlotsX
+PyPlot relies on [PyCall.jl](https://github.com/JuliaPy/PyCall.jl) which relies on [Conda.jl](https://github.com/JuliaPy/Conda.jl) to link to the appropriate Python libraries.
+It's quite tricky to get this whole machinery working fine with GA, the recommended way to do so is to use `setup-python` e.g.:
 
-Requires you to have `lualatex` installed (also on CI) + `pdf2svg`
+```yml
+uses: actions/setup-python@v2
+with:
+  python-version: 3.8
+```
+
+install matplotlib (plus any other package you would call via PyCall separately) using `pip` and exctract the exact path to the python binary using `which`:
+
+```yml
+run: |
+     pip install matplotlib
+     export PYTHON=$(which python)
+```
+
+and finally start the Julia command with a build of `PyCall` to ensure it uses that `PYTHON` path:
+
+```yml
+run: julia -e '
+       using Pkg; Pkg.add("PyCall"); Pkg.build("Pycall");
+       ...'
+```
+
+this will guarantee that the right executable is used even when you're using the GA cache.
+
+Remember to also add PyPlot to your environment.
+
+## PGFPlotsX.jl
+
+[PGFPlotsX.jl](https://github.com/KristofferC/PGFPlotsX.jl) is an interface to [PGFPlots](https://www.ctan.org/pkg/pgfplots) and produces LaTeX-style plots.
+
+\lskip
 
 \showmd{
   ```!
@@ -204,7 +243,35 @@ Requires you to have `lualatex` installed (also on CI) + `pdf2svg`
   ```
 }
 
+### PGFPlotsX with GA
+
+In order to use this package on GA you need a minimal texlive installation which, unfortunately, is quite heavy.
+This requires adding the following to your GA script:
+
+```yml
+run: |
+  sudo apt-get update -qq
+  sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
+```
+
+which takes around 1 minute to run at the time of writing.
+
+Remember to also add PGFPlotsX to your environment.
+
 ## PlotlyJS
+
+[PlotlyJS.jl](https://github.com/JuliaPlots/PlotlyJS.jl) is an interface to [Plotly](https://plotly.com/javascript/) and allows embedding semi-interactive plots.
+The code below separates concerns a bit by having a custom script loading the JSON produced by PlotlyJS.
+You could easily hide most of this logic in a lxfun or hfun.
+
+The overall structure is
+
+1. a Javascript `PlotlyJS_json` function which can load a JSON representation of a Plotly plot (this could be put in your `_layout/foot.html`),
+1. the PlotlyJS code to plot what you want,
+1. an empty div block with an id that can be pointed to,
+1. some Javascript calling the `PlotlyJS_json` function.
+
+\lskip
 
 \showmd{
   ~~~
@@ -250,3 +317,7 @@ Requires you to have `lualatex` installed (also on CI) + `pdf2svg`
   </script>
   ~~~
 }
+
+### PlotlyJS with GA
+
+It doesn't require anything specific in your GA. Make sure the Javascript library is in your `/libs/` though, along with the PlotlyJS package in your environment.

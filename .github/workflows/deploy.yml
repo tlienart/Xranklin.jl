@@ -68,7 +68,6 @@ jobs:
         run: |
              pip install ${{ env.PYTHON_LIBS }}
              export PYTHON=$(which python)
-             export PYBUILD=""
 
       # QT dependencies for GR (Plots)
       - if: ${{ env.PLOTS != '' }}
