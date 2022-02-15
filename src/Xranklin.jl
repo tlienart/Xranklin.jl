@@ -158,6 +158,8 @@ include("$p/tex.jl")
 p = "build"
 include("$p/paths.jl")
 include("$p/watch.jl")
+include("$p/full_pass.jl")
+include("$p/build_loop.jl")
 include("$p/serve.jl")
 
 end

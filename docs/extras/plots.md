@@ -183,6 +183,6 @@ PlotlyJS.savejson(p, joinpath(opath, "ex.json"));
 
 <script>
 graphDiv = document.getElementById("foobar");
-plotlyPromise = PlotlyJS_json(graphDiv, "/assets/plotlyfigs/ex.json")
+plotlyPromise = PlotlyJS_json(graphDiv, "{{> ifelse($_final, $base_url_prefix, "" ) }}/assets/plotlyfigs/ex.json")
 </script>
 ~~~

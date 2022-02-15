@@ -77,6 +77,8 @@ const DefaultGlobalVars = Vars(
     # Hyperrefs
     :_refrefs => LittleDict{String, String}(),  # id => location
     :_bibrefs => LittleDict{String, String}(),  # id => location
+    # Is it the final build (prepath application)
+    :_final => false,
 )
 const DefaultGlobalVarsAlias = Alias(
     :prepath                => :base_url_prefix,
