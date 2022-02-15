@@ -1,4 +1,4 @@
-include(joinpath(@__DIR__, "..", "..", "utils.jl"))
+include(joinpath(@__DIR__, "..", "utils.jl"))
 
 @testset "is_easily_serializable" begin
     # Acceptable
@@ -34,6 +34,5 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
     @test !X.is_easily_serializable([1, Foo(1)])
     @test !X.is_easily_serializable(Ptr{Int}())
     @test !X.is_easily_serializable(Ref(true))
-
 
 end

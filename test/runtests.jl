@@ -11,6 +11,7 @@ end
     include(p/"types.jl")
     include(p/"context.jl")
     include(p/"default_context.jl")
+    include(p/"serialize.jl")
 end
 
 @testset "Context/Code" begin
@@ -18,7 +19,6 @@ end
     include(p/"modules.jl")
     include(p/"notebook_vars.jl")
     include(p/"notebook_code.jl")
-    # include(p/"serialize.jl")
     include(p/"code-show.jl")
 end
 

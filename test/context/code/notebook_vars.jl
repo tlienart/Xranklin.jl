@@ -61,33 +61,3 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
     @test getvar(lc, :c) == 3
     @test X.counter(nb) == 3
 end
-
-@testset "nbv cache" begin
-    lc = X.DefaultLocalContext()
-    v1 = """
-        a = 5
-        b = 7
-        """
-    v2 = """
-        c = 8
-        d = a
-        """
-    X.eval_vars_cell!(lc, X.subs(v1))
-    X.eval_vars_cell!(lc, X.subs(v2))
-
-    @test !X.isstale(lc.nb_vars)
-    @test getvar(lc, :d) == getvar(lc, :a)
-
-    fp = tempname()
-    X.serialize_notebook(lc.nb_vars, fp)
-
-    # Loading from cache
-    lc2 = X.DefaultLocalContext()
-    X.load_vars_cache!(lc2, fp)
-    @test getvar(lc, :a) == getvar(lc2, :a)
-    @test getvar(lc, :d) == getvar(lc2, :d)
-    @test X.isstale(lc2.nb_vars)
-    X.eval_vars_cell!(lc, X.subs(v1))
-    @test getvar(lc, :a) == 5
-    @test !X.isstale(lc.nb_vars)
-end
