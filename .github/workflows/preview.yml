@@ -72,14 +72,16 @@ jobs:
 
       # QT dependencies for GR (Plots)
       - if: ${{ env.PLOTS != '' }}
-        run: sudo apt-get install -y qt5-default
+        run: |
+             sudo apt-get update -y
+             sudo apt-get install -y qt5-default
 
       # LaTeX* deps for PGFPlotsX etc
       - if: ${{ env.LATEX }}
         name: Install LaTeX 🌴
         run: |
           sudo add-apt-repository ppa:jonathonf/texlive-2019
-          sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
+          sudo apt-get install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
 
       # ================ #
       # BUILDING WEBSITE #

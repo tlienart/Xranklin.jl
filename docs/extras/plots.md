@@ -41,25 +41,6 @@ This is a follow up from code but with more examples to do with plotting specifi
   time.
 }
 
-## PyPlot
-
-\showmd{
-  ```!
-  import PyPlot
-
-  x = range(-1, 1, length=300)
-  y = @. sinc(x) * exp(-1/x^2)
-
-  PyPlot.figure(figsize=(6, 4))
-  PyPlot.plot(x, y, lw=3, label="Hello")
-  PyPlot.legend()
-  PyPlot.gcf()
-  ```
-}
-
-Note how we need to use `gcf()` here so that the result of the code cell &mdash; a figure &mdash;
-is showable as a SVG.
-
 
 ## Plots
 
@@ -98,6 +79,49 @@ CairoMakie.current_figure()
 
 For many more, see the wonderful [Beautiful Makie](https://lazarusa.github.io/BeautifulMakie/)
 site by [Lazaro Alonso](https://github.com/lazarusA).
+
+
+## WGLMakie
+
+(Safari users will need to enable WebGL, see [link in the WGLMakie docs](https://makie.juliaplots.org/stable/documentation/backends/wglmakie/#troubleshooting))
+
+```!wgl
+import WGLMakie, JSServe
+WGLMakie.activate!()
+
+<|(io, o) = show(io, MIME"text/html"(), o)
+
+io = IOBuffer()
+
+io <| JSServe.Page(exportable=true, offline=true)
+io <| WGLMakie.scatter(1:4)
+io <| WGLMakie.surface(rand(4,4))
+io <| JSServe.Slider(1:3)
+
+String(take!(io))
+```
+
+\htmlshow{wgl}
+
+
+## PyPlot
+
+\showmd{
+  ```!
+  import PyPlot
+
+  x = range(-1, 1, length=300)
+  y = @. sinc(x) * exp(-1/x^2)
+
+  PyPlot.figure(figsize=(6, 4))
+  PyPlot.plot(x, y, lw=3, label="Hello")
+  PyPlot.legend()
+  PyPlot.gcf()
+  ```
+}
+
+Note how we need to use `gcf()` here so that the result of the code cell &mdash; a figure &mdash;
+is showable as a SVG.
 
 
 ## PGFPlotsX
@@ -162,22 +186,3 @@ graphDiv = document.getElementById("foobar");
 plotlyPromise = PlotlyJS_json(graphDiv, "/assets/figs/plotlyjs_ex.json")
 </script>
 ~~~
-
-
-<!-- ## WGLMakie
-
-(Safari users will need to enable WebGL, see [link in the WGLMakie docs](https://makie.juliaplots.org/stable/documentation/backends/wglmakie/#troubleshooting))
-
-```!wgl
-import WGLMakie, JSServe
-WGLMakie.activate!()
-
-io = IOBuffer()
-show(io, MIME"text/html"(), JSServe.Page(exportable=true, offline=true))
-show(io, MIME"text/html"(), WGLMakie.scatter(1:4))
-show(io, MIME"text/html"(), WGLMakie.surface(rand(4,4)))
-show(io, MIME"text/html"(), JSServe.Slider(1:3))
-String(take!(io))
-```
-
-\htmlshow{wgl} -->
