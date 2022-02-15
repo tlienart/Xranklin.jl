@@ -1,26 +1,47 @@
-name: Build and Deploy
-
-env:
-  SITE_FOLDER: "docs"
-  CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
-  BASE_URL_PREFIX: "Xranklin.jl"
-  CACHE_KEY: "franklin-aa"
-  PYTHON: "" # force use of Conda.jl
+name: Preview
 
 on:
   push:
     branches:
-      - main
-      - master
+      - preview   # note: check rev= in build (Xranklin specific)
+
+env:
+  # ADJUST THE FOLLOWING
+  # where is the site folder, use "" if the repo root is
+  SITE_FOLDER: "docs"
+  # if it's a personal site, use "" otherwise use the name of the repo
+  BASE_URL_PREFIX: "Xranklin.jl"
+  # if it's not a preview, use ""
+  PREVIEW: ""
+
+  # FLAGS FOR DEPENDENCIES INSTALLATION, ADJUST AS REQUIRED
+  # If use PyCall or PyPlot indicate libs here otherwise set to ""
+  PYTHON_LIBS: "matplotlib pandas"
+  # If use Plots.jl indicate "xvfb-run" otherwise ""
+  PLOTS: "xvfb-run"
+  # whether PGFPlotsX or Tikz or anything requiring latex is used
+  LATEX: true
+
+  # ----------------------------------------------------------
+  # DON'T CHANGE THE FOLLOWING UNLESS YOU HAVE GOOD REASONS TO
+  # >> amounts to build(clear=true) when commit message contains [clear]
+  CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
+  # >> change the digit at the end if, for some reason, you believe
+  # that the cache used by the github action has an issue
+  CACHE_KEY: "franklin-preview-cache"
 
 jobs:
-  build-and-deploy:
+  preview:
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
         uses: actions/checkout@v2
 
-      - name: Cache
+      # =========== #
+      # CACHE SETUP #
+      # =========== #
+
+      - name: Cache 📖
         uses: actions/cache@v2
         with:
           path: |
@@ -28,9 +49,43 @@ jobs:
                 ${{ env.SITE_FOLDER }}/__site
                 ~/.julia/artifacts
                 ~/.julia/packages
-                ~/.julia/conda
           key: ${{ runner.os }}-${{ env.CACHE_KEY }}-${{ github.sha }}
           restore-keys: ${{ runner.os }}-${{ env.CACHE_KEY }}-
+
+      # ============ #
+      # DEPENDENCIES #
+      # ============ #
+
+      # Python
+      - if: ${{ env.PYTHON_LIBS != '' }}
+        name: Install Python 🐍
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - if: ${{ env.PYTHON_LIBS != '' }}
+        name: Install Python packages 🐍
+        run: |
+             pip install ${{ env.PYTHON_LIBS }}
+             export PYTHON=$(which python)
+             export PYBUILD=""
+
+      # QT dependencies for GR (Plots)
+      - if: ${{ env.PLOTS != '' }}
+        run: |
+             sudo apt-get update -qq
+             sudo apt-get install -y qt5-default
+
+      # LaTeX* deps for PGFPlotsX etc
+      - if: ${{ env.LATEX }}
+        name: Install LaTeX 🌴
+        run: |
+          sudo apt-get update -qq
+          sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
+
+      # ================ #
+      # BUILDING WEBSITE #
+      # ================ #
 
       # Julia
       - name: Install Julia
@@ -38,19 +93,34 @@ jobs:
         with:
           version: 1.7
 
-      # Website build
-      - run: julia -e '
+      # Building website
+      - name: Building website 🚧
+        run: ${{ env.PLOTS }} julia -e '
                 using Pkg;
-                Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
+                isempty("${{ env.PYTHON_LIBS }}") || (Pkg.add("PyCall"); Pkg.build("PyCall"););
+                Pkg.add(
+                  url="https://github.com/tlienart/Xranklin.jl",
+                  rev="main"
+                  );
                 using Xranklin;
                 build("${{ env.SITE_FOLDER }}";
                       clear=${{ env.CLEAR_CACHE }},
-                      prefix="${{ env.BASE_URL_PREFIX }}");'
+                      prefix=joinpath(
+                        "${{ env.BASE_URL_PREFIX }}",
+                        "${{ env.PREVIEW }}"
+                        )
+                      );'
 
-      # Deployment and caching
-      - run: touch ${{ env.SITE_FOLDER }}/__site/.nojekyll
+      # ========== #
+      # DEPLOYMENT #
+      # ========== #
+
+      # Deployment
+      - name: No Jekyll
+        run: touch ${{ env.SITE_FOLDER }}/__site/.nojekyll
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
           BRANCH: gh-pages
           FOLDER: ${{ env.SITE_FOLDER }}/__site
+          TARGET-FOLDER: "${{ env.PREVIEW }}"
