@@ -74,6 +74,8 @@ github = "https://github.com/tlienart/Franklin.jl"
 [page vars]: /syntax/vars+funs/
 [code eval]: /syntax/code/
 
+[GA]: https://docs.github.com/en/actions
+
 <!-- GLOBAL COMMANDS -->
 
 \newcommand{\emdash}{&#8212;}

@@ -30,19 +30,34 @@ img.code-figure {
 </style>
 ~~~
 
-This is a follow up from code but with more examples to do with plotting specifically.
+## Overview
+
+Julia has many packages that offer plotting capacity and you can use any of them in Franklin as long as the resulting plot is showable as SVG or PNG or has a [custom show](/syntax/code/#custom_show) method.
+
+One key difficulty is that if you want your site to be built remotely (e.g. by [GitHub Action][GA]) then you need to ensure that the relevant dependencies (if any) are installed to enable this.
+We discuss this for each of the plotting package below.
+Remember that you also **must** add the relevant plotting library to your website environment using [Pkg.jl](https://github.com/JuliaLang/Pkg.jl) e.g. with something like
+
+```julia
+using Pkg; Pkg.add("Plots")
+```
 
 \note{
-  While you can use packages as you want, remember that if you use CI (e.g. GitHub action)
-  then all these packages must be installed every time CI is run which can take a while
-  if you have a lot of big packages.
-
-  For Plots for instance, PyPlot is nice because the installation from scratch takes little
-  time.
+  If you use another approach to remotely build your website, for instance with GitLab, please consider opening an issue discussing how to adapt the GitHub-specific instructions. It should be fairly similar.
 }
 
+In order to avoid name clashes, all packages in the code snippets below are `import`ed and so all function calls are of the form `Plots.plot`.
+You don't need to do this if you're using a single plotting library of course.
 
-## Plots
+## Plots.jl
+
+[Plots.jl](https://github.com/JuliaPlots/Plots.jl) is one of the most common plotting package used.
+It is pretty easy to use and has [great documentation](https://docs.juliaplots.org/stable/).
+The default backend ([GR.jl](https://github.com/jheinen/GR.jl)) works pretty well and is fairly quick.
+
+Relative to Franklin, objects plotted via functions like `Plots.plot` are showable to SVG so it's particularly simple to use this plotting library with Franklin.
+
+\lskip
 
 \showmd{
   ```!
@@ -55,7 +70,33 @@ This is a follow up from code but with more examples to do with plotting specifi
   ```
 }
 
+### Plots with GA
+
+The GR backend requires to have `qt5-default` installed and to run the Julia command with [`xvfb`](https://en.wikipedia.org/wiki/Xvfb).
+So you will need to have a line in your GitHub Action script like
+
+```yml
+run: |
+     sudo apt-get update -qq
+     sudo apt-get install -y qt5-default
+```
+
+and you will also need to prefix the call to Julia for the actual website building with `xvfb-run`:
+
+```yml
+run: xvfb-run julia -e 'using Pkg; ...'
+```
+
+The overhead of installing `qt5-default` on GA is a bit under 30s, and the time to precompile the Plots package and get the first plot on GA is around 1 min at the time of writing.
+
+Remember to also add `Plots` to your environment.
+
+
 ## CairoMakie
+
+CairoMakie is the Cairo backend for [Makie.jl](https://github.com/JuliaPlots/Makie.jl).
+It is geared towards high-quality 2D plotting.
+See also the Franklin-based [Makie documentation](https://makie.juliaplots.org/stable/).
 
 \showmd{
 ```!
@@ -79,11 +120,21 @@ This is a follow up from code but with more examples to do with plotting specifi
   ```
 }
 
-For many more, see the wonderful [Beautiful Makie](https://lazarusa.github.io/BeautifulMakie/)
-site by [Lazaro Alonso](https://github.com/lazarusA).
+The `current_figure()` at the end returns an object showable as SVG which is what is displayed above.
 
+For many more examples using this package, see the wonderful [Beautiful Makie](https://lazarusa.github.io/BeautifulMakie/)
+site by [Lazaro Alonso](https://github.com/lazarusA) and also based on Franklin.
+
+### CairoMakie with GA
+
+You don't need to install anything specific in your GA script but remember to add `CairoMakie` to your environment.
 
 ## WGLMakie
+
+WGLMakie is the WebGL backend for [Makie.jl](https://github.com/JuliaPlots/Makie.jl).
+See also the [docs](https://makie.juliaplots.org/dev/documentation/backends/wglmakie/).
+
+Combined with [JSServe.jl](https://github.com/SimonDanisch/JSServe.jl) it can produce HTML with Javascript for interactive plots.
 
 (Safari users will need to enable WebGL, see [link in the WGLMakie docs](https://makie.juliaplots.org/stable/documentation/backends/wglmakie/#troubleshooting))
 
@@ -107,8 +158,13 @@ site by [Lazaro Alonso](https://github.com/lazarusA).
   \htmlshow{wgl}
 }
 
+### WGLMakie with GA
+
+You don't need to install anything specific in your GA script but remember to add `WGLMakie` to your environment.
 
 ## PyPlot
+
+[PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl)
 
 \showmd{
   ```!
