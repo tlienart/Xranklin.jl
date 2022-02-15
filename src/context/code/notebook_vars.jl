@@ -9,7 +9,7 @@ function eval_vars_cell!(ctx::Context, cell_code::SS)::Nothing
     nb   = ctx.nb_vars
     cntr = counter(nb)
     lnb  = length(nb)
-    code = cell_code |> strip |> string
+    code = cell_code |> sstrip
 
     # skip cell if previously seen and unchanged
     if isunchanged(nb, cntr, code)

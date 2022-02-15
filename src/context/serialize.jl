@@ -53,34 +53,36 @@ is_easily_serializable(::Type{LittleDict{A,B,C,D}}) where {A,B,C,D} =
 lc_cache_path(rp::String) = path(:cache) / noext(rp) / "lc.cache"
 gc_cache_path()           = path(:cache) / "gc.cache"
 
-function serialize_lc(c::LocalContext)
-    if !all(is_easily_serializable, values(c.vars))
-        @info "... [lc of $(c.rpath)] ⚠ (non-serialisable vars, skipping)"
+function serialize_lc(lc::LocalContext)
+    if !all(is_easily_serializable, values(lc.vars))
+        @info "... [lc of $(lc.rpath)] ⚠ (non-serialisable vars, skipping)"
         return
     end
     nt = (
         # glob
-        vars     = c.vars,      # serialisable by explicit check
-        lxdefs   = c.lxdefs,    # always serialisable
-        headings = c.headings,  # as
-        rpath    = c.rpath,     # as
-        anchors  = c.anchors,   # as
+        vars     = lc.vars,      # serialisable by explicit check
+        lxdefs   = lc.lxdefs,    # always serialisable
+        headings = lc.headings,  # as
+        rpath    = lc.rpath,     # as
+        anchors  = lc.anchors,   # as
         # is_recursive
         # is_math
-        req_vars   = c.req_vars,   # as
-        req_lxdefs = c.req_lxdefs, # as
+        req_vars   = lc.req_vars,   # as
+        req_lxdefs = lc.req_lxdefs, # as
         # vars_aliases
         # nb_vars
         # nb_code
-        to_trigger = c.to_trigger, # as
-        page_hash  = c.page_hash[] # as
+        to_trigger = lc.to_trigger,  # as
+        page_hash  = lc.page_hash[], # as
+        # --
+        applied_prefix = getvar(lc, :_applied_base_url_prefix, "")
     )
-    fp = lc_cache_path(c.rpath)
+    fp = lc_cache_path(lc.rpath)
     mkpath(dirname(fp))
     open(fp, "w") do outf
         serialize(outf, nt)
     end
-    @info "... [lc of $(c.rpath)] ✓"
+    @info "... [lc of $(lc.rpath)] ✓"
     return
 end
 
@@ -95,10 +97,11 @@ function deserialize_lc(rp::String, gc::GlobalContext)
     union!(lc.req_lxdefs, nt.req_lxdefs)
     union!(lc.to_trigger, nt.to_trigger)
     lc.page_hash[] = nt.page_hash
+    setvar!(lc, :_applied_base_url_prefix, nt.applied_prefix)
     return lc
 end
 
-function serialize_gc(c::GlobalContext)
+function serialize_gc(gc::GlobalContext)
     # we don't need to keep track of vars or lxdefs because we always
     # evaluate config and utils at the beginning of a run.
     # we also don't need to keep track of children, because when we
@@ -111,22 +114,22 @@ function serialize_gc(c::GlobalContext)
         # vars_aliases
         # nb_vars
         # nb_code
-        anchors    = c.anchors,
-        tags       = c.tags,
-        paginated  = c.paginated,
+        anchors    = gc.anchors,
+        tags       = gc.tags,
+        paginated  = gc.paginated,
         # to_trigger
         # init_trigger
-        deps_map   = c.deps_map,
-        children   = collect(keys(c.children_contexts))
+        deps_map   = gc.deps_map,
+        children   = collect(keys(gc.children_contexts))
     )
     @info "📓 serializing $(hl("global context", :cyan))..."
     open(gc_cache_path(), "w") do outf
         serialize(outf, nt)
     end
     @info "... [global context] ✓"
-    nc = length(c.children_contexts)
+    nc = length(gc.children_contexts)
     @info "📓 serializing $(hl("$nc local context", :cyan))..."
-    for (rp, lc) in c.children_contexts
+    for (rp, lc) in gc.children_contexts
         endswith(rp, ".md") || continue
         serialize_lc(lc)
     end

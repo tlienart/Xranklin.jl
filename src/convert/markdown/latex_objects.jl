@@ -174,7 +174,7 @@ function try_form_lxdef(
     if nextb.name != :CU_BRACKETS
         return failed_block(berr, next_bad), maxi
     end
-    def = content(nextb) |> dedent |> strip |> String
+    def = content(nextb) |> dedent |> sstrip
 
     # found a newcommand! push it to context and return a skipped block
     if case == :com
@@ -203,7 +203,7 @@ function try_form_lxdef(
     post = content(nextb) |> dedent |> strip |> String
 
     # found a newenvironment! push it to context and return a skipped block
-    name = strip(content(naming)) |> string
+    name = sstrip(content(naming))
     setdef!(ctx, name, LxDef(nargs, pre => post, from(block), to(nextb)))
     # see skips earlier for command, one more brace here
     skips = 3 + pre_space + has_nargs + post_space

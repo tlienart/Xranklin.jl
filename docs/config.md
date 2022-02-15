@@ -163,3 +163,6 @@ github = "https://github.com/tlienart/Franklin.jl"
     #1
   }
 }
+
+
+\newcommand{\kbd}[1]{ ~~~<kbd>#1</kbd>~~~ }

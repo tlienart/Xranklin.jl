@@ -119,3 +119,11 @@ Across sessions, where we want to check whether a given file has changed,
 we store the filehash and compare.
 """
 filehash(fpath::String) = open(crc32c, fpath)
+
+
+"""
+    sstrip(s, a...)
+
+Like strip except returns a string.
+"""
+sstrip(s, a...) = strip(s, a...) |> string

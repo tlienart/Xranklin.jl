@@ -36,7 +36,7 @@ Runs Franklin in the current directory.
                    already have a browser tab pointing to a page of interest.
 
 """
-function serve(d::String = pwd();
+function serve(d::String = "";
 
             # Main kwargs
             dir::String    = d,
@@ -59,6 +59,8 @@ function serve(d::String = pwd();
             host::String = "127.0.0.1",
             launch::Bool = true,
             )
+
+    folder = ifelse(isempty(folder), pwd(), dir)
 
     if debug
         Logging.disable_logging(Logging.Debug - 100)

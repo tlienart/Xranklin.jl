@@ -13,12 +13,22 @@ env:
   BASE_URL_PREFIX: "Xranklin.jl"
   # if it's not a preview, use ""
   PREVIEW: "preview"
+
+  # FLAGS FOR DEPENDENCIES INSTALLATION, ADJUST AS REQUIRED
+  # If use PyCall or PyPlot indicate libs here otherwise set to ""
+  PYTHON_LIBS: "matplotlib pandas"
+  # If use Plots.jl indicate "xvfb-run" otherwise ""
+  PLOTS: "xvfb-run"
+  # whether PGFPlotsX or Tikz or anything requiring latex is used
+  LATEX: true
+
+  # ----------------------------------------------------------
   # DON'T CHANGE THE FOLLOWING UNLESS YOU HAVE GOOD REASONS TO
-  # >> amounts to build(clear=true)
+  # >> amounts to build(clear=true) when commit message contains [clear]
   CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
   # >> change the digit at the end if, for some reason, you believe
   # that the cache used by the github action has an issue
-  CACHE_KEY: "franklin-preview-2"
+  CACHE_KEY: "franklin-preview-cache"
 
 jobs:
   preview:
@@ -26,6 +36,10 @@ jobs:
     steps:
       - name: Git checkout
         uses: actions/checkout@v2
+
+      # =========== #
+      # CACHE SETUP #
+      # =========== #
 
       - name: Cache 📖
         uses: actions/cache@v2
@@ -35,11 +49,43 @@ jobs:
                 ${{ env.SITE_FOLDER }}/__site
                 ~/.julia/artifacts
                 ~/.julia/packages
-                !~/.julia/packages/PyPlot
-                !~/.julia/packages/PyCall
-                !~/.julia/packages/Conda
           key: ${{ runner.os }}-${{ env.CACHE_KEY }}-${{ github.sha }}
           restore-keys: ${{ runner.os }}-${{ env.CACHE_KEY }}-
+
+      # ============ #
+      # DEPENDENCIES #
+      # ============ #
+
+      # Python
+      - if: ${{ env.PYTHON_LIBS != '' }}
+        name: Install Python 🐍
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - if: ${{ env.PYTHON_LIBS != '' }}
+        name: Install Python packages 🐍
+        run: |
+             pip install ${{ env.PYTHON_LIBS }}
+             export PYTHON=$(which python)
+             export PYBUILD=""
+
+      # QT dependencies for GR (Plots)
+      - if: ${{ env.PLOTS != '' }}
+        run: |
+             sudo apt-get update -qq
+             sudo apt-get install -y qt5-default
+
+      # LaTeX* deps for PGFPlotsX etc
+      - if: ${{ env.LATEX }}
+        name: Install LaTeX 🌴
+        run: |
+          sudo apt-get update -qq
+          sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
+
+      # ================ #
+      # BUILDING WEBSITE #
+      # ================ #
 
       # Julia
       - name: Install Julia
@@ -47,20 +93,11 @@ jobs:
         with:
           version: 1.7
 
-      # Python
-      - name: Install Python 🐍
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - name: Python libs and path 🐍
-        run: pip install matplotlib pandas
-
-      # Website build
+      # Building website
       - name: Building website 🚧
-      - run: |
-             export PYTHON=$(which python);
-             julia -e '
+        run: ${{ env.PLOTS }} julia -e '
                 using Pkg;
+                isempty("${{ env.PYTHON_LIBS }}") || (Pkg.add("PyCall"); Pkg.build("PyCall"););
                 Pkg.add(
                   url="https://github.com/tlienart/Xranklin.jl",
                   rev="preview"
@@ -74,8 +111,13 @@ jobs:
                         )
                       );'
 
-      # Deployment and caching
-      - run: touch ${{ env.SITE_FOLDER }}/__site/.nojekyll
+      # ========== #
+      # DEPLOYMENT #
+      # ========== #
+
+      # Deployment
+      - name: No Jekyll
+        run: touch ${{ env.SITE_FOLDER }}/__site/.nojekyll
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:

@@ -269,6 +269,7 @@ function process_md_file_io!(
             return
         end
     end
+    setvar!(lc, :_applied_base_url_prefix, "")
 
     # reset the notebook counters at the top (they may already be there)
     reset_notebook_counters!(lc)

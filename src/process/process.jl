@@ -93,7 +93,7 @@ function process_file(
             process_html_file(gc, fpath, opath)
         end
 
-        final && adjust_base_url(gc, rpath, opath)
+        adjust_base_url(gc, rpath, opath; final)
 
         #
         # End of processing for MD/HTML file
@@ -177,24 +177,39 @@ base URL prefix (prepath) into account if it's not empty.
 In such cases, erase the hash of the page as the page will need to be
 re-processed in a subsequent 'serve'.
 """
-function adjust_base_url(gc::GlobalContext, rpath::String, opath::String)
+function adjust_base_url(gc::GlobalContext, rpath::String, opath::String;
+                         final::Bool=false)
     #
     # If we're in the final pass, we potentially need to fix all
     # relative links to take the base_url_prefix (prepath) into
     # account.
     #
-    pp = getvar(gc, :base_url_prefix, "")
-    pp = strip(pp, '/')
-    isempty(pp) && return
+    lc = gc.children_contexts[rpath]
+    pp = ifelse(final, sstrip(getvar(gc, :base_url_prefix, ""), '/'), "")
+    ap = getvar(lc, :_applied_base_url_prefix, "")
+    isempty(pp) && isempty(ap) && return
 
+    # ap will be empty if the page has not been skipped
     @info """
         ... ✏ setting $(hl("base_url_prefix", :yellow)) to $(hl(pp, :yellow))...
         """
-    old = read(opath, String)
-    ss  = SubstitutionString("\\1=\\2/$(pp)/")
     # replace things that look like href="/..." with href="/$prepath/..."
-    open(opath, "w") do outf
-        write(outf, replace(old, PREPATH_FIX_PAT => ss))
+    old = read(opath, String)
+    ss  = ifelse(isempty(pp),
+        SubstitutionString("\\1=\\2/"),
+        SubstitutionString("\\1=\\2/$(pp)/")
+    )
+    if isempty(ap)
+        open(opath, "w") do outf
+            write(outf, replace(old, PREPATH_FIX_PAT => ss))
+        end
+    elseif pp != ap
+        # page has been skipped, we need to adjust the adjustment
+        pat = Regex(PREPATH_FIX_PAT.pattern * "$(ap)/")
+        open(opath, "w") do outf
+            write(outf, replace(old, pat => ss))
+        end
     end
+    setvar!(lc, :_applied_base_url_prefix, pp)
     return
 end

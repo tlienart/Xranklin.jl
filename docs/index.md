@@ -2,20 +2,63 @@
 header = "Building websites with Franklin.jl"
 +++
 
-## Foo
+\newcommand{\goto}[1]{
+  ~~~
+  <a href="!#1" id="goto">
+    <span id="check">&check;</span>
+    <span id="arrow"><b>&rarr;</b></span>
+  </a>
+  ~~~
+}
 
-* [basics](/syntax/basics/)
-* [extensions](/syntax/extensions/)
-* [code cells](/syntax/code/)
-* [plots](/syntax/plots/)
-* [variables and functions](/syntax/vars+funs/)
-* [custom commands and functions](/syntax/utils/)
+~~~
+<style>
+.sub-header {
+  font-size: 1.5em;
+  font-weight: 300;
+}
+.flist p {
+  display:inline;
+}
+.flist ul {
+  list-style: none;
+}
+.flist a#goto {
+  padding-right: 10px;
+  margin-left: -15px;
+}
+.flist a#goto #arrow{
+  display:none;
+}
+.flist a#goto:hover #check {
+  display: none;
+}
+.flist a#goto:hover #arrow {
+  display: inline;
+}
+</style>
+~~~
 
-## todo
+@@sub-header
+Franklin is a simple, customisable, static site generator with a focus on technical blogging.
+@@
 
-- order of execution (first pass, then second pass resolving html stuff, and so should be careful)
-- each page is two notebook (one for vars, one for code) + link to it from syntax. Notion of context (this is a bit advanced so maybe vars+funs should be intro and context more advanced with notebook stuff and cycles and shit)
+## Key features
 
-```!
-1+1
-```
+_click on the '&check;' sign to know more_
+
+@@flist
+* \goto{/syntax/markdown/} Augmented markdown allowing definition of LaTeX-like commands,
+* \goto{/syntax/divs-commands/} Easy inclusion of user-defined div-blocks,
+* \goto{/syntax/divs-commands/} Maths rendered via [KaTeX](https://katex.org/), code via [highlight.js](https://highlightjs.org) both can be pre-rendered,
+* \goto{/code/} Can live-evaluate Julia code blocks,
+* \goto{/workflow/#creating_your_website} Live preview of modifications,
+* \goto{/workflow/#publication_step} Simple publication step to deploy the website
+@@
+
+## Quick start
+
+To install Franklin with Julia *≥ 1.5*, in a Julia REPL do
+
+* hit \kbd{]} to enter package mode,
+* write `add Franklin` and press \kbd{enter}.
