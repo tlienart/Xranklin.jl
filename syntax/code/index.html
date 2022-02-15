@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="/Xranklin.jl/css/layout.css">
   <link rel="stylesheet" href="/Xranklin.jl/css/extras.css">
 
+  
   <style>
   .fig-stdout { visibility: hidden; height: 0; margin: 0; }
   </style>
@@ -313,7 +314,7 @@ randstring(5)
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">randstring(5)</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">"VJZ6l"</code></pre></div></fieldset>
+<div class="code-output"><pre><code class="code-result language-plaintext">"ugaca"</code></pre></div></fieldset>
 
 </div><div class="trim">
 
@@ -639,13 +640,13 @@ sqrt(-1)
 <div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: DomainError with -1.0:
 sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).
 Stacktrace:
-  [1] throw_complex_domainerror(f::Symbol, x::Float64)
-    @ Base.Math ./math.jl:33
-  [2] sqrt
-    @ ./math.jl:567 [inlined]
-  [3] sqrt(x::Int64)
-    @ Base.Math ./math.jl:1221
-</code></pre></div></fieldset>
+   [1] throw_complex_domainerror(f::Symbol, x::Float64)
+     @ Base.Math ./math.jl:33
+   [2] sqrt
+     @ ./math.jl:567 [inlined]
+   [3] sqrt(x::Int64)
+     @ Base.Math ./math.jl:1221
+ </code></pre></div></fieldset>
 
 </div>
 <div style="height:1em;"></div><h3 id="in_what_path_does_the_code_run?" ><a href="#in_what_path_does_the_code_run?"> In what path does the code run?</a></h3><p>In the same path as where <code>serve</code> was called.
@@ -1070,8 +1071,8 @@ The simple example below shows how that can work (you could do something similar
 \pycode&lbrace;
   import pandas as pd
   df = pd.DataFrame(&lbrace;
-    &quot;A&quot;: [&quot;Alice&quot;, &quot;Bob&quot;],
-    &quot;B&quot;: [2, 3]
+    &quot;A&quot;: [&quot;Alice&quot;, &quot;Bob&quot;, &quot;Jane&quot;],
+    &quot;B&quot;: [2, 3, 4]
     &rbrace;)
   df[&quot;B&quot;].mean()
 &rbrace;</code></pre>
@@ -1085,30 +1086,11 @@ The simple example below shows how that can work (you could do something similar
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="python">import pandas as pd
 df = pd.DataFrame(&lbrace;
-  &quot;A&quot;: [&quot;Alice&quot;, &quot;Bob&quot;],
-  &quot;B&quot;: [2, 3]
+  &quot;A&quot;: [&quot;Alice&quot;, &quot;Bob&quot;, &quot;Jane&quot;],
+  &quot;B&quot;: [2, 3, 4]
   &rbrace;)
 df[&quot;B&quot;].mean()</code></pre>
-<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: PyError ($(Expr(:escape, :(ccall(#= /home/runner/.julia/packages/PyCall/L0fLP/src/pyeval.jl:38 =# @pysym(:PyEval_EvalCode), PyPtr, (PyPtr, PyPtr, PyPtr), o, globals, locals))))) <class 'ModuleNotFoundError'>
-ModuleNotFoundError("No module named 'pandas'")
-  File "/home/runner/.julia/packages/PyCall/L0fLP/src/pyeval.jl", line 1, in <module>
-    const Py_single_input = 256  # from Python.h
-
-Stacktrace:
-  [1] pyerr_check
-    @ ~/.julia/packages/PyCall/L0fLP/src/exception.jl:62 [inlined]
-  [2] pyerr_check
-    @ ~/.julia/packages/PyCall/L0fLP/src/exception.jl:66 [inlined]
-  [3] _handle_error(msg::String)
-    @ PyCall ~/.julia/packages/PyCall/L0fLP/src/exception.jl:83
-  [4] macro expansion
-    @ ~/.julia/packages/PyCall/L0fLP/src/exception.jl:97 [inlined]
-  [5] #117
-    @ ~/.julia/packages/PyCall/L0fLP/src/pyeval.jl:38 [inlined]
-  [6] disable_sigint
-    @ ./c.jl:458 [inlined]
-  [7] pyeval_(s::String, globals::PyCall.PyDict{String, PyCall.PyObject, true}, locals::PyCall.PyDict{String, PyCall.PyObject, true}, input_type::Int64, fname::String)
-    @ PyCall ~/.julia/packages/PyCall/L0fLP/src/pyeval.jl:37
+<div class="code-output"><pre><code class="code-stdout language-plaintext">3.0
 </code></pre></div></fieldset>
 
 </div><p>The <code>replace</code> line in the code block adds a <code>res = ...</code> before the last line
