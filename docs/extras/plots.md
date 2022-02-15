@@ -163,7 +163,7 @@ PGFPlotsX.@pgf PGFPlotsX.Axis(
         delete fig.config.showTips
         Plotly.newPlot(div, fig);
     }
-  </script>
+</script>
 ~~~
 
 ```!
@@ -174,8 +174,8 @@ p=PlotlyJS.plot(
       title="Responsive Plots"
     )
 )
-opath = mkpath(joinpath(Utils.path(:site), "assets", "figs"))
-PlotlyJS.savejson(p, joinpath(opath, "plotlyjs_ex.json"));
+opath = mkpath(joinpath(Utils.path(:site), "assets", "plotlyfigs"))
+PlotlyJS.savejson(p, joinpath(opath, "ex.json"));
 ```
 
 ~~~
@@ -183,6 +183,6 @@ PlotlyJS.savejson(p, joinpath(opath, "plotlyjs_ex.json"));
 
 <script>
 graphDiv = document.getElementById("foobar");
-plotlyPromise = PlotlyJS_json(graphDiv, "/assets/figs/plotlyjs_ex.json")
+plotlyPromise = PlotlyJS_json(graphDiv, "/assets/plotlyfigs/ex.json")
 </script>
 ~~~
