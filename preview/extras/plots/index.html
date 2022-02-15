@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="/Xranklin.jl/preview/css/layout.css">
   <link rel="stylesheet" href="/Xranklin.jl/preview/css/extras.css">
 
+  
   <style>
   .fig-stdout { visibility: hidden; height: 0; margin: 0; }
   </style>
@@ -161,7 +162,7 @@
         <div id="margin-toc">
           
             <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
-            <div class="toc"><ol><li><a href="#pyplot"> PyPlot</a></li></ol></div>
+            <div class="toc"><ol><li><a href="#pyplot"> PyPlot</a></li><li><a href="#plots"> Plots</a></li></ol></div>
           
       </div>
     </div>
@@ -218,8 +219,56 @@ PyPlot.gcf()</code></pre>
 
 </div><p>Note how we need to use <code>gcf()</code> here so that the result of the code cell &mdash; a figure &mdash;
 is showable as a SVG.</p>
-<p>}</p>
+<h2 id="plots" ><a href="#plots"> Plots</a></h2><div class="trim">
 
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+import Plots
+
+Plots.plot(x, y, label=&quot;Hello&quot;, size=(500, 300))
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">import Plots
+
+Plots.plot(x, y, label=&quot;Hello&quot;, size=(500, 300))</code></pre>
+<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: ArgumentError: Package Plots not found in current path:
+- Run `import Pkg; Pkg.add("Plots")` to install the Plots package.
+
+Stacktrace:
+  [1] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:967
+  [2] eval
+    @ ./boot.jl:373 [inlined]
+  [3] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
+    @ Base ./loading.jl:1196
+  [4] include_string
+    @ ./loading.jl:1180 [inlined]
+  [5] #47
+    @ ~/.julia/packages/Xranklin/4R8jM/src/context/code/notebook_code.jl:128 [inlined]
+  [6] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#47#48"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, Base.PipeEndpoint, Base.PipeEndpoint})()
+    @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:118
+  [7] with_logstate(f::Function, logstate::Any)
+    @ Base.CoreLogging ./logging.jl:511
+  [8] with_logger
+    @ ./logging.jl:623 [inlined]
+  [9] capture(f::Xranklin.var"#47#48"{Module, String}; rethrow::Type, color::Bool)
+    @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:116
+ [10] capture
+    @ ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:75 [inlined]
+ [11] _eval_code_cell(mdl::Module, code::String, cell_name::String)
+    @ Xranklin ~/.julia/packages/Xranklin/4R8jM/src/context/code/notebook_code.jl:127
+ [12] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/4R8jM/src/context/code/notebook_code.jl:86
+ [13] html_code_block(b::FranklinParser.Block, c::Xranklin.LocalContext)
+    @ Xranklin ~/.julia/packages/Xranklin/4R8jM/src/convert/markdown/rules/code.jl:181</code></pre></div></fieldset>
+
+</div>
 
 
 
