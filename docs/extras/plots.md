@@ -57,25 +57,27 @@ This is a follow up from code but with more examples to do with plotting specifi
 
 ## CairoMakie
 
+\showmd{
 ```!
-import CairoMakie
-CairoMakie.activate!()
+  import CairoMakie
+  CairoMakie.activate!()
 
-x  = range(0, 10, length=100)
-y1 = sin.(x)
-y2 = cos.(x)
+  x  = range(0, 10, length=100)
+  y1 = sin.(x)
+  y2 = cos.(x)
 
-CairoMakie.scatter(x, y1,
-  color      = :red,
-  markersize = range(5, 15, length=100)
-)
-CairoMakie.scatter!(x, y2,
-  color    = range(0, 1, length=100),
-  colormap = :thermal
-)
+  CairoMakie.scatter(x, y1,
+    color      = :red,
+    markersize = range(5, 15, length=100)
+  )
+  CairoMakie.scatter!(x, y2,
+    color    = range(0, 1, length=100),
+    colormap = :thermal
+  )
 
-CairoMakie.current_figure()
-```
+  CairoMakie.current_figure()
+  ```
+}
 
 For many more, see the wonderful [Beautiful Makie](https://lazarusa.github.io/BeautifulMakie/)
 site by [Lazaro Alonso](https://github.com/lazarusA).
@@ -85,23 +87,25 @@ site by [Lazaro Alonso](https://github.com/lazarusA).
 
 (Safari users will need to enable WebGL, see [link in the WGLMakie docs](https://makie.juliaplots.org/stable/documentation/backends/wglmakie/#troubleshooting))
 
-```!wgl
-import WGLMakie, JSServe
-WGLMakie.activate!()
+\showmd{
+  ```!wgl
+  import WGLMakie, JSServe
+  WGLMakie.activate!()
 
-<|(io, o) = show(io, MIME"text/html"(), o)
+  <|(io, o) = show(io, MIME"text/html"(), o)
 
-io = IOBuffer()
+  io = IOBuffer()
 
-io <| JSServe.Page(exportable=true, offline=true)
-io <| WGLMakie.scatter(1:4)
-io <| WGLMakie.surface(rand(4,4))
-io <| JSServe.Slider(1:3)
+  io <| JSServe.Page(exportable=true, offline=true)
+  io <| WGLMakie.scatter(1:4)
+  io <| WGLMakie.surface(rand(4,4))
+  io <| JSServe.Slider(1:3)
 
-String(take!(io))
-```
+  String(take!(io))
+  ```
 
-\htmlshow{wgl}
+  \htmlshow{wgl}
+}
 
 
 ## PyPlot
@@ -128,61 +132,65 @@ is showable as a SVG.
 
 Requires you to have `lualatex` installed (also on CI) + `pdf2svg`
 
-```!
-using LaTeXStrings
-import PGFPlotsX
-PGFPlotsX.@pgf PGFPlotsX.Axis(
-    {
-      xlabel = L"x",
-      ylabel = L"f(x) = x^2 - x + 4"
-    },
-    PGFPlotsX.Plot(
-      PGFPlotsX.Expression("x^2 - x + 4")
-    )
-)
-```
+\showmd{
+  ```!
+  using LaTeXStrings
+  import PGFPlotsX
+  PGFPlotsX.@pgf PGFPlotsX.Axis(
+      {
+        xlabel = L"x",
+        ylabel = L"f(x) = x^2 - x + 4"
+      },
+      PGFPlotsX.Plot(
+        PGFPlotsX.Expression("x^2 - x + 4")
+      )
+  )
+  ```
+}
 
 ## PlotlyJS
 
-~~~
-<script src="/libs/plotly/plotly.min.js"></script>
-<script>
-    const PlotlyJS_json = async (div, url) => {
-      response = await fetch(url)
-      fig = await response.json()
-      if (typeof fig.config === 'undefined') { fig["config"]={} }
-        delete fig.layout.width
-        delete fig.layout.height
-        fig["layout"]["autosize"] = true
-        fig["config"]["autosizable"] = true
-        fig["config"]["responsive"] = true
-        fig.config["scrollZoom"] = false
-        delete fig.config.staticPlot
-        delete fig.config.displayModeBar
-        delete fig.config.doubleClick
-        delete fig.config.showTips
-        Plotly.newPlot(div, fig);
-    }
-</script>
-~~~
+\showmd{
+  ~~~
+  <script src="/libs/plotly/plotly.min.js"></script>
+  <script>
+      const PlotlyJS_json = async (div, url) => {
+        response = await fetch(url)
+        fig = await response.json()
+        if (typeof fig.config === 'undefined') { fig["config"]={} }
+          delete fig.layout.width
+          delete fig.layout.height
+          fig["layout"]["autosize"] = true
+          fig["config"]["autosizable"] = true
+          fig["config"]["responsive"] = true
+          fig.config["scrollZoom"] = false
+          delete fig.config.staticPlot
+          delete fig.config.displayModeBar
+          delete fig.config.doubleClick
+          delete fig.config.showTips
+          Plotly.newPlot(div, fig);
+      }
+  </script>
+  ~~~
 
-```!
-import PlotlyJS
-p=PlotlyJS.plot(
-    PlotlyJS.scatter(x=1:10, y=rand(10), mode="markers"),
-    PlotlyJS.Layout(
-      title="Responsive Plots"
-    )
-)
-opath = mkpath(joinpath(Utils.path(:site), "assets", "plotlyfigs"))
-PlotlyJS.savejson(p, joinpath(opath, "ex.json"));
-```
+  ```!
+  import PlotlyJS
+  p=PlotlyJS.plot(
+      PlotlyJS.scatter(x=1:10, y=rand(10), mode="markers"),
+      PlotlyJS.Layout(
+        title="Responsive Plots"
+      )
+  )
+  opath = mkpath(joinpath(Utils.path(:site), "assets", "plotlyfigs"))
+  PlotlyJS.savejson(p, joinpath(opath, "ex.json"));
+  ```
 
-~~~
-<div id="foobar"></div>
+  ~~~
+  <div id="foobar"></div>
 
-<script>
-graphDiv = document.getElementById("foobar");
-plotlyPromise = PlotlyJS_json(graphDiv, "/{{> ifelse($_final, $base_url_prefix, "" ) }}assets/plotlyfigs/ex.json")
-</script>
-~~~
+  <script>
+  graphDiv = document.getElementById("foobar");
+  plotlyPromise = PlotlyJS_json(graphDiv, "/{{> ifelse($_final, $base_url_prefix, "" ) }}assets/plotlyfigs/ex.json")
+  </script>
+  ~~~
+}
