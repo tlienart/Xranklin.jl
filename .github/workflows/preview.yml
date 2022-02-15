@@ -19,8 +19,8 @@ env:
   PYTHON_LIBS: "matplotlib pandas"
   # If use Plots.jl indicate "xvfb-run" otherwise ""
   PLOTS: "xvfb-run"
-  # whether PGFPlotsX is used
-  PGFPLOTSX: true
+  # whether PGFPlotsX or Tikz or anything requiring latex is used
+  LATEX: true
 
   # ----------------------------------------------------------
   # DON'T CHANGE THE FOLLOWING UNLESS YOU HAVE GOOD REASONS TO
@@ -72,9 +72,14 @@ jobs:
 
       # QT dependencies for GR (Plots)
       - if: ${{ env.PLOTS != '' }}
+        run: sudo apt-get install -y qt5-default
+
+      # LaTeX* deps for PGFPlotsX etc
+      - if: ${{ env.LATEX }}
+        name: Install LaTeX 🌴
         run: |
-             sudo apt-get update -y
-             sudo apt-get install -y qt5-default
+          sudo add-apt-repository ppa:jonathonf/texlive-2019
+          sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
 
       # ================ #
       # BUILDING WEBSITE #

@@ -21,7 +21,7 @@ menu_title = header
 <style>
 img.code-figure {
   max-width: 600px;
-  min-width: 350px;
+  min-width: 450px;
 }
 
 .code-stdout {
@@ -68,7 +68,7 @@ is showable as a SVG.
   import Plots
 
   x = range(-1, 1, length=300)
-  y = @. sinc(x) * exp(-1/x^2)
+  y = @. sinc(x) * cos(x) * exp(-1/x^2)
 
   Plots.plot(x, y, label="Hello", size=(500, 300))
   ```
@@ -100,7 +100,7 @@ For many more, see the wonderful [Beautiful Makie](https://lazarusa.github.io/Be
 site by [Lazaro Alonso](https://github.com/lazarusA).
 
 
-<!-- ## PGFPlotsX
+## PGFPlotsX
 
 Requires you to have `lualatex` installed (also on CI) + `pdf2svg`
 
@@ -116,8 +116,8 @@ PGFPlotsX.@pgf PGFPlotsX.Axis(
       PGFPlotsX.Expression("x^2 - x + 4")
     )
 )
-``` -->
-<!--
+```
+
 ## PlotlyJS
 
 ~~~
@@ -164,7 +164,7 @@ plotlyPromise = PlotlyJS_json(graphDiv, "/assets/figs/plotlyjs_ex.json")
 ~~~
 
 
-## WGLMakie
+<!-- ## WGLMakie
 
 (Safari users will need to enable WebGL, see [link in the WGLMakie docs](https://makie.juliaplots.org/stable/documentation/backends/wglmakie/#troubleshooting))
 
