@@ -41,18 +41,14 @@ This is a follow up from code but with more examples to do with plotting specifi
   time.
 }
 
-Prepare something
-
-```!
-x = range(-1, 1, length=300)
-y = @. sinc(x) * exp(-1/x^2);
-```
-
 ## PyPlot
 
 \showmd{
   ```!
   import PyPlot
+
+  x = range(-1, 1, length=300)
+  y = @. sinc(x) * exp(-1/x^2)
 
   PyPlot.figure(figsize=(6, 4))
   PyPlot.plot(x, y, lw=3, label="Hello")
@@ -65,16 +61,44 @@ Note how we need to use `gcf()` here so that the result of the code cell &mdash;
 is showable as a SVG.
 
 
-
 ## Plots
 
 \showmd{
   ```!
   import Plots
 
+  x = range(-1, 1, length=300)
+  y = @. sinc(x) * exp(-1/x^2)
+
   Plots.plot(x, y, label="Hello", size=(500, 300))
   ```
 }
+
+## CairoMakie
+
+```!
+import CairoMakie
+CairoMakie.activate!()
+
+x  = range(0, 10, length=100)
+y1 = sin.(x)
+y2 = cos.(x)
+
+CairoMakie.scatter(x, y1,
+  color      = :red,
+  markersize = range(5, 15, length=100)
+)
+CairoMakie.scatter!(x, y2,
+  color    = range(0, 1, length=100),
+  colormap = :thermal
+)
+
+CairoMakie.current_figure()
+```
+
+For many more, see the wonderful [Beautiful Makie](https://lazarusa.github.io/BeautifulMakie/)
+site by [Lazaro Alonso](https://github.com/lazarusA).
+
 
 <!-- ## PGFPlotsX
 
@@ -139,23 +163,6 @@ plotlyPromise = PlotlyJS_json(graphDiv, "/assets/figs/plotlyjs_ex.json")
 </script>
 ~~~
 
-## CairoMakie
-
-```!
-import CairoMakie
-CairoMakie.activate!()
-x = range(0, 10, length=100)
-y1 = sin.(x)
-y2 = cos.(x)
-
-CairoMakie.scatter(x, y1, color = :red, markersize = range(5, 15, length=100))
-CairoMakie.scatter!(x, y2, color = range(0, 1, length=100), colormap = :thermal)
-
-CairoMakie.current_figure()
-```
-
-For many more, see the wonderful [Beautiful Makie](https://lazarusa.github.io/BeautifulMakie/)
-site by [Lazaro Alonso](https://github.com/lazarusA).
 
 ## WGLMakie
 
