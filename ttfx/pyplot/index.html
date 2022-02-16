@@ -16,12 +16,12 @@ gcf()</code></pre>
 <div class="code-output"><img class="code-figure" src="/Xranklin.jl/ttfx/pyplot/assets/index/figs-html/__autofig_1458796918183576839.svg">
 </div><h1 id="time" ><a href="#time"> TIME</a></h1><pre><code class="julia">using Dates
 delta  = datetime2unix(now())
-delta -= 1645027480
+delta -= 1645031963
 delta  = round(delta/60, digits=2)
 ps(s) = joinpath(Utils.path(:site), s)
 write(ps(&quot;timer&quot;), delta)
 println(&quot;Time taken: $(delta)min.&quot;)</code></pre>
-<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 1.83min.
+<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 1.8min.
 </code></pre></div>
   
 </div>
