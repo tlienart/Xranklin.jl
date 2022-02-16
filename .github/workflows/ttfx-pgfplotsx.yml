@@ -52,6 +52,8 @@ jobs:
               echo "delta  = datetime2unix(now())"           >> ${{ env.INDEX }}
               echo "delta -= ${{ env.START }}"               >> ${{ env.INDEX }}
               echo "delta  = round(delta/60, digits=2)"      >> ${{ env.INDEX }}
+              echo "ps(s) = joinpath(Utils.path(:site), s)"  >> ${{ env.INDEX }}
+              echo "write(ps(\"timer\"), delta)"             >> ${{ env.INDEX }}
               echo "println(\"Time taken: \$(delta)min.\")"  >> ${{ env.INDEX }}
               echo "\`\`\`"                                  >> ${{ env.INDEX }}
               cat ${{ env.INDEX }}
