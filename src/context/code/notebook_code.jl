@@ -59,6 +59,7 @@ function eval_code_cell!(
         # keep track of vars assignments or whatever as they
         # can't have changed
         for tmp_idx = 1:cell_index-1
+            @info "  💦  refreshing cell $cell_name..." 
             _eval_code_cell(
                 nb.mdl,
                 nb.code_pairs[tmp_idx].code,

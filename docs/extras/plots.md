@@ -70,6 +70,7 @@ Note also that this time is a one-off cost, subsequent plots should take negligi
 | [Gaston.jl](#gaston.jl)             | [link](/ttfx/gaston/)      | {{ttfx gaston}}       |
 | [UnicodePlots.jl](#unicodeplots.jl) | [link](/ttfx/unicodeplots) | {{ttfx unicodeplots}} |
 
+A final note here is that if the pages on which you have plots don't change and that you use the cache, these pages will be skipped at build time and you won't have to pay the full overhead (only the installation of the dependencies but that's always under 1 min).
 
 ### Suppressing stdout
 
