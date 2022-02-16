@@ -80,6 +80,6 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
-          BRANCH: gh-pages
+          BRANCH: gh-ttfx
           FOLDER: ${{ env.SITED }}/__site
           TARGET-FOLDER: "${{ env.TARGD }}"
