@@ -28,10 +28,8 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
-      - name: Install Ansi2html 🐍
-        run: |
-             pip install ansi2html
-             export PYTHON=$(which python)
+      - name: Install Ansi2HTML 🐍
+        run: pip install ansi2html
 
       # -- modify index --
       - name: Set utils.jl 📖

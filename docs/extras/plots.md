@@ -61,13 +61,15 @@ Note also that this time is a one-off cost, subsequent plots should take negligi
 
 | Plotting package | Result | Time (min) |
 | ---------------- | ------ | ---------- |
-| [Plots.jl](#plots.jl)           | [link](/ttfx/plots/)      | {{ttfx plots}}      |
-| [CairoMakie.jl](#cairomakie.jl) | [link](/ttfx/cairomakie/) | {{ttfx cairomakie}} |
-| [WGLMakie.jl](#wglmakie.jl)     | [link](/ttfx/wglmakie/)   | {{ttfx wglmakie}}   |
-| [PyPlot.jl](#pyplot.jl)         | [link](/ttfx/pyplot/)     | {{ttfx pyplot}}     |
-| [PGFPlotsX.jl](#pgfplotsx.jl)   | [link](/ttfx/pgfplotsx/)  | {{ttfx pgfplotsx}}  |
-| [PlotlyJS.jl](#plotlyjs.jl)     | NA                        | NA                  |
-| [Gaston.jl](#gaston.jl)         | [link](/ttfx/gaston/)     | {{ttfx gaston}}     |
+| [Plots.jl](#plots.jl)               | [link](/ttfx/plots/)       | {{ttfx plots}}        |
+| [CairoMakie.jl](#cairomakie.jl)     | [link](/ttfx/cairomakie/)  | {{ttfx cairomakie}}   |
+| [WGLMakie.jl](#wglmakie.jl)         | [link](/ttfx/wglmakie/)    | {{ttfx wglmakie}}     |
+| [PyPlot.jl](#pyplot.jl)             | [link](/ttfx/pyplot/)      | {{ttfx pyplot}}       |
+| [PGFPlotsX.jl](#pgfplotsx.jl)       | [link](/ttfx/pgfplotsx/)   | {{ttfx pgfplotsx}}    |
+| [PlotlyJS.jl](#plotlyjs.jl)         | NA                         | NA                    |
+| [Gaston.jl](#gaston.jl)             | [link](/ttfx/gaston/)      | {{ttfx gaston}}       |
+| [UnicodePlots.jl](#unicodeplots.jl) | [link](/ttfx/unicodeplots) | {{ttfx unicodeplots}} |
+
 
 ### Suppressing stdout
 
@@ -124,7 +126,7 @@ run: xvfb-run julia -e 'using Pkg; ...'
 
 The overhead of installing `qt5-default` on GA is a bit under 30s, and the time to precompile the Plots package and get the first plot on GA is around 1 min at the time of writing.
 
-Remember to also add `Plots` to your environment.
+Remember to also add `Plots` to the site environment.
 
 
 ## CairoMakie
@@ -164,7 +166,7 @@ site by [Lazaro Alonso](https://github.com/lazarusA) and also based on Franklin.
 
 ### CairoMakie with GA
 
-You don't need to install anything specific in your GA script but remember to add `CairoMakie` to your environment.
+You don't need to install anything specific in your GA script but remember to add `CairoMakie` to the site environment.
 
 ## WGLMakie
 
@@ -199,7 +201,7 @@ Combined with [JSServe.jl](https://github.com/SimonDanisch/JSServe.jl) it can pr
 
 ### WGLMakie with GA
 
-You don't need to install anything specific in your GA script but remember to add `WGLMakie` to your environment.
+You don't need to install anything specific in your GA script but remember to add `WGLMakie` to the site environment.
 
 ## PyPlot.jl
 
@@ -253,7 +255,7 @@ run: julia -e '
 
 this will guarantee that the right executable is used even when you're using the GA cache.
 
-Remember to also add PyPlot to your environment.
+Remember to also add PyPlot to the site environment.
 
 ## PGFPlotsX.jl
 
@@ -293,7 +295,7 @@ run: |
 
 which takes around 1 minute to run at the time of writing.
 
-Remember to also add PGFPlotsX to your environment.
+Remember to also add PGFPlotsX to the site environment.
 
 ## PlotlyJS
 
@@ -357,7 +359,7 @@ The overall structure is
 
 ### PlotlyJS with GA
 
-It doesn't require anything specific in your GA. Make sure the Javascript library is in your `/libs/` though, along with the PlotlyJS package in your environment.
+It doesn't require anything specific in your GA. Make sure the Javascript library is in your `/libs/` though, along with the PlotlyJS package in the site environment.
 
 
 ## Gaston.jl
@@ -388,4 +390,56 @@ run: |
   sudo apt-get install -y gnuplot
 ```
 
-Remember to also add Gaston to your environment.
+Remember to also add Gaston to the site environment.
+
+
+## UnicodePlots.jl
+
+[UnicodePlots.jl](https://github.com/JuliaPlots/UnicodePlots.jl) is a plotting library produced text-based plots.
+This is meant for use in the REPL but you can actually generate ANSI text with it which can, in turn, be converted to HTML that can be injected in Franklin.
+This requires a custom show method which depends on a Python library [ansi2html](https://github.com/pycontribs/ansi2html/).
+
+\showmd{
+  ```!
+  import UnicodePlots
+  x = range(0, pi, length=500)
+  y = @. sin(exp(x)) * sinc(x)
+  lineplot(x, y,
+    xlim=[0, pi],
+    ylim=[-0.2, 1]
+  )
+  ```
+}
+
+The code to insert in your `utils.jl` to get the relevant custom show method is
+
+```julia
+import UnicodePlots
+
+function html_show(p::UnicodePlots.Plot)
+    td = tempdir()
+    tf = tempname(td)
+    io = IOBuffer()
+    UnicodePlots.savefig(p, tf; color=true)
+    # assume ansi2html is available
+    if success(pipeline(`cat $tf`, `ansi2html -i -l`, io))
+        return "<pre>" * String(take!(io)) * "</pre>"
+    end
+    return ""
+end
+```
+
+It requires `ansi2html`, a Python library which you can install via `pip`.
+
+### UnicodePlots with GA
+
+This is similar to the case of PyPlot: you need to install ansi2html which can be done with
+
+```yml
+uses: actions/setup-python@v2
+with:
+  python-version: 3.8
+run: pip install ansi2html
+```
+
+as well as adding UnicodePlots to the site environment.
