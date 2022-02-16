@@ -45,7 +45,7 @@ jobs:
               echo "using Dates"                             >> ${{ env.INDEX }}
               echo "delta  = datetime2unix(now())"           >> ${{ env.INDEX }}
               echo "delta -= ${{ env.START }}"               >> ${{ env.INDEX }}
-              echo "delta  = round(delta, digits=2)"         >> ${{ env.INDEX }}
+              echo "delta  = round(delta/60, digits=2)"      >> ${{ env.INDEX }}
               echo "println(\"Time taken: \$(delta)min.\")"  >> ${{ env.INDEX }}
               echo "\`\`\`"                                  >> ${{ env.INDEX }}
               cat ${{ env.INDEX }}
