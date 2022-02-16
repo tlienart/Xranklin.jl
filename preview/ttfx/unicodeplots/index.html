@@ -1,0 +1,53 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div class="franklin-content" >
+  <h1 id="ttfx_unicodeplots" ><a href="#ttfx_unicodeplots"> TTFX UnicodePlots</a></h1><pre><code class="julia">using UnicodePlots
+x = range(0, pi, length=500)
+y = @. sin(exp(x)) * sinc(x)
+lineplot(x, y, 
+  xlabel=&quot;x&quot;,
+  ylabel=&quot;y&quot;,
+  border=:dotted,
+  xlim=[0,pi],
+  ylim=[-0.2,1])</code></pre>
+<div class="code-output"><pre>          <span style="color: #000000">⡤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⢤</span> 
+        <span style="color: #000000">1</span> <span style="color: #000000">⡇</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #000000">⢸</span> 
+          <span style="color: #000000">⡇</span><span style="color: #00aa00">⡠</span><span style="color: #00aa00">⠖</span><span style="color: #00aa00">⠦</span><span style="color: #00aa00">⣄</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #000000">⢸</span> 
+          <span style="color: #000000">⡇</span>⠀⠀⠀<span style="color: #00aa00">⠈</span><span style="color: #00aa00">⢧</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #000000">⢸</span> 
+          <span style="color: #000000">⡇</span>⠀⠀⠀⠀⠀<span style="color: #00aa00">⢣</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #000000">⢸</span> 
+          <span style="color: #000000">⡇</span>⠀⠀⠀⠀⠀<span style="color: #00aa00">⠈</span><span style="color: #00aa00">⢇</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #000000">⢸</span> 
+          <span style="color: #000000">⡇</span>⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⠘</span><span style="color: #00aa00">⡄</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #000000">⢸</span> 
+          <span style="color: #000000">⡇</span>⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⢹</span><span style="color: #00aa00">⡀</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #000000">⢸</span> 
+   y      <span style="color: #000000">⡇</span>⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⢇</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #000000">⢸</span> 
+          <span style="color: #000000">⡇</span>⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⠘</span><span style="color: #00aa00">⡄</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #000000">⢸</span> 
+          <span style="color: #000000">⡇</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⢱</span><span style="color: #00aa00">⡀</span>⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⢀</span><span style="color: #00aa00">⣀</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #000000">⢸</span> 
+          <span style="color: #000000">⡇</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⢣</span>⠀⠀⠀⠀⠀<span style="color: #00aa00">⢀</span><span style="color: #00aa00">⡴</span><span style="color: #00aa00">⠉</span><span style="color: #00aa00">⠈</span><span style="color: #00aa00">⠱</span><span style="color: #00aa00">⡄</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #000000">⢸</span> 
+          <span style="color: #000000">⡇</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⠈</span><span style="color: #00aa00">⢧</span>⠀⠀⠀<span style="color: #00aa00">⢠</span><span style="color: #00aa00">⠞</span>⠀⠀⠀⠀<span style="color: #00aa00">⠘</span><span style="color: #00aa00">⣆</span>⠀⠀⠀<span style="color: #00aa00">⢀</span><span style="color: #00aa00">⣀</span>⠀⠀⠀⠀<span style="color: #00aa00">⢠</span><span style="color: #00aa00">⠛</span><span style="color: #00aa00">⢆</span>⠀⠀⠀⠀⠀<span style="color: #000000">⢸</span> 
+          <span style="color: #000000">⡇</span>⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤<span style="color: #00aa00">⠬</span><span style="color: #00aa00">⠷</span><span style="color: #00aa00">⠤</span><span style="color: #00aa00">⠴</span><span style="color: #00aa00">⠧</span>⠤⠤⠤⠤⠤⠤<span style="color: #00aa00">⠬</span><span style="color: #00aa00">⠦</span><span style="color: #00aa00">⣤</span><span style="color: #00aa00">⠶</span><span style="color: #00aa00">⠭</span><span style="color: #00aa00">⠬</span><span style="color: #00aa00">⢷</span><span style="color: #00aa00">⡤</span>⠤<span style="color: #00aa00">⢤</span><span style="color: #00aa00">⠯</span>⠤<span style="color: #00aa00">⠼</span><span style="color: #00aa00">⣦</span><span style="color: #00aa00">⢤</span><span style="color: #00aa00">⠶</span><span style="color: #00aa00">⠦</span><span style="color: #00aa00">⠾</span><span style="color: #000000">⢸</span> 
+          <span style="color: #000000">⡇</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⢣</span><span style="color: #00aa00">⣀</span><span style="color: #00aa00">⡼</span>⠀⠀⠀<span style="color: #00aa00">⠈</span><span style="color: #00aa00">⠉</span>⠀⠀⠀<span style="color: #000000">⢸</span> 
+     <span style="color: #000000">-0.2</span> <span style="color: #000000">⡇</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⠉</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #000000">⢸</span> 
+          <span style="color: #000000">⠓⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠚</span> 
+          ⠀<span style="color: #000000">0</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #000000">3.14159</span>⠀ 
+          ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀x⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ 
+</pre></div><h1 id="time" ><a href="#time"> TIME</a></h1><pre><code class="julia">using Dates
+delta  = datetime2unix(now())
+delta -= 1645027472
+delta  = round(delta/60, digits=2)
+ps(s) = joinpath(Utils.path(:site), s)
+write(ps(&quot;timer&quot;), delta)
+println(&quot;Time taken: $(delta)min.&quot;)</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 1.02min.
+</code></pre></div>
+  
+</div>
+
+
+
+  </body>
+</html>
