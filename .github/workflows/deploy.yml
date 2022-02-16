@@ -114,6 +114,11 @@ jobs:
       # DEPLOYMENT #
       # ========== #
 
+      - name: Recover TTFX
+        uses: actions/checkout@v2
+        with:
+          ref: gh-ttfx
+
       # Deployment
       - name: No Jekyll
         run: touch ${{ env.SITE_FOLDER }}/__site/.nojekyll
