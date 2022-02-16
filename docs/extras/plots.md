@@ -50,6 +50,26 @@ using Pkg; Pkg.add("Plots")
 In order to avoid name clashes, all packages in the code snippets below are `import`ed and so all function calls are of the form `Plots.plot`.
 You don't need to do this if you're using a single plotting library of course.
 
+### Overhead
+
+In the table below we list the time taken from starting a GA deployment to displaying a meaningful plot.
+The time includes the installation of dependencies, the installation of the plotting package and the time it takes to execute the code.
+The exact time you get in your case will depend on GA and so you should take that number as an indicator rather than an exact figure.
+Note also that this time is a one-off cost, subsequent plots should take negligible time in comparison.
+
+\lskip
+
+| Plotting package | Result | Time (min) |
+| ---------------- | ------ | ---------- |
+| [Plots.jl](#plots.jl)           | [link](/ttfx/plots/)      | {{ttfx plots}}      |
+| [CairoMakie.jl](#cairomakie.jl) | [link](/ttfx/cairomakie/) | {{ttfx cairomakie}} |
+| [CairoMakie.jl](#cairomakie.jl) | [link](/ttfx/cairomakie/) | {{ttfx cairomakie}} |
+| [WGLMakie.jl](#wglmakie.jl)     | [link](/ttfx/wglmakie/)   | {{ttfx wglmakie}}   |
+| [PyPlot.jl](#pyplot.jl)         | [link](/ttfx/pyplot/)     | {{ttfx pyplot}}     |
+| [PGFPlotsX.jl](#pgfplotsx.jl)   | [link](/ttfx/pgfplotsx/)  | {{ttfx pgfplotsx}}  |
+| [PlotlyJS.jl](#plotlyjs.jl)     | NA                        | NA                  |
+| [Gaston.jl](#gaston.jl)         | [link](/ttfx/gaston/)     | {{ttfx gaston}}     |
+
 ## Plots.jl
 
 [Plots.jl](https://github.com/JuliaPlots/Plots.jl) is one of the most common plotting package used.
@@ -321,3 +341,34 @@ The overall structure is
 ### PlotlyJS with GA
 
 It doesn't require anything specific in your GA. Make sure the Javascript library is in your `/libs/` though, along with the PlotlyJS package in your environment.
+
+
+## Gaston.jl
+
+
+[Gaston.jl](https://github.com/mbaz/Gaston.jl) is an interface to [GnuPlot](http://gnuplot.sourceforge.net).
+It is a great choice if you're familiar with GnuPlot. There is also very good [documentation](https://mbaz.github.io/Gaston.jl/stable/).
+Note that, by default, PNG images will be generated.
+
+\lskip
+
+\showmd{
+  ```!
+  import Gaston
+  x = range(0, pi, length=500)
+  y = @. sin(exp(x)) * sinc(x)
+  plot(x, y)
+  ```
+}
+
+### Gaston with GA
+
+You need to install GnuPlot and that's it:
+
+```
+run: |
+  sudo apt-get update -qq
+  sudo apt-get install -y gnuplot
+```
+
+Remember to also add Gaston to your environment.

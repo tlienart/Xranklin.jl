@@ -1,4 +1,5 @@
 import Literate
+import HTTP
 
 
 function hfun_rm_headings(ps::Vector{String})
@@ -59,4 +60,16 @@ function hfun_navmenu()
         write(io, "</ul>")
     end
     return String(take!(io))
+end
+
+
+####################################
+# TTFX
+####################################
+
+function hfun_ttfx(p)
+    p = first(p)
+    r = HTTP.request("GET", "https://tlienart.github.io/Xranklin.jl/ttfx/$(p)/timer")
+    t = first(reinterpret(Float64, r.body))
+    return string(t)
 end
