@@ -14,12 +14,12 @@ lines(x, y)</code></pre>
 <div class="code-output"><img class="code-figure" src="/Xranklin.jl/ttfx/cairomakie/assets/index/figs-html/__autofig_7415659806595590123.svg">
 </div><h1 id="time" ><a href="#time"> TIME</a></h1><pre><code class="julia">using Dates
 delta  = datetime2unix(now())
-delta -= 1645010288
+delta -= 1645016236
 delta  = round(delta/60, digits=2)
 ps(s) = joinpath(Utils.path(:site), s)
 write(ps(&quot;timer&quot;), delta)
 println(&quot;Time taken: $(delta)min.&quot;)</code></pre>
-<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 5.58min.
+<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 4.92min.
 </code></pre></div>
   
 </div>
