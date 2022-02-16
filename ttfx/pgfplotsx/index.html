@@ -18,12 +18,12 @@
 Stacktrace:
 </code></pre></div><h1 id="time" ><a href="#time"> TIME</a></h1><pre><code class="julia">using Dates
 delta  = datetime2unix(now())
-delta -= 1645018593
+delta -= 1645027529
 delta  = round(delta/60, digits=2)
 ps(s) = joinpath(Utils.path(:site), s)
 write(ps(&quot;timer&quot;), delta)
 println(&quot;Time taken: $(delta)min.&quot;)</code></pre>
-<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 0.96min.
+<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 0.93min.
 </code></pre></div>
   
 </div>
