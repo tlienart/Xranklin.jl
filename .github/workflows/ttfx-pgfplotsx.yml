@@ -1,0 +1,81 @@
+name: PGFPlotsX
+
+on:
+  push:
+    branches:
+      - preview
+      - main
+      - ttfx
+
+env:
+  INDEX: "test/abc_min/index.md"
+  SETUP: "using Pkg; Pkg.add([\"PGFPlotsX\", "LaTeXStrings"]);"
+  BUILD: ""
+  PPATH: "Xranklin.jl"
+  TARGD: "ttfx/pgfplotsx"
+  SITED: "test/abc_min"
+
+jobs:
+  pgfplotsx:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+
+      # =======================================================================
+      # -- deps --
+      - name: Install LaTeX 🌴
+        run: |
+          sudo apt-get update -qq
+          sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
+
+      # -- modify index --
+      - name: Set index.md 📖
+        run: |
+              echo "# TTFX PGFPlotsX"                        > ${{ env.INDEX }}
+              echo "\`\`\`!"                                >> ${{ env.INDEX }}
+              echo "using PGFPlotsX, LaTeXStrings"          >> ${{ env.INDEX }}
+              echo "@pgf PGFPlotsX.Axis("                   >> ${{ env.INDEX }}
+              echo "    {"                                  >> ${{ env.INDEX }}
+              echo "      xlabel = L\"x\","                 >> ${{ env.INDEX }}
+              echo "      ylabel = L\"f(x) = x^2 - x + 4\"" >> ${{ env.INDEX }}
+              echo "    },"                                 >> ${{ env.INDEX }}
+              echo "    Plot("                              >> ${{ env.INDEX }}
+              echo "      Expression(\"x^2 - x + 4\")"      >> ${{ env.INDEX }}
+              echo "    )"                                  >> ${{ env.INDEX }}
+              echo ")"                                      >> ${{ env.INDEX }}
+              echo "\`\`\`"                                 >> ${{ env.INDEX }}
+              cat ${{ env.INDEX }}
+
+      # =======================================================================
+
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: 1.7
+
+      - name: Building website 🚧
+        run: ${{ env.BUILD }} julia -e '
+                ${{ env.SETUP }};
+                Pkg.add(
+                  url="https://github.com/tlienart/Xranklin.jl",
+                  rev="main"
+                  );
+                using Xranklin;
+                build("${{ env.SITED }}";
+                      clear=true,
+                      prefix=joinpath(
+                        "${{ env.PPATH }}",
+                        "${{ env.TARGD }}"
+                        )
+                      );'
+
+      # Deployment
+      - name: No Jekyll
+        run: touch ${{ env.SITED }}/__site/.nojekyll
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        with:
+          BRANCH: gh-pages
+          FOLDER: ${{ env.SITED }}/__site
+          TARGET-FOLDER: "${{ env.TARGD }}"

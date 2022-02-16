@@ -13,7 +13,7 @@ env:
   BUILD: ""
   PPATH: "Xranklin.jl"
   TARGD: "ttfx/pyplot"
-  SITED: "docs"
+  SITED: "test/abc_min"
 
 jobs:
   pyplot:
@@ -62,7 +62,7 @@ jobs:
                   rev="main"
                   );
                 using Xranklin;
-                build("test/abc_min";
+                build("${{ env.SITED }}";
                       clear=true,
                       prefix=joinpath(
                         "${{ env.PPATH }}",
