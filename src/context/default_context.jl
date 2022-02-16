@@ -155,6 +155,9 @@ const DefaultLocalVars = Vars(
     :_paginator_npp  => 10,
     # Check if a base url prefix was applied
     :_applied_base_url_prefix => "",
+    # Generated HTML (when skipping, allows to recover previously generated)
+    :_generated_html  => "",
+    :_generated_latex => "",
 )
 const DefaultLocalVarsAlias = Alias(
     :fd_rpath     => :_relative_path,

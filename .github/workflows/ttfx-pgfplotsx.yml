@@ -9,7 +9,7 @@ on:
 
 env:
   INDEX: "test/abc_min/index.md"
-  SETUP: "using Pkg; Pkg.add([\"PGFPlotsX\", \"LaTeXStrings\"]);"
+  SETUP: "using Pkg; Pkg.add([\"PGFPlotsX\"]);"
   BUILD: ""
   PPATH: "Xranklin.jl"
   TARGD: "ttfx/pgfplotsx"
@@ -33,19 +33,16 @@ jobs:
       # -- modify index --
       - name: Set index.md 📖
         run: |
-              echo "# TTFX PGFPlotsX"                         > ${{ env.INDEX }}
-              echo "\`\`\`!"                                 >> ${{ env.INDEX }}
-              echo "using PGFPlotsX, LaTeXStrings"           >> ${{ env.INDEX }}
-              echo "@pgf PGFPlotsX.Axis("                    >> ${{ env.INDEX }}
-              echo "    {"                                   >> ${{ env.INDEX }}
-              echo "      xlabel = L\"x\","                  >> ${{ env.INDEX }}
-              echo "      ylabel = L\"f(x) = x^2 - x + 4\""  >> ${{ env.INDEX }}
-              echo "    },"                                  >> ${{ env.INDEX }}
-              echo "    Plot("                               >> ${{ env.INDEX }}
-              echo "      Expression(\"x^2 - x + 4\")"       >> ${{ env.INDEX }}
-              echo "    )"                                   >> ${{ env.INDEX }}
-              echo ")"                                       >> ${{ env.INDEX }}
-              echo "\`\`\`"                                  >> ${{ env.INDEX }}
+              echo "# TTFX PGFPlotsX"       > ${{ env.INDEX }}
+              echo "\`\`\`!"               >> ${{ env.INDEX }}
+              echo "using PGFPlotsX"       >> ${{ env.INDEX }}
+              echo "@pgf PGFPlotsX.Axis("  >> ${{ env.INDEX }}
+              echo "    Plot("             >> ${{ env.INDEX }}
+              echo "      {no_marks},"     >> ${{ env.INDEX }}
+              echo "      Table(x, y)      >> ${{ env.INDEX }}
+              echo "    )"                 >> ${{ env.INDEX }}
+              echo ")"                     >> ${{ env.INDEX }}
+              echo "\`\`\`"                >> ${{ env.INDEX }}
               echo "# TIME"                                  >> ${{ env.INDEX }}
               echo "\`\`\`!"                                 >> ${{ env.INDEX }}
               echo "using Dates"                             >> ${{ env.INDEX }}

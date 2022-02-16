@@ -63,7 +63,6 @@ Note also that this time is a one-off cost, subsequent plots should take negligi
 | ---------------- | ------ | ---------- |
 | [Plots.jl](#plots.jl)           | [link](/ttfx/plots/)      | {{ttfx plots}}      |
 | [CairoMakie.jl](#cairomakie.jl) | [link](/ttfx/cairomakie/) | {{ttfx cairomakie}} |
-| [CairoMakie.jl](#cairomakie.jl) | [link](/ttfx/cairomakie/) | {{ttfx cairomakie}} |
 | [WGLMakie.jl](#wglmakie.jl)     | [link](/ttfx/wglmakie/)   | {{ttfx wglmakie}}   |
 | [PyPlot.jl](#pyplot.jl)         | [link](/ttfx/pyplot/)     | {{ttfx pyplot}}     |
 | [PGFPlotsX.jl](#pgfplotsx.jl)   | [link](/ttfx/pgfplotsx/)  | {{ttfx pgfplotsx}}  |
@@ -76,7 +75,8 @@ Note also that this time is a one-off cost, subsequent plots should take negligi
 It is pretty easy to use and has [great documentation](https://docs.juliaplots.org/stable/).
 The default backend ([GR.jl](https://github.com/jheinen/GR.jl)) works pretty well and is fairly quick.
 
-Relative to Franklin, objects plotted via functions like `Plots.plot` are showable to SVG so it's particularly simple to use this plotting library with Franklin.
+Relative to Franklin, objects plotted via functions like `Plots.plot` are showable to SVG
+so it's particularly simple to use this plotting library with Franklin.
 
 \lskip
 
@@ -251,13 +251,16 @@ Remember to also add PyPlot to your environment.
   ```!
   using LaTeXStrings
   import PGFPlotsX
+  x = range(-1, 1, length=300)
+  y = @. sinc(x) * exp(-1/x^2)
   PGFPlotsX.@pgf PGFPlotsX.Axis(
       {
         xlabel = L"x",
-        ylabel = L"f(x) = x^2 - x + 4"
+        ylabel = L"f(x) = \mathrm{sinc(x)}\exp(-x^{-2})"
       },
       PGFPlotsX.Plot(
-        PGFPlotsX.Expression("x^2 - x + 4")
+        {no_marks},
+        PGFPlotsX.Table(x, y)
       )
   )
   ```
@@ -357,7 +360,7 @@ Note that, by default, PNG images will be generated.
   import Gaston
   x = range(0, pi, length=500)
   y = @. sin(exp(x)) * sinc(x)
-  plot(x, y)
+  Gaston.plot(x, y)
   ```
 }
 

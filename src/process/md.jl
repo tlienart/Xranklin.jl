@@ -3,7 +3,7 @@
 #
 # > process_md_file
 #   > process_md_file_io!
-#     > setup_page_context
+#     > reset_page_context!
 #     > _process_md_file_html
 #     > _process_md_file_latex
 #
@@ -173,7 +173,7 @@ end
 # ------------------------------------------------------------------------
 
 """
-    setup_page_context(lc; reset_notebook)
+    reset_page_context!(lc; reset_notebook)
 
 Set the current page context and reset its variables such as the headers,
 equation counters etc.
@@ -185,17 +185,24 @@ The set of anchors from `lc` before they were reset. This will allow us to
 establish whether any anchor has changed on the page and, if so, to
 re-trigger pages that may depend upon those.
 """
-function setup_page_context(
+function reset_page_context!(
             lc::LocalContext;
             reset_notebook=false
-            )::Set{String}
+            )::NamedTuple
     # set it as current context in case it isn't
     set_current_local_context(lc)
-    bk_anchors = copy(lc.anchors)
+
+    state = (
+        anchors   = copy(lc.anchors),
+        headings  = copy(lc.headings),
+        eq_cntr   = eqrefs(lc)["__cntr__"],
+        cell_cntr = getvar(lc, :_auto_cell_counter, 0),
+        paginator = getvar(lc, :_paginator_name, "")
+    )
 
     # Reset page counters and variables (headers etc)
-    empty!(lc.headings)
     empty!(lc.anchors)
+    empty!(lc.headings)
     eqrefs(lc)["__cntr__"] = 0
     setvar!(lc, :_auto_cell_counter, 0)
     setvar!(lc, :_paginator_name, "")
@@ -203,7 +210,23 @@ function setup_page_context(
     # in the context of "ignore_cache", reset the notebook
     reset_notebook && reset_code_notebook!(lc)
 
-    return bk_anchors
+    return state
+end
+
+"""
+    restore_page_context!(lc, state)
+
+In the "skip" case (where a page hasn't changed), we need to undo the effect
+of reset_page_context! so that the inclusion of head.html and foot.html has
+access to the proper environment (which has otherwise been scrubbed).
+"""
+function restore_page_context!(lc::LocalContext, state::NamedTuple)
+    union!(lc.anchors,  state.anchors)
+    merge!(lc.headings, state.headings)
+    eqrefs(lc)["__cntr__"] = state.eq_cntr
+    setvar!(lc, :_auto_cell_counter, state.cell_cntr)
+    setvar!(lc, :_paginator_name, state.paginator)
+    return
 end
 
 
@@ -243,7 +266,7 @@ function process_md_file_io!(
         previous_hash = lc.page_hash[]
     end
 
-    bk_anchors   = setup_page_context(lc)
+    bk_state     = reset_page_context!(lc)
     bk_tags_dict = get_page_tags(lc)
 
     # get markdown and compute the hash of it so that we can check whether
@@ -257,6 +280,8 @@ function process_md_file_io!(
 
     set_meta_parameters(lc, fpath, opath)
 
+    skip = false
+
     if previous_hash == page_hash
         # this is only possible if we're on the initial pass AND the
         # LC was loaded from cache (so that in_gc is true)
@@ -266,7 +291,7 @@ function process_md_file_io!(
             @info """
                 ⏩ page '$rpath' hasn't changed, skipping the conversion...
                 """
-            return
+            skip = true
         end
     end
     setvar!(lc, :_applied_base_url_prefix, "")
@@ -274,14 +299,18 @@ function process_md_file_io!(
     # reset the notebook counters at the top (they may already be there)
     reset_notebook_counters!(lc)
 
+    # if we're in the skip case, we need to re-instate the state as it
+    # was before the call to reset_page_context
+    skip && restore_page_context!(lc, bk_state)
+
     output = (tohtml ?
-                _process_md_file_html(lc, page_content_md) :
-                _process_md_file_latex(lc, page_content_md))::String
+                _process_md_file_html(lc, page_content_md; skip) :
+                _process_md_file_latex(lc, page_content_md; skip)  )::String
 
     # only here do we know whether `ignore_cache` was set to 'true'
     # if that's the case, reset the code notebook and re-evaluate.
     if from_cache && getvar(lc, :ignore_cache, false)
-        setup_page_context(lc, reset_notebook=true)
+        reset_page_context!(lc, reset_notebook=true)
         output = (tohtml ?
                     _process_md_file_html(lc, page_content_md) :
                     _process_md_file_latex(lc, page_content_md))::String
@@ -297,7 +326,7 @@ function process_md_file_io!(
     #
     # check whether any anchor has been removed by comparing
     # to 'bk_anchors'.
-    for id in setdiff(bk_anchors, lc.anchors)
+    for id in setdiff(bk_state.anchors, lc.anchors)
         rm_anchor(gc, id, lc.rpath)
     end
 
@@ -325,21 +354,25 @@ end
 """
     _process_md_file_html
 """
-function _process_md_file_html(ctx::LocalContext, page_content_md::String)
+function _process_md_file_html(lc::LocalContext, page_content_md::String; skip=false)
     # get and process html for the foot of the page
-    page_foot_path = path(:folder) / getgvar(:layout_page_foot)::String
+    page_foot_path = path(:folder) / getvar(lc, :layout_page_foot, "")
     page_foot_html = ""
     if !isempty(page_foot_path) && isfile(page_foot_path)
-        page_foot_html = html2(read(page_foot_path, String), ctx)
+        page_foot_html = html2(read(page_foot_path, String), lc)
     end
 
     # add the content tags if required
-    c_tag   = getvar(ctx, :content_tag)::String
-    c_class = getvar(ctx, :content_class)::String
-    c_id    = getvar(ctx, :content_id)::String
+    c_tag   = getvar(lc, :content_tag,   "")
+    c_class = getvar(lc, :content_class, "")
+    c_id    = getvar(lc, :content_id,    "")
 
     # Assemble the body, wrap it in tags if required
-    page_content_html = html(page_content_md, ctx)
+    page_content_html = getvar(lc, :_generated_html, "")
+    if !skip || isempty(page_content_html)
+        page_content_html = html(page_content_md, lc)
+        setvar!(lc, :_generated_html, page_content_html)
+    end
 
     body_html = ""
     if !isempty(c_tag)
@@ -361,7 +394,7 @@ function _process_md_file_html(ctx::LocalContext, page_content_md::String)
     # > head if it exists
     head_path = path(:folder) / getgvar(:layout_head)::String
     if !isempty(head_path) && isfile(head_path)
-        full_page_html = html2(read(head_path, String), ctx)
+        full_page_html = html2(read(head_path, String), lc)
     end
 
     # > attach the body
@@ -369,7 +402,7 @@ function _process_md_file_html(ctx::LocalContext, page_content_md::String)
     # > then the foot if it exists
     foot_path = path(:folder) / getgvar(:layout_foot)::String
     if !isempty(foot_path) && isfile(foot_path)
-        full_page_html *= html2(read(foot_path, String), ctx)
+        full_page_html *= html2(read(foot_path, String), lc)
     end
 
     return full_page_html
@@ -378,8 +411,12 @@ end
 """
     _process_md_file_latex
 """
-function _process_md_file_latex(ctx::LocalContext, page_content_md::String)
-    page_content_latex = latex(page_content_md, ctx)
+function _process_md_file_latex(lc::LocalContext, page_content_md::String; skip=false)
+    page_content_latex = getvar(lc, :_generated_latex, "")
+    if !skip || isempty(page_content_latex)
+        page_content_latex = latex(page_content_md, lc)
+        setvar!(lc, :_generated_latex, page_content_latex)
+    end
 
     full_page_latex = raw"\begin{document}" * "\n\n"
     head_path = path(:folder) / getgvar(:layout_head_lx)::String
