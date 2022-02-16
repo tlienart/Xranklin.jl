@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div class="franklin-content" >
+  <h1 id="ttfx_pyplot" ><a href="#ttfx_pyplot"> TTFX PyPlot</a></h1><pre><code class="julia">using Pyplot
+x = range(0, pi, length=500)
+y = @. sin(exp(x)) * sinc(x)
+figure(figsize=(6, 4))
+plot(x, y)
+gcf()</code></pre>
+<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: ArgumentError: Package Pyplot not found in current path:
+- Run `import Pkg; Pkg.add("Pyplot")` to install the Pyplot package.
+
+Stacktrace:
+  [1] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:967
+  [2] eval
+    @ ./boot.jl:373 [inlined]
+  [3] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
+    @ Base ./loading.jl:1196
+  [4] include_string
+    @ ./loading.jl:1180 [inlined]
+  [5] #47
+    @ ~/.julia/packages/Xranklin/z5P9Y/src/context/code/notebook_code.jl:128 [inlined]
+  [6] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#47#48"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, Base.PipeEndpoint, Base.PipeEndpoint})()
+    @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:118
+  [7] with_logstate(f::Function, logstate::Any)
+    @ Base.CoreLogging ./logging.jl:511
+  [8] with_logger
+    @ ./logging.jl:623 [inlined]
+  [9] capture(f::Xranklin.var"#47#48"{Module, String}; rethrow::Type, color::Bool)
+    @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:116
+ [10] capture
+    @ ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:75 [inlined]
+ [11] _eval_code_cell(mdl::Module, code::String, cell_name::String)
+    @ Xranklin ~/.julia/packages/Xranklin/z5P9Y/src/context/code/notebook_code.jl:127
+ [12] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/z5P9Y/src/context/code/notebook_code.jl:86
+ [13] html_code_block(b::FranklinParser.Block, c::Xranklin.LocalContext)
+    @ Xranklin ~/.julia/packages/Xranklin/z5P9Y/src/convert/markdown/rules/code.jl:181</code></pre></div>
+  
+</div>
+
+
+
+  </body>
+</html>
