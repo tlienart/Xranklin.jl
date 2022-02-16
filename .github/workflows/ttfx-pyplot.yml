@@ -9,11 +9,12 @@ on:
 
 env:
   INDEX: "test/abc_min/index.md"
-  SETUP: "using Pkg; Pkg.activate(\"test/abc_min\"); Pkg.add([\"PyCall\", \"PyPlot\"]); Pkg.build(\"PyCall\");"
+  SETUP: "using Pkg; Pkg.add([\"PyCall\", \"PyPlot\"]); Pkg.build(\"PyCall\");"
   BUILD: ""
   PPATH: "Xranklin.jl"
   TARGD: "ttfx/pyplot"
   SITED: "test/abc_min"
+  START: $(date +%s)
 
 jobs:
   pyplot:
@@ -36,15 +37,23 @@ jobs:
       # -- modify index --
       - name: Set index.md 📖
         run: |
-              echo "# TTFX PyPlot"                   > ${{ env.INDEX }}
-              echo "\`\`\`!"                        >> ${{ env.INDEX }}
-              echo "using Pyplot"                   >> ${{ env.INDEX }}
-              echo "x = range(0, pi, length=500)"   >> ${{ env.INDEX }}
-              echo "y = @. sin(exp(x)) * sinc(x)"   >> ${{ env.INDEX }}
-              echo "figure(figsize=(6, 4))"         >> ${{ env.INDEX }}
-              echo "plot(x, y)"                     >> ${{ env.INDEX }}
-              echo "gcf()"                          >> ${{ env.INDEX }}
-              echo "\`\`\`"                         >> ${{ env.INDEX }}
+              echo "# TTFX PyPlot"                  > ${{ env.INDEX }}
+              echo "\`\`\`!"                       >> ${{ env.INDEX }}
+              echo "using PyPlot"                  >> ${{ env.INDEX }}
+              echo "x = range(0, pi, length=500)"  >> ${{ env.INDEX }}
+              echo "y = @. sin(exp(x)) * sinc(x)"  >> ${{ env.INDEX }}
+              echo "figure(figsize=(6, 4))"        >> ${{ env.INDEX }}
+              echo "plot(x, y)"                    >> ${{ env.INDEX }}
+              echo "gcf()"                         >> ${{ env.INDEX }}
+              echo "\`\`\`"                        >> ${{ env.INDEX }}
+              echo "# TIME"                                 >> ${{ env.INDEX }}
+              echo "\`\`\`!"                                >> ${{ env.INDEX }}
+              echo "using Dates"                            >> ${{ env.INDEX }}
+              echo "delta  = datetime2unix(now())"          >> ${{ env.INDEX }}
+              echo "delta -= ${{ env.START }}"              >> ${{ env.INDEX }}
+              echo "delta  = round(delta, digits=2)"        >> ${{ env.INDEX }}
+              echo "println(\"Time taken: $(delta)min.\")"  >> ${{ env.INDEX }}
+              echo "\`\`\`"                                 >> ${{ env.INDEX }}
               cat ${{ env.INDEX }}
 
       # =======================================================================
