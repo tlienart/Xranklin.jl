@@ -210,27 +210,27 @@ Note also that this time is a one-off cost, subsequent plots should take negligi
 <tr>
 <td > <a href="#plots.jl">Plots.jl</a>               </td>
 <td > <a href="/Xranklin.jl/ttfx/plots/">link</a>       </td>
-<td > 3.3        </td>
+<td > 4.2        </td>
 </tr>
 <tr>
 <td > <a href="#cairomakie.jl">CairoMakie.jl</a>     </td>
 <td > <a href="/Xranklin.jl/ttfx/cairomakie/">link</a>  </td>
-<td > 5.1   </td>
+<td > 6.08   </td>
 </tr>
 <tr>
 <td > <a href="#wglmakie.jl">WGLMakie.jl</a>         </td>
 <td > <a href="/Xranklin.jl/ttfx/wglmakie/">link</a>    </td>
-<td > 7.81     </td>
+<td > 5.66     </td>
 </tr>
 <tr>
 <td > <a href="#pyplot.jl">PyPlot.jl</a>             </td>
 <td > <a href="/Xranklin.jl/ttfx/pyplot/">link</a>      </td>
-<td > 1.83       </td>
+<td > 1.8       </td>
 </tr>
 <tr>
 <td > <a href="#pgfplotsx.jl">PGFPlotsX.jl</a>       </td>
 <td > <a href="/Xranklin.jl/ttfx/pgfplotsx/">link</a>   </td>
-<td > 0.93    </td>
+<td > 0.94    </td>
 </tr>
 <tr>
 <td > <a href="#plotlyjs.jl">PlotlyJS.jl</a>         </td>
@@ -240,12 +240,12 @@ Note also that this time is a one-off cost, subsequent plots should take negligi
 <tr>
 <td > <a href="#gaston.jl">Gaston.jl</a>             </td>
 <td > <a href="/Xranklin.jl/ttfx/gaston/">link</a>      </td>
-<td > 1.24       </td>
+<td > 1.02       </td>
 </tr>
 <tr>
 <td > <a href="#unicodeplots.jl">UnicodePlots.jl</a> </td>
 <td > <a href="/Xranklin.jl/ttfx/unicodeplots">link</a> </td>
-<td > 1.02 </td>
+<td > 1.16 </td>
 </tr>
 </tbody>
 </table>
@@ -730,8 +730,9 @@ Note that, by default, PNG images will be generated.</p>
 
 <fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
 import Gaston
+Gaston.set(term=&quot;qt&quot;)
 x = range(0, pi, length=500)
-y = @. sin(exp(x)) * sinc(x)
+y = @. sin(exp(x)) * sinc(x) + 1
 Gaston.plot(x, y)
 ```</code></pre>
 </fieldset>
@@ -743,10 +744,11 @@ Gaston.plot(x, y)
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">import Gaston
+Gaston.set(term=&quot;qt&quot;)
 x = range(0, pi, length=500)
-y = @. sin(exp(x)) * sinc(x)
+y = @. sin(exp(x)) * sinc(x) + 1
 Gaston.plot(x, y)</code></pre>
-<div class="code-output"><img class="code-figure" src="/Xranklin.jl/assets/extras/plots/figs-html/__autofig_12023497440056683996.svg">
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/assets/extras/plots/figs-html/__autofig_2913458536231110079.svg">
 </div></fieldset>
 
 </div><h3 id="gaston_with_ga" ><a href="#gaston_with_ga"> Gaston with GA</a></h3><p>You need to install GnuPlot and that's it:</p>

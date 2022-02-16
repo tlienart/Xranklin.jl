@@ -1,0 +1,34 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div class="franklin-content" >
+  <h1 id="ttfx_pgfplotsx" ><a href="#ttfx_pgfplotsx"> TTFX PGFPlotsX</a></h1><pre><code class="julia">using PGFPlotsX
+@pgf PGFPlotsX.Axis(
+    Plot(
+      &lbrace;no_marks&rbrace;,
+      Table(x, y)
+    )
+)</code></pre>
+<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: UndefVarError: x not defined
+Stacktrace:
+</code></pre></div><h1 id="time" ><a href="#time"> TIME</a></h1><pre><code class="julia">using Dates
+delta  = datetime2unix(now())
+delta -= 1645032020
+delta  = round(delta/60, digits=2)
+ps(s) = joinpath(Utils.path(:site), s)
+write(ps(&quot;timer&quot;), delta)
+println(&quot;Time taken: $(delta)min.&quot;)</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 0.94min.
+</code></pre></div>
+  
+</div>
+
+
+
+  </body>
+</html>
