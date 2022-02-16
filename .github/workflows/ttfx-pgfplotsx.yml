@@ -39,7 +39,7 @@ jobs:
               echo "@pgf PGFPlotsX.Axis("  >> ${{ env.INDEX }}
               echo "    Plot("             >> ${{ env.INDEX }}
               echo "      {no_marks},"     >> ${{ env.INDEX }}
-              echo "      Table(x, y)      >> ${{ env.INDEX }}
+              echo "      Table(x, y)"     >> ${{ env.INDEX }}
               echo "    )"                 >> ${{ env.INDEX }}
               echo ")"                     >> ${{ env.INDEX }}
               echo "\`\`\`"                >> ${{ env.INDEX }}
