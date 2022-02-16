@@ -9,7 +9,7 @@ on:
 
 env:
   INDEX: "test/abc_min/index.md"
-  SETUP: "using Pkg; Pkg.activate(\"test/abc_min\"); Pkg.add([\"WGLMakie\", \"JSServe\"]);"
+  SETUP: "using Pkg; Pkg.add([\"WGLMakie\", \"JSServe\"]);"
   BUILD: ""
   PPATH: "Xranklin.jl"
   TARGD: "ttfx/wglmakie"
@@ -40,14 +40,14 @@ jobs:
               echo "String(take!(io))"                             >> ${{ env.INDEX }}
               echo "\`\`\`"                                        >> ${{ env.INDEX }}
               echo "\\htmlshow{wgl}"                               >> ${{ env.INDEX }}
-              echo "# TIME"                                 >> ${{ env.INDEX }}
-              echo "\`\`\`!"                                >> ${{ env.INDEX }}
-              echo "using Dates"                            >> ${{ env.INDEX }}
-              echo "delta  = datetime2unix(now())"          >> ${{ env.INDEX }}
-              echo "delta -= ${{ env.START }}"              >> ${{ env.INDEX }}
-              echo "delta  = round(delta, digits=2)"        >> ${{ env.INDEX }}
-              echo "println(\"Time taken: $(delta)min.\")"  >> ${{ env.INDEX }}
-              echo "\`\`\`"                                 >> ${{ env.INDEX }}
+              echo "# TIME"                                  >> ${{ env.INDEX }}
+              echo "\`\`\`!"                                 >> ${{ env.INDEX }}
+              echo "using Dates"                             >> ${{ env.INDEX }}
+              echo "delta  = datetime2unix(now())"           >> ${{ env.INDEX }}
+              echo "delta -= ${{ env.START }}"               >> ${{ env.INDEX }}
+              echo "delta  = round(delta, digits=2)"         >> ${{ env.INDEX }}
+              echo "println(\"Time taken: \$(delta)min.\")"  >> ${{ env.INDEX }}
+              echo "\`\`\`"                                  >> ${{ env.INDEX }}
               cat ${{ env.INDEX }}
 
       # =======================================================================

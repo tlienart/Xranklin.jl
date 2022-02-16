@@ -1,4 +1,4 @@
-name: PGFPlotsX
+name: Plots
 
 on:
   push:
@@ -9,15 +9,15 @@ on:
 
 env:
   INDEX: "test/abc_min/index.md"
-  SETUP: "using Pkg; Pkg.add([\"PGFPlotsX\", \"LaTeXStrings\"]);"
+  SETUP: "using Pkg; Pkg.add([\"Plots\"]);"
   BUILD: ""
   PPATH: "Xranklin.jl"
-  TARGD: "ttfx/pgfplotsx"
+  TARGD: "ttfx/plots"
   SITED: "test/abc_min"
   START: $(date +%s)
 
 jobs:
-  pgfplotsx:
+  plots:
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
@@ -25,27 +25,21 @@ jobs:
 
       # =======================================================================
       # -- deps --
-      - name: Install LaTeX 🌴
+      - name: Install QT 💻
         run: |
-          sudo apt-get update -qq
-          sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
+             sudo apt-get update -qq
+             sudo apt-get install -y qt5-default
 
       # -- modify index --
       - name: Set index.md 📖
         run: |
-              echo "# TTFX PGFPlotsX"                         > ${{ env.INDEX }}
-              echo "\`\`\`!"                                 >> ${{ env.INDEX }}
-              echo "using PGFPlotsX, LaTeXStrings"           >> ${{ env.INDEX }}
-              echo "@pgf PGFPlotsX.Axis("                    >> ${{ env.INDEX }}
-              echo "    {"                                   >> ${{ env.INDEX }}
-              echo "      xlabel = L\"x\","                  >> ${{ env.INDEX }}
-              echo "      ylabel = L\"f(x) = x^2 - x + 4\""  >> ${{ env.INDEX }}
-              echo "    },"                                  >> ${{ env.INDEX }}
-              echo "    Plot("                               >> ${{ env.INDEX }}
-              echo "      Expression(\"x^2 - x + 4\")"       >> ${{ env.INDEX }}
-              echo "    )"                                   >> ${{ env.INDEX }}
-              echo ")"                                       >> ${{ env.INDEX }}
-              echo "\`\`\`"                                  >> ${{ env.INDEX }}
+              echo "# TTFX Plots"                  > ${{ env.INDEX }}
+              echo "\`\`\`!"                       >> ${{ env.INDEX }}
+              echo "using Plots"                   >> ${{ env.INDEX }}
+              echo "x = range(0, pi, length=500)"  >> ${{ env.INDEX }}
+              echo "y = @. sin(exp(x)) * sinc(x)"  >> ${{ env.INDEX }}
+              echo "plot(x, y)"                    >> ${{ env.INDEX }}
+              echo "\`\`\`"                        >> ${{ env.INDEX }}
               echo "# TIME"                                  >> ${{ env.INDEX }}
               echo "\`\`\`!"                                 >> ${{ env.INDEX }}
               echo "using Dates"                             >> ${{ env.INDEX }}
@@ -55,6 +49,7 @@ jobs:
               echo "println(\"Time taken: \$(delta)min.\")"  >> ${{ env.INDEX }}
               echo "\`\`\`"                                  >> ${{ env.INDEX }}
               cat ${{ env.INDEX }}
+
 
       # =======================================================================
 
