@@ -32,9 +32,8 @@ function eval_code_cell!(
     cell_code  = string(cell_code)
     cell_hash  = hash(cell_code) |> string
 
-    # if the cell_index is within the range of cell indexes (i.e. there
-    # is already a cell at that index), we replace the name with the current
-    # cell name to guarantee we're using the latest name.
+    # if the cell_index is within the range of cell indexes, we replace the
+    # name with the current cell name to guarantee we're using the latest name.
     if cell_index <= length(nb.code_names)
         nb.code_names[cell_index] = cell_name
         # skip cell if previously seen and unchanged
@@ -52,7 +51,7 @@ function eval_code_cell!(
     # If that's the case, then the entire notebook is re-run to make
     # sure all cells have been executed once so that the cell we have
     # now has the full notebook context.
-    if isstale(nb)
+    if is_stale(nb)
         start = time(); @info """
               ❗ code notebook stale, refreshing...
               """

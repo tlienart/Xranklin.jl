@@ -29,13 +29,13 @@ Notebook for vars assignments.
     cntr_refs:    keeps track of the evaluated "cell number" when sequentially
                    evaluating code
     code_pairs:   keeps track of [(code => vnames)]
-    is_stale_ref: whether the notebook was loaded from cache.
+    is_stale: whether the notebook was loaded from cache.
 """
 struct VarsNotebook <: Notebook
     mdl::Module
     cntr_ref::Ref{Int}
     code_pairs::VarsCodePairs
-    is_stale_ref::Ref{Bool}
+    is_stale::Ref{Bool}
 end
 VarsNotebook(mdl::Module) =
     VarsNotebook(mdl, Ref(1), VarsCodePairs(), Ref(false))
@@ -51,7 +51,7 @@ Notebook for code.
 Same as VarsNotebook with additionally
 
     code_names:   list of code block names in sequential order.
-    is_stale_ref: keeps track of whether the notebook was loaded from cache.
+    is_stale: keeps track of whether the notebook was loaded from cache.
                    If it was loaded from cache and a cell changes, all
                    previous cells will have to be re-evaluated.
 """
@@ -62,15 +62,15 @@ struct CodeNotebook <: Notebook
     code_pairs::CodeCodePairs
     # specific ones
     code_names::Vector{String}
-    is_stale_ref::Ref{Bool}
+    is_stale::Ref{Bool}
 end
 CodeNotebook(mdl::Module) =
     CodeNotebook(mdl, Ref(1), CodeCodePairs(), String[], Ref(false))
 
 
-isstale(nb::Notebook)         = nb.is_stale_ref[]
-stale_notebook!(nb::Notebook) = (nb.is_stale_ref[] = true;)
-fresh_notebook!(nb::Notebook) = (nb.is_stale_ref[] = false;)
+is_stale(nb::Notebook)        = nb.is_stale[]
+stale_notebook!(nb::Notebook) = (nb.is_stale[] = true;)
+fresh_notebook!(nb::Notebook) = (nb.is_stale[] = false;)
 
 
 # ------------------------------ #

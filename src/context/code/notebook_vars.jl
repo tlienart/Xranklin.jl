@@ -17,7 +17,7 @@ function eval_vars_cell!(ctx::Context, cell_code::SS)::Nothing
         return
     end
 
-    if isstale(nb)
+    if is_stale(nb)
         # reeval all previous cells, we don't need to
         # keep track of their vars or whatever as they haven't changed
         tempc = 1

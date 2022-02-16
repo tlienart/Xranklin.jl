@@ -70,7 +70,9 @@ function serialize_lc(lc::LocalContext)
         req_vars   = lc.req_vars,   # as
         req_lxdefs = lc.req_lxdefs, # as
         # vars_aliases
-        # nb_vars
+        nb_vars_cp = lc.nb_vars.code_pairs,  # serialisable since lc.vars is
+        nb_code_cp = lc.nb_code.code_pairs,  # as (string only)
+        nb_code_cn = lc.nb_code.code_names,  # as
         # nb_code
         to_trigger = lc.to_trigger,  # as
         page_hash  = lc.page_hash[], # as
@@ -97,6 +99,14 @@ function deserialize_lc(rp::String, gc::GlobalContext)
     union!(lc.req_lxdefs, nt.req_lxdefs)
     union!(lc.to_trigger, nt.to_trigger)
     lc.page_hash[] = nt.page_hash
+
+    # deserialise notebooks and mark as stale
+    append!(lc.nb_vars.code_pairs, nt.nb_vars_cp)
+    append!(lc.nb_code.code_pairs, nt.nb_code_cp)
+    append!(lc.nb_code.code_names, nt.nb_code_cn)
+    stale_notebook!(lc.nb_vars)
+    stale_notebook!(lc.nb_code)
+
     setvar!(lc, :_applied_base_url_prefix, nt.applied_prefix)
     return lc
 end
