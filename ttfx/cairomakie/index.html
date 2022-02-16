@@ -12,7 +12,13 @@ x = range(0, pi, length=500)
 y = @. sin(exp(x)) * sinc(x)
 lines(x, y)</code></pre>
 <div class="code-output"><img class="code-figure" src="/Xranklin.jl/ttfx/cairomakie/assets/index/figs-html/__autofig_7415659806595590123.svg">
-</div>
+</div><h1 id="time" ><a href="#time"> TIME</a></h1><pre><code class="julia">using Dates
+delta  = datetime2unix(now())
+delta -= 1645006905
+delta  = round(delta, digits=2)
+println(&quot;Time taken: min.&quot;)</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: min.
+</code></pre></div>
   
 </div>
 
