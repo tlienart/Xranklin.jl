@@ -47,8 +47,6 @@ jobs:
           path: |
                 ${{ env.SITE_FOLDER }}/__cache
                 ${{ env.SITE_FOLDER }}/__site
-                ~/.julia/artifacts
-                ~/.julia/packages
           key: ${{ runner.os }}-${{ env.CACHE_KEY }}-${{ github.sha }}
           restore-keys: ${{ runner.os }}-${{ env.CACHE_KEY }}-
 
