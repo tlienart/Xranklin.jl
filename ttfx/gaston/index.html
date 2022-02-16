@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -13,12 +14,12 @@ plot(x, y)</code></pre>
 <div class="code-output"><img class="code-figure" src="/Xranklin.jl/ttfx/gaston/assets/index/figs-html/__autofig_4096694901479055568.svg">
 </div><h1 id="time" ><a href="#time"> TIME</a></h1><pre><code class="julia">using Dates
 delta  = datetime2unix(now())
-delta -= 1645016285
+delta -= 1645017021
 delta  = round(delta/60, digits=2)
 ps(s) = joinpath(Utils.path(:site), s)
 write(ps(&quot;timer&quot;), delta)
 println(&quot;Time taken: $(delta)min.&quot;)</code></pre>
-<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 1.03min.
+<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 1.25min.
 </code></pre></div>
   
 </div>
