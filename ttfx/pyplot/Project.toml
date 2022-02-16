@@ -1,0 +1,4 @@
+[deps]
+PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
+PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
+Xranklin = "558449b0-171e-4e1f-900f-d076a5ddf486"
