@@ -3,8 +3,6 @@ name: Gaston
 on:
   push:
     branches:
-      - preview
-      - main
       - ttfx
 
 env:

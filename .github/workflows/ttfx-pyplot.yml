@@ -3,8 +3,6 @@ name: PyPlot
 on:
   push:
     branches:
-      - preview
-      - main
       - ttfx
 
 env:

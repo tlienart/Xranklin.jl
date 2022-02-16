@@ -3,8 +3,6 @@ name: PGFPlotsX
 on:
   push:
     branches:
-      - preview
-      - main
       - ttfx
 
 env:

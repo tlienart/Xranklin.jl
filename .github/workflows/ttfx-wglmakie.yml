@@ -3,8 +3,6 @@ name: WGLMakie
 on:
   push:
     branches:
-      - preview
-      - main
       - ttfx
 
 env:

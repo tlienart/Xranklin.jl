@@ -3,8 +3,6 @@ name: Plots
 on:
   push:
     branches:
-      - preview
-      - main
       - ttfx
 
 env:
