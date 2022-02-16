@@ -9,7 +9,7 @@ on:
 
 env:
   INDEX: "test/abc_min/index.md"
-  SETUP: "using Pkg; Pkg.add([\"PyCall\", \"PyPlot\"]); Pkg.build(\"PyCall\");"
+  SETUP: "using Pkg; Pkg.activate(\"test/abc_min\"); Pkg.add([\"PyCall\", \"PyPlot\"]); Pkg.build(\"PyCall\");"
   BUILD: ""
   PPATH: "Xranklin.jl"
   TARGD: "ttfx/pyplot"

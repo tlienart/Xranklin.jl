@@ -9,7 +9,7 @@ on:
 
 env:
   INDEX: "test/abc_min/index.md"
-  SETUP: "using Pkg; Pkg.add([\"PGFPlotsX\", "LaTeXStrings"]);"
+  SETUP: "using Pkg; Pkg.activate(\"test/abc_min\"); Pkg.add([\"PGFPlotsX\", \"LaTeXStrings\"]);"
   BUILD: ""
   PPATH: "Xranklin.jl"
   TARGD: "ttfx/pgfplotsx"

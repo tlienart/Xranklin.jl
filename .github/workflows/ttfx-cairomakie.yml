@@ -1,0 +1,70 @@
+name: CairoMakie
+
+on:
+  push:
+    branches:
+      - preview
+      - main
+      - ttfx
+
+env:
+  INDEX: "test/abc_min/index.md"
+  SETUP: "using Pkg; Pkg.activate(\"test/abc_min\"); Pkg.add([\"CairoMakie\"]);"
+  BUILD: ""
+  PPATH: "Xranklin.jl"
+  TARGD: "ttfx/cairomakie"
+  SITED: "test/abc_min"
+
+jobs:
+  cairomakie:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+
+      # =======================================================================
+      # -- modify index --
+      - name: Set index.md 📖
+        run: |
+              echo "# TTFX CairoMakie"               > ${{ env.INDEX }}
+              echo "\`\`\`!"                        >> ${{ env.INDEX }}
+              echo "using CairoMakie"               >> ${{ env.INDEX }}
+              echo "CairoMakie.activate!()"         >> ${{ env.INDEX }}
+              echo "x = range(0, pi, length=500)"   >> ${{ env.INDEX }}
+              echo "y = @. sin(exp(x)) * sinc(x)"   >> ${{ env.INDEX }}
+              echo "lines(x, y)"                    >> ${{ env.INDEX }}
+              echo "\`\`\`"                         >> ${{ env.INDEX }}
+              cat ${{ env.INDEX }}
+
+      # =======================================================================
+
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: 1.7
+
+      - name: Building website 🚧
+        run: ${{ env.BUILD }} julia -e '
+                ${{ env.SETUP }};
+                Pkg.add(
+                  url="https://github.com/tlienart/Xranklin.jl",
+                  rev="main"
+                  );
+                using Xranklin;
+                build("${{ env.SITED }}";
+                      clear=true,
+                      prefix=joinpath(
+                        "${{ env.PPATH }}",
+                        "${{ env.TARGD }}"
+                        )
+                      );'
+
+      # Deployment
+      - name: No Jekyll
+        run: touch ${{ env.SITED }}/__site/.nojekyll
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        with:
+          BRANCH: gh-pages
+          FOLDER: ${{ env.SITED }}/__site
+          TARGET-FOLDER: "${{ env.TARGD }}"
