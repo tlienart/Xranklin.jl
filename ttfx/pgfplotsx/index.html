@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div class="franklin-content" >
+  <h1 id="ttfx_pgfplotsx" ><a href="#ttfx_pgfplotsx"> TTFX PGFPlotsX</a></h1><pre><code class="julia">using PGFPlotsX, LaTeXStrings
+@pgf PGFPlotsX.Axis(
+    &lbrace;
+      xlabel = L&quot;x&quot;,
+      ylabel = L&quot;f(x) = x^2 - x + 4&quot;
+    &rbrace;,
+    Plot(
+      Expression(&quot;x^2 - x + 4&quot;)
+    )
+)</code></pre>
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/ttfx/pgfplotsx/assets/index/figs-html/__autofig_8655637021288125344.svg">
+</div>
+  
+</div>
+
+
+
+  </body>
+</html>
