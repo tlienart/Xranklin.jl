@@ -3,7 +3,7 @@ name: UnicodePlots
 on:
   push:
     branches:
-      - ttfx-test
+      - ttfx
 
 env:
   INDEX: "test/abc_min/index.md"
