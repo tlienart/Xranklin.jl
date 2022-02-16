@@ -16,7 +16,7 @@ env:
 
   # FLAGS FOR DEPENDENCIES INSTALLATION, ADJUST AS REQUIRED
   # If use PyCall or PyPlot indicate libs here otherwise set to ""
-  PYTHON_LIBS: "matplotlib pandas"
+  PYTHON_LIBS: "matplotlib pandas ansi2html"
   # If use Plots.jl indicate "xvfb-run" otherwise ""
   PLOTS: "xvfb-run"
   # whether PGFPlotsX or Tikz or anything requiring latex is used
