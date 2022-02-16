@@ -69,7 +69,10 @@ end
 
 function hfun_ttfx(p)
     p = first(p)
-    r = HTTP.request("GET", "https://tlienart.github.io/Xranklin.jl/ttfx/$(p)/timer")
+    r = HTTP.request(
+        "GET",
+        "https://raw.githubusercontent.com/tlienart/Xranklin.jl/gh-ttfx/ttfx/$(p)/timer"
+    )
     t = first(reinterpret(Float64, r.body))
     return string(t)
 end
