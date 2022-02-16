@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -6,25 +7,23 @@
 </head>
 <body>
 <div class="franklin-content" >
-  <h1 id="ttfx_pgfplotsx" ><a href="#ttfx_pgfplotsx"> TTFX PGFPlotsX</a></h1><pre><code class="julia">using PGFPlotsX, LaTeXStrings
+  <h1 id="ttfx_pgfplotsx" ><a href="#ttfx_pgfplotsx"> TTFX PGFPlotsX</a></h1><pre><code class="julia">using PGFPlotsX
 @pgf PGFPlotsX.Axis(
-    &lbrace;
-      xlabel = L&quot;x&quot;,
-      ylabel = L&quot;f(x) = x^2 - x + 4&quot;
-    &rbrace;,
     Plot(
-      Expression(&quot;x^2 - x + 4&quot;)
+      &lbrace;no_marks&rbrace;,
+      Table(x, y)
     )
 )</code></pre>
-<div class="code-output"><img class="code-figure" src="/Xranklin.jl/ttfx/pgfplotsx/assets/index/figs-html/__autofig_8655637021288125344.svg">
-</div><h1 id="time" ><a href="#time"> TIME</a></h1><pre><code class="julia">using Dates
+<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: UndefVarError: x not defined
+Stacktrace:
+</code></pre></div><h1 id="time" ><a href="#time"> TIME</a></h1><pre><code class="julia">using Dates
 delta  = datetime2unix(now())
-delta -= 1645010362
+delta -= 1645017049
 delta  = round(delta/60, digits=2)
 ps(s) = joinpath(Utils.path(:site), s)
 write(ps(&quot;timer&quot;), delta)
 println(&quot;Time taken: $(delta)min.&quot;)</code></pre>
-<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 0.87min.
+<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 0.86min.
 </code></pre></div>
   
 </div>
