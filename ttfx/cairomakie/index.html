@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div class="franklin-content" >
+  <h1 id="ttfx_cairomakie" ><a href="#ttfx_cairomakie"> TTFX CairoMakie</a></h1><pre><code class="julia">using CairoMakie
+CairoMakie.activate!()
+x = range(0, pi, length=500)
+y = @. sin(exp(x)) * sinc(x)
+lines(x, y)</code></pre>
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/ttfx/cairomakie/assets/index/figs-html/__autofig_7415659806595590123.svg">
+</div>
+  
+</div>
+
+
+
+  </body>
+</html>
