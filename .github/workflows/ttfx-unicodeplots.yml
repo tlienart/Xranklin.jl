@@ -1,0 +1,110 @@
+name: UnicodePlots
+
+on:
+  push:
+    branches:
+      - ttfx-test
+
+env:
+  INDEX: "test/abc_min/index.md"
+  UTILS: "test/abc_min/utils.jl"
+  SETUP: "using Pkg; Pkg.add(\"UnicodePlots\");"
+  BUILD: ""
+  PPATH: "Xranklin.jl"
+  TARGD: "ttfx/unicodeplots"
+  SITED: "test/abc_min"
+  START: $(date +%s)
+
+jobs:
+  unicodeplots:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+
+      # =======================================================================
+      # -- deps --
+      - name: Install Python 🐍
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install Ansi2html 🐍
+        run: |
+             pip install ansi2html
+             export PYTHON=$(which python)
+
+      # -- modify index --
+      - name: Set utils.jl 📖
+        run: |
+             echo "import UnicodePlots"                                      > ${{ env.UTILS }}
+             echo "function html_show(p::UnicodePlots.Plot)"                >> ${{ env.UTILS }}
+             echo "  td = tempdir()"                                        >> ${{ env.UTILS }}
+             echo "  tf = tempname(td)"                                     >> ${{ env.UTILS }}
+             echo "  io = IOBuffer()"                                       >> ${{ env.UTILS }}
+             echo "  UnicodePlots.savefig(p, tf; color=true)"               >> ${{ env.UTILS }}
+             echo "  p  = pipeline(\`cat \$tf\`, \`ansi2html -i -l\`, io)"  >> ${{ env.UTILS }}
+             echo "  if success(p)"                                         >> ${{ env.UTILS }}
+             echo "    return \"<pre>\" * String(take!(io)) * \"</pre>\""   >> ${{ env.UTILS }}
+             echo "  end"                                                   >> ${{ env.UTILS }}
+             echo "  return \"\""                                           >> ${{ env.UTILS }}
+             echo "end"                                                     >> ${{ env.UTILS }}
+             cat ${{ env.UTILS }}
+
+      - name: Set index.md 📖
+        run: |
+              echo "# TTFX UnicodePlots"            > ${{ env.INDEX }}
+              echo "\`\`\`!"                       >> ${{ env.INDEX }}
+              echo "using UnicodePlots"            >> ${{ env.INDEX }}
+              echo "x = range(0, pi, length=500)"  >> ${{ env.INDEX }}
+              echo "y = @. sin(exp(x)) * sinc(x)"  >> ${{ env.INDEX }}
+              echo "lineplot(x, y, "               >> ${{ env.INDEX }}
+              echo "  xlabel=\"x\","               >> ${{ env.INDEX }}
+              echo "  ylabel=\"y\","               >> ${{ env.INDEX }}
+              echo "  border=:dotted,"             >> ${{ env.INDEX }}
+              echo "  xlim=[0,pi],"                >> ${{ env.INDEX }}
+              echo "  ylim=[-0.2,1])"              >> ${{ env.INDEX }}
+              echo "\`\`\`"                        >> ${{ env.INDEX }}
+              echo "# TIME"                                  >> ${{ env.INDEX }}
+              echo "\`\`\`!"                                 >> ${{ env.INDEX }}
+              echo "using Dates"                             >> ${{ env.INDEX }}
+              echo "delta  = datetime2unix(now())"           >> ${{ env.INDEX }}
+              echo "delta -= ${{ env.START }}"               >> ${{ env.INDEX }}
+              echo "delta  = round(delta/60, digits=2)"      >> ${{ env.INDEX }}
+              echo "ps(s) = joinpath(Utils.path(:site), s)"  >> ${{ env.INDEX }}
+              echo "write(ps(\"timer\"), delta)"             >> ${{ env.INDEX }}
+              echo "println(\"Time taken: \$(delta)min.\")"  >> ${{ env.INDEX }}
+              echo "\`\`\`"                                  >> ${{ env.INDEX }}
+              cat ${{ env.INDEX }}
+
+      # =======================================================================
+
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: 1.7
+
+      - name: Building website 🚧
+        run: ${{ env.BUILD }} julia -e '
+                ${{ env.SETUP }};
+                Pkg.add(
+                  url="https://github.com/tlienart/Xranklin.jl",
+                  rev="main"
+                  );
+                using Xranklin;
+                build("${{ env.SITED }}";
+                      clear=true,
+                      prefix=joinpath(
+                        "${{ env.PPATH }}",
+                        "${{ env.TARGD }}"
+                        )
+                      );'
+
+      # Deployment
+      - name: No Jekyll
+        run: touch ${{ env.SITED }}/__site/.nojekyll
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        with:
+          BRANCH: gh-ttfx
+          FOLDER: ${{ env.SITED }}/__site
+          TARGET-FOLDER: "${{ env.TARGD }}"
