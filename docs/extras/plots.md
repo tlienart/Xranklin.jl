@@ -374,9 +374,9 @@ Note that, by default, PNG images will be generated.
 \showmd{
   ```!
   import Gaston
-  Gaston.set(term="png")
+  Gaston.set(term="qt")
   x = range(0, pi, length=500)
-  y = @. sin(exp(x)) * sinc(x)
+  y = @. sin(exp(x)) * sinc(x) + 1
   Gaston.plot(x, y)
   ```
 }
