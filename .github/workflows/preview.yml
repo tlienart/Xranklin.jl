@@ -114,6 +114,16 @@ jobs:
       # DEPLOYMENT #
       # ========== #
 
+      # TTFX Experiment results
+      - name: Recover TTFX
+        uses: actions/checkout@v2
+        with:
+          ref: gh-ttfx
+          path: ttfx
+
+      - name: Move TTFX results
+        run: mv ttfx/ttfx ${{ env.SITE_FOLDER }}/__site/ttfx
+
       # Deployment
       - name: No Jekyll
         run: touch ${{ env.SITE_FOLDER }}/__site/.nojekyll

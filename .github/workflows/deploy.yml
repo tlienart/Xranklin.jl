@@ -37,28 +37,6 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v2
 
-      - name: Recover TTFX
-        uses: actions/checkout@v2
-        with:
-          ref: gh-ttfx
-          path: ttfx
-
-      - name: LS
-        run: ls -aoh ttfx
-
-      - name: Move Content
-        run: |
-             mv ttfx/ttfx tmp
-             rm -rf ttfx
-             mv tmp ttfx
-
-      - name: LS2
-        run: ls -aoh
-
-      - name: LS3
-        run: ls -aoh ttfx
-
-
       # =========== #
       # CACHE SETUP #
       # =========== #
@@ -135,6 +113,16 @@ jobs:
       # ========== #
       # DEPLOYMENT #
       # ========== #
+
+      # TTFX Experiment results
+      - name: Recover TTFX
+        uses: actions/checkout@v2
+        with:
+          ref: gh-ttfx
+          path: ttfx
+
+      - name: Move TTFX results
+        run: mv ttfx/ttfx ${{ env.SITE_FOLDER }}/__site/ttfx
 
       # Deployment
       - name: No Jekyll
