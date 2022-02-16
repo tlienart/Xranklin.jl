@@ -404,9 +404,10 @@ This requires a custom show method which depends on a Python library [ansi2html]
   import UnicodePlots
   x = range(0, pi, length=500)
   y = @. sin(exp(x)) * sinc(x)
-  lineplot(x, y,
+  UnicodePlots.lineplot(x, y,
     xlim=[0, pi],
-    ylim=[-0.2, 1]
+    ylim=[-0.2, 1],
+    border=:dotted
   )
   ```
 }
