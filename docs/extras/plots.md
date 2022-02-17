@@ -269,9 +269,29 @@ this will guarantee that the right executable is used even when you're using the
 
 Remember to also add PyPlot to the site environment.
 
+## PGFPlots.jl
+
+[PGFPlots.jl](https://github.com/JuliaTeX/PGFPlots.jl) is an interface to [PGFPlots](https://www.ctan.org/pkg/pgfplots)
+and produces LaTeX-style plots.
+
+\lskip
+
+### PGFPlots with GA
+
+In order to use this package on GA you need a minimal texlive installation.
+This requires adding the following to your GA script:
+
+```yml
+run: |
+  sudo apt-get update -qq
+  sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
+```
+
+Remember to also add PGFPlots to the site environment.
+
 ## PGFPlotsX.jl
 
-[PGFPlotsX.jl](https://github.com/KristofferC/PGFPlotsX.jl) is an interface to [PGFPlots](https://www.ctan.org/pkg/pgfplots) and produces LaTeX-style plots.
+[PGFPlotsX.jl](https://github.com/KristofferC/PGFPlotsX.jl) is also an interface to [PGFPlots](https://www.ctan.org/pkg/pgfplots) and produces LaTeX-style plots but it does have much fewer dependencies than PGFPlots and its syntax is much closer to PGFPlots.
 
 \lskip
 
@@ -297,17 +317,7 @@ Remember to also add PyPlot to the site environment.
 
 ### PGFPlotsX with GA
 
-In order to use this package on GA you need a minimal texlive installation which, unfortunately, is quite heavy.
-This requires adding the following to your GA script:
-
-```yml
-run: |
-  sudo apt-get update -qq
-  sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
-```
-
-which takes around 1 minute to run at the time of writing.
-
+Same as for PGFPlots (see [above](#pgfplots_with_ga)).
 Remember to also add PGFPlotsX to the site environment.
 
 ## PlotlyJS
