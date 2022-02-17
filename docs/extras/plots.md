@@ -64,14 +64,17 @@ Note also that this time is a one-off cost, subsequent plots should take negligi
 
 | Plotting package | Result | Time (min) |
 | ---------------- | ------ | ---------- |
-| [Plots.jl](#plots.jl)               | [link](/ttfx/plots/)       | {{ttfx plots}}        |
-| [CairoMakie.jl](#cairomakie.jl)     | [link](/ttfx/cairomakie/)  | {{ttfx cairomakie}}   |
-| [WGLMakie.jl](#wglmakie.jl)         | [link](/ttfx/wglmakie/)    | {{ttfx wglmakie}}     |
-| [PyPlot.jl](#pyplot.jl)             | [link](/ttfx/pyplot/)      | {{ttfx pyplot}}       |
-| [PGFPlotsX.jl](#pgfplotsx.jl)       | [link](/ttfx/pgfplotsx/)   | {{ttfx pgfplotsx}}    |
-| [PlotlyJS.jl](#plotlyjs.jl)         | NA                         | NA                    |
-| [Gaston.jl](#gaston.jl)             | [link](/ttfx/gaston/)      | {{ttfx gaston}}       |
-| [UnicodePlots.jl](#unicodeplots.jl) | [link](/ttfx/unicodeplots) | {{ttfx unicodeplots}} |
+| [Plots.jl](#plots.jl)               | [link](/ttfx/plots/)        | {{ttfx plots}}        |
+| [CairoMakie.jl](#cairomakie.jl)     | [link](/ttfx/cairomakie/)   | {{ttfx cairomakie}}   |
+| [WGLMakie.jl](#wglmakie.jl)         | [link](/ttfx/wglmakie/)     | {{ttfx wglmakie}}     |
+| [PyPlot.jl](#pyplot.jl)             | [link](/ttfx/pyplot/)       | {{ttfx pyplot}}       |
+| [PGFPlotsX.jl](#pgfplotsx.jl)       | [link](/ttfx/pgfplotsx/)    | {{ttfx pgfplotsx}}    |
+| [PlotlyJS.jl](#plotlyjs.jl)         | NA                          | NA                    |
+| [Gaston.jl](#gaston.jl)             | [link](/ttfx/gaston/)       | {{ttfx gaston}}       |
+| [UnicodePlots.jl](#unicodeplots.jl) | [link](/ttfx/unicodeplots/) | {{ttfx unicodeplots}} |
+| [Gadfly.jl](#gadfly.jl)             | [link](/ttfx/gadfly/)       | {{ttfx gadfly}}       |
+
+\lskip
 
 A final note here is that if the pages on which you have plots don't change and that you use the cache, these pages will be skipped at build time and you won't have to pay the full overhead (only the installation of the dependencies but that's always under 1 min).
 
