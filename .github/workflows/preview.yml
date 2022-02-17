@@ -5,146 +5,43 @@ on:
     branches:
       - preview   # note: check rev= in build (Xranklin specific)
 
-env:
-  # ADJUST THE FOLLOWING
-  # where is the site folder, use "" if the repo root is
-  SITE_FOLDER: "docs"
-  # if it's a personal site, use "" otherwise use the name of the repo
-  BASE_URL_PREFIX: "Xranklin.jl"
-  # if it's not a preview, use ""
-  PREVIEW: ""
-  # branch to use for Xranklin code
-  BRANCH: "preview"
-  # FLAGS FOR DEPENDENCIES INSTALLATION, ADJUST AS REQUIRED
-  #
-  # If use PyCall or PyPlot indicate libs here otherwise set to ""
-  # --> If you use PyPlot you'll need matlotlib here
-  # --> If use UnicodePlots, you'll need ansi2html
-  PYTHON_LIBS: "matplotlib pandas ansi2html"
-  #
-  # If use Plots.jl indicate "xvfb-run" otherwise ""
-  PLOTS: "xvfb-run"
-  #
-  # If use PGFPlotsX or Tikz or anything requiring latex is used
-  LATEX: true
-  #
-  # If use Gaston or Gnuplot.jl
-  GNUPLOT: true
-
-  # ----------------------------------------------------------
-  # DON'T CHANGE THE FOLLOWING UNLESS YOU HAVE GOOD REASONS TO
-  # >> amounts to build(clear=true) when commit message contains [clear]
-  CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
-  # >> change the digit at the end if, for some reason, you believe
-  # that the cache used by the github action has an issue
-  CACHE_KEY: "franklin-preview-cache"
-
 jobs:
   preview:
     runs-on: ubuntu-latest
     steps:
-      - name: Git checkout
-        uses: actions/checkout@v2
-
-      # =========== #
-      # CACHE SETUP #
-      # =========== #
-
-      - name: Cache 📖
-        uses: actions/cache@v2
+      - uses: actions/checkout@v2
+      - uses: tlienart/xranklin-build-action@v1
         with:
-          path: |
-                ${{ env.SITE_FOLDER }}/__cache
-                ${{ env.SITE_FOLDER }}/__site
-          key: ${{ runner.os }}-${{ env.CACHE_KEY }}-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-${{ env.CACHE_KEY }}-
+          # ADJUST THE FOLLOWING
+          # where is the site folder, use "" if the repo root is
+          SITE_FOLDER: "docs"
+          # if it's a personal site, use "" otherwise use the name of the repo
+          BASE_URL_PREFIX: "Xranklin.jl"
+          # if it's not a preview, use ""
+          PREVIEW: ""
+          # branch to use for Xranklin code
+          BRANCH: "preview"
 
-      # ============ #
-      # DEPENDENCIES #
-      # ============ #
+          # FLAGS FOR DEPENDENCIES INSTALLATION, ADJUST AS REQUIRED
+          #
+          # If use PyCall or PyPlot indicate libs here otherwise set to ""
+          # --> If you use PyPlot you'll need matlotlib here
+          # --> If use UnicodePlots, you'll need ansi2html
+          PYTHON_LIBS: "matplotlib pandas ansi2html"
+          #
+          # If use Plots.jl indicate "xvfb-run" otherwise ""
+          PLOTS: "xvfb-run"
+          #
+          # If use PGFPlotsX or Tikz or anything requiring latex is used
+          LATEX: true
+          #
+          # If use Gaston or Gnuplot.jl
+          GNUPLOT: true
 
-      # Python
-      - if: ${{ env.PYTHON_LIBS != '' }}
-        name: Installing Python 🐍...
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-
-      - if: ${{ env.PYTHON_LIBS != '' }}
-        name: Installing Python packages 🐍...
-        run: |
-             pip install ${{ env.PYTHON_LIBS }}
-             export PYTHON=$(which python)
-
-      # Apt-get update if necessary
-      - if: ${{ (env.PLOTS != '') || (env.LATEX) || (env.GNUPLOT) }}
-        name: Updating APT 👷‍♂️...
-        run: sudo apt-get update -qq
-
-      # QT dependencies for Plots with GR backend
-      - if: ${{ env.PLOTS != '' }}
-        name: Installing QT5 💻...
-        run: sudo apt-get install -y qt5-default
-
-      # LaTeX* deps for PGFPlotsX etc
-      - if: ${{ env.LATEX }}
-        name: Installing LaTeX 🌴...
-        run: sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
-
-      # Gnuplot for Gaston etc
-      - if: ${{ env.GNUPLOT }}
-        name: Install GnuPlot 💻
-        run: sudo apt-get install -y gnuplot
-
-      # ================ #
-      # BUILDING WEBSITE #
-      # ================ #
-
-      # Julia
-      - name: Installing Julia 💙...
-        uses: julia-actions/setup-julia@v1
-        with:
-          version: 1.7
-
-      # Building website
-      - name: Building website 🚧...
-        run: ${{ env.PLOTS }} julia -e '
-                using Pkg;
-                isempty("${{ env.PYTHON_LIBS }}") || (Pkg.add("PyCall"); Pkg.build("PyCall"););
-                Pkg.add(
-                  url="https://github.com/tlienart/Xranklin.jl",
-                  rev="${{ env.BRANCH }}"
-                  );
-                using Xranklin;
-                build("${{ env.SITE_FOLDER }}";
-                      clear=${{ env.CLEAR_CACHE }},
-                      prefix=joinpath(
-                        "${{ env.BASE_URL_PREFIX }}",
-                        "${{ env.PREVIEW }}"
-                        )
-                      );'
-
-      # ========== #
-      # DEPLOYMENT #
-      # ========== #
-
-      # TTFX Experiment results
-      - name: Recover TTFX
-        uses: actions/checkout@v2
-        with:
-          ref: gh-ttfx
-          path: ttfx
-
-      - name: Move TTFX results
-        run: yes | cp -rf ttfx/ttfx/* ${{ env.SITE_FOLDER }}/__site/ttfx
-
-      # Deployment
-      - name: Avoid Jekyll build
-        run: touch ${{ env.SITE_FOLDER }}/__site/.nojekyll
-
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@releases/v4
-        with:
-          BRANCH: gh-pages
-          FOLDER: ${{ env.SITE_FOLDER }}/__site
-          TARGET-FOLDER: "${{ env.PREVIEW }}"
+          # ----------------------------------------------------------
+          # DON'T CHANGE THE FOLLOWING UNLESS YOU HAVE GOOD REASONS TO
+          # >> amounts to build(clear=true) when commit message contains [clear]
+          CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
+          # >> change the digit at the end if, for some reason, you believe
+          # that the cache used by the github action has an issue
+          CACHE_KEY: "franklin-preview-cache"
