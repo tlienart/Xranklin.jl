@@ -15,7 +15,7 @@ env:
   START: $(date +%s)
 
 jobs:
-  pgfplotsx:
+  pgfplots:
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
