@@ -34,7 +34,6 @@ jobs:
               echo "# TTFX Gaston"                  > ${{ env.INDEX }}
               echo "\`\`\`!"                       >> ${{ env.INDEX }}
               echo "using Gaston"                  >> ${{ env.INDEX }}
-              echo "set(term=\"qt\")"              >> ${{ env.INDEX }} 
               echo "x = range(0, pi, length=500)"  >> ${{ env.INDEX }}
               echo "y = @. sin(exp(x)) * sinc(x)"  >> ${{ env.INDEX }}
               echo "plot(x, y)"                    >> ${{ env.INDEX }}
