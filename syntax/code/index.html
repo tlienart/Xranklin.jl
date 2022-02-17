@@ -330,7 +330,7 @@ randstring(5)
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">randstring(5)</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">"PAnI7"</code></pre></div></fieldset>
+<div class="code-output"><pre><code class="code-result language-plaintext">"gtQC4"</code></pre></div></fieldset>
 
 </div><div class="trim">
 
@@ -710,13 +710,13 @@ sqrt(-1)
 <div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: DomainError with -1.0:
 sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).
 Stacktrace:
-  [1] throw_complex_domainerror(f::Symbol, x::Float64)
-    @ Base.Math ./math.jl:33
-  [2] sqrt
-    @ ./math.jl:567 [inlined]
-  [3] sqrt(x::Int64)
-    @ Base.Math ./math.jl:1221
-</code></pre></div></fieldset>
+   [1] throw_complex_domainerror(f::Symbol, x::Float64)
+     @ Base.Math ./math.jl:33
+   [2] sqrt
+     @ ./math.jl:567 [inlined]
+   [3] sqrt(x::Int64)
+     @ Base.Math ./math.jl:1221
+ </code></pre></div></fieldset>
 
 </div>
 <div style="height:1em;"></div><h3 id="in_what_path_does_the_code_run?" ><a href="#in_what_path_does_the_code_run?"> In what path does the code run?</a></h3><p>In the same path as where <code>serve</code> was called.
