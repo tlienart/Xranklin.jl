@@ -15,7 +15,7 @@ env:
   START: $(date +%s)
 
 jobs:
-  gaston:
+  gadfly:
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
