@@ -124,7 +124,7 @@ jobs:
           path: ttfx
 
       - name: Move TTFX results
-        run: mv ttfx/ttfx ${{ env.SITE_FOLDER }}/__site/ttfx
+        run: yes | cp -rf ttfx/ttfx/* ${{ env.SITE_FOLDER }}/__site/ttfx
 
       # Deployment
       - name: No Jekyll

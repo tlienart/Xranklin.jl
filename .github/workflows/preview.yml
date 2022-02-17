@@ -112,6 +112,10 @@ jobs:
       # DEPLOYMENT #
       # ========== #
 
+      # Gaston adjustment
+      - name: Recover Gaston plot
+        run: yes | cp -rf docs/_assets/gaston/* docs/__site/assets/extras/plots/figs-html/.
+
       # TTFX Experiment results
       - name: Recover TTFX
         uses: actions/checkout@v2
@@ -120,7 +124,7 @@ jobs:
           path: ttfx
 
       - name: Move TTFX results
-        run: mv ttfx/ttfx ${{ env.SITE_FOLDER }}/__site/ttfx
+        run: yes | cp -rf ttfx/ttfx/* ${{ env.SITE_FOLDER }}/__site/ttfx
 
       # Deployment
       - name: No Jekyll

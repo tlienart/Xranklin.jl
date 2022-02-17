@@ -7,7 +7,6 @@ LAST REVISION: Jan 14, 2022 (full page ok)
 showtoc = true
 header = "Code blocks"
 menu_title = header
-# ignore_cache = true
 +++
 
 \newcommand{\triplebt}{~~~<code>&#96;&#96;&#96;</code>~~~}
@@ -41,7 +40,8 @@ can be shown somewhere else via the `\show` command:
 
 The orange box helps indicate what corresponds to the output of an executed code cell.
 This is just the styling we use on the present site though, you can of course control this
-yourself by styling the class `.code-output` or one of the more specific sub-classes (see [the section on code output](#output_of_executable_code_blocks)).
+yourself by styling the class `.code-output` or one of the more specific sub-classes
+(see [the section on code output](#output_of_executable_code_blocks)).
 
 The syntax
 
@@ -106,6 +106,13 @@ Unless you intend to show the code output somewhere else than below the code blo
 or use a custom method to show the code output, this last syntax (where everything is implicit)
 is likely the one you will want to use most often.
 
+\tip{
+  When debugging, you might like to double the execution marker (`!!` or `::`) which will force
+  the cell to be re-evaluated; this can be useful for debugging but should be removed as soon as
+  you fixed the problem as it otherwise incurs unnecessary cost when building the site.
+  See also [what to do when things go wrong](#what_to_do_when_things_go_wrong) below.
+}
+
 ### Hiding lines of code
 
 In some cases an executable code cell might need some lines of code to work which you don't
@@ -133,6 +140,46 @@ you can put `#hideall` in the code.
 }
 
 \lskip
+
+### Providing name hints
+
+For auto-named code blocks (which you likely will want to use most of the time), you can provide
+a name hint which will help identify what is being evaluated in the REPL output when you
+build your site.
+
+So for instance if you just write
+
+\showmd{
+  ```!
+  println("hello")
+  ```
+}
+
+when the page gets built, something like
+
+```
+evaluating cell auto_cell_5...
+```
+
+will be shown in the REPL.
+But it can sometimes be useful to know precisely which block is being run and you can do
+this by adding a "`# name: name hint`" line in your code:
+
+\showmd{
+  ```!
+  # name: printing example
+  println("hello!")
+  ```
+}
+
+then, when the page gets built, something like
+
+```
+evaluating cell auto_cell_5 (printing example)...
+```
+
+will be shown in the REPL.
+
 
 ## Understanding how things work
 
@@ -176,20 +223,27 @@ the website (see also [the page discussing Utils](/syntax/utils/)).
 
 While hopefully this shouldn't happen too often, two things can go wrong:
 
-1. some code fails in an un-expected way (e.g.: it calls objects which it should have access to but doesn't seem to),
-1. the output of an auto-cell is incorrect (either wasn't refreshed or some other random output that you didn't expect).
+1. some code fails in an un-expected way (e.g.: it calls objects which it should have
+  access to but doesn't seem to),
+1. the output of an auto-cell is incorrect (either wasn't refreshed or some other random
+output that you didn't expect).
 
-In both cases, clearing the cache should resolve the issue.
-You can do this in two ways:
+In both cases, you can first try to force re-execute the cell and, if that fails, you can
+try clearing the cache:
 
-1. interrupt the server, add the [page variable](/syntax/vars+funs/) `ignore_cache = true` and re-start the server,
-1. interrupt the server and restart it with the argument `clear = true`.
+1. to force re-execute a cell, just double the execution marker (e.g. `!!` or `::`),
+1. to clear the page cache, interrupt the server, add the [page variable](/syntax/vars+funs/)
+  `ignore_cache = true` and re-start the server,
+1. to clear the entire site cache, interrupt the server and restart it passing the
+argument `clear = true` to `serve(...)` .
 
-In the first case, only the cache associated with the current page will be ignored and only that
-page will be (completely) re-evaluated.
-In the second case, the whole site is re-built from scratch.
+In the first case, that cell along with all subsequent cells will be re-evaluated.
+In the second case, only the cache associated with the current page will be ignored and only
+that page will be (completely) re-evaluated.
+In the last case, the whole site is re-built from scratch.
 
-In any case, if you can reproduce what led to the problem, kindly open an issue on GitHub.
+In any case, if you can reproduce what led to the problem, and you think it could be addressed
+on the Franklin side,  kindly open an issue on GitHub.
 
 ## Output of executable code blocks
 

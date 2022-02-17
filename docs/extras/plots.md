@@ -106,6 +106,7 @@ so it's particularly simple to use this plotting library with Franklin.
 
 \showmd{
   ```!
+  # name: plots
   import Plots
 
   x = range(-1, 1, length=300)
@@ -147,6 +148,7 @@ See also the Franklin-based [Makie documentation](https://makie.juliaplots.org/s
 
 \showmd{
 ```!
+  # name: cairomakie
   import CairoMakie
   CairoMakie.activate!()
 
@@ -189,6 +191,7 @@ Combined with [JSServe.jl](https://github.com/SimonDanisch/JSServe.jl) it can pr
 
 \showmd{
   ```!wgl
+  # name: wglmakie
   import WGLMakie, JSServe
   WGLMakie.activate!()
 
@@ -220,6 +223,7 @@ You don't need to install anything specific in your GA script but remember to ad
 
 \showmd{
   ```!
+  # name: pyplot
   import PyPlot
 
   x = range(-1, 1, length=300)
@@ -273,6 +277,7 @@ Remember to also add PyPlot to the site environment.
 
 \showmd{
   ```!
+  # name: pgfplotsx
   using LaTeXStrings
   import PGFPlotsX
   x = range(-1, 1, length=300)
@@ -344,6 +349,7 @@ The overall structure is
   ~~~
 
   ```!
+  # name: plotlyjs
   import PlotlyJS
   p=PlotlyJS.plot(
       PlotlyJS.scatter(x=1:10, y=rand(10), mode="markers"),
@@ -381,6 +387,7 @@ Note that, by default, PNG images will be generated.
 
 \showmd{
   ```!
+  # name: gaston
   import Gaston
   x = range(0, pi, length=500)
   y = @. sin(exp(x)) * sinc(x) + 1
@@ -421,6 +428,7 @@ This requires a custom show method which depends on a Python library [ansi2html]
 
 \showmd{
   ```!
+  # name: unicodeplots
   import UnicodePlots
   x = range(0, pi, length=500)
   y = @. sin(exp(x)) * sinc(x)
@@ -471,12 +479,15 @@ as well as adding UnicodePlots to the site environment.
 
 \lskip
 
-```!
-import Gadfly
-x = range(0, pi, length=500)
-y = @. sin(exp(x)) * sinc(x)
-Gadfly.plot(x=x, y=y, Gadfly.Geom.path)
-```
+\showmd{
+  ```!
+  # name: gadfly
+  import Gadfly
+  x = range(0, pi, length=500)
+  y = @. sin(exp(x)) * sinc(x)
+  Gadfly.plot(x=x, y=y, Gadfly.Geom.path)
+  ```
+}
 
 ### Gadfly with GA
 
