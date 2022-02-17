@@ -11,7 +11,7 @@ Last edit: Feb 15
 * ✅ PlotlyJS
 * ✅ Gaston
 * ✅ UnicodePlots
-* ❌ Gadfly
+* ✅ Gadfly
 
  -->
 
@@ -394,17 +394,6 @@ Note that, by default, PNG images will be generated.
   Gaston.plot(x, y)
   ```
 }
-
-```!
-#hideall
-pairs = cur_lc().nb_code.code_pairs
-i = findfirst(p -> occursin("import Gaston", p.code), pairs)
-fname = match(r"\/([\_a-z0-9]+\.svg)", pairs[i].repr.html).captures[1]
-cp(
-  joinpath(Utils.path(:site), "assets", "extras", "plots", "figs-html", fname),
-  joinpath(Utils.path(:folder), "_assets", "gaston", fname)
-);
-```
 
 
 ### Gaston with GA

@@ -13,14 +13,24 @@ env:
   BASE_URL_PREFIX: "Xranklin.jl"
   # if it's not a preview, use ""
   PREVIEW: ""
+  # branch to use for Xranklin code
+  BRANCH: "preview"
 
   # FLAGS FOR DEPENDENCIES INSTALLATION, ADJUST AS REQUIRED
+  #
   # If use PyCall or PyPlot indicate libs here otherwise set to ""
+  # --> If you use PyPlot you'll need matlotlib here
+  # --> If use UnicodePlots, you'll need ansi2html
   PYTHON_LIBS: "matplotlib pandas ansi2html"
+  #
   # If use Plots.jl indicate "xvfb-run" otherwise ""
   PLOTS: "xvfb-run"
-  # whether PGFPlotsX or Tikz or anything requiring latex is used
+  #
+  # If use PGFPlotsX or Tikz or anything requiring latex is used
   LATEX: true
+  #
+  # If use Gaston or Gnuplot.jl
+  GNUPLOT: true
 
   # ----------------------------------------------------------
   # DON'T CHANGE THE FOLLOWING UNLESS YOU HAVE GOOD REASONS TO
@@ -28,7 +38,7 @@ env:
   CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
   # >> change the digit at the end if, for some reason, you believe
   # that the cache used by the github action has an issue
-  CACHE_KEY: "franklin-preview-cache"
+  CACHE_KEY: "franklin-cache"
 
 jobs:
   deploy:
@@ -56,48 +66,55 @@ jobs:
 
       # Python
       - if: ${{ env.PYTHON_LIBS != '' }}
-        name: Install Python 🐍
+        name: Installing Python 🐍...
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
 
       - if: ${{ env.PYTHON_LIBS != '' }}
-        name: Install Python packages 🐍
+        name: Installing Python packages 🐍...
         run: |
              pip install ${{ env.PYTHON_LIBS }}
              export PYTHON=$(which python)
 
-      # QT dependencies for GR (Plots)
+      # Apt-get update if necessary
+      - if: ${{ (env.PLOTS != '') || (env.LATEX) || (env.GNUPLOT) }}
+        name: Updating APT 👷‍♂️...
+        run: sudo apt-get update -qq
+
+      # QT dependencies for Plots with GR backend
       - if: ${{ env.PLOTS != '' }}
-        run: |
-             sudo apt-get update -qq
-             sudo apt-get install -y qt5-default
+        name: Installing QT5 💻...
+        run: sudo apt-get install -y qt5-default
 
       # LaTeX* deps for PGFPlotsX etc
       - if: ${{ env.LATEX }}
-        name: Install LaTeX 🌴
-        run: |
-          sudo apt-get update -qq
-          sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
+        name: Installing LaTeX 🌴...
+        run: sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
+
+      # Gnuplot for Gaston etc
+      - if: ${{ env.GNUPLOT }}
+        name: Install GnuPlot 💻
+        run: sudo apt-get install -y gnuplot
 
       # ================ #
       # BUILDING WEBSITE #
       # ================ #
 
       # Julia
-      - name: Install Julia
+      - name: Installing Julia 💙...
         uses: julia-actions/setup-julia@v1
         with:
           version: 1.7
 
       # Building website
-      - name: Building website 🚧
+      - name: Building website 🚧...
         run: ${{ env.PLOTS }} julia -e '
                 using Pkg;
                 isempty("${{ env.PYTHON_LIBS }}") || (Pkg.add("PyCall"); Pkg.build("PyCall"););
                 Pkg.add(
                   url="https://github.com/tlienart/Xranklin.jl",
-                  rev="main"
+                  rev="${{ env.BRANCH }}"
                   );
                 using Xranklin;
                 build("${{ env.SITE_FOLDER }}";
@@ -112,10 +129,6 @@ jobs:
       # DEPLOYMENT #
       # ========== #
 
-      # Gaston adjustment
-      - name: Recover Gaston plot
-        run: yes | cp -rf docs/_assets/gaston/* docs/__site/assets/extras/plots/figs-html/.
-
       # TTFX Experiment results
       - name: Recover TTFX
         uses: actions/checkout@v2
@@ -127,8 +140,9 @@ jobs:
         run: yes | cp -rf ttfx/ttfx/* ${{ env.SITE_FOLDER }}/__site/ttfx
 
       # Deployment
-      - name: No Jekyll
+      - name: Avoid Jekyll build
         run: touch ${{ env.SITE_FOLDER }}/__site/.nojekyll
+
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
