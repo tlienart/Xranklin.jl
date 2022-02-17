@@ -68,6 +68,7 @@ Note also that this time is a one-off cost, subsequent plots should take negligi
 | [CairoMakie.jl](#cairomakie.jl)     | [link](/ttfx/cairomakie/)   | {{ttfx cairomakie}}   |
 | [WGLMakie.jl](#wglmakie.jl)         | [link](/ttfx/wglmakie/)     | {{ttfx wglmakie}}     |
 | [PyPlot.jl](#pyplot.jl)             | [link](/ttfx/pyplot/)       | {{ttfx pyplot}}       |
+| [PGFPlots.jl](#pgfplots.jl)         | [link](/ttfx/pgfplots/)     | {{ttfx pgfplots}}     |
 | [PGFPlotsX.jl](#pgfplotsx.jl)       | [link](/ttfx/pgfplotsx/)    | {{ttfx pgfplotsx}}    |
 | [PlotlyJS.jl](#plotlyjs.jl)         | NA                          | NA                    |
 | [Gaston.jl](#gaston.jl)             | [link](/ttfx/gaston/)       | {{ttfx gaston}}       |
@@ -109,8 +110,8 @@ so it's particularly simple to use this plotting library with Franklin.
   # name: plots
   import Plots
 
-  x = range(-1, 1, length=300)
-  y = @. sinc(x) * cos(x) * exp(-1/x^2)
+  x = range(0, pi, length=500)
+  y = @. sin(exp(x)) * sinc(x)
 
   Plots.plot(x, y, label="Hello", size=(500, 300))
   ```
@@ -226,8 +227,8 @@ You don't need to install anything specific in your GA script but remember to ad
   # name: pyplot
   import PyPlot
 
-  x = range(-1, 1, length=300)
-  y = @. sinc(x) * exp(-1/x^2)
+  x = range(0, pi, length=500)
+  y = @. sin(exp(x)) * sinc(x)
 
   PyPlot.figure(figsize=(6, 4))
   PyPlot.plot(x, y, lw=3, label="Hello")
@@ -276,6 +277,21 @@ and produces LaTeX-style plots.
 
 \lskip
 
+\showmd{
+  ```!
+  # name: pgfplots
+  using LaTeXStrings
+  import PGFPlots
+  x = range(0, pi, length=500)
+  y = @. sin(exp(x)) * sinc(x)
+  PGFPlots.Axis(
+    PGFPlots.Plots.Linear(x, y, style="smooth, no marks"),
+    xlabel = L"x",
+    ylabel = L"f(x) = \sin(\exp(x))\mathrm{sinc}(x)"
+  )
+  ```
+}
+
 ### PGFPlots with GA
 
 In order to use this package on GA you need a minimal texlive installation.
@@ -300,12 +316,12 @@ Remember to also add PGFPlots to the site environment.
   # name: pgfplotsx
   using LaTeXStrings
   import PGFPlotsX
-  x = range(-1, 1, length=300)
-  y = @. sinc(x) * exp(-1/x^2)
+  x = range(0, pi, length=500)
+  y = @. sin(exp(x)) * sinc(x)
   PGFPlotsX.@pgf PGFPlotsX.Axis(
       {
         xlabel = L"x",
-        ylabel = L"f(x) = \mathrm{sinc(x)}\exp(-x^{-2})"
+        ylabel = L"f(x) = \sin(\exp(x))\mathrm{sinc}(x)"
       },
       PGFPlotsX.Plot(
         {no_marks},
