@@ -31,13 +31,13 @@ jobs:
       # -- modify index --
       - name: Set index.md 📖
         run: |
-              echo "# TTFX PGFPlots"                      > ${{ env.INDEX }}
-              echo "\`\`\`!"                             >> ${{ env.INDEX }}
-              echo "using PGFPlots"                      >> ${{ env.INDEX }}
-              echo "x = range(0, pi, length=500)"        >> ${{ env.INDEX }}
-              echo "y = @. sin(exp(x)) * sinc(x)"        >> ${{ env.INDEX }}
-              echo "Plots.Linear(x, y, style="smooth")"  >> ${{ env.INDEX }}
-              echo "\`\`\`"                              >> ${{ env.INDEX }}
+              echo "# TTFX PGFPlots"                        > ${{ env.INDEX }}
+              echo "\`\`\`!"                               >> ${{ env.INDEX }}
+              echo "using PGFPlots"                        >> ${{ env.INDEX }}
+              echo "x = range(0, pi, length=500)"          >> ${{ env.INDEX }}
+              echo "y = @. sin(exp(x)) * sinc(x)"          >> ${{ env.INDEX }}
+              echo "Plots.Linear(x, y, style=\"smooth\")"  >> ${{ env.INDEX }}
+              echo "\`\`\`"                                >> ${{ env.INDEX }}
               echo "# TIME"                                  >> ${{ env.INDEX }}
               echo "\`\`\`!"                                 >> ${{ env.INDEX }}
               echo "using Dates"                             >> ${{ env.INDEX }}
