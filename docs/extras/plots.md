@@ -4,11 +4,14 @@ Last edit: Feb 15
 
 * ✅ PyPlot.jl
 * ✅ Plots.jl
-* ✅ Makie - CairoMakie
-* ❌ Makie - GLMakie      NOTE: not tried
-* ✅ Makie - WGLMakie
+* ✅ CairoMakie
+* ❌ GLMakie      NOTE: not tried
+* ✅ WGLMakie
 * ✅ PGFPlotsX
 * ✅ PlotlyJS
+* ✅ Gaston
+* ✅ UnicodePlots
+* ❌ Gadfly
 
  -->
 
@@ -458,3 +461,20 @@ run: pip install ansi2html
 ```
 
 as well as adding UnicodePlots to the site environment.
+
+## Gadfly
+
+[Gadfly.jl](https://github.com/GiovineItalia/Gadfly.jl) is a plotting system written in Julia and influenced by the Grammar of Graphics.
+
+\lskip
+
+```!
+import Gadfly
+x = range(0, pi, length=500)
+y = @. sin(exp(x)) * sinc(x)
+Gadfly.plot(x=x, y=y, Gadfly.Geom.path)
+```
+
+### Gadfly with GA
+
+Gadfly doesn't require anything specific in your GA script, just remember to add it to the site environment.
