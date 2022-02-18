@@ -160,7 +160,7 @@
     <div id="main-top-header">
       <div id="main-top-header-content">
         
-          <h1>Using and adapting an external layout</h1>
+          <h1>Using and adapting a layout</h1>
         
       </div>
     </div>
@@ -170,7 +170,7 @@
         <div id="margin-toc">
           
             <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
-            <div class="toc"><ol><li><a href="#overview"> Overview</a></li><li><a href="#tips_and_tricks"> Tips and tricks</a><ol><li><a href="#organising_layout_files"> Organising layout files</a></li></ol></li><li><a href="#example_1_"hugo_coder"_template"> Example 1: "Hugo-Coder" template</a><ol><li><a href="#overview__2"> Overview</a></li><li><a href="#page_structure"> Page structure</a></li><li><a href="#variables"> Variables</a></li><li><a href="#assets"> Assets</a></li></ol></li></ol></div>
+            <div class="toc"><ol><li><a href="#overview"> Overview</a></li><li><a href="#tips_and_tricks"> Tips and tricks</a><ol><li><a href="#using_page_variables"> Using page variables</a></li><li><a href="#organising_layout_files"> Organising layout files</a></li></ol></li><li><a href="#example_1_"hugo_coder"_template"> Example 1: "Hugo-Coder" template</a><ol><li><a href="#overview__2"> Overview</a></li><li><a href="#page_structure"> Page structure</a></li><li><a href="#variables"> Variables</a></li><li><a href="#assets"> Assets</a></li></ol></li></ol></div>
           
       </div>
     </div>
@@ -178,12 +178,42 @@
     
     <div id="main-left-content">
       
-<h2 id="overview" ><a href="#overview"> Overview</a></h2><p>Remember that layouts can quickly become complicated especially if you want them to work on multiple devices flawlessly: does the layout work on all screen ratios? on all browsers? don't forget that the aim should be to publish great content and not spend hundreds of hours trying to figure out why some menu doesn't properly collabse in narrow mode.</p>
-<p>Starting from an established layout that you've found somewhere and/or using a CSS template will help a lot in this respect.
-Designing a layout from scratch, if you don't have a lot of webdev experience, can be pretty painful.</p>
-<p>Comment systems.</p>
-<h2 id="tips_and_tricks" ><a href="#tips_and_tricks"> Tips and tricks</a></h2><h3 id="organising_layout_files" ><a href="#organising_layout_files"> Organising layout files</a></h3><p>You might find it convenient to define additional layout files in order to separate (and de-clutter) layout elements.
-For instance, let's say your layout includes a menu, you might begin with a <code>head.html</code> looking like</p>
+<h2 id="overview" ><a href="#overview"> Overview</a></h2><p>Have you seen a great website layout online that you would like to imitate and that is
+not already available for Franklin?
+This is the page where we explain how you can adapt a layout fairly easily.</p>
+<p>Building a great website layout from scratch is difficult, especially if you don't have
+a lot of web-dev experience.
+We therefore recommend that you either start from one of the
+<a href="https://tlienart.github.io/FranklinTemplates.jl/">Franklin-ready templates</a> or from an
+established website template that you found.</p>
+<h2 id="tips_and_tricks" ><a href="#tips_and_tricks"> Tips and tricks</a></h2><h3 id="using_page_variables" ><a href="#using_page_variables"> Using page variables</a></h3><p>When working on the layout, a key tool will be to leverage <a href="/Xranklin.jl/syntax/vars+funs/">page variables</a>
+so that you can enable specific parts of the layout on specific pages (conditionals) and
+extract page information to use in the layout.</p>
+<p>For instance, you may have articles in <code>/posts/...</code> and would like that all such pages
+show a publication date.
+You could use a page variable <code>date</code> for this with for instance on <code>/posts/page1.md</code>:</p>
+<pre><code class="md">+++
+using Dates
+date = Date(2022, 2, 15)
++++
+
+&lt;!-- Here the rest of the page content --&gt;</code></pre>
+<p>and in your <code>head.html</code> you might have something like</p>
+<pre><code class="html">...
+&lt;head&gt;
+  &lbrace;&lbrace;ispage posts/*&rbrace;&rbrace;
+    &lt;title&gt;Post - &lbrace;&lbrace;date&rbrace;&rbrace;&lt;/title&gt;
+  &lbrace;&lbrace;else&rbrace;&rbrace;
+    &lt;title&gt;My Website&lt;/title&gt;
+  &lbrace;&lbrace;end&rbrace;&rbrace;
+&lt;/head&gt;
+...</code></pre>
+<p>Of course that's a simplistic example but page variables are very handy to
+control the layout of your website.</p>
+<h3 id="organising_layout_files" ><a href="#organising_layout_files"> Organising layout files</a></h3><p>You might find it convenient to define additional layout files in order to separate
+(and de-clutter) layout elements.
+For instance, let's say your layout includes a menu, you might begin with
+a <code>head.html</code> looking like</p>
 <pre><code class="html">&lt;html&gt;
 &lt;head&gt;
   &lt;title&gt; The title &lt;/title&gt;
@@ -198,7 +228,8 @@ For instance, let's say your layout includes a menu, you might begin with a <cod
 &lt;/nav&gt;
 
 &lt;body&gt;</code></pre>
-<p>As your site grows, this might become more complex and it then becomes helpful to a file <code>menu.html</code> with</p>
+<p>As your site grows, this might become more complex, and it then becomes helpful
+to have a dedicated file <code>menu.html</code> with</p>
 <pre><code class="html">&lt;nav&gt;
   &lt;ul&gt;
     &lt;li&gt;&lt;a href=&quot;/home/&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
@@ -222,6 +253,7 @@ For that function, paths are taken relative to the <code>_layout</code> folder (
 <ul>
 <li>Demo site: <a href="https://hugo-coder.netlify.app">https://hugo-coder.netlify.app</a>,</li>
 <li>Source repo: <a href="https://github.com/luizdepra/hugo-coder">https://github.com/luizdepra/hugo-coder</a> (MIT Licensed).</li>
+<li><a href="https://tlienart.github.io/coder-xranklin-demo/">Result site</a> and <a href="https://github.com/tlienart/coder-xranklin-demo">repo</a>.</li>
 </ul>
 <p>The way we will go about this is by looking at the source HTML of the demo site and taking the parts we need to rebuild this with Franklin.
 Specifically:</p>

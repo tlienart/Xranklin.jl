@@ -160,7 +160,7 @@
     <div id="main-top-header">
       <div id="main-top-header-content">
         
-          <h1>Building websites with Franklin.jl</h1>
+          <h1>Building websites with Franklin</h1>
         
       </div>
     </div>
@@ -185,6 +185,7 @@
 }
 .flist ul {
   list-style: none;
+  padding-left: 1em;
 }
 .flist a#goto {
   padding-right: 10px;
@@ -199,30 +200,26 @@
 .flist a#goto:hover #arrow {
   display: inline;
 }
-</style><div class="sub-header"><p>Franklin is a simple, customisable, static site generator with a focus on technical blogging.</p>
+</style><div class="sub-header"><p>Franklin.jl is a simple, customisable, static site generator with a focus on technical blogging.</p>
 </div><h2 id="key_features" ><a href="#key_features"> Key features</a></h2><p><em>click on the '&check;' sign to know more</em></p>
 <div class="flist"><ul>
-<li><a href="/Xranklin.jl/syntax/markdown/" id="goto">
+<li><a href="/Xranklin.jl/syntax/basics/" id="goto">
   <span id="check">&check;</span>
   <span id="arrow"><b>&rarr;</b></span>
-</a> Augmented markdown allowing definition of LaTeX-like commands,</li>
-<li><a href="/Xranklin.jl/syntax/divs-commands/" id="goto">
+</a> Based on common Markdown syntax,</li>
+<li><a href="/Xranklin.jl/syntax/extensions/" id="goto">
   <span id="check">&check;</span>
   <span id="arrow"><b>&rarr;</b></span>
-</a> Easy inclusion of user-defined div-blocks,</li>
-<li><a href="/Xranklin.jl/syntax/divs-commands/" id="goto">
+</a> Multiple extensions to the base Markdown syntax such as the possibility to define LaTeX-like commands or the inclusion of div-blocks,</li>
+<li><a href="/Xranklin.jl/syntax/extensions/" id="goto">
   <span id="check">&check;</span>
   <span id="arrow"><b>&rarr;</b></span>
 </a> Maths rendered via <a href="https://katex.org/">KaTeX</a>, code via <a href="https://highlightjs.org">highlight.js</a> both can be pre-rendered,</li>
-<li><a href="/Xranklin.jl/code/" id="goto">
+<li><a href="/Xranklin.jl/syntax/code/" id="goto">
   <span id="check">&check;</span>
   <span id="arrow"><b>&rarr;</b></span>
 </a> Can live-evaluate Julia code blocks,</li>
-<li><a href="/Xranklin.jl/workflow/#creating_your_website" id="goto">
-  <span id="check">&check;</span>
-  <span id="arrow"><b>&rarr;</b></span>
-</a> Live preview of modifications,</li>
-<li><a href="/Xranklin.jl/workflow/#publication_step" id="goto">
+<li><a href="/Xranklin.jl/workflow/deployment/" id="goto">
   <span id="check">&check;</span>
   <span id="arrow"><b>&rarr;</b></span>
 </a> Simple publication step to deploy the website</li>
@@ -232,6 +229,20 @@
 <li>hit <kbd>]</kbd> to enter package mode,</li>
 <li>write <code>add Franklin</code> and press <kbd>enter</kbd>.</li>
 </ul>
+<p>You can then just try it out:</p>
+<pre><code class="julia-repl">julia&gt; using Franklin
+julia&gt; newsite(&quot;mySite&quot;, template=&quot;pure-sm&quot;)
+✓ Website folder generated at &quot;mySite&quot; (now the current directory).
+→ Use serve() from Franklin to see the website in your browser.
+
+julia&gt; serve()
+(...)
+✓ LiveServer listening on http://localhost:8000/ ...
+  (use CTRL+C to shut down)</code></pre>
+<p>If you navigate to that URL in your browser, you will see the website.
+If you then open <code>mySite/index.md</code> in an editor and modify it at will, the changes
+will be live-rendered in your browser.</p>
+<p>Read more in <a href="/Xranklin.jl/workflow/getting_started/">Getting Started</a>.</p>
 
 
 
