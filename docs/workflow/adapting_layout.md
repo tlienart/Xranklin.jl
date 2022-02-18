@@ -1,24 +1,69 @@
 +++
 showtoc = true
-header = "Using and adapting an external layout"
+header = "Using and adapting a layout"
 menu_title = "Adapting a layout"
 +++
 
 ## Overview
 
-Remember that layouts can quickly become complicated especially if you want them to work on multiple devices flawlessly: does the layout work on all screen ratios? on all browsers? don't forget that the aim should be to publish great content and not spend hundreds of hours trying to figure out why some menu doesn't properly collabse in narrow mode.
+Have you seen a great website layout online that you would like to imitate and that is
+not already available for Franklin?
+This is the page where we explain how you can adapt a layout fairly easily.
 
-Starting from an established layout that you've found somewhere and/or using a CSS template will help a lot in this respect.
-Designing a layout from scratch, if you don't have a lot of webdev experience, can be pretty painful.
-
-Comment systems.
+Building a great website layout from scratch is difficult, especially if you don't have
+a lot of web-dev experience.
+We therefore recommend that you either start from one of the
+[Franklin-ready templates](https://tlienart.github.io/FranklinTemplates.jl/) or from an
+established website template that you found.
 
 ## Tips and tricks
 
+### Using page variables
+
+When working on the layout, a key tool will be to leverage [page variables](/syntax/vars+funs/)
+so that you can enable specific parts of the layout on specific pages (conditionals) and
+extract page information to use in the layout.
+
+For instance, you may have articles in `/posts/...` and would like that all such pages
+show a publication date.
+You could use a page variable `date` for this with for instance on `/posts/page1.md`:
+
+```md
++++
+using Dates
+date = Date(2022, 2, 15)
++++
+
+<!-- Here the rest of the page content -->
+```
+
+and in your `head.html` you might have something like
+
+```html
+...
+<head>
+  {{ispage posts/*}}
+    <title>Post - {{date}}</title>
+  {{else}}
+    <title>My Website</title>
+  {{end}}
+</head>
+...
+```
+
+Of course that's a simplistic example but page variables are very handy to
+control the layout of your website.
+
+
+
+
+
 ### Organising layout files
 
-You might find it convenient to define additional layout files in order to separate (and de-clutter) layout elements.
-For instance, let's say your layout includes a menu, you might begin with a `head.html` looking like
+You might find it convenient to define additional layout files in order to separate
+(and de-clutter) layout elements.
+For instance, let's say your layout includes a menu, you might begin with
+a `head.html` looking like
 
 ```html
 <html>
@@ -37,7 +82,8 @@ For instance, let's say your layout includes a menu, you might begin with a `hea
 <body>
 ```
 
-As your site grows, this might become more complex and it then becomes helpful to a file `menu.html` with
+As your site grows, this might become more complex, and it then becomes helpful
+to have a dedicated file `menu.html` with
 
 ```html
 <nav>
@@ -74,6 +120,7 @@ This is an MIT-licensed template designed for Hugo by [Luiz F. A. de Prá](https
 
 * Demo site: <https://hugo-coder.netlify.app>,
 * Source repo: <https://github.com/luizdepra/hugo-coder> (MIT Licensed).
+* [Result site](https://tlienart.github.io/coder-xranklin-demo/) and [repo](https://github.com/tlienart/coder-xranklin-demo).
 
 The way we will go about this is by looking at the source HTML of the demo site and taking the parts we need to rebuild this with Franklin.
 Specifically:
