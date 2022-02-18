@@ -64,7 +64,7 @@ Note also that this time is a one-off cost, subsequent plots should take negligi
 
 | Plotting package | Result | Time (min) |
 | ---------------- | ------ | ---------- |
-| [Plots.jl](#plots.jl)               | [link](/ttfx/plots/)        | {{ttfx plots}}        |
+| [Plots.jl](#plots.jl) (GR backend)  | [link](/ttfx/plots/)        | {{ttfx plots}}        |
 | [CairoMakie.jl](#cairomakie.jl)     | [link](/ttfx/cairomakie/)   | {{ttfx cairomakie}}   |
 | [WGLMakie.jl](#wglmakie.jl)         | [link](/ttfx/wglmakie/)     | {{ttfx wglmakie}}     |
 | [PyPlot.jl](#pyplot.jl)             | [link](/ttfx/pyplot/)       | {{ttfx pyplot}}       |
