@@ -66,12 +66,14 @@ end
 
 
 """
-    tag_path(gc, id)
+    tag_rpath(gc, id)
 
-Return the path to the tag page corresponding to the tag `id`.
+Return the relative path to the tag page corresponding to the tag `id`.
 """
-tag_path(gc::GlobalContext, id::String) =
-    path(:site) / getvar(gc, :tags_prefix, "tags") / id / "index.html"
+tag_rpath(gc::GlobalContext, id::String) =
+    getvar(gc, :tags_prefix, "tags") / id / "index.html"
+
+tag_path(gc, id) = path(:site) / tag_rpath(gc, id)
 
 
 """
@@ -80,8 +82,11 @@ tag_path(gc::GlobalContext, id::String) =
 Write a new (or re-write) a tag page.
 """
 function write_tag_page(gc::GlobalContext, id::String)::Nothing
-    tp = tag_path(gc, id)
+    trp = tag_rpath(gc, id)
+    tp  = tag_path(gc, id)
     mkpath(splitdir(tp)[1])
+
+    # default if none given
     ct = """
         <!doctype html>
         <html lang="en">
@@ -103,13 +108,16 @@ function write_tag_page(gc::GlobalContext, id::String)::Nothing
         ct = read(tt, String)
     end
 
-    # convert tag layout and write to file
-    base = getvar(gc, :tags_prefix, "tags")
-    lc   = DefaultLocalContext(gc; rpath="/$base/$id")
+    # convert tag layout and write to file (we don't care about retrieving it from GC)
+    lc = DefaultLocalContext(gc; rpath=trp)
     setvar!(lc, :tag_id, id)
     setvar!(lc, :tag_name, gc.tags[id].name)
+    setvar!(lc, :_relative_path, trp)
     open(tp, "w") do f
         write(f, html2(ct, lc))
+    end
+    if getvar(gc, :_final, false)
+        adjust_base_url(gc, tp, tp)
     end
     return
 end
@@ -146,6 +154,8 @@ function get_page_tags()::LittleDict{String,String}
     lc === nothing && return LittleDict{String,String}()
     return get_page_tags(lc)
 end
+get_page_tags(rp::String) = get_page_tags(cur_gc().children_contexts[rp])
+
 
 
 """

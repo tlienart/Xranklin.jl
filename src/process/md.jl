@@ -343,6 +343,7 @@ function process_md_file_io!(
         rm_tag(gc, id, lc.rpath)
     end
     # do the opposite and add any new tags
+    # NOTE: this creates a local context for each tag page
     for id in setdiff(new_keys, old_keys)
         name = tags_dict[id]
         add_tag(gc, id, name, lc.rpath)

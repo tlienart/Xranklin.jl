@@ -272,7 +272,7 @@ function _resolve_henv_cond(henv::HEnvPart)
             cond_str = _nestr(cond_str)
         end
 
-    # IS PAGE (XXX tag)
+    # IS PAGE
     elseif env_name in (:ispage, :ifpage, :isnotpage, :ifnotpage)
         cond_str = _estr("""
             begin
