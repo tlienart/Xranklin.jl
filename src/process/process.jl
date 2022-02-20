@@ -177,15 +177,14 @@ base URL prefix (prepath) into account if it's not empty.
 In such cases, erase the hash of the page as the page will need to be
 re-processed in a subsequent 'serve'.
 """
-function adjust_base_url(gc::GlobalContext, rpath::String, opath::String;
+function adjust_base_url(lc::LocalContext, opath::String;
                          final::Bool=false)
     #
     # If we're in the final pass, we potentially need to fix all
     # relative links to take the base_url_prefix (prepath) into
     # account.
     #
-    lc = gc.children_contexts[rpath]
-    pp = ifelse(final, sstrip(getvar(gc, :base_url_prefix, ""), '/'), "")
+    pp = ifelse(final, sstrip(getvar(lc.glob, :base_url_prefix, ""), '/'), "")
     ap = getvar(lc, :_applied_base_url_prefix, "")
     isempty(pp) && isempty(ap) && return
 
@@ -212,4 +211,9 @@ function adjust_base_url(gc::GlobalContext, rpath::String, opath::String;
     end
     setvar!(lc, :_applied_base_url_prefix, pp)
     return
+end
+function adjust_base_url(gc::GlobalContext, rpath::String, opath::String;
+                         final::Bool=false)
+    lc = gc.children_contexts[rpath]
+    adjust_base_url(lc, opath; final)
 end

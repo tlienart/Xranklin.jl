@@ -117,7 +117,7 @@ function write_tag_page(gc::GlobalContext, id::String)::Nothing
         write(f, html2(ct, lc))
     end
     if getvar(gc, :_final, false)
-        adjust_base_url(gc, tp, tp)
+        adjust_base_url(lc, tp, final=true)
     end
     return
 end
