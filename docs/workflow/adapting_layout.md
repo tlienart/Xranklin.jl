@@ -112,33 +112,55 @@ This allows to split your layout in smaller bits that are easier to maintain.
 The `{{...}}` syntax indicates we're calling the ["HTML" function](/syntax/vars+funs/) `insert`.
 For that function, paths are taken relative to the `_layout` folder (so here `menu.html` is assumed to be next to `head.html`).
 
-## Example 1: "Hugo-Coder" template
+## Example 1: "Minima-Reboot" template
 
 ### Overview
 
-This is an MIT-licensed template designed for Hugo by [Luiz F. A. de Prá](https://github.com/luizdepra).
+This is an MIT-licensed template which is a Bootstrap port of Jekyll's default theme, designed by [Alexander Terenin](https://github.com/aterenin/minima-reboot/).
 
-* Demo site: <https://hugo-coder.netlify.app>,
-* Source repo: <https://github.com/luizdepra/hugo-coder> (MIT Licensed).
-* [Result site](https://tlienart.github.io/coder-xranklin-demo/) and [repo](https://github.com/tlienart/coder-xranklin-demo).
+* Demo site: <https://aterenin.github.io/minima-reboot/>,
+* Source repo: <https://github.com/aterenin/minima-reboot> (MIT Licensed),
+* [Result site](https://tlienart.github.io/coder-minima-reboot-demo/) and [repo](https://github.com/tlienart/minima-reboot-xranklin-demo).
 
 The way we will go about this is by looking at the source HTML of the demo site and taking the parts we need to rebuild this with Franklin.
 Specifically:
 
-* what is the HTML structure (or structures) of pages on that site (the general skeleton of each page),
-* what are the _assets_ of the site, things that would potentially be hosted on the server (e.g. stylesheets, icons, ...)
-* what are information in the structure that should be controlled by either the `config.md` or pages (e.g. author, publication date, meta tag, ...)
+1. what is the HTML structure (or structures) of pages on that site (the general skeleton of each page),
+1. what are the _assets_ of the site, things that would potentially be hosted on the server (e.g. stylesheets, icons, ...)
+1. what are information in the structure that should be controlled by either the `config.md` or pages (e.g. author, publication date, meta tag, ...)
 
 \note{
   This was done in January 2022, the template may have changed a little bit since then but the
   procedure should show you how to adapt or update it easily.
 }
 
+### Page structure
+
+When inspecting the HTML f the landing page (and other pages), the structure is more or less
+as follows:
+
+```html
+```
+
+
+## Example 2: "Hugo-Coder" template
+
+### Overview
+
+This is an MIT-licensed template designed for Hugo by [Luiz F. A. de Prá](https://github.com/luizdepra).
+
+* Demo site: <https://hugo-coder.netlify.app>,
+* Source repo: <https://github.com/luizdepra/hugo-coder> (MIT Licensed),
+* [Result site](https://tlienart.github.io/coder-xranklin-demo/) and [repo](https://github.com/tlienart/coder-xranklin-demo).
+
+We will proceed as with the Minima Reboot example.
+
 
 ### Page structure
 
-When inspecting the HTML of the landing page (and other pages),
-the structure is more or less as follows:
+When inspecting the HTML of the landing page (and other pages) (after un-minification using
+something like [unminify2](https://www.unminify2.com/)), we can observe that the structure
+is more or less as follows:
 
 ```html
 ...
@@ -146,15 +168,16 @@ the structure is more or less as follows:
   ...
 </head>
 
-<body class="preload-transitions colorscheme-auto">
-  ...
+<body>
+  <header ...>
+  </header>
 
-  <main class="wrapper">
-    <nav class="navigation">...</nav>
-    <div class="content">...</div>
-    <footer class="footer">...</footer>
+  <main ...>
   </main>
-  ...
+
+  <footer ...>
+  </footer>
+
 </body>
 </html>
 ```
@@ -162,6 +185,181 @@ the structure is more or less as follows:
 This is easy to adapt to Franklin by defining a `_layout/head.html` to contain
 everything above `<div class="content">` and `_layout/foot.html` to
 contain everything below it.
+
+#### Content
+
+The content is where the Markdown converted to HTML will go.
+Here, it's going to be most of what's in the `<main>` part.
+Roughly speaking things above of that will go in `head.html` and thing below the
+closing tag will go in `foot.html`.
+
+If we inspect it more closely, we will see that the *landing* page looks like
+
+```html
+<main aria-label="Content">
+  <div id="content-container" class="container">
+      <header class="pt-3 mb-3">
+          <p>Posts<p>
+      </header>
+      <div id="content">
+
+...
+```
+
+whereas the *about* page looks like
+
+```html
+<main aria-label="Content">
+  <article>
+    <header class="pt-4 pb-3">
+        <h1>About</h1>
+    </header>
+    <div id="content">
+...
+```
+
+and a *post* page looks like
+
+```html
+<main aria-label="Content">
+  <div id="content-container" class="container">
+    <article itemscope itemtype="http://schema.org/BlogPosting">
+      <header class="pt-4 pb-3">
+        <h1 itemprop="name headline">Welcome to minima-reboot</h1>
+          <p class="text-secondary">
+            <time datetime="2017-12-26T00:00:00+00:00" itemprop="datePublished">
+              Dec 26, 2017
+            </time>
+          </p>
+      </header>
+      <div class="text-justify" itemprop="articleBody" id="content">
+```
+
+So there are some differences that we need to take into account.
+
+#### Head (1)
+
+In the head we basically put everything that's above the `<main>` block as
+well as the start of that main block with conditionals based on the differences
+highlighted in the previous point.
+
+Let's start with the simple bit first.
+In most layouts, there's a recurring part that you find on pretty  much all pages "as is".
+
+In the current case, everything above `<main>` is pretty much like this so you can just
+copy paste it in the `head.html`. A couple of points things to bear in mind (illustrated further below):
+
+* for assets (`.js`, `.css`), figure out whether you want or need to host them statically, if so download them and put them in the `_css` or `_libs` and adjust the references accordingly,
+* for meta tags, you will typically want to use [page-variables](/syntax/vars+funs/) to make
+it (much) easier to maintain them from the `config.md` file,
+
+In our case, to simplify the presentation, we will make very asset (css, js, images) static.
+You can choose to do this or not, there are pros and cons in both cases (e.g. see [this SO post](https://stackoverflow.com/questions/26192897/should-i-use-bootstrap-from-cdn-or-make-a-copy-on-my-server)).
+
+So for instance we replace
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" ...>
+```
+
+by
+
+```html
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+```
+
+after having saved the CSS at `_css/bootstrap.min.css`.
+
+In terms of the point on meta tags, we replace for instance
+
+```html
+<meta name="author" content="GitHub User" />
+```
+
+by
+
+```html
+<meta name="author" content="{{author}}" />
+```
+
+and in `config.md` we correspondingly put
+
+```plaintext
++++
+
+...
+author = "The Author"
+...
+
++++
+```
+
+#### Head (2) (XXX)
+
+Now let's turn to the different ways to open the main part.
+We just need to add conditionals via `ispage` to check that the relevant block
+is applied on the relevant page(s).
+
+```html
+<main aria-label="Content">
+  <div id="content-container" class="container">
+
+{{ispage index.html}}  <!-- specific to the landing page -->
+  <header class="pt-3 mb-3">
+    <p> {{header}} <p>
+  </header>
+  <div id="content">
+{{end}}
+
+{{ispage about.html}} <!-- specific to the about page -->
+  <article>
+    <header class="pt-4 pb-3">
+        <h1>{{header}}</h1>
+    </header>
+    <div id="content">
+{{end}}
+
+{{ispage posts/*}}
+  {{ispage posts/index.html}} <!-- posts landing page -->
+  {{else}} <!-- specific posts -->
+    <article itemscope itemtype="http://schema.org/BlogPosting">
+      <header class="pt-4 pb-3">
+        <h1 itemprop="name headline">{{header}}</h1>
+          <p class="text-secondary"> <time datetime="" itemprop="datePublished"> </time> </p>
+      </header>
+      <div class="text-justify" itemprop="articleBody" id="content">
+  {{end}}
+{{end}}
+```
+
+#### Foot
+
+The process for `foot.html` is identical except that we consider what's below `</main>` and
+we have to close what was open in the main part (with the same conditionals).
+So we end up with something like
+
+```html
+{{ispage index.html}}  <!-- specific to the landing page -->
+{{end}}
+
+{{ispage about.html}} <!-- specific to the about page -->
+{{end}}
+
+{{ispage posts/*}}
+  {{ispage posts/index.html}} <!-- posts landing page -->
+  {{else}} <!-- specific posts -->
+  {{end}}
+{{end}}
+
+</main> <!-- always -->
+<footer id="site-footer">
+  ...
+</footer>
+</body>
+</html>
+```
+
+
 
 ### Variables
 
