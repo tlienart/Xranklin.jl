@@ -26,8 +26,14 @@ Otherwise add a new anchor to the GC.
 
 Note: in this page the 'rpath' is that of the page defining the anchor.
 """
-function add_anchor(gc::GlobalContext, id::String, rpath::String)::Nothing
-    crumbs("add_anchor", "$id (from $rpath)")
+function add_anchor(
+            gc::GlobalContext,
+            id::String,
+            rpath::String
+        )::Nothing
+
+    crumbs(@FNAME, "$id (from $rpath)")
+
     # add the id to the local context's anchors
     union!(gc.children_contexts[rpath].anchors, [id])
     if id in keys(gc.anchors)
@@ -68,8 +74,14 @@ Note: in this case the 'rpath' is that of the page querying for the anchor.
 In case (1), the local context corresponding to the last location of the
 matching anchor gets the querying page as a to-trigger.
 """
-function get_anchor(gc::GlobalContext, id::String, rpath::String)::String
-    crumbs("get_anchor", "$id (from $rpath)")
+function get_anchor(
+            gc::GlobalContext,
+            id::String,
+            rpath::String
+        )::String
+
+    crumbs(@FNAME, "$id (from $rpath)")
+
     if id in keys(gc.anchors)
         a = gc.anchors[id]
         union!(a.reqs, [rpath])
@@ -109,8 +121,14 @@ Note: in this case the 'rpath' is the one of the page removing an anchor.
 Re-process all pages that depended upon this updated anchor assuming the
 removed location was the last one.
 """
-function rm_anchor(gc::GlobalContext, id::String, rpath::String)
-    crumbs("rm_anchor", "$id (from $rpath)")
+function rm_anchor(
+            gc::GlobalContext,
+            id::String,
+            rpath::String
+        )::Nothing
+
+    crumbs(@FNAME, "$id (from $rpath)")
+
     # this check should be superfluous
     id in keys(gc.anchors) || return
     # recover the locs and the last relevant loc

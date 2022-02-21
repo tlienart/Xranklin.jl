@@ -87,6 +87,10 @@ function match_url(base::AbstractString, cand::AbstractString)
     return noext(scand) == sbase
 end
 
+# get the function name (used in crumbs)
+macro FNAME()
+    return :($(esc(Expr(:isdefined, :var"#self#"))) ? $(esc(:var"#self#")) : nothing)
+end
 
 crumbs(s1, s2="") = @debug "🚧 ... $(hl(s1, :yellow)) $(s2 === "" ? "" : "> $(hl(s2, :light_green))")"
 alert(s)          = @error "🚧 ... $s"

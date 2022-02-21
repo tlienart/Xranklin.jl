@@ -14,6 +14,7 @@ const DefaultGlobalVars = Vars(
     :content_id          => "",
     :autosavefigs        => true,
     :autoshowfigs        => true,
+    :layout_skeleton     => "_layout/skeleton.html",
     :layout_head         => "_layout/head.html",
     :layout_foot         => "_layout/foot.html",
     :layout_page_foot    => "_layout/page_foot.html",

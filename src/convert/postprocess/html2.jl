@@ -16,8 +16,13 @@ brace blocks).
 """
 html2(s::String, c::Context; kw...) = html2(FP.html_partition(s; kw...), c)
 
-function html2(parts::Vector{Block}, c::Context)::String
-    crumbs("html2")
+function html2(
+            parts::Vector{Block},
+            c::Context
+        )::String
+
+    crumbs(@FNAME)
+
     # DEV NOTES
     # ---------
     # * since the hfuns might call a process_file function which, itself

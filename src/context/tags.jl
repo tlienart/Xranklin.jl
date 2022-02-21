@@ -29,8 +29,9 @@ function add_tag(
             id::String,         # e.g.: foo_bar
             name::String,       # e.g.: Foo Bar
             rpath::String
-            )::Nothing
-    crumbs("add_tag", "$id (from $rpath)")
+        )::Nothing
+
+    crumbs(@FNAME, "$id (from $rpath)")
 
     if id in keys(gc.tags)
         union!(gc.tags[id].locs, [rpath])
@@ -48,8 +49,14 @@ end
 Remove a tag `id` from page at `rpath` within global context `gc`.
 Then either remove or rewrite the corresponding tag page.
 """
-function rm_tag(gc::GlobalContext, id::String, rpath::String)::String
-    crumbs("rm_tag", "$id (from $rpath)")
+function rm_tag(
+            gc::GlobalContext,
+            id::String,
+            rpath::String
+        )::String
+
+    crumbs(@FNAME, "$id (from $rpath)")
+
     # this check should be superfluous
     id in keys(gc.tags) || return
     # remove the location from GC

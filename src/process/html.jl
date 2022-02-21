@@ -16,8 +16,9 @@ function process_html_file(
             gc::GlobalContext,
             fpath::String,
             opath::String
-            )::Nothing
-    crumbs("process_html_file", fpath)
+        )::Nothing
+
+    crumbs(@FNAME, fpath)
 
     rpath  = get_rpath(fpath)
     in_gc  = rpath in keys(gc.children_contexts)

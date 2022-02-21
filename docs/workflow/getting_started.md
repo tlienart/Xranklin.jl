@@ -135,6 +135,37 @@ via [page variables](/syntax/vars+funs/) but, for now, the important bit is just
 high-level view in mind.
 
 
+### Skeleton structure
+
+Though the `head.html`/`foot.html` approach above is recommended as it allows re-using the
+`head.html` and `foot.html` elsewhere, including in raw-HTML pages, by doing
+
+```html
+{{insert head.html}}
+
+Your HTML here
+
+{{insert foot.html}}
+```
+
+some users might prefer having a single `_layout/skeleton.html` file which describes the structure of pages.
+For instance it could look like
+
+```html
+<!doctype html>
+<html lang="en">
+<head> ... </head>
+<body>
+  {{page_content}}  <!-- this inserts the HTML converted from markdown -->
+</body>
+</html>
+```
+
+and so instead of separating the head, content and foot, it's a single file where you just indicate where the content goes.
+
+If you do have a skeleton file in your `_layout` folder and also have a head and foot files, only the skeleton will be considered.
+
+
 ## Next steps
 
 Now that you have a working website that you can render locally and experiment with,
