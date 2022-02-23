@@ -44,8 +44,6 @@ header = "Building websites with Franklin"
 Franklin.jl is a simple, customisable, static site generator with a focus on technical blogging.
 @@
 
-😓💦🚒
-
 ## Key features
 
 _click on the '&check;' sign to know more_
