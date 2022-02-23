@@ -538,7 +538,7 @@ LEFT PANEL / MENU
   position: sticky;
   top: var(--left-menu-content-top);
 	height: calc(100vh - var(--left-menu-content-top));
-	padding-left: 1em;
+	padding-left: .5em;
 	border-right: var(--menu-content-border-right);
 	display: block;
 }
