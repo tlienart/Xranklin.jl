@@ -407,9 +407,9 @@ function _process_md_file_html(
     end
 
     # Path 2 / skeleton
-    skeleton_path = path(:folder) / getvar(lc, :layout_page_foot, "")
+    skeleton_path = path(:folder) / getvar(lc, :skeleton_path, "")
     if !isempty(skeleton_path) && isfile(skeleton_path)
-        return html2(read(head_path, String), lc)
+        return html2(read(skeleton_path, String), lc)
     end
 
     # Path 1 / head * page *foot
@@ -432,7 +432,7 @@ function _assemble_join_html(lc::LocalContext)::String
         page_foot_html = html2(read(page_foot_path, String), lc)
     end
 
-    #
+    #1
     # PAGE (with PAGE FOOT)
     #
     c_tag     = getvar(lc, :content_tag,   "")
@@ -470,6 +470,7 @@ function _assemble_join_html(lc::LocalContext)::String
     if !isempty(foot_path) && isfile(foot_path)
         full_page_html *= html2(read(foot_path, String), lc)
     end
+
     return full_page_html
 end
 
