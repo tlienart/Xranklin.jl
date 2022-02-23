@@ -51,6 +51,7 @@ LARGER with right-toc
   --text-sm:     0.95em;
   --text-lg:     1.2em;
   --text-xl:     1.4em;
+	--text-h4: 		 1.2em;
   --text-h3:     1.5em;
   --text-h2:     2em;
 	--text-h1: 		 3em;
@@ -360,11 +361,11 @@ code {
 	word-wrap:   break-word;
 }
 
-:is(h1, h2, h3) a {
+:is(h1, h2, h3, h4) a {
 	text-decoration: none;
 	color: var(--col-dark);
 }
-:is(h1, h2, h3) {
+:is(h1, h2, h3, h4) {
 	margin-top: 0;
 	margin-bottom: 0;
 }
@@ -384,6 +385,12 @@ h3 {
 	font-size:   var(--text-h3);
 	padding-top: 1em;
 	font-weight: 450;
+}
+
+h4 {
+	font-size: var(--text-h4);
+	padding-top: 1em;
+	font-weight: 350;
 }
 
 pre code.hljs {

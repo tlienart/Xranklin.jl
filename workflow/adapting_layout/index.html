@@ -170,7 +170,7 @@
         <div id="margin-toc">
           
             <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
-            <div class="toc"><ol><li><a href="#overview"> Overview</a></li><li><a href="#tips_and_tricks"> Tips and tricks</a><ol><li><a href="#using_page_variables"> Using page variables</a></li><li><a href="#organising_layout_files"> Organising layout files</a></li></ol></li><li><a href="#example_1_"hugo_coder"_template"> Example 1: "Hugo-Coder" template</a><ol><li><a href="#overview__2"> Overview</a></li><li><a href="#page_structure"> Page structure</a></li><li><a href="#variables"> Variables</a></li><li><a href="#assets"> Assets</a></li></ol></li></ol></div>
+            <div class="toc"><ol><li><a href="#overview"> Overview</a></li><li><a href="#tips_and_tricks"> Tips and tricks</a><ol><li><a href="#using_page_variables"> Using page variables</a></li><li><a href="#organising_layout_files"> Organising layout files</a></li></ol></li><li><a href="#example_1_"minima_reboot"_template"> Example 1: "Minima-Reboot" template</a><ol><li><a href="#overview__2"> Overview</a></li><li><a href="#page_structure"> Page structure</a></li></ol></li><li><a href="#example_2_"hugo_coder"_template"> Example 2: "Hugo-Coder" template</a><ol><li><a href="#overview__3"> Overview</a></li><li><a href="#page_structure__2"> Page structure</a></li><li><a href="#variables"> Variables</a></li><li><a href="#assets"> Assets</a></li></ol></li></ol></div>
           
       </div>
     </div>
@@ -249,45 +249,175 @@ to have a dedicated file <code>menu.html</code> with</p>
 <p>This allows to split your layout in smaller bits that are easier to maintain.
 The <code>&lbrace;&lbrace;...&rbrace;&rbrace;</code> syntax indicates we're calling the <a href="/Xranklin.jl/syntax/vars+funs/">"HTML" function</a> <code>insert</code>.
 For that function, paths are taken relative to the <code>_layout</code> folder (so here <code>menu.html</code> is assumed to be next to <code>head.html</code>).</p>
-<h2 id="example_1_"hugo_coder"_template" ><a href="#example_1_"hugo_coder"_template"> Example 1: "Hugo-Coder" template</a></h2><h3 id="overview__2" ><a href="#overview__2"> Overview</a></h3><p>This is an MIT-licensed template designed for Hugo by <a href="https://github.com/luizdepra">Luiz F. A. de Prá</a>.</p>
+<h2 id="example_1_"minima_reboot"_template" ><a href="#example_1_"minima_reboot"_template"> Example 1: "Minima-Reboot" template</a></h2><h3 id="overview__2" ><a href="#overview__2"> Overview</a></h3><p>This is an MIT-licensed template which is a Bootstrap port of Jekyll's default theme, designed by <a href="https://github.com/aterenin/minima-reboot/">Alexander Terenin</a>.</p>
 <ul>
-<li>Demo site: <a href="https://hugo-coder.netlify.app">https://hugo-coder.netlify.app</a>,</li>
-<li>Source repo: <a href="https://github.com/luizdepra/hugo-coder">https://github.com/luizdepra/hugo-coder</a> (MIT Licensed).</li>
-<li><a href="https://tlienart.github.io/coder-xranklin-demo/">Result site</a> and <a href="https://github.com/tlienart/coder-xranklin-demo">repo</a>.</li>
+<li>Demo site: <a href="https://aterenin.github.io/minima-reboot/">https://aterenin.github.io/minima-reboot/</a>,</li>
+<li>Source repo: <a href="https://github.com/aterenin/minima-reboot">https://github.com/aterenin/minima-reboot</a> (MIT Licensed),</li>
+<li><a href="https://tlienart.github.io/coder-minima-reboot-demo/">Result site</a> and <a href="https://github.com/tlienart/minima-reboot-xranklin-demo">repo</a>.</li>
 </ul>
 <p>The way we will go about this is by looking at the source HTML of the demo site and taking the parts we need to rebuild this with Franklin.
 Specifically:</p>
-<ul>
+<ol>
 <li>what is the HTML structure (or structures) of pages on that site (the general skeleton of each page),</li>
 <li>what are the <em>assets</em> of the site, things that would potentially be hosted on the server (e.g. stylesheets, icons, ...)</li>
 <li>what are information in the structure that should be controlled by either the <code>config.md</code> or pages (e.g. author, publication date, meta tag, ...)</li>
-</ul>
+</ol>
 <fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
 
 This was done in January 2022, the template may have changed a little bit since then but the
 procedure should show you how to adapt or update it easily.
 
-</fieldset><h3 id="page_structure" ><a href="#page_structure"> Page structure</a></h3><p>When inspecting the HTML of the landing page (and other pages),
-the structure is more or less as follows:</p>
+</fieldset><h3 id="page_structure" ><a href="#page_structure"> Page structure</a></h3><p>When inspecting the HTML f the landing page (and other pages), the structure is more or less
+as follows:</p>
+<h2 id="example_2_"hugo_coder"_template" ><a href="#example_2_"hugo_coder"_template"> Example 2: "Hugo-Coder" template</a></h2><h3 id="overview__3" ><a href="#overview__3"> Overview</a></h3><p>This is an MIT-licensed template designed for Hugo by <a href="https://github.com/luizdepra">Luiz F. A. de Prá</a>.</p>
+<ul>
+<li>Demo site: <a href="https://hugo-coder.netlify.app">https://hugo-coder.netlify.app</a>,</li>
+<li>Source repo: <a href="https://github.com/luizdepra/hugo-coder">https://github.com/luizdepra/hugo-coder</a> (MIT Licensed),</li>
+<li><a href="https://tlienart.github.io/coder-xranklin-demo/">Result site</a> and <a href="https://github.com/tlienart/coder-xranklin-demo">repo</a>.</li>
+</ul>
+<p>We will proceed as with the Minima Reboot example.</p>
+<h3 id="page_structure__2" ><a href="#page_structure__2"> Page structure</a></h3><p>When inspecting the HTML of the landing page (and other pages) (after un-minification using
+something like <a href="https://www.unminify2.com/">unminify2</a>), we can observe that the structure
+is more or less as follows:</p>
 <pre><code class="html">...
 &lt;head&gt;
   ...
 &lt;/head&gt;
 
-&lt;body class=&quot;preload-transitions colorscheme-auto&quot;&gt;
-  ...
+&lt;body&gt;
+  &lt;header ...&gt;
+  &lt;/header&gt;
 
-  &lt;main class=&quot;wrapper&quot;&gt;
-    &lt;nav class=&quot;navigation&quot;&gt;...&lt;/nav&gt;
-    &lt;div class=&quot;content&quot;&gt;...&lt;/div&gt;
-    &lt;footer class=&quot;footer&quot;&gt;...&lt;/footer&gt;
+  &lt;main ...&gt;
   &lt;/main&gt;
-  ...
+
+  &lt;footer ...&gt;
+  &lt;/footer&gt;
+
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
 <p>This is easy to adapt to Franklin by defining a <code>_layout/head.html</code> to contain
 everything above <code>&lt;div class=&quot;content&quot;&gt;</code> and <code>_layout/foot.html</code> to
 contain everything below it.</p>
+<h4 id="content" ><a href="#content"> Content</a></h4><p>The content is where the Markdown converted to HTML will go.
+Here, it's going to be most of what's in the <code>&lt;main&gt;</code> part.
+Roughly speaking things above of that will go in <code>head.html</code> and thing below the
+closing tag will go in <code>foot.html</code>.</p>
+<p>If we inspect it more closely, we will see that the <em>landing</em> page looks like</p>
+<pre><code class="html">&lt;main aria-label=&quot;Content&quot;&gt;
+  &lt;div id=&quot;content-container&quot; class=&quot;container&quot;&gt;
+      &lt;header class=&quot;pt-3 mb-3&quot;&gt;
+          &lt;p&gt;Posts&lt;p&gt;
+      &lt;/header&gt;
+      &lt;div id=&quot;content&quot;&gt;
+
+...</code></pre>
+<p>whereas the <em>about</em> page looks like</p>
+<pre><code class="html">&lt;main aria-label=&quot;Content&quot;&gt;
+  &lt;article&gt;
+    &lt;header class=&quot;pt-4 pb-3&quot;&gt;
+        &lt;h1&gt;About&lt;/h1&gt;
+    &lt;/header&gt;
+    &lt;div id=&quot;content&quot;&gt;
+...</code></pre>
+<p>and a <em>post</em> page looks like</p>
+<pre><code class="html">&lt;main aria-label=&quot;Content&quot;&gt;
+  &lt;div id=&quot;content-container&quot; class=&quot;container&quot;&gt;
+    &lt;article itemscope itemtype=&quot;http://schema.org/BlogPosting&quot;&gt;
+      &lt;header class=&quot;pt-4 pb-3&quot;&gt;
+        &lt;h1 itemprop=&quot;name headline&quot;&gt;Welcome to minima-reboot&lt;/h1&gt;
+          &lt;p class=&quot;text-secondary&quot;&gt;
+            &lt;time datetime=&quot;2017-12-26T00:00:00+00:00&quot; itemprop=&quot;datePublished&quot;&gt;
+              Dec 26, 2017
+            &lt;/time&gt;
+          &lt;/p&gt;
+      &lt;/header&gt;
+      &lt;div class=&quot;text-justify&quot; itemprop=&quot;articleBody&quot; id=&quot;content&quot;&gt;</code></pre>
+<p>So there are some differences that we need to take into account.</p>
+<h4 id="head_(1)" ><a href="#head_(1)"> Head (1)</a></h4><p>In the head we basically put everything that's above the <code>&lt;main&gt;</code> block as
+well as the start of that main block with conditionals based on the differences
+highlighted in the previous point.</p>
+<p>Let's start with the simple bit first.
+In most layouts, there's a recurring part that you find on pretty  much all pages "as is".</p>
+<p>In the current case, everything above <code>&lt;main&gt;</code> is pretty much like this so you can just
+copy paste it in the <code>head.html</code>. A couple of points things to bear in mind (illustrated further below):</p>
+<ul>
+<li>for assets (<code>.js</code>, <code>.css</code>), figure out whether you want or need to host them statically, if so download them and put them in the <code>_css</code> or <code>_libs</code> and adjust the references accordingly,</li>
+<li>for meta tags, you will typically want to use <a href="/Xranklin.jl/syntax/vars+funs/">page-variables</a> to make
+it (much) easier to maintain them from the <code>config.md</code> file,</li>
+</ul>
+<p>In our case, to simplify the presentation, we will make very asset (css, js, images) static.
+You can choose to do this or not, there are pros and cons in both cases (e.g. see <a href="https://stackoverflow.com/questions/26192897/should-i-use-bootstrap-from-cdn-or-make-a-copy-on-my-server">this SO post</a>).</p>
+<p>So for instance we replace</p>
+<pre><code class="html">&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css&quot; ...&gt;</code></pre>
+<p>by</p>
+<pre><code class="html">&lt;link rel=&quot;stylesheet&quot; href=&quot;/css/bootstrap.min.css&quot;&gt;</code></pre>
+<p>after having saved the CSS at <code>_css/bootstrap.min.css</code>.</p>
+<p>In terms of the point on meta tags, we replace for instance</p>
+<pre><code class="html">&lt;meta name=&quot;author&quot; content=&quot;GitHub User&quot; /&gt;</code></pre>
+<p>by</p>
+<pre><code class="html">&lt;meta name=&quot;author&quot; content=&quot;&lbrace;&lbrace;author&rbrace;&rbrace;&quot; /&gt;</code></pre>
+<p>and in <code>config.md</code> we correspondingly put</p>
+<pre><code class="plaintext">+++
+
+...
+author = &quot;The Author&quot;
+...
+
++++</code></pre>
+<h4 id="head_(2)_(xxx)" ><a href="#head_(2)_(xxx)"> Head (2) (XXX)</a></h4><p>Now let's turn to the different ways to open the main part.
+We just need to add conditionals via <code>ispage</code> to check that the relevant block
+is applied on the relevant page(s).</p>
+<pre><code class="html">&lt;main aria-label=&quot;Content&quot;&gt;
+  &lt;div id=&quot;content-container&quot; class=&quot;container&quot;&gt;
+
+&lbrace;&lbrace;ispage index.html&rbrace;&rbrace;  &lt;!-- specific to the landing page --&gt;
+  &lt;header class=&quot;pt-3 mb-3&quot;&gt;
+    &lt;p&gt; &lbrace;&lbrace;header&rbrace;&rbrace; &lt;p&gt;
+  &lt;/header&gt;
+  &lt;div id=&quot;content&quot;&gt;
+&lbrace;&lbrace;end&rbrace;&rbrace;
+
+&lbrace;&lbrace;ispage about.html&rbrace;&rbrace; &lt;!-- specific to the about page --&gt;
+  &lt;article&gt;
+    &lt;header class=&quot;pt-4 pb-3&quot;&gt;
+        &lt;h1&gt;&lbrace;&lbrace;header&rbrace;&rbrace;&lt;/h1&gt;
+    &lt;/header&gt;
+    &lt;div id=&quot;content&quot;&gt;
+&lbrace;&lbrace;end&rbrace;&rbrace;
+
+&lbrace;&lbrace;ispage posts/*&rbrace;&rbrace;
+  &lbrace;&lbrace;ispage posts/index.html&rbrace;&rbrace; &lt;!-- posts landing page --&gt;
+  &lbrace;&lbrace;else&rbrace;&rbrace; &lt;!-- specific posts --&gt;
+    &lt;article itemscope itemtype=&quot;http://schema.org/BlogPosting&quot;&gt;
+      &lt;header class=&quot;pt-4 pb-3&quot;&gt;
+        &lt;h1 itemprop=&quot;name headline&quot;&gt;&lbrace;&lbrace;header&rbrace;&rbrace;&lt;/h1&gt;
+          &lt;p class=&quot;text-secondary&quot;&gt; &lt;time datetime=&quot;&quot; itemprop=&quot;datePublished&quot;&gt; &lt;/time&gt; &lt;/p&gt;
+      &lt;/header&gt;
+      &lt;div class=&quot;text-justify&quot; itemprop=&quot;articleBody&quot; id=&quot;content&quot;&gt;
+  &lbrace;&lbrace;end&rbrace;&rbrace;
+&lbrace;&lbrace;end&rbrace;&rbrace;</code></pre>
+<h4 id="foot" ><a href="#foot"> Foot</a></h4><p>The process for <code>foot.html</code> is identical except that we consider what's below <code>&lt;/main&gt;</code> and
+we have to close what was open in the main part (with the same conditionals).
+So we end up with something like</p>
+<pre><code class="html">&lbrace;&lbrace;ispage index.html&rbrace;&rbrace;  &lt;!-- specific to the landing page --&gt;
+&lbrace;&lbrace;end&rbrace;&rbrace;
+
+&lbrace;&lbrace;ispage about.html&rbrace;&rbrace; &lt;!-- specific to the about page --&gt;
+&lbrace;&lbrace;end&rbrace;&rbrace;
+
+&lbrace;&lbrace;ispage posts/*&rbrace;&rbrace;
+  &lbrace;&lbrace;ispage posts/index.html&rbrace;&rbrace; &lt;!-- posts landing page --&gt;
+  &lbrace;&lbrace;else&rbrace;&rbrace; &lt;!-- specific posts --&gt;
+  &lbrace;&lbrace;end&rbrace;&rbrace;
+&lbrace;&lbrace;end&rbrace;&rbrace;
+
+&lt;/main&gt; &lt;!-- always --&gt;
+&lt;footer id=&quot;site-footer&quot;&gt;
+  ...
+&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
 <h3 id="variables" ><a href="#variables"> Variables</a></h3><p>A number of information contained in the page structure can be given or controlled
 by <a href="/Xranklin.jl/syntax/vars+funs/">page variables</a>.
 For instance:</p>
