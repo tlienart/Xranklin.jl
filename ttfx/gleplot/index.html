@@ -8,20 +8,20 @@
 <body>
 <div class="franklin-content" >
   <h1 id="ttfx_gleplot" ><a href="#ttfx_gleplot"> TTFX GLEPlot</a></h1><pre><code class="julia">using GLEPlot
-GLEPlot.GP_ENV[&quot;GLE_PATH&quot;] = `gle-4.3.1-Linux/bin/gle`
+ENV[&quot;GLE&quot;] = &quot;gle-4.3.1-Linux/bin/gle&quot;
 x = range(0, pi, length=500)
 y = @. sin(exp(x)) * sinc(x)
 plot(x, y)
 gcf()</code></pre>
-<div class="code-output"><img class="code-figure" src="/Xranklin.jl/ttfx/gleplot/assets/index/figs-html/__autofig_13027356394598393934.svg">
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/ttfx/gleplot/assets/index/figs-html/__autofig_7412803961723187357.svg">
 </div><h1 id="time" ><a href="#time"> TIME</a></h1><pre><code class="julia">using Dates
 delta  = datetime2unix(now())
-delta -= 1646231844
+delta -= 1646239602
 delta  = round(delta/60, digits=2)
 ps(s) = joinpath(Utils.path(:site), s)
 write(ps(&quot;timer&quot;), delta)
 println(&quot;Time taken: $(delta)min.&quot;)</code></pre>
-<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 1.14min.
+<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 1.2min.
 </code></pre></div>
   
 </div>
