@@ -33,8 +33,6 @@ jobs:
 
       # -- modify index --
       - name: Set utils.jl 📖
-        env:
-          START2: $(date +%s)
         run: |
              echo "import UnicodePlots"                                      > ${{ env.UTILS }}
              echo "function html_show(p::UnicodePlots.Plot)"                >> ${{ env.UTILS }}
@@ -55,6 +53,7 @@ jobs:
               echo "# TTFX UnicodePlots"            > ${{ env.INDEX }}
               echo "\`\`\`!"                       >> ${{ env.INDEX }}
               echo "setgvar!(:skiplatex, true)"    >> ${{ env.INDEX }}
+              echo "START2 = time()"               >> ${{ env.INDEX }}
               echo "using UnicodePlots"            >> ${{ env.INDEX }}
               echo "x = range(0, pi, length=500)"  >> ${{ env.INDEX }}
               echo "y = @. sin(exp(x)) * sinc(x)"  >> ${{ env.INDEX }}
@@ -70,7 +69,7 @@ jobs:
               echo "using Dates"                             >> ${{ env.INDEX }}
               echo "t0  = datetime2unix(now())"              >> ${{ env.INDEX }}
               echo "delta  = t0 - ${{ env.START  }}"         >> ${{ env.INDEX }}
-              echo "delta2 = t0 - ${{ env.START2 }}"         >> ${{ env.INDEX }}
+              echo "delta2 = t0 - START2"                    >> ${{ env.INDEX }}
               echo "delta  = round(delta  / 60, digits=2)"   >> ${{ env.INDEX }}
               echo "delta2 = round(delta2, digits=2)"        >> ${{ env.INDEX }}
               echo "ps(s) = joinpath(Utils.path(:site), s)"  >> ${{ env.INDEX }}
