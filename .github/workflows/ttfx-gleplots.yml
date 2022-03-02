@@ -33,7 +33,8 @@ jobs:
         run: |
             curl -L https://sourceforge.net/projects/glx/files/gle4%20%28Current%20Active%20Version%29/4.3.1/gle-4.3.1-Linux.zip/download > gle.zip
             unzip gle.zip
-            alias gle='gle-4.3.1-Linux/bin/gle'
+            shopt -s expand_aliases
+            alias gle='gle*/bin/gle'
             gle -v
 
       # -- modify index --
