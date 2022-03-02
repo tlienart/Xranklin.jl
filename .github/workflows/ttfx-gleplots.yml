@@ -36,9 +36,12 @@ jobs:
 
       # -- modify index --
       - name: Set index.md 📖
+        env:
+          START2: $(date +%s)
         run: |
               echo "# TTFX GLEPlot"                 > ${{ env.INDEX }}
               echo "\`\`\`!"                       >> ${{ env.INDEX }}
+              echo "setgvar!(:skiplatex, true)"    >> ${{ env.INDEX }}
               echo "using GLEPlot"                 >> ${{ env.INDEX }}
               echo "ENV[\"GLE\"] = \"gle-4.3.1-Linux/bin/gle\"" >> ${{ env.INDEX }}
               echo "x = range(0, pi, length=500)"  >> ${{ env.INDEX }}
@@ -61,8 +64,6 @@ jobs:
               echo "println(\"Time taken2: \$(delta2)s.\")"  >> ${{ env.INDEX }}
               echo "\`\`\`"                                  >> ${{ env.INDEX }}
               cat ${{ env.INDEX }}
-        with:
-            START2: $(date +%s)
 
       # =======================================================================
 

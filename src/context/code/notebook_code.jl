@@ -75,16 +75,25 @@ function eval_code_cell!(
     # Form autofigs paths
     autosavefigs = getvar(ctx, :autosavefigs, true)
     autoshowfigs = getvar(ctx, :autoshowfigs, true)
+    skiplatex    = getvar(ctx, :skiplatex, false)
     fig_id       = "__autofig_$(cell_hash)"
     fpath_html   = imgdir_html  / fig_id
     fpath_latex  = imgdir_latex / fig_id
-    fig_html     = (save=autosavefigs, show=autoshowfigs, fpath=fpath_html)
-    fig_latex    = (save=autosavefigs, show=autoshowfigs, fpath=fpath_latex)
+    fig_html     = (
+        save  = autosavefigs,
+        show  = autoshowfigs,
+        fpath = fpath_html
+    )
+    fig_latex    = (
+        save  = autosavefigs,
+        show  = autoshowfigs,
+        fpath = fpath_latex
+    )
 
     # evaluate the cell and capture the output
     @info "  ⏯️  evaluating cell $cell_name..."
     code_outp = _eval_code_cell(nb.mdl, cell_code, cell_name)
-    code_repr = _form_code_repr(code_outp, fig_html, fig_latex)
+    code_repr = _form_code_repr(code_outp, fig_html, fig_latex, skiplatex)
     code_pair = CodeCodePair((cell_code, code_repr))
 
     return finish_cell_eval!(nb, code_pair)
@@ -228,8 +237,11 @@ representation and add a class "fig-stdout" which can more readily be
 suppressed or enabled by the user via CSS (and will be suppressed by default).
 """
 function _form_code_repr(
-            output::Tuple{String,String,<:Any}, fig_html::NT, fig_latex::NT
-            )::CodeRepr where NT <: NamedTuple
+            output::Tuple{String,String,<:Any},
+            fig_html::NT,
+            fig_latex::NT,
+            skiplatex::Bool = false
+        )::CodeRepr where NT <: NamedTuple
 
     # extract the raw stuff from the output tuple (from _eval_code_cell)
     std_out, std_err, result  = output
@@ -268,7 +280,7 @@ function _form_code_repr(
         )
         # Check if there's a dedicated show or a custom show available
         figshow = append_result_html!(io_html, result, fig_html)
-        append_result_latex!(io_latex, result, fig_latex)
+        skiplatex || append_result_latex!(io_latex, result, fig_latex)
     end
 
     hrepr, lrepr, rrepr = String.(take!.((io_html, io_latex, io_raw)))
