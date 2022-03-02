@@ -40,7 +40,7 @@ jobs:
               echo "# TTFX GLEPlot"                 > ${{ env.INDEX }}
               echo "\`\`\`!"                       >> ${{ env.INDEX }}
               echo "using GLEPlot"                 >> ${{ env.INDEX }}
-              echo "ENV[\"GLE_PATH\"] = \`gle-4.3.1-Linux/bin/gle\`" >> ${{ env.INDEX }}
+              echo "ENV[\"GLE\"] = \`gle-4.3.1-Linux/bin/gle\`" >> ${{ env.INDEX }}
               echo "x = range(0, pi, length=500)"  >> ${{ env.INDEX }}
               echo "y = @. sin(exp(x)) * sinc(x)"  >> ${{ env.INDEX }}
               echo "plot(x, y)"                    >> ${{ env.INDEX }}
