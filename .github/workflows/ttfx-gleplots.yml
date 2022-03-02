@@ -8,7 +8,7 @@ on:
 
 env:
   INDEX: "test/abc_min/index.md"
-  SETUP: 'using Pkg; Pkg.add(url="https://github.com/tlienart/GLEPlot.jl", rev="main");'
+  SETUP: 'using Pkg; Pkg.add(url="https://github.com/tlienart/GLEPlot.jl", rev="dev");'
   BUILD: ""
   PPATH: "Xranklin.jl"
   TARGD: "ttfx/gleplot"
@@ -33,8 +33,6 @@ jobs:
         run: |
             curl -L https://sourceforge.net/projects/glx/files/gle4%20%28Current%20Active%20Version%29/4.3.1/gle-4.3.1-Linux.zip/download > gle.zip
             unzip gle.zip
-            export PATH=$PATH:$PATH:gle-4.3.1-Linux/bin/
-            gle -v
 
       # -- modify index --
       - name: Set index.md 📖
@@ -42,6 +40,7 @@ jobs:
               echo "# TTFX GLEPlot"                 > ${{ env.INDEX }}
               echo "\`\`\`!"                       >> ${{ env.INDEX }}
               echo "using GLEPlot"                 >> ${{ env.INDEX }}
+              echo "GLEPlot.GLE_ENV[\"GLE_PATH\"] = `gle-4.3.1-Linux/bin/gle`" >> ${{ env.INDEX }}
               echo "x = range(0, pi, length=500)"  >> ${{ env.INDEX }}
               echo "y = @. sin(exp(x)) * sinc(x)"  >> ${{ env.INDEX }}
               echo "plot(x, y)"                    >> ${{ env.INDEX }}
@@ -69,7 +68,6 @@ jobs:
       - name: Building website 🚧
         run: ${{ env.BUILD }} julia -e '
                 ${{ env.SETUP }};
-                success(pipeline(`gle -v`));
                 Pkg.add(
                   url="https://github.com/tlienart/Xranklin.jl",
                   rev="main"
