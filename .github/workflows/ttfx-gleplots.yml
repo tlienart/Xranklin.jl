@@ -33,8 +33,7 @@ jobs:
         run: |
             curl -L https://sourceforge.net/projects/glx/files/gle4%20%28Current%20Active%20Version%29/4.3.1/gle-4.3.1-Linux.zip/download > gle.zip
             unzip gle.zip
-            shopt -s expand_aliases
-            alias gle='gle*/bin/gle'
+            export PATH=$PATH:$PATH:gle-4.3.1-Linux/bin/
             gle -v
 
       # -- modify index --
@@ -70,6 +69,7 @@ jobs:
       - name: Building website 🚧
         run: ${{ env.BUILD }} julia -e '
                 ${{ env.SETUP }};
+                success(pipeline(`gle -v`));
                 Pkg.add(
                   url="https://github.com/tlienart/Xranklin.jl",
                   rev="main"
