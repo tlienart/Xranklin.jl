@@ -74,7 +74,7 @@ jobs:
               echo "delta2 = round(delta2, digits=2)"        >> ${{ env.INDEX }}
               echo "ps(s) = joinpath(Utils.path(:site), s)"  >> ${{ env.INDEX }}
               echo "write(ps(\"timer\"), delta)"             >> ${{ env.INDEX }}
-              echo "write(ps(\"timer2\"), delta)"            >> ${{ env.INDEX }}
+              echo "write(ps(\"timer2\"), delta2)"           >> ${{ env.INDEX }}
               echo "println(\"Time taken: \$(delta)min.\")"  >> ${{ env.INDEX }}
               echo "println(\"Time taken2: \$(delta2)s.\")"  >> ${{ env.INDEX }}
               echo "\`\`\`"                                  >> ${{ env.INDEX }}
