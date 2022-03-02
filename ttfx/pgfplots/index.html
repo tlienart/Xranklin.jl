@@ -14,12 +14,12 @@ Plots.Linear(x, y, style=&quot;smooth&quot;)</code></pre>
 <div class="code-output"><img class="code-figure" src="/Xranklin.jl/ttfx/pgfplots/assets/index/figs-html/__autofig_12311469023618509855.svg">
 </div><h1 id="time" ><a href="#time"> TIME</a></h1><pre><code class="julia">using Dates
 delta  = datetime2unix(now())
-delta -= 1645105572
+delta -= 1646231890
 delta  = round(delta/60, digits=2)
 ps(s) = joinpath(Utils.path(:site), s)
 write(ps(&quot;timer&quot;), delta)
 println(&quot;Time taken: $(delta)min.&quot;)</code></pre>
-<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 3.94min.
+<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 3.24min.
 </code></pre></div>
   
 </div>
