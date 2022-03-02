@@ -16,7 +16,7 @@ env:
   START: $(date +%s)
 
 jobs:
-  pgfplotsx:
+  gleplot:
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
@@ -33,7 +33,7 @@ jobs:
         run: |
             curl -L https://sourceforge.net/projects/glx/files/gle4%20%28Current%20Active%20Version%29/4.3.1/gle-4.3.1-Linux.zip/download > gle.zip
             unzip gle.zip
-            alias gle='gle*/bin/gle'
+            alias gle='gle-4.3.1-Linux/bin/gle'
             gle -v
 
       # -- modify index --
