@@ -36,9 +36,12 @@ jobs:
 
       # -- modify index --
       - name: Set index.md 📖
+        env:
+          START2: $(date +%s)
         run: |
               echo "# TTFX GLEPlot"                 > ${{ env.INDEX }}
               echo "\`\`\`!"                       >> ${{ env.INDEX }}
+              echo "setgvar!(:skiplatex, true)"    >> ${{ env.INDEX }}
               echo "using GLEPlot"                 >> ${{ env.INDEX }}
               echo "ENV[\"GLE\"] = \"gle-4.3.1-Linux/bin/gle\"" >> ${{ env.INDEX }}
               echo "x = range(0, pi, length=500)"  >> ${{ env.INDEX }}
@@ -49,12 +52,16 @@ jobs:
               echo "# TIME"                                  >> ${{ env.INDEX }}
               echo "\`\`\`!"                                 >> ${{ env.INDEX }}
               echo "using Dates"                             >> ${{ env.INDEX }}
-              echo "delta  = datetime2unix(now())"           >> ${{ env.INDEX }}
-              echo "delta -= ${{ env.START }}"               >> ${{ env.INDEX }}
-              echo "delta  = round(delta/60, digits=2)"      >> ${{ env.INDEX }}
+              echo "t0  = datetime2unix(now())"              >> ${{ env.INDEX }}
+              echo "delta  = t0 - ${{ env.START  }}"         >> ${{ env.INDEX }}
+              echo "delta2 = t0 - ${{ env.START2 }}"         >> ${{ env.INDEX }}
+              echo "delta  = round(delta  / 60, digits=2)"   >> ${{ env.INDEX }}
+              echo "delta2 = round(delta2, digits=2)"        >> ${{ env.INDEX }}
               echo "ps(s) = joinpath(Utils.path(:site), s)"  >> ${{ env.INDEX }}
               echo "write(ps(\"timer\"), delta)"             >> ${{ env.INDEX }}
+              echo "write(ps(\"timer2\"), delta)"            >> ${{ env.INDEX }}
               echo "println(\"Time taken: \$(delta)min.\")"  >> ${{ env.INDEX }}
+              echo "println(\"Time taken2: \$(delta2)s.\")"  >> ${{ env.INDEX }}
               echo "\`\`\`"                                  >> ${{ env.INDEX }}
               cat ${{ env.INDEX }}
 

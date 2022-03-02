@@ -13,6 +13,7 @@ const DefaultGlobalVars = Vars(
     :content_class       => "franklin-content",
     :content_id          => "",
     :autosavefigs        => true,
+    :skiplatex           => false,
     :autoshowfigs        => true,
     :layout_skeleton     => "_layout/skeleton.html",
     :layout_head         => "_layout/head.html",
