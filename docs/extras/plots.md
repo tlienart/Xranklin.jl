@@ -74,6 +74,7 @@ Note also that this time is a one-off cost, subsequent plots should take negligi
 | [Gaston.jl](#gaston.jl)             | [link](/ttfx/gaston/)       | {{ttfx gaston}}       |
 | [UnicodePlots.jl](#unicodeplots.jl) | [link](/ttfx/unicodeplots/) | {{ttfx unicodeplots}} |
 | [Gadfly.jl](#gadfly.jl)             | [link](/ttfx/gadfly/)       | {{ttfx gadfly}}       |
+| [GLEPlot.jl](#gleplot.jl)           | [link](/ttfx/gleplot/)      | {{ttfx gleplot}}      |
 
 \lskip
 
@@ -507,3 +508,26 @@ as well as adding UnicodePlots to the site environment.
 ### Gadfly with GA
 
 Gadfly doesn't require anything specific in your GA script, just remember to add it to the site environment.
+
+## GLEPlot
+
+[GLEPlot.jl](https://github.com/tlienart/GLEPlot.jl) is an **experimental** wrapper around the
+[Graphics Layout Engine](https://glx.sourceforge.io), a mature library geared around producing publication quality plots.
+
+For now GLEPlot is not ready yet for consumption by general users.
+
+### GLEPlot with GA
+
+```yml
+run: |
+    curl -L https://sourceforge.net/projects/glx/files/gle4%20%28Current%20Active%20Version%29/4.3.1/gle-4.3.1-Linux.zip/download > gle.zip
+    unzip gle.zip
+```
+
+on CI you will also have to indicate the path to the binary explicitly, so in `utils.jl` add
+
+```
+ENV["GLE_PATH"] = `gle-4.3.1-Linux/bin/gle`
+```
+
+note the backticks.
