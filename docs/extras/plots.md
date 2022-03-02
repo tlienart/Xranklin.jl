@@ -527,7 +527,5 @@ run: |
 on CI you will also have to indicate the path to the binary explicitly, so in `utils.jl` add
 
 ```
-ENV["GLE_PATH"] = `gle-4.3.1-Linux/bin/gle`
+ENV["GLE"] = "gle-4.3.1-Linux/bin/gle"
 ```
-
-note the backticks.
