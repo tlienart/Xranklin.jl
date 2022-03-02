@@ -1,4 +1,4 @@
-name: PGFPlotsX
+name: GLEPlot
 
 on:
   push:
@@ -7,10 +7,10 @@ on:
 
 env:
   INDEX: "test/abc_min/index.md"
-  SETUP: "using Pkg; Pkg.add([\"PGFPlotsX\"]);"
+  SETUP: 'using Pkg; Pkg.add(url="https://github.com/tlienart/GLEPlot.jl", rev="main");'
   BUILD: ""
   PPATH: "Xranklin.jl"
-  TARGD: "ttfx/pgfplotsx"
+  TARGD: "ttfx/gleplot"
   SITED: "test/abc_min"
   START: $(date +%s)
 
@@ -21,27 +21,23 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v2
 
-      # =======================================================================
-      # -- deps --
-      - name: Install LaTeX 🌴
-        run: |
-          sudo apt-get update -qq
-          sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
+      # # =======================================================================
+      # # -- deps --
+      # - name: Install LaTeX 🌴
+      #   run: |
+      #     sudo apt-get update -qq
+      #     sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
 
       # -- modify index --
       - name: Set index.md 📖
         run: |
-              echo "# TTFX PGFPlotsX"               > ${{ env.INDEX }}
+              echo "# TTFX GLEPlot"                 > ${{ env.INDEX }}
               echo "\`\`\`!"                       >> ${{ env.INDEX }}
-              echo "using PGFPlotsX"               >> ${{ env.INDEX }}
+              echo "using GLEPlot"                 >> ${{ env.INDEX }}
               echo "x = range(0, pi, length=500)"  >> ${{ env.INDEX }}
               echo "y = @. sin(exp(x)) * sinc(x)"  >> ${{ env.INDEX }}
-              echo "@pgf PGFPlotsX.Axis("          >> ${{ env.INDEX }}
-              echo "    Plot("                     >> ${{ env.INDEX }}
-              echo "      {no_marks},"             >> ${{ env.INDEX }}
-              echo "      Table(x, y)"             >> ${{ env.INDEX }}
-              echo "    )"                         >> ${{ env.INDEX }}
-              echo ")"                             >> ${{ env.INDEX }}
+              echo "plot(x, y)"                    >> ${{ env.INDEX }}
+              echo "gcf()"                         >> ${{ env.INDEX }}
               echo "\`\`\`"                        >> ${{ env.INDEX }}
               echo "# TIME"                                  >> ${{ env.INDEX }}
               echo "\`\`\`!"                                 >> ${{ env.INDEX }}
