@@ -1,5 +1,5 @@
 +++
-header = "Building websites with Franklin.jl"
+header = "Building websites with Franklin"
 +++
 
 \newcommand{\goto}[1]{
@@ -22,6 +22,7 @@ header = "Building websites with Franklin.jl"
 }
 .flist ul {
   list-style: none;
+  padding-left: 1em;
 }
 .flist a#goto {
   padding-right: 10px;
@@ -40,7 +41,7 @@ header = "Building websites with Franklin.jl"
 ~~~
 
 @@sub-header
-Franklin is a simple, customisable, static site generator with a focus on technical blogging.
+Franklin.jl is a simple, customisable, static site generator with a focus on technical blogging.
 @@
 
 ## Key features
@@ -48,12 +49,11 @@ Franklin is a simple, customisable, static site generator with a focus on techni
 _click on the '&check;' sign to know more_
 
 @@flist
-* \goto{/syntax/markdown/} Augmented markdown allowing definition of LaTeX-like commands,
-* \goto{/syntax/divs-commands/} Easy inclusion of user-defined div-blocks,
-* \goto{/syntax/divs-commands/} Maths rendered via [KaTeX](https://katex.org/), code via [highlight.js](https://highlightjs.org) both can be pre-rendered,
-* \goto{/code/} Can live-evaluate Julia code blocks,
-* \goto{/workflow/#creating_your_website} Live preview of modifications,
-* \goto{/workflow/#publication_step} Simple publication step to deploy the website
+* \goto{/syntax/basics/} Based on common Markdown syntax,
+* \goto{/syntax/extensions/} Multiple extensions to the base Markdown syntax such as the possibility to define LaTeX-like commands or the inclusion of div-blocks,
+* \goto{/syntax/extensions/} Maths rendered via [KaTeX](https://katex.org/), code via [highlight.js](https://highlightjs.org) both can be pre-rendered,
+* \goto{/syntax/code/} Can live-evaluate Julia code blocks,
+* \goto{/workflow/deployment/} Simple publication step to deploy the website
 @@
 
 ## Quick start
@@ -62,3 +62,23 @@ To install Franklin with Julia *≥ 1.5*, in a Julia REPL do
 
 * hit \kbd{]} to enter package mode,
 * write `add Franklin` and press \kbd{enter}.
+
+You can then just try it out:
+
+```julia-repl
+julia> using Franklin
+julia> newsite("mySite", template="pure-sm")
+✓ Website folder generated at "mySite" (now the current directory).
+→ Use serve() from Franklin to see the website in your browser.
+
+julia> serve()
+(...)
+✓ LiveServer listening on http://localhost:8000/ ...
+  (use CTRL+C to shut down)
+```
+
+If you navigate to that URL in your browser, you will see the website.
+If you then open `mySite/index.md` in an editor and modify it at will, the changes
+will be live-rendered in your browser.
+
+Read more in [Getting Started](/workflow/getting_started/).

@@ -16,8 +16,12 @@ Process a configuration string into a given global context object. The
 configuration can be given explicitly as a string to allow for
 pre-configuration (e.g. a Utils package generating a default config).
 """
-function process_config(config::String, gc::GlobalContext)
-    crumbs("process_config")
+function process_config(
+            config::String,
+            gc::GlobalContext
+        )::Nothing
+
+    crumbs(@FNAME)
 
     # ensure we're in the relevant gc
     set_current_global_context(gc)
@@ -115,8 +119,9 @@ Process a utils string into a given global context object.
 function process_utils(
             utils::String,
             gc::GlobalContext
-            )
-    crumbs("process_utils")
+        )::Nothing
+
+    crumbs(@FNAME)
 
     # ensure we're in the relevant gc
     set_current_global_context(gc)

@@ -74,8 +74,6 @@ latex_code_inline(b::Block, c::LocalContext) = (
 #   - unchanged code at the cell counter
 #       >
 #
-#
-# XXX what's going on with changes of names and pop! stuff and cellname=""
 
 """
     _strip(s)
@@ -140,8 +138,15 @@ function _code_info(b::Block, ctx::LocalContext)
         if !isnothing(n)
             name = n
         else
-            name = auto_cell_name(ctx)
-            auto = true
+            name_hint = ""
+            m = match(AUTO_NAME_HINT, code)
+            if !isnothing(m)
+                name_hint = m.captures[1]
+                code = replace(code, AUTO_NAME_HINT => "")
+            end
+            name  = auto_cell_name(ctx)
+            name *= ifelse(isempty(name_hint), "", " ($name_hint)")
+            auto  = true
         end
         if length(e) == 2
             force = true

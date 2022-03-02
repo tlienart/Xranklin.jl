@@ -11,7 +11,7 @@ Last edit: Feb 15
 * ✅ PlotlyJS
 * ✅ Gaston
 * ✅ UnicodePlots
-* ❌ Gadfly
+* ✅ Gadfly
 
  -->
 
@@ -64,14 +64,18 @@ Note also that this time is a one-off cost, subsequent plots should take negligi
 
 | Plotting package | Result | Time (min) |
 | ---------------- | ------ | ---------- |
-| [Plots.jl](#plots.jl)               | [link](/ttfx/plots/)       | {{ttfx plots}}        |
-| [CairoMakie.jl](#cairomakie.jl)     | [link](/ttfx/cairomakie/)  | {{ttfx cairomakie}}   |
-| [WGLMakie.jl](#wglmakie.jl)         | [link](/ttfx/wglmakie/)    | {{ttfx wglmakie}}     |
-| [PyPlot.jl](#pyplot.jl)             | [link](/ttfx/pyplot/)      | {{ttfx pyplot}}       |
-| [PGFPlotsX.jl](#pgfplotsx.jl)       | [link](/ttfx/pgfplotsx/)   | {{ttfx pgfplotsx}}    |
-| [PlotlyJS.jl](#plotlyjs.jl)         | NA                         | NA                    |
-| [Gaston.jl](#gaston.jl)             | [link](/ttfx/gaston/)      | {{ttfx gaston}}       |
-| [UnicodePlots.jl](#unicodeplots.jl) | [link](/ttfx/unicodeplots) | {{ttfx unicodeplots}} |
+| [Plots.jl](#plots.jl) (GR backend)  | [link](/ttfx/plots/)        | {{ttfx plots}}        |
+| [CairoMakie.jl](#cairomakie.jl)     | [link](/ttfx/cairomakie/)   | {{ttfx cairomakie}}   |
+| [WGLMakie.jl](#wglmakie.jl)         | [link](/ttfx/wglmakie/)     | {{ttfx wglmakie}}     |
+| [PyPlot.jl](#pyplot.jl)             | [link](/ttfx/pyplot/)       | {{ttfx pyplot}}       |
+| [PGFPlots.jl](#pgfplots.jl)         | [link](/ttfx/pgfplots/)     | {{ttfx pgfplots}}     |
+| [PGFPlotsX.jl](#pgfplotsx.jl)       | [link](/ttfx/pgfplotsx/)    | {{ttfx pgfplotsx}}    |
+| [PlotlyJS.jl](#plotlyjs.jl)         | NA                          | NA                    |
+| [Gaston.jl](#gaston.jl)             | [link](/ttfx/gaston/)       | {{ttfx gaston}}       |
+| [UnicodePlots.jl](#unicodeplots.jl) | [link](/ttfx/unicodeplots/) | {{ttfx unicodeplots}} |
+| [Gadfly.jl](#gadfly.jl)             | [link](/ttfx/gadfly/)       | {{ttfx gadfly}}       |
+
+\lskip
 
 A final note here is that if the pages on which you have plots don't change and that you use the cache, these pages will be skipped at build time and you won't have to pay the full overhead (only the installation of the dependencies but that's always under 1 min).
 
@@ -103,10 +107,11 @@ so it's particularly simple to use this plotting library with Franklin.
 
 \showmd{
   ```!
+  # name: plots
   import Plots
 
-  x = range(-1, 1, length=300)
-  y = @. sinc(x) * cos(x) * exp(-1/x^2)
+  x = range(0, pi, length=500)
+  y = @. sin(exp(x)) * sinc(x)
 
   Plots.plot(x, y, label="Hello", size=(500, 300))
   ```
@@ -144,6 +149,7 @@ See also the Franklin-based [Makie documentation](https://makie.juliaplots.org/s
 
 \showmd{
 ```!
+  # name: cairomakie
   import CairoMakie
   CairoMakie.activate!()
 
@@ -186,6 +192,7 @@ Combined with [JSServe.jl](https://github.com/SimonDanisch/JSServe.jl) it can pr
 
 \showmd{
   ```!wgl
+  # name: wglmakie
   import WGLMakie, JSServe
   WGLMakie.activate!()
 
@@ -217,10 +224,11 @@ You don't need to install anything specific in your GA script but remember to ad
 
 \showmd{
   ```!
+  # name: pyplot
   import PyPlot
 
-  x = range(-1, 1, length=300)
-  y = @. sinc(x) * exp(-1/x^2)
+  x = range(0, pi, length=500)
+  y = @. sin(exp(x)) * sinc(x)
 
   PyPlot.figure(figsize=(6, 4))
   PyPlot.plot(x, y, lw=3, label="Hello")
@@ -269,6 +277,21 @@ and produces LaTeX-style plots.
 
 \lskip
 
+\showmd{
+  ```!
+  # name: pgfplots
+  using LaTeXStrings
+  import PGFPlots
+  x = range(0, pi, length=500)
+  y = @. sin(exp(x)) * sinc(x)
+  PGFPlots.Axis(
+    PGFPlots.Plots.Linear(x, y, style="smooth, no marks"),
+    xlabel = L"x",
+    ylabel = L"f(x) = \sin(\exp(x))\mathrm{sinc}(x)"
+  )
+  ```
+}
+
 ### PGFPlots with GA
 
 In order to use this package on GA you need a minimal texlive installation.
@@ -290,14 +313,15 @@ Remember to also add PGFPlots to the site environment.
 
 \showmd{
   ```!
+  # name: pgfplotsx
   using LaTeXStrings
   import PGFPlotsX
-  x = range(-1, 1, length=300)
-  y = @. sinc(x) * exp(-1/x^2)
+  x = range(0, pi, length=500)
+  y = @. sin(exp(x)) * sinc(x)
   PGFPlotsX.@pgf PGFPlotsX.Axis(
       {
         xlabel = L"x",
-        ylabel = L"f(x) = \mathrm{sinc(x)}\exp(-x^{-2})"
+        ylabel = L"f(x) = \sin(\exp(x))\mathrm{sinc}(x)"
       },
       PGFPlotsX.Plot(
         {no_marks},
@@ -351,6 +375,7 @@ The overall structure is
   ~~~
 
   ```!
+  # name: plotlyjs
   import PlotlyJS
   p=PlotlyJS.plot(
       PlotlyJS.scatter(x=1:10, y=rand(10), mode="markers"),
@@ -388,23 +413,13 @@ Note that, by default, PNG images will be generated.
 
 \showmd{
   ```!
+  # name: gaston
   import Gaston
   x = range(0, pi, length=500)
   y = @. sin(exp(x)) * sinc(x) + 1
   Gaston.plot(x, y)
   ```
 }
-
-```!
-#hideall
-pairs = cur_lc().nb_code.code_pairs
-i = findfirst(p -> occursin("import Gaston", p.code), pairs)
-fname = match(r"\/([\_a-z0-9]+\.svg)", pairs[i].repr.html).captures[1]
-cp(
-  joinpath(Utils.path(:site), "assets", "extras", "plots", "figs-html", fname),
-  joinpath(Utils.path(:folder), "_assets", "gaston", fname)
-);
-```
 
 
 ### Gaston with GA
@@ -428,6 +443,7 @@ This requires a custom show method which depends on a Python library [ansi2html]
 
 \showmd{
   ```!
+  # name: unicodeplots
   import UnicodePlots
   x = range(0, pi, length=500)
   y = @. sin(exp(x)) * sinc(x)
@@ -478,12 +494,15 @@ as well as adding UnicodePlots to the site environment.
 
 \lskip
 
-```!
-import Gadfly
-x = range(0, pi, length=500)
-y = @. sin(exp(x)) * sinc(x)
-Gadfly.plot(x=x, y=y, Gadfly.Geom.path)
-```
+\showmd{
+  ```!
+  # name: gadfly
+  import Gadfly
+  x = range(0, pi, length=500)
+  y = @. sin(exp(x)) * sinc(x)
+  Gadfly.plot(x=x, y=y, Gadfly.Geom.path)
+  ```
+}
 
 ### Gadfly with GA
 

@@ -139,9 +139,14 @@ _isemptyvar(v::Date)      = (v == Date(1))
 Take a `henv` (vector of key double brace blocks) resolve it and write to `io`
 within the context `c`.
 """
-function resolve_henv(henv::Vector{HEnvPart}, io::IOBuffer, c::Context)
+function resolve_henv(
+            henv::Vector{HEnvPart},
+            io::IOBuffer,
+            c::Context
+        )::Nothing
+
     env_name = first(henv).name
-    crumbs("resolve_henv", env_name)
+    crumbs(@FNAME, env_name)
 
     # ------------------------------------------------
     # IF-style h-env
@@ -230,11 +235,16 @@ function resolve_henv(henv::Vector{HEnvPart}, io::IOBuffer, c::Context)
             end
         end
     end
+    return
 end
 
 
-function _resolve_henv_cond(henv::HEnvPart)
-    crumbs("_resolve_henv_cond")
+function _resolve_henv_cond(
+            henv::HEnvPart
+        )::Bool
+
+    crumbs(@FNAME)
+
     # XXX assumptions about the number of arguments (henv.args)
     env_name = henv.name
     env_name == :else && return true
@@ -272,7 +282,7 @@ function _resolve_henv_cond(henv::HEnvPart)
             cond_str = _nestr(cond_str)
         end
 
-    # IS PAGE (XXX tag)
+    # IS PAGE
     elseif env_name in (:ispage, :ifpage, :isnotpage, :ifnotpage)
         cond_str = _estr("""
             begin

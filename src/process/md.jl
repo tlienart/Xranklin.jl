@@ -15,8 +15,13 @@
 Process a markdown file at `rpath` within `gc` by generating paths
 and calling `process_md_file` with full details.
 """
-function process_md_file(gc::GlobalContext, rpath::String; kw...)
-    crumbs("process_md_file", rpath)
+function process_md_file(
+            gc::GlobalContext,
+            rpath::String;
+            kw...
+        )
+    crumbs(@FNAME, rpath)
+
     fpath = path(:folder) / rpath
     opath = get_opath(fpath)
     process_md_file(gc, fpath, opath; kw...)
@@ -33,8 +38,9 @@ function process_md_file(
             fpath::String,
             opath::String;
             initial_pass::Bool=false,
-            kw...)::Nothing
-    crumbs("process_md_file", fpath)
+            kw...
+        )::Nothing
+    crumbs(@FNAME, fpath)
 
     # check if the file should be skipped
     # 1> is the file actually still there? this is a rare case which may happen
@@ -96,7 +102,10 @@ end
 Remove all `odir/k/` dirs to avoid ever having spurious such dirs.
 Re-creating these dirs and the file in it takes negligible time.
 """
-function _cleanup_paginated(odir::String)
+function _cleanup_paginated(
+            odir::String
+        )::Nothing
+
     # remove all pagination folders from odir
     # we're looking for folders that look like '/1/', '/2/' etc.
     # so their name is all numeric, does not start with 0 and
@@ -118,7 +127,12 @@ Handles the non-paginated case. Checks if the page was previously paginated,
 if it wasn't, do nothing. Otherwise, update `gc.paginated` to reflect that
 it's not paginated anymore.
 """
-function _not_paginated(gc::GlobalContext, rpath::String, odir::String)
+function _not_paginated(
+            gc::GlobalContext,
+            rpath::String,
+            odir::String
+        )::Nothing
+
     rpath in gc.paginated || return
     setdiff!(gc.paginated, rpath)
     return
@@ -133,8 +147,13 @@ rewrites it to match the `/1/` case by replacing the `PAGINATOR_TOKEN`
 (so `odir/index.html` and `odir/1/index.html` are identical). It then
 goes on to write the other pages as needed.
 """
-function _paginated(gc::GlobalContext, rpath::String, opath::String,
-                    paginator_name::String)
+function _paginated(
+            gc::GlobalContext,
+            rpath::String,
+            opath::String,
+            paginator_name::String
+        )::Nothing
+
     # recover the corresponding local context
     lc   = gc.children_contexts[rpath]
     iter = getvar(lc, Symbol(paginator_name)) |> collect
@@ -188,7 +207,8 @@ re-trigger pages that may depend upon those.
 function reset_page_context!(
             lc::LocalContext;
             reset_notebook=false
-            )::NamedTuple
+        )::NamedTuple
+
     # set it as current context in case it isn't
     set_current_local_context(lc)
 
@@ -217,10 +237,15 @@ end
     restore_page_context!(lc, state)
 
 In the "skip" case (where a page hasn't changed), we need to undo the effect
-of reset_page_context! so that the inclusion of head.html and foot.html has
+of `reset_page_context!` so that the inclusion of head.html and foot.html has
 access to the proper environment (which has otherwise been scrubbed).
+The `state` comes from `reset_page_context!`.
 """
-function restore_page_context!(lc::LocalContext, state::NamedTuple)
+function restore_page_context!(
+            lc::LocalContext,
+            state::NamedTuple
+        )::Nothing
+
     union!(lc.anchors,  state.anchors)
     merge!(lc.headings, state.headings)
     eqrefs(lc)["__cntr__"] = state.eq_cntr
@@ -246,8 +271,8 @@ function process_md_file_io!(
             opath::String="",
             initial_pass::Bool=false,
             tohtml::Bool=true
-            )::Nothing
-    crumbs("process_md_file_io!", fpath)
+        )::Nothing
+    crumbs(@FNAME, fpath)
 
     # path of the file relative to path(:folder)
     rpath = get_rpath(fpath)
@@ -343,6 +368,7 @@ function process_md_file_io!(
         rm_tag(gc, id, lc.rpath)
     end
     # do the opposite and add any new tags
+    # NOTE: this creates a local context for each tag page
     for id in setdiff(new_keys, old_keys)
         name = tags_dict[id]
         add_tag(gc, id, name, lc.rpath)
@@ -352,54 +378,94 @@ function process_md_file_io!(
 end
 
 """
-    _process_md_file_html
+    _process_md_file_html(lc, page_content_md; skip)
+
+Form the full HTML of a page. This can take two main routes:
+
+1. HEAD * CONTENT * PAGE_FOOT * FOOT
+2. SKELETON(CONTENT)
+
+In the first case, things are assembled one after the other and sequentially
+joined. Elements (such as PAGE_FOOT) may be empty.
+
+In the second case, if there is a skeleton, all other files are ignored
+unless they're explicitly included in the skeleton. The skeleton indicates the
+structure of the full page and indicates with {{page_content}} where the
+converted content should be included.
 """
-function _process_md_file_html(lc::LocalContext, page_content_md::String; skip=false)
-    # get and process html for the foot of the page
-    page_foot_path = path(:folder) / getvar(lc, :layout_page_foot, "")
-    page_foot_html = ""
-    if !isempty(page_foot_path) && isfile(page_foot_path)
-        page_foot_html = html2(read(page_foot_path, String), lc)
-    end
+function _process_md_file_html(
+            lc::LocalContext,
+            page_content_md::String;
+            skip=false
+         )::String
 
-    # add the content tags if required
-    c_tag   = getvar(lc, :content_tag,   "")
-    c_class = getvar(lc, :content_class, "")
-    c_id    = getvar(lc, :content_id,    "")
-
-    # Assemble the body, wrap it in tags if required
+    # Conversion of the content + wrap into tags if required
     page_content_html = getvar(lc, :_generated_html, "")
     if !skip || isempty(page_content_html)
         page_content_html = html(page_content_md, lc)
         setvar!(lc, :_generated_html, page_content_html)
     end
 
+    # Path 2 / skeleton
+    skeleton_path = path(:folder) / getvar(lc, :skeleton_path, "")
+    if !isempty(skeleton_path) && isfile(skeleton_path)
+        return html2(read(skeleton_path, String), lc)
+    end
+
+    # Path 1 / head * page *foot
+    return _assemble_join_html(lc)
+end
+
+
+"""
+    _assemble_join_html
+
+HEAD * PAGE * FOOT (see `_process_md_file_html`).
+"""
+function _assemble_join_html(lc::LocalContext)::String
+    #
+    # PAGE FOOT
+    #
+    page_foot_path = path(:folder) / getvar(lc, :layout_page_foot, "")
+    page_foot_html = ""
+    if !isempty(page_foot_path) && isfile(page_foot_path)
+        page_foot_html = html2(read(page_foot_path, String), lc)
+    end
+
+    #1
+    # PAGE (with PAGE FOOT)
+    #
+    c_tag     = getvar(lc, :content_tag,   "")
+    c_class   = getvar(lc, :content_class, "")
+    c_id      = getvar(lc, :content_id,    "")
+    c_html    = getvar(lc, :_generated_html, "")
     body_html = ""
     if !isempty(c_tag)
         body_html = """
             <$(c_tag) $(attr(:class, c_class)) $(attr(:id, c_id))>
-              $page_content_html
+              $c_html
               $page_foot_html
             </$(c_tag)>
             """
     else
         body_html = """
-            $page_content_html
+            $c_html
             $page_foot_html
             """
     end
 
-    # Assemble the full page
+    #
+    # HEAD * PAGE * FOOT
+    #
     full_page_html = ""
-    # > head if it exists
+    # > HEAD
     head_path = path(:folder) / getgvar(:layout_head)::String
     if !isempty(head_path) && isfile(head_path)
         full_page_html = html2(read(head_path, String), lc)
     end
-
-    # > attach the body
+    # > PAGE
     full_page_html *= body_html
-    # > then the foot if it exists
+    # > FOOT
     foot_path = path(:folder) / getgvar(:layout_foot)::String
     if !isempty(foot_path) && isfile(foot_path)
         full_page_html *= html2(read(foot_path, String), lc)
@@ -408,8 +474,10 @@ function _process_md_file_html(lc::LocalContext, page_content_md::String; skip=f
     return full_page_html
 end
 
+
 """
     _process_md_file_latex
+
 """
 function _process_md_file_latex(lc::LocalContext, page_content_md::String; skip=false)
     page_content_latex = getvar(lc, :_generated_latex, "")

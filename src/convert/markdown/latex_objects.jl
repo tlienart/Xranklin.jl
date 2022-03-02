@@ -86,8 +86,9 @@ function try_form_lxdef(
             i::Int,
             blocks::Vector{Block},
             ctx::Context
-            )::Tuple{Block,Int}
-    crumbs("try_form_lxdef", str_fmt(block.ss, 30))
+        )::Tuple{Block,Int}
+
+    crumbs(@FNAME, str_fmt(block.ss, 30))
 
     n_blocks = length(blocks)
     # command or env?
@@ -240,8 +241,9 @@ function try_resolve_lxcom(
             blocks::Vector{Block},
             ctx::LocalContext;
             tohtml::Bool=true
-            )::Tuple{Block,Int}
-    crumbs("try_resolve_lxcom", str_fmt(blocks[i].ss, 30))
+        )::Tuple{Block,Int}
+
+    crumbs(@FNAME, str_fmt(blocks[i].ss, 30))
 
     # Process:
     # 1. look for definition --> fail if none + not in math mode + not lxfun
@@ -451,8 +453,9 @@ function try_resolve_lxenv(
             blocks::Vector{Block},
             ctx::LocalContext;
             tohtml::Bool=true
-            )::Block
-    crumbs("try_resolve_lxenv")
+        )::Block
+
+    crumbs(@FNAME)
 
     # recover the brackets {...} inside the environment (to read arguments)
     # there's necessarily at least two brackets (with env name)

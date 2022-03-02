@@ -31,16 +31,18 @@ jobs:
       # -- modify index --
       - name: Set index.md 📖
         run: |
-              echo "# TTFX PGFPlotsX"       > ${{ env.INDEX }}
-              echo "\`\`\`!"               >> ${{ env.INDEX }}
-              echo "using PGFPlotsX"       >> ${{ env.INDEX }}
-              echo "@pgf PGFPlotsX.Axis("  >> ${{ env.INDEX }}
-              echo "    Plot("             >> ${{ env.INDEX }}
-              echo "      {no_marks},"     >> ${{ env.INDEX }}
-              echo "      Table(x, y)"     >> ${{ env.INDEX }}
-              echo "    )"                 >> ${{ env.INDEX }}
-              echo ")"                     >> ${{ env.INDEX }}
-              echo "\`\`\`"                >> ${{ env.INDEX }}
+              echo "# TTFX PGFPlotsX"               > ${{ env.INDEX }}
+              echo "\`\`\`!"                       >> ${{ env.INDEX }}
+              echo "using PGFPlotsX"               >> ${{ env.INDEX }}
+              echo "x = range(0, pi, length=500)"  >> ${{ env.INDEX }}
+              echo "y = @. sin(exp(x)) * sinc(x)"  >> ${{ env.INDEX }}
+              echo "@pgf PGFPlotsX.Axis("          >> ${{ env.INDEX }}
+              echo "    Plot("                     >> ${{ env.INDEX }}
+              echo "      {no_marks},"             >> ${{ env.INDEX }}
+              echo "      Table(x, y)"             >> ${{ env.INDEX }}
+              echo "    )"                         >> ${{ env.INDEX }}
+              echo ")"                             >> ${{ env.INDEX }}
+              echo "\`\`\`"                        >> ${{ env.INDEX }}
               echo "# TIME"                                  >> ${{ env.INDEX }}
               echo "\`\`\`!"                                 >> ${{ env.INDEX }}
               echo "using Dates"                             >> ${{ env.INDEX }}

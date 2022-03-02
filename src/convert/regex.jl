@@ -22,6 +22,9 @@ const CODE_LANG_PAT = r"([^\!\:]+)?([\!\:]{1,2})?(\S+)?"
 This is fragile if people do something silly like `x = 5 # foo ; # bar`"
 const HIDE_FINAL_OUTPUT_PAT = r";\s*(:?#.*)?\n?"
 
+"Check if a name hint is given"
+const AUTO_NAME_HINT = r"^\s*\#\s*name\:\s*((.*?))\n"
+
 "Trim the non-relevant part of a stacktrace when evaluating code."
 const STACKTRACE_TRIM_PAT = r"\[\d+\]\stop-level\sscope"
 
