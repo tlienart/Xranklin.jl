@@ -12,6 +12,7 @@ Last edit: Feb 15
 * ✅ Gaston
 * ✅ UnicodePlots
 * ✅ Gadfly
+* 🚧 GLEPlot
 
  -->
 
