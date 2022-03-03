@@ -781,7 +781,7 @@ Note that, by default, PNG images will be generated.</p>
 # name: gaston
 import Gaston
 Gaston.set(term=&quot;qt&quot;)
-Gaston.set(termopts=&quot;font 'Helvetica,14')
+Gaston.set(termopts=&quot;font 'Helvetica,14'&quot;)
 x = range(0, pi, length=500)
 y = @. sin(exp(x)) * sinc(x) + 1
 Gaston.plot(x, y)
@@ -796,13 +796,12 @@ Gaston.plot(x, y)
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">import Gaston
 Gaston.set(term=&quot;qt&quot;)
-Gaston.set(termopts=&quot;font 'Helvetica,14')
+Gaston.set(termopts=&quot;font 'Helvetica,14'&quot;)
 x = range(0, pi, length=500)
 y = @. sin(exp(x)) * sinc(x) + 1
 Gaston.plot(x, y)</code></pre>
-<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: syntax: incomplete: invalid string syntax
-Stacktrace:
- </code></pre></div></fieldset>
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/preview/assets/extras/plots/figs-html/__autofig_174354198025658535.svg">
+</div></fieldset>
 
 </div><h3 id="gaston_with_ga" ><a href="#gaston_with_ga"> Gaston with GA</a></h3><p>You need to install GnuPlot and that's it:</p>
 <pre><code class="julia">run: |
