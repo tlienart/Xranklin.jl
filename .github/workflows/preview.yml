@@ -3,10 +3,10 @@ name: Preview
 on:
   push:
     branches:
-      - preview   # note: check rev= in build (Xranklin specific)
+      - docs
 
 jobs:
-  preview:
+  docs-preview:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -20,7 +20,7 @@ jobs:
 
           # PREVIEW MODE
           PREVIEW: "preview"    # > will go to BASE_URL_PREFIX/PREVIEW
-          BRANCH: "preview"     # > version of the code to use for the preview
+          BRANCH: "docs"        # > version of the code to use for the preview
 
           # ===================================================================
           # FLAGS FOR DEPENDENCIES INSTALLATION, ADJUST AS REQUIRED

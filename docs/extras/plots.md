@@ -417,6 +417,8 @@ Note that, by default, PNG images will be generated.
   ```!
   # name: gaston
   import Gaston
+  Gaston.set(term="qt")
+  Gaston.set(termopts="font 'Helvetica,14')
   x = range(0, pi, length=500)
   y = @. sin(exp(x)) * sinc(x) + 1
   Gaston.plot(x, y)

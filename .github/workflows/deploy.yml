@@ -4,10 +4,9 @@ on:
   push:
     branches:
       - main
-      - docs
 
 jobs:
-  preview:
+  docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
