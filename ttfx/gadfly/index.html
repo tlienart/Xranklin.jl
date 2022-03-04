@@ -16,7 +16,7 @@ plot(x=x, y=y, Geom.path)</code></pre>
 <div class="code-output"><img class="code-figure" src="/Xranklin.jl/ttfx/gadfly/assets/index/figs-html/__autofig_4866062445464231902.svg">
 </div><h1 id="time" ><a href="#time"> TIME</a></h1><pre><code class="julia">using Dates
 t0  = datetime2unix(now())
-delta  = t0 - 1646254918
+delta  = t0 - 1646297755
 delta2 = t0 - START2
 delta  = round(delta  / 60, digits=2)
 delta2 = round(delta2, digits=2)
@@ -25,8 +25,8 @@ write(ps(&quot;timer&quot;), delta)
 write(ps(&quot;timer2&quot;), delta2)
 println(&quot;Time taken: $(delta)min.&quot;)
 println(&quot;Time taken2: $(delta2)s.&quot;)</code></pre>
-<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 3.09min.
-Time taken2: 54.91s.
+<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 2.43min.
+Time taken2: 41.5s.
 </code></pre></div>
   
 </div>
