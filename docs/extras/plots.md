@@ -501,7 +501,7 @@ run: pip install ansi2html
 
 as well as adding UnicodePlots to the site environment.
 
-## Gadfly
+## Gadfly.jl
 
 [Gadfly.jl](https://github.com/GiovineItalia/Gadfly.jl) is a plotting system written in Julia and influenced by the Grammar of Graphics.
 
@@ -522,7 +522,7 @@ as well as adding UnicodePlots to the site environment.
 
 Gadfly doesn't require anything specific in your GA script, just remember to add it to the site environment.
 
-## GLEPlot
+## GLEPlot.jl
 
 [GLEPlot.jl](https://github.com/tlienart/GLEPlot.jl) is an **experimental** wrapper around the
 [Graphics Layout Engine](https://glx.sourceforge.io), a mature library geared around producing publication quality plots.
