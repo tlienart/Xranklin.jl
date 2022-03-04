@@ -282,6 +282,7 @@ so it's particularly simple to use this plotting library with Franklin.</p>
 <div style="height:1em;"></div><div class="trim">
 
 <fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+# indep
 # name: plots
 import Plots
 
@@ -322,6 +323,7 @@ See also the Franklin-based <a href="https://makie.juliaplots.org/stable/">Makie
 <div style="height:1em;"></div><div class="trim">
 
 <fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+  # indep
   # name: cairomakie
   import CairoMakie
   CairoMakie.activate!()
@@ -380,6 +382,7 @@ See also the <a href="https://makie.juliaplots.org/dev/documentation/backends/wg
 <div style="height:1em;"></div><div class="trim">
 
 <fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!wgl
+# indep
 # name: wglmakie
 import WGLMakie, JSServe
 WGLMakie.activate!()
@@ -538,6 +541,7 @@ JSServe.setup_connection({offline: true})
 <div style="height:1em;"></div><div class="trim">
 
 <fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+# indep
 # name: pyplot
 import PyPlot
 
@@ -590,6 +594,7 @@ and produces LaTeX-style plots.</p>
 <div style="height:1em;"></div><div class="trim">
 
 <fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+# indep
 # name: pgfplots
 using LaTeXStrings
 import PGFPlots
@@ -631,6 +636,7 @@ This requires adding the following to your GA script:</p>
 <div style="height:1em;"></div><div class="trim">
 
 <fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+# indep
 # name: pgfplotsx
 using LaTeXStrings
 import PGFPlotsX
@@ -709,6 +715,7 @@ You could easily hide most of this logic in a lxfun or hfun.</p>
 ~~~
 
 ```!
+# indep
 # name: plotlyjs
 import PlotlyJS
 p=PlotlyJS.plot(
@@ -778,6 +785,7 @@ Note that, by default, PNG images will be generated.</p>
 <div style="height:1em;"></div><div class="trim">
 
 <fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+# indep
 # name: gaston
 import Gaston
 Gaston.set(term=&quot;qt&quot;)
@@ -814,6 +822,7 @@ This requires a custom show method which depends on a Python library <a href="ht
 <div class="trim">
 
 <fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+# indep
 # name: unicodeplots
 import UnicodePlots
 x = range(0, pi, length=500)
@@ -885,6 +894,7 @@ run: pip install ansi2html</code></pre>
 <div style="height:1em;"></div><div class="trim">
 
 <fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+# indep
 # name: gadfly
 import Gadfly
 x = range(0, pi, length=500)
@@ -924,7 +934,6 @@ Gadfly.plot(x=x, y=y, Gadfly.Geom.path)</code></pre>
       <div id="pg-foot">
         Website built with <a href="https://franklinjl.org">Franklin.jl</a>
         and the <a href="https://julialang.org">Julia programming language</a>.
-        Page last modified on March 4, 2022.
       </div>
 
       </div>   
