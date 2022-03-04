@@ -141,6 +141,31 @@ you can put `#hideall` in the code.
 
 \lskip
 
+
+### Mock lines
+
+In some cases you might want to show a line of code without it being run.
+The example below should make this clearer:
+
+```
+data = fetch("./tests/data.txt") # <-- depends on your setup
+data = fetch("/user/$name/api")  # <-- what the user should do
+
+plot(data)
+```
+
+In this example, you'd want to _run but hide_ the first line and _not run but show_ the second
+line.
+You already know `#hide`, the other one is `#mock` (also allowed: `#fake`, `#noexec`, `#norun`).
+
+\showmd{
+  ```!
+  println("hello")   # hide  <-- executed, not shown
+  println("not run") # mock  <-- shown, not executed
+  ```
+}
+
+
 ### Providing name hints
 
 For auto-named code blocks (which you likely will want to use most of the time), you can provide
@@ -180,6 +205,35 @@ evaluating cell auto_cell_5 (printing example)...
 
 will be shown in the REPL.
 
+
+### Marking a cell as independent
+
+If a code block is fully independent of any other code blocks on the page, you can mark it as _independent_ (with `# indep`), this will allow Franklin to skip re-evaluating this block when other code blocks around it change.
+
+To clarify this, imagine you have a page with two blocks _A_ and _B_.
+By default if _A_ is modified, _B_ will be re-evaluated because Franklin considers that _B_ might
+depend on some things that _A_ defines.\\
+However, if you know that _B_ is fully independent code, you can mark it as such and then when _A_ changes, _B_ will **not** get re-evaluated.
+
+When marking a block as independent, the user guarantees to Franklin that:
+1. the code does not depend on any other code block on the page,
+1. no other code block on the page depends on that code block.
+
+The marker for independence should be placed at the top of your code:
+
+\showmd{
+  ```!
+  # indep
+  x = 5
+  println(x^2)
+  ```
+}
+
+\tip{
+  If all your code blocks are fast-running, you can ignore the `indep` trick.
+  However if a block takes time to run, and you know that it is independent
+  in the sense mentioned above, marking it explicitly will help make page reloads faster.
+}
 
 ## Understanding how things work
 
@@ -423,16 +477,16 @@ We can use the type `Foo` by indicating it is defined in `Utils` and the custom 
 }
 \lskip
 
-### Showing the output as Markdown
+### Showing the output as Markdown/HTML
 
-In some cases it can be convenient to use a code block to generate some markdown.
-One way is to define a [utils function](/syntax/utils/) but you can also use the `\showmd` command
+In some cases it can be convenient to use a code block to generate some markdown (resp. HTML).
+One way is to define a [utils function](/syntax/utils/) but you can also use the `\mdshow` (resp. `\htmlshow`) command
 which interprets the output of `stdout` and the string representation of the result as Markdown.
 
 Here's a simple illustration:
 
 \showmd{
-  ````!ex-showmd
+  ````!ex-mdshow
   #hideall
   println("```plaintext")
   for i in 1:5
@@ -441,8 +495,23 @@ Here's a simple illustration:
   println("```")
   ````
 
-  \mdshow{ex-showmd}
+  \mdshow{ex-mdshow}
 }
+
+Here's another one with `\htmlshow`:
+
+\showmd{
+  ```!ex-htmlshow
+  #hideall
+  println("<ul>")
+  for i in 1:5
+    println("<li>", "🌴"^i, "</li>")
+  end
+  println("</ul>")
+  ```
+  \htmlshow{ex-htmlshow}
+}
+
 
 
 ### What if the code errors?

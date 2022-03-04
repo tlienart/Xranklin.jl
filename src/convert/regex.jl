@@ -35,7 +35,7 @@ const CODE_INDEP_PAT = r"(?:^|\n)\s*#\s*?indep\s*\n"
 const CODE_HIDE_PAT = Regex(raw"(?:^|[^\S\r\n]*?)#(\s)*?hide(all)?")
 
 "Show some line of code in an executable block without running it."
-const CODE_MOCK_PAT = Regex(raw"(?:^|[^\S\r\n]*?)#(\s)*?(?:mock|norun)")
+const CODE_MOCK_PAT = Regex(raw"(?:^|[^\S\r\n]*?)#(\s)*?(?:mock|norun|noexec|fake)")
 
 "Same as CODE_HIDE_PAT but accounting for Literate syntax."
 const LITERATE_HIDE_PAT  = Regex(raw"(?:^|[^\S\r\n]*?)#src")
