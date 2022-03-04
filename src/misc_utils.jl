@@ -88,7 +88,7 @@ function match_url(base::AbstractString, cand::AbstractString)
 end
 
 # get the function name (used in crumbs)
-macro FNAME()
+macro fname()
     return :($(esc(Expr(:isdefined, :var"#self#"))) ? $(esc(:var"#self#")) : nothing)
 end
 

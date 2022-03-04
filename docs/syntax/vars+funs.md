@@ -249,6 +249,11 @@ might be irrelevant for you.
 | `layout_page_foot` | `"_layout/page_foot.html"` | the path to the page foot file |
 | `layout_head_lx` | `"_layout/latex/head.tex"` | the path to the LaTeX preamble |
 | `parse_script_blocks` | `true` | whether to parse `<script>` blocks |
+| `date_format` | `"U d, yyyy"` | base date format used |
+| `date_days`   | `String[]`    | specify custom day names (e.g. `["Lundi", ...]`) |
+| `date_shortdays` | `String[]` | specify custom short day names (e.g. `["Lun", ...]`) |
+| `date_months` | `String[]` | specify custom month names (e.g. `["Janvier", ...]`) |
+| `date_shortmonths` | `String[]` | specify custom short month names (e.g. `["Jan", ...]`) |
 | `ignore_base` | `["LICENSE.md", "README.md", ...]` | base list of strings or regexes of files and directories to ignore |
 | `ignore` | `[]` | complements `ignore_base` |
 | `keep_path` | `String[]` | relative paths of files that should have their build path be identical to their source path |

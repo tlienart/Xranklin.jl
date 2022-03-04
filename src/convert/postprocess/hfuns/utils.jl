@@ -35,6 +35,7 @@ const INTERNAL_HFUNS = [
     # /input.jl
     :fill,
     :insert, :include,
+    :page_content,
     # /tags_pagination.jl
     :taglist,
     :paginate,
@@ -44,7 +45,9 @@ const INTERNAL_HFUNS = [
     :reflink,
     :cite,
     :link_a, :img_a,
-    :footnotes
+    :footnotes,
+    # /dates.jl
+    :last_modification_date, :creation_date,
 ]
 
 

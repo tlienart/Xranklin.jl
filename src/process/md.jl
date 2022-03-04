@@ -20,7 +20,7 @@ function process_md_file(
             rpath::String;
             kw...
         )
-    crumbs(@FNAME, rpath)
+    crumbs(@fname, rpath)
 
     fpath = path(:folder) / rpath
     opath = get_opath(fpath)
@@ -40,7 +40,7 @@ function process_md_file(
             initial_pass::Bool=false,
             kw...
         )::Nothing
-    crumbs(@FNAME, fpath)
+    crumbs(@fname, fpath)
 
     # check if the file should be skipped
     # 1> is the file actually still there? this is a rare case which may happen
@@ -272,7 +272,7 @@ function process_md_file_io!(
             initial_pass::Bool=false,
             tohtml::Bool=true
         )::Nothing
-    crumbs(@FNAME, fpath)
+    crumbs(@fname, fpath)
 
     # path of the file relative to path(:folder)
     rpath = get_rpath(fpath)
@@ -407,7 +407,7 @@ function _process_md_file_html(
     end
 
     # Path 2 / skeleton
-    skeleton_path = path(:folder) / getvar(lc, :skeleton_path, "")
+    skeleton_path = path(:folder) / getvar(lc, :layout_skeleton, "")
     if !isempty(skeleton_path) && isfile(skeleton_path)
         return html2(read(skeleton_path, String), lc)
     end

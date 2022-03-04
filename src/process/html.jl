@@ -18,7 +18,7 @@ function process_html_file(
             opath::String
         )::Nothing
 
-    crumbs(@FNAME, fpath)
+    crumbs(@fname, fpath)
 
     rpath  = get_rpath(fpath)
     in_gc  = rpath in keys(gc.children_contexts)

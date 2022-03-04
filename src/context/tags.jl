@@ -31,7 +31,7 @@ function add_tag(
             rpath::String
         )::Nothing
 
-    crumbs(@FNAME, "$id (from $rpath)")
+    crumbs(@fname, "$id (from $rpath)")
 
     if id in keys(gc.tags)
         union!(gc.tags[id].locs, [rpath])
@@ -55,7 +55,7 @@ function rm_tag(
             rpath::String
         )::String
 
-    crumbs(@FNAME, "$id (from $rpath)")
+    crumbs(@fname, "$id (from $rpath)")
 
     # this check should be superfluous
     id in keys(gc.tags) || return

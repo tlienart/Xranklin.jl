@@ -140,6 +140,7 @@ include("$p/hyperref.jl")
 include("$p/evalstr.jl")
 include("$p/henv.jl")
 include("$p/tags_pagination.jl")
+include("$p/dates.jl")
 
 p = "convert/postprocess"
 include("$p/utils.jl")

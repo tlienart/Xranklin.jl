@@ -32,7 +32,7 @@ function add_anchor(
             rpath::String
         )::Nothing
 
-    crumbs(@FNAME, "$id (from $rpath)")
+    crumbs(@fname, "$id (from $rpath)")
 
     # add the id to the local context's anchors
     union!(gc.children_contexts[rpath].anchors, [id])
@@ -80,7 +80,7 @@ function get_anchor(
             rpath::String
         )::String
 
-    crumbs(@FNAME, "$id (from $rpath)")
+    crumbs(@fname, "$id (from $rpath)")
 
     if id in keys(gc.anchors)
         a = gc.anchors[id]
@@ -127,7 +127,7 @@ function rm_anchor(
             rpath::String
         )::Nothing
 
-    crumbs(@FNAME, "$id (from $rpath)")
+    crumbs(@fname, "$id (from $rpath)")
 
     # this check should be superfluous
     id in keys(gc.anchors) || return

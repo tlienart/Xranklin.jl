@@ -32,7 +32,7 @@ function process_file(
             reproc::Bool=false
         )::Nothing
 
-    crumbs(@FNAME, "$(fpair.first) => $(fpair.second)")
+    crumbs(@fname, "$(fpair.first) => $(fpair.second)")
 
     # Form the full path to the file being considered
     fpath = joinpath(fpair...)

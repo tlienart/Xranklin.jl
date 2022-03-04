@@ -22,6 +22,12 @@ const DefaultGlobalVars = Vars(
     :layout_tag          => "_layout/tag.html",
     :layout_head_lx      => "_layout/latex/head.tex",
     :parse_script_blocks => true,  # see html2; possibly disable DBB in <script>
+    # Date format
+    :date_format      => "U d, yyyy",
+    :date_days        => String[],
+    :date_shortdays   => String[],
+    :date_months      => String[],
+    :date_shortmonths => String[],
     # File management
     :ignore_base      => StringOrRegex[
                                r"(?:.*?)\.DS_Store$", ".gitignore", "node_modules/",

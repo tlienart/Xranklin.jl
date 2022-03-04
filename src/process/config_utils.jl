@@ -21,7 +21,7 @@ function process_config(
             gc::GlobalContext
         )::Nothing
 
-    crumbs(@FNAME)
+    crumbs(@fname)
 
     # ensure we're in the relevant gc
     set_current_global_context(gc)
@@ -121,7 +121,7 @@ function process_utils(
             gc::GlobalContext
         )::Nothing
 
-    crumbs(@FNAME)
+    crumbs(@fname)
 
     # ensure we're in the relevant gc
     set_current_global_context(gc)

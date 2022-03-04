@@ -146,7 +146,7 @@ function resolve_henv(
         )::Nothing
 
     env_name = first(henv).name
-    crumbs(@FNAME, env_name)
+    crumbs(@fname, env_name)
 
     # ------------------------------------------------
     # IF-style h-env
@@ -243,7 +243,7 @@ function _resolve_henv_cond(
             henv::HEnvPart
         )::Bool
 
-    crumbs(@FNAME)
+    crumbs(@fname)
 
     # XXX assumptions about the number of arguments (henv.args)
     env_name = henv.name
