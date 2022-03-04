@@ -19,7 +19,8 @@ function eval_code_cell!(
             ctx::Context, cell_code::SS, cell_name::String;
             imgdir_html::String=tempdir(),
             imgdir_latex::String=tempdir(),
-            force::Bool=false
+            force::Bool=false,
+            indep::Bool=false,
             )::Nothing
 
     # stop early if there's no code to evaluate
@@ -46,12 +47,25 @@ function eval_code_cell!(
         push!(nb.code_names, cell_name)
     end
 
+    # if the cell is explicitly marked as independent, check if we don't
+    # happen to have a mapping for it
+    if indep
+        if cell_code in keys(nb.indep_code)
+            @info "  ⏩  skipping cell $cell_name (independent 🌴 )"
+            code_pair = CodeCodePair((cell_code, nb.indep_code[cell_code]))
+            return finish_cell_eval!(nb, code_pair, indep)
+        end
+    end
+
     # we now have some code that we should evaluate, first we check
     # whether the notebook is stale (e.g. if was loaded from cache)
     # If that's the case, then the entire notebook is re-run to make
     # sure all cells have been executed once so that the cell we have
     # now has the full notebook context.
-    if is_stale(nb)
+    # There is one EXCEPTION to this: if the cell was marked as
+    # independent (indep=true). In that case, the cell is assumed NOT
+    # to depend on context and therefore previous cells are not reexec.
+    if is_stale(nb) && !indep
         start = time(); @info """
               ❗ code notebook stale, refreshing...
               """
@@ -75,7 +89,7 @@ function eval_code_cell!(
     # Form autofigs paths
     autosavefigs = getvar(ctx, :autosavefigs, true)
     autoshowfigs = getvar(ctx, :autoshowfigs, true)
-    skiplatex    = getvar(ctx, :skiplatex, false)
+    skiplatex    = getvar(ctx, :skiplatex,    false)
     fig_id       = "__autofig_$(cell_hash)"
     fpath_html   = imgdir_html  / fig_id
     fpath_latex  = imgdir_latex / fig_id
@@ -91,12 +105,18 @@ function eval_code_cell!(
     )
 
     # evaluate the cell and capture the output
-    @info "  ⏯️  evaluating cell $cell_name..."
+    @info "  ⏯️  evaluating cell $(hl(cell_name, :yellow))" *
+          ifelse(indep, " 🌴 ...", "...")
+
     code_outp = _eval_code_cell(nb.mdl, cell_code, cell_name)
     code_repr = _form_code_repr(code_outp, fig_html, fig_latex, skiplatex)
     code_pair = CodeCodePair((cell_code, code_repr))
 
-    return finish_cell_eval!(nb, code_pair)
+    if indep
+        nb.indep_code[cell_code] = code_repr
+    end
+
+    return finish_cell_eval!(nb, code_pair, indep)
 end
 
 
@@ -124,9 +144,20 @@ function _eval_code_cell(
             isempty(cell_name) ? "" : "($cell_name)",
             :light_green))
         """
+
     std_out = ""
     std_err = ""
     result  = nothing
+
+    # discard mock lines
+    io = IOBuffer()
+    for line in split(code, '\n')
+        m = match(CODE_MOCK_PAT, line)
+        if isnothing(m)
+            println(io, line)
+        end
+    end
+    code = String(take!(io))
 
     # avoid Precompilation info and warning showing up in stdout
     pre_log_level = Base.CoreLogging._min_enabled_level[] # yeah.. I know

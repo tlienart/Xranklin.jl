@@ -109,6 +109,7 @@ so it's particularly simple to use this plotting library with Franklin.
 
 \showmd{
   ```!
+  # indep
   # name: plots
   import Plots
 
@@ -151,6 +152,7 @@ See also the Franklin-based [Makie documentation](https://makie.juliaplots.org/s
 
 \showmd{
 ```!
+  # indep
   # name: cairomakie
   import CairoMakie
   CairoMakie.activate!()
@@ -194,6 +196,7 @@ Combined with [JSServe.jl](https://github.com/SimonDanisch/JSServe.jl) it can pr
 
 \showmd{
   ```!wgl
+  # indep
   # name: wglmakie
   import WGLMakie, JSServe
   WGLMakie.activate!()
@@ -226,6 +229,7 @@ You don't need to install anything specific in your GA script but remember to ad
 
 \showmd{
   ```!
+  # indep
   # name: pyplot
   import PyPlot
 
@@ -281,6 +285,7 @@ and produces LaTeX-style plots.
 
 \showmd{
   ```!
+  # indep
   # name: pgfplots
   using LaTeXStrings
   import PGFPlots
@@ -315,6 +320,7 @@ Remember to also add PGFPlots to the site environment.
 
 \showmd{
   ```!
+  # indep
   # name: pgfplotsx
   using LaTeXStrings
   import PGFPlotsX
@@ -377,6 +383,7 @@ The overall structure is
   ~~~
 
   ```!
+  # indep
   # name: plotlyjs
   import PlotlyJS
   p=PlotlyJS.plot(
@@ -415,6 +422,7 @@ Note that, by default, PNG images will be generated.
 
 \showmd{
   ```!
+  # indep
   # name: gaston
   import Gaston
   Gaston.set(term="qt")
@@ -447,6 +455,7 @@ This requires a custom show method which depends on a Python library [ansi2html]
 
 \showmd{
   ```!
+  # indep
   # name: unicodeplots
   import UnicodePlots
   x = range(0, pi, length=500)
@@ -500,6 +509,7 @@ as well as adding UnicodePlots to the site environment.
 
 \showmd{
   ```!
+  # indep
   # name: gadfly
   import Gadfly
   x = range(0, pi, length=500)

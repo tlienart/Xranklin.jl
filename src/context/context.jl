@@ -50,10 +50,13 @@ Notebook for code.
 
 Same as VarsNotebook with additionally
 
-    code_names:   list of code block names in sequential order.
-    is_stale: keeps track of whether the notebook was loaded from cache.
-                   If it was loaded from cache and a cell changes, all
-                   previous cells will have to be re-evaluated.
+    code_names: list of code block names in sequential order.
+    is_stale:   keeps track of whether the notebook was loaded from cache.
+                  If it was loaded from cache and a cell changes, all
+                  previous cells will have to be re-evaluated.
+    indep_code: keeps track of mapping {code_string => code_repr} for code
+                 blocks explicitly marked as 'indep' so that their result
+                 is "frozen" and the cell can be skipped.
 """
 struct CodeNotebook <: Notebook
     # see VarsNotebook
@@ -63,9 +66,11 @@ struct CodeNotebook <: Notebook
     # specific ones
     code_names::Vector{String}
     is_stale::Ref{Bool}
+    indep_code::LittleDict{String, CodeRepr}
 end
 CodeNotebook(mdl::Module) =
-    CodeNotebook(mdl, Ref(1), CodeCodePairs(), String[], Ref(false))
+    CodeNotebook(mdl, Ref(1), CodeCodePairs(),
+                 String[], Ref(false), LittleDict{String,CodeRepr}())
 
 
 is_stale(nb::Notebook)        = nb.is_stale[]

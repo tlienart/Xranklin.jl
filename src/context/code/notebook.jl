@@ -27,6 +27,7 @@ function reset_code_notebook!(c::LocalContext)
     reset_counter!(c.nb_code)
     empty!(c.nb_code.code_pairs)
     empty!(c.nb_code.code_names)
+    empty!(c.nb_code.indep_code)
     fresh_notebook!(c.nb_code)
     return
 end
@@ -42,17 +43,41 @@ function isunchanged(nb::Notebook, cntr::Int, code::String)
     return code == get(nb.code_pairs, cntr, (code="",)).code
 end
 
-function finish_cell_eval!(nb::Notebook, cp)
+function finish_cell_eval!(nb::Notebook, cp, indep=false)
     cntr = counter(nb)
     lnb  = length(nb)
     if cntr ≤ lnb
-       # replace, leave the counter where it was and discard
-       # everything after (gets re-evaled)
+       # replace the code to make sure we have the latest
        nb.code_pairs[cntr] = cp
-       deleteat!(nb.code_pairs, cntr+1:lnb)
+       # if the cell is not independent, clear all the code downstream
+       # of it so it gets re-evaluated
+       indep || deleteat!(nb.code_pairs, cntr+1:lnb)
    else
        push!(nb.code_pairs, cp)
    end
    increment!(nb)
    return
+end
+
+
+"""
+    _refresh_indep_code!(lc)
+
+Go over the `indep_code` mapping of the local context's code notebook to check
+if any entries has code not contained in the code notebook's code pairs.
+This can happen if an indep code block gets modified.
+See process/md/process_md_file_io!
+"""
+function _refresh_indep_code!(lc::LocalContext)
+    actual_code_on_page = Set([cp.code for cp in lc.nb_code.code_pairs])
+    keys_to_remove = Set{String}()
+    for k in keys(lc.nb_code.indep_code)
+        if k ∉ actual_code_on_page
+            union!(keys_to_remove, (k,))
+        end
+    end
+    for k in keys_to_remove
+        delete!(lc.nb_code.indep_code, k)
+    end
+    return
 end

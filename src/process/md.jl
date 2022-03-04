@@ -341,6 +341,11 @@ function process_md_file_io!(
                     _process_md_file_latex(lc, page_content_md))::String
     end
 
+    # Now that the page has been evaluated, we can discard entries
+    # from `indep_code` mapping that are obsolete (e.g. if an indep
+    # cell changed!)
+    _refresh_indep_code!(lc)
+
     #
     # HTML WRITE
     #
@@ -376,6 +381,7 @@ function process_md_file_io!(
 
     return
 end
+
 
 """
     _process_md_file_html(lc, page_content_md; skip)

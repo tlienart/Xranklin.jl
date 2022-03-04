@@ -22,14 +22,20 @@ const CODE_LANG_PAT = r"([^\!\:]+)?([\!\:]{1,2})?(\S+)?"
 This is fragile if people do something silly like `x = 5 # foo ; # bar`"
 const HIDE_FINAL_OUTPUT_PAT = r";\s*(:?#.*)?\n?"
 
-"Check if a name hint is given"
-const AUTO_NAME_HINT = r"^\s*\#\s*name\:\s*((.*?))\n"
-
 "Trim the non-relevant part of a stacktrace when evaluating code."
 const STACKTRACE_TRIM_PAT = r"\[\d+\]\stop-level\sscope"
 
+"Check if a name hint is given"
+const AUTO_NAME_HINT_PAT = r"(?:^|\n)\s*#\s*name\s*\:\s*(.*?)\n"
+
+"Check if a cell is indep of other cells"
+const CODE_INDEP_PAT = r"(?:^|\n)\s*#\s*?indep\s*\n"
+
 "Hide some or all lines of code in an executable block."
-const CODE_HIDE_PAT = Regex(raw"(?:^|[^\S\r\n]*?)#(\s)*?(?i)hide(all)?")
+const CODE_HIDE_PAT = Regex(raw"(?:^|[^\S\r\n]*?)#(\s)*?hide(all)?")
+
+"Show some line of code in an executable block without running it."
+const CODE_MOCK_PAT = Regex(raw"(?:^|[^\S\r\n]*?)#(\s)*?(?:mock|norun)")
 
 "Same as CODE_HIDE_PAT but accounting for Literate syntax."
 const LITERATE_HIDE_PAT  = Regex(raw"(?:^|[^\S\r\n]*?)#src")

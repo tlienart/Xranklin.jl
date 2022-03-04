@@ -11,10 +11,17 @@ author = "Thibaut Lienart"
 
 # Base URL prefix when live
 base_url_prefix = "Xranklin.jl"
+meta_description = "Franklin"
+github = "https://github.com/tlienart/Franklin.jl"
 
 # General Layout
 layout_page_foot = ""
 content_tag = ""
+showtoc = false
+skiplatex = true
+
+# Tables
+table_class = "pure-table"
 
 # Menus + ordering of submenus
 menu = [
@@ -42,15 +49,6 @@ menu = [
   ],
 ]
 
-# Page layout
-showtoc = false
-
-# Tables
-table_class = "pure-table"
-
-# Misc
-meta_description = "Franklin"
-github = "https://github.com/tlienart/Franklin.jl"
 
 +++
 

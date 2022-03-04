@@ -1,3 +1,4 @@
+
 """
     _hescape(s)
 
@@ -32,7 +33,7 @@ function _hide_lines(c)::SS
         m  = match(CODE_HIDE_PAT, line)
         ml = match(LITERATE_HIDE_PAT, line)
         if m === ml === nothing
-            println(io, line)
+            println(io, replace(line, CODE_MOCK_PAT => ""))
         elseif m !== nothing && m.captures[2] !== nothing
             # case 'hideall'
             return subs("")
@@ -82,6 +83,14 @@ Strip `s` from spaces that are not whitespaces (usually line returns).
 """
 _strip(s) = strip(c -> (c != ' ') && isspace(c), s)
 
+
+"""
+    CodeInfo
+
+Object to keep track of code and information passed around it (e.g. is it an
+executable code cell, should we force re-execute it, is it independent from
+other cells etc).
+"""
 struct CodeInfo
     name::String
     lang::String
@@ -89,9 +98,20 @@ struct CodeInfo
     exec::Bool
     auto::Bool
     force::Bool
+    indep::Bool
 end
-CodeInfo(; name="", lang="", code=subs(""), exec=false, auto=false, force=false) =
-    CodeInfo(name, lang, code, exec, auto, force)
+function CodeInfo(;
+            name="",
+            lang="",
+            code=subs(""),
+            exec=false,
+            auto=false,
+            force=false,
+            indep=false
+        )
+    CodeInfo(name, lang, code, exec, auto, force, indep)
+end
+
 
 """
     _code_info(b)
@@ -112,7 +132,11 @@ If the "!" or ":" is doubled (i.e. "!!" or "::") the cell will be evaluated
 in all scenarios. This can be useful for debugging or force-refreshing a
 cell but should otherwise not be used.
 """
-function _code_info(b::Block, ctx::LocalContext)
+function _code_info(
+            b::Block,
+            ctx::LocalContext
+        )::CodeInfo
+
     info = match(CODE_INFO_PAT, b.ss).captures[1]
     lang = getvar(ctx, :lang, "")
     info === nothing && return CodeInfo(; lang, code=_strip(content(b)))
@@ -125,6 +149,7 @@ function _code_info(b::Block, ctx::LocalContext)
     exec  = false
     auto  = false
     force = false
+    indep = false
 
     l, e, n = match(CODE_LANG_PAT, info)
 
@@ -134,26 +159,42 @@ function _code_info(b::Block, ctx::LocalContext)
     if !isnothing(e)
         exec = true
     end
+
     if exec
+        # Either attribute a name to the code automatically based on when
+        # it appears on the page, or - if a name hint is given - use the
+        # name hint.
         if !isnothing(n)
             name = n
         else
             name_hint = ""
-            m = match(AUTO_NAME_HINT, code)
+            m = match(AUTO_NAME_HINT_PAT, code)
             if !isnothing(m)
                 name_hint = m.captures[1]
-                code = replace(code, AUTO_NAME_HINT => "")
+                code = replace(code, AUTO_NAME_HINT_PAT => "\n")
             end
+
             name  = auto_cell_name(ctx)
             name *= ifelse(isempty(name_hint), "", " ($name_hint)")
             auto  = true
         end
+        # If there's a doubling of `!` or `:` then the cell should
+        # be force re-executed.
         if length(e) == 2
             force = true
         end
+        # If there's an '# indep ' on a line, then mark the code
+        # as indep
+        m = match(CODE_INDEP_PAT, code)
+        if !isnothing(m)
+            indep = true
+            code  = replace(code, CODE_INDEP_PAT => "\n")
+        end
     end
-    return CodeInfo(; name, lang, code, exec, auto, force)
+
+    return CodeInfo(; name, lang, code=strip(code, ['\n']), exec, auto, force, indep)
 end
+
 
 """
     auto_cell_name(ctx)
@@ -161,7 +202,10 @@ end
 Assign a name to a code cell based on the notebook counter (and increment
 the notebook counter).
 """
-function auto_cell_name(ctx::LocalContext)
+function auto_cell_name(
+            ctx::LocalContext
+        )::String
+
     cntr  = getvar(ctx, :_auto_cell_counter, 0)
     cntr += 1
     setvar!(ctx, :_auto_cell_counter, cntr)
@@ -172,7 +216,16 @@ end
 auto_cell_name() = auto_cell_name(cur_lc())
 
 
-html_code_block(b::Block, c::LocalContext) = begin
+"""
+    html_code_block(b, c)
+
+Represent a code block `b` as HTML in the local context `c`.
+"""
+function html_code_block(
+            b::Block,
+            c::LocalContext
+        )::String
+
     hascode!(c)
     ci   = _code_info(b, c)
     # placeholder for output string if has to be added directly after code
@@ -185,7 +238,7 @@ html_code_block(b::Block, c::LocalContext) = begin
             imgdir_latex = mkpath(imgdir_base / "figs-latex")
             eval_code_cell!(
                 c, ci.code, ci.name;
-                imgdir_html, imgdir_latex, force=ci.force
+                imgdir_html, imgdir_latex, force=ci.force, indep=ci.indep
             )
         end
         if ci.auto
@@ -200,7 +253,17 @@ html_code_block(b::Block, c::LocalContext) = begin
         """) * post
 end
 
-latex_code_block(b::Block, c::LocalContext) = begin
+
+"""
+    latex_code_block(b, c)
+
+Represent a code block `b` as LaTeX in the local context `c`.
+"""
+function latex_code_block(
+            b::Block,
+            c::LocalContext
+        )::String
+
     ci = _code_info(b, c)
     if ci.exec
         if ci.lang == "julia"
