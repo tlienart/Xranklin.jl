@@ -263,6 +263,7 @@ cached.
 This allows for code blocks to not be systematically re-executed if they don't need to be.
 The cached representation can however be considered _stale_ in which case the code block
 will be re-evaluated as soon as the page changes.
+This can be mitigated with the use of `# indep` as [mentioned above](##Marking a cell as independent).
 When adding or modifying a code block, every code block below that one are considered stale,
 and so will be re-executed.
 
@@ -304,7 +305,8 @@ on the Franklin side,  kindly open an issue on GitHub.
 
 When evaluating a code block, Franklin captures `stdout`, `stderr` and, if the code
 doesn't fail, the result of the execution.
-When using the command `\show`, the output is placed in the following HTML:
+When using the command `\show` (or automatically if you use implicit naming), the output
+is placed in the following HTML:
 
 ```html
 <div class="code-output">
@@ -324,14 +326,16 @@ When using the command `\show`, the output is placed in the following HTML:
 </div>
 ```
 
-If the code block didn't fail, the _appropriate representation_ of a result that is
-not `nothing` is obtained by considering the following cases in order:
+If the code block didn't fail, the _appropriate representation of the result_ is obtained by considering the following cases in order:
 
+1. the result is `nothing`, nothing gets shown (no string),
 1. there is a custom `html_show` function for `typeof(result)` that is defined
-in your `Utils`: the string returned by the call to that function is then added,
-1. the object can be shown as an SVG or PNG image: the image is automatically saved to
-an appropriate location and shown (with priority to the SVG output),
-1. the output of `Base.show(result)` is added in a `<pre><code...` block.
+in your `Utils`, the string returned by the call to that function is then added,
+1. the object has a `Base.show` method for `MIME"image/svg+xml"` or `MIME"image/png"`,
+the image is automatically saved to an appropriate location and shown (with priority to SVG output),
+1. the object has a `Base.show` method for `MIME"text/html"`, it gets called and the HTML gets shown,
+1. the object has a `Base.show` method for `MIME"text/plain"`, it gets called and shown in a `<pre><code class="code-result language-plaintext">...</code></pre>` block,
+1. otherwise, the fallback `Base.show` is called and shown as in the previous point in a `<pre><code...` block.
 
 Note that you can always suppress the display of a code block result by
 adding a final '`;`' to the code.
@@ -357,7 +361,7 @@ Nothing will be shown beyond `stdout` if
 * the last command in the code block is a `@show` or returns `nothing`
 * the last command in the code block is followed by '`;`'
 
-For instance
+A few examples follow:
 
 \showmd{
   ```!
@@ -373,10 +377,20 @@ For instance
   ```
 }
 
+\showmd{
+  ```!
+  function foo()::Nothing
+      println("bar")
+      return
+  end
+  foo()    # ==> returns nothing
+  ```
+}
+
 ### Default show
 
-For a result that is not showable as an image or doesn't have a custom show, `Base.show`
-will be applied with a result similar to what you would get in the Julia REPL:
+For a result that does not have a custom show, is not showable as an image, or HTML,
+`Base.show` will be applied with a result similar to what you would get in the Julia REPL:
 
 \showmd{
   ```!
@@ -389,6 +403,10 @@ will be applied with a result similar to what you would get in the Julia REPL:
   [1, 2, 3]
   ```
 }
+
+One exception to this is if the result has a dedicated show method for `MIME"text/plain"` in which
+case that is what will be called and shown.
+
 
 ### Showable as SVG or PNG
 
@@ -403,6 +421,7 @@ For instance:
 
 \showmd{
   ```!
+  # indep
   using Luxor
   @drawsvg juliacircles()
   ```
@@ -433,10 +452,11 @@ hash("""
 
 
 Here's another example with PyPlot (and you could use any other plotting library such as
-  [Plots](https://github.com/JuliaPlots/Plots.jl),
-  [PlotlyJS](https://github.com/JuliaPlots/PlotlyJS.jl), etc.)
+[Plots](https://github.com/JuliaPlots/Plots.jl), [PlotlyJS](https://github.com/JuliaPlots/PlotlyJS.jl), etc.,
+you can also check out the [page dedicated to plots with Franklin](/extras/plots/))
 
 ```!
+# indep
 using PyPlot
 x = range(0, pi, length=500)
 y = @. sin(exp(x)) * sinc(x)
@@ -445,9 +465,27 @@ plot(x, y)
 gcf()
 ```
 
-Note that it's the figure object that is showable as SVG in Pyplot and so we must do
+Note that it's the figure object that is showable as SVG in PyPlot and so we must do
 `gcf()` here to have it be the effective result of the cell and have the plot shown.
 
+### HTML show
+
+Some packages define objects which indicate how to show objects with a `MIME"text/html"`,
+in that case the corresponding `show` method is called and the HTML shown.
+This is for instance the case with DataFrame objects:
+
+```!
+# indep
+using DataFrames
+df = DataFrame(
+  (
+    names  = ["Vlad", "Martha", "Hasan", "Carl"],
+    age    = [50, 34, 23, 42],
+    gender = ["M", "F", "M", "M"]
+  )
+)
+```
+\lskip
 
 ### Custom show
 
@@ -521,6 +559,7 @@ capture a trimmed stacktrace of the problem which will be displayed:
 
 \showmd{
   ```!
+  # indep
   sqrt(-1)
   ```
 }
@@ -574,334 +613,5 @@ You can actually see it [here](/405.html).
   environment. Do use `Utils.path(:folder)` or `Utils.path(:site)`
   as your base path and use `joinpath` to point to the specific location you care about.
 }
-\lskip
 
-## Using packages
-
-As already illustrated in a few examples above, you can use packages in executable code blocks.
-You should make sure that those packages are added to the environment corresponding to the
-website folder. For instance let's say you want to use `CSV` and `DataFrames`, you would do:
-
-```julia-repl
-julia> using Pkg; Pkg.activate("path/to/website/folder")
-julia> Pkg.add(["CSV", "DataFrames"])
-```
-
-It's important your website folder has its dedicated environment.
-Especially if you use continuous integration (CI, e.g. GitHub Actions)
-to build and deploy the website as that CI will need a correct `Project.toml`
-to load the packages needed to properly build the website.
-
-```!
-using DataFrames
-df = DataFrame(A=1:4, B=["M", "F", "F", "M"])
-```
-
-\lskip
-
-### Cache and packages
-
-If you start a new Julia session and have a page where some code uses a package
-(say `DataFrames`) and you add a new code block at the end of the page, only that
-code will be executed and, therefore, won't have access to `DataFrames` unless
-you re-evaluate the whole page **or** you explicitly add `using DataFrames` in that
-new cell (possibly with a `# hide` if you don't want to show it multiple times).
-
-Alternatively, you can (same as when you encounter errors):
-
-* set the current page to ignore the cache at the start of the server by setting
-the page variable `ignore_cache` to `true` and restart the server,
-* clear the entire site cache.
-
-## More examples
-
-You'll find here a few toy examples of what can be done with executed
-code cells, hopefully it will give you some inspiration for what you might do with
-them yourself!
-
-### Generating a table
-
-In this example we use code to generate the Markdown representation of a table and use
-`\mdshow` to show the result.
-You could combine such an example with `CSV` to read data from a file for instance.
-
-\showmd{
-  ```!ex-gen-table
-  #hideall
-  names = (:Taimur, :Catherine, :Maria, :Arvind, :Jose, :Minjie)
-  numbers = (1525, 5134, 4214, 9019, 8918, 5757)
-  # header
-  println( "| Name  | Number  |")
-  println( "| :---  | :---    |")
-  # all rows
-  println.("| $name | $number |"
-    for (name, number) in zip(names, numbers)
-  );
-  ```
-  \mdshow{ex-gen-table}
-}
-
-### Generating SVG
-
-Here we combine the use of `\mdshow` with a command that inputs some SVG.
-
-~~~
-<style>
-.ccols {
-  margin-top:1.5em;
-  margin-bottom:1.5em;
-  margin-left:auto;
-  margin-right:auto;
-  width: 60%;
-  text-align: center;}
-.ccols svg {
-  width:30px;}
-</style>
-~~~
-
-
-\showmd{
-  \newcommand{\circle}[1]{
-    ~~~
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4">
-    <circle cx="2" cy="2" r="1.5" fill="#1"/></svg>
-    ~~~
-  }
-
-  ```!ex-gen-svg
-  #hideall
-  cols = (
-    :pink, :lightpink, :hotpink, :deeppink,
-    :mediumvioletred, :palevioletred, :coral,
-    :tomato, :orangered, :darkorange, :orange, :gold
-  )
-  print("@@ccols ")
-  print.("\\circle{$c}" for c in cols)
-  println("@@")
-  ```
-
-  \mdshow{ex-gen-svg}
-}
-
-The CSS corresponding to `ccols` is
-
-```css
-.ccols {
-  margin-top:1.5em;
-  margin-bottom:1.5em;
-  margin-left:auto;
-  margin-right:auto;
-  width: 60%;
-  text-align: center;}
-.ccols svg {
-  width:30px;}
-```
-
-### Team cards
-
-You may want to have a page with responsive team cards for instance where every card would
-follow the same layout but the content would be different.
-There are multiple ways you can do this with Franklin and a simple one below
-(adapted from [this tutorial](https://www.w3schools.com/howto/howto_css_team.asp)).
-The advantage of doing something like this is that it can help separate the content
-from the layout making both arguably easier to maintain.
-
-~~~
-<style>
-.column {
-  float:left;
-  width:30%;
-  margin-bottom:16px;
-  padding:0 8px; }
-@media (max-width:62rem) {
-  .column {
-    width:45%;
-    display:block; }
-  }
-@media (max-width:30rem){
-  .column {
-    width:95%;
-    display:block;}
-  }
-.card { box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); }
-.card img {
-  padding-left:0;
-  width: 100%; }
-.container { padding: 0 16px; }
-.container::after, .row::after{
-  content: "";
-  clear: both;
-  display: table; }
-.title { color: grey; }
-.vitae { margin-top: 0.5em; }
-.email {
-  font-family: courier;
-  margin-top: 0.5em;
-  margin-bottom: 0.5em; }
-.button{
-  border: none;
-  outline: 0;
-  display: inline-block;
-  padding: 8px;
-  color: white;
-  background-color: #000;
-  text-align: center;
-  cursor: pointer;
-  width: 100%; }
-.button:hover{ background-color: #555; }
-</style>
-~~~
-
-\showmd{
-  \newcommand{\card}[5]{
-    @@card
-      ![#1](/assets/eximg/team/!#2.jpg)
-      @@container
-        ~~~
-        <h2>#1</h2>
-        ~~~
-        @@title #3 @@
-        @@vitae #4 @@
-        @@email #5 @@
-        ~~~
-        <p><button class="button">Contact</button></p>
-        ~~~
-      @@
-    @@
-  }
-
-  ```!ex-gen-teamcards
-  #hideall
-  team = [
-    (
-      name="Jane Doe",
-      pic="beth",
-      title="CEO & Founder",
-      vitae="Phasellus eget enim eu lectus faucibus vestibulum",
-      email="example@example.com"
-    ),
-    (
-      name="Mike Ross",
-      pic="rick",
-      title="Art Director",
-      vitae="Phasellus eget enim eu lectus faucibus vestibulum",
-      email="example@example.com"
-    ),
-    (
-      name="John Doe",
-      pic="meseeks",
-      title="Designer",
-      vitae="Phasellus eget enim eu lectus faucibus vestibulum",
-      email="example@example.com"
-    )
-  ]
-
-  "@@cards @@row" |> println
-  for person in team
-    """
-    @@column
-      \\card{
-        $(person.name)}{
-        $(person.pic)}{
-        $(person.title)}{
-        $(person.vitae)}{
-        $(person.email)}
-    @@
-    """ |> println
-  end
-  println("@@ @@") # end of cards + row
-  ```
-
-  \mdshow{ex-gen-teamcards}
-}
-
-The CSS used here is
-
-```css
-.column {
-  float:left;
-  width:30%;
-  margin-bottom:16px;
-  padding:0 8px; }
-@media (max-width:62rem) {
-  .column {
-    width:45%;
-    display:block; }
-  }
-@media (max-width:30rem){
-  .column {
-    width:95%;
-    display:block;}
-  }
-.card { box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); }
-.card img {
-  padding-left:0;
-  width: 100%; }
-.container { padding: 0 16px; }
-.container::after, .row::after{
-  content: "";
-  clear: both;
-  display: table; }
-.title { color: grey; }
-.vitae { margin-top: 0.5em; }
-.email {
-  font-family: courier;
-  margin-top: 0.5em;
-  margin-bottom: 0.5em; }
-.button{
-  border: none;
-  outline: 0;
-  display: inline-block;
-  padding: 8px;
-  color: white;
-  background-color: #000;
-  text-align: center;
-  cursor: pointer;
-  width: 100%; }
-.button:hover{ background-color: #555; }
-```
-
-### Executing Python code
-
-Using [PyCall] you can evaluate Python code in Julia, and so you can do that in Franklin too.
-The simple example below shows how that can work (you could do something similar with [RCall] too).
-
-\showmd{
-  \newcommand{\pycode}[1]{
-    <!-- Show python code block -->
-    ```python
-    #1
-    ```
-    <!-- Execute code with PyCall.jl -->
-    ```!
-    #hideall
-    using PyCall
-    lines = replace(
-      """#1""",
-      r"(^|\n)([^\n]+)\n?$" => s"\1res = \2"
-    )
-    py"""
-    $$lines
-    """
-    println(py"res")
-    ```
-  }
-
-  \pycode{
-    import pandas as pd
-    df = pd.DataFrame({
-      "A": ["Alice", "Bob", "Jane"],
-      "B": [2, 3, 4]
-      })
-    df["B"].mean()
-  }
-
-}
-
-The `replace` line in the code block adds a `res = ...` before the last line
-so that the result can be shown, cf. the [PyCall] docs.
-
-\note{
-  It's up to you to make sure that [PyCall] works well in your Julia session and that
-  the Python environment it uses has the relevant libraries (e.g. `numpy`).
-}
+[Next page](/syntax/code-2/)

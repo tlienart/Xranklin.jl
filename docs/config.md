@@ -35,6 +35,7 @@ menu = [
     "basics",
     "extensions",
     "code",
+    "code-2",
     "vars+funs",
     "utils",
     ],

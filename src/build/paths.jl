@@ -60,7 +60,8 @@ Extract the relative path out of the full path to a file.
     `/foo/bar/baz/site/blog/page.md` --> `blog/page.md`
 """
 get_rpath(fpath::String) = fpath[(getgvar(:_idx_rpath)::Int):end]
-
+get_rpath() = cur_lc().rpath
+get_rdir()  = dirname(get_rpath())
 
 """
     get_ropath(opath)

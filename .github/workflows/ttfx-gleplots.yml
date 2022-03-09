@@ -31,7 +31,7 @@ jobs:
 
       - name: Install GLE
         run: |
-            curl -L https://sourceforge.net/projects/glx/files/gle4%20%28Current%20Active%20Version%29/4.3.1/gle-4.3.1-Linux.zip/download > gle.zip
+            curl -L https://sourceforge.net/projects/glx/files/gle/4.3.2/gle-4.3.2-Linux.zip/download > gle.zip
             unzip gle.zip
 
       # -- modify index --

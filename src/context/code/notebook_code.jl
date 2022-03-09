@@ -358,14 +358,21 @@ function append_result_html!(io::IOBuffer, result::R, fig::NamedTuple) where R
                 """)
         figshow = true
 
+    elseif hasmethod(Base.show, (IO, MIME"text/html", R))
+        Base.@invokelatest Base.show(io, MIME("text/html"), result)
+
     else
         write(io, """<pre><code class="code-result language-plaintext">""")
-        # need invokelatest in case the cell includes a package which extends show
-        Base.@invokelatest Base.show(io, result)
+        if hasmethod(Base.show, (IO, MIME"text/plain", R))
+            Base.@invokelatest Base.show(io, MIME("text/plain"), result)
+        else
+            Base.@invokelatest Base.show(io, result)
+        end
         write(io, """</code></pre>""")
     end
     return figshow
 end
+
 
 """
     append_result_latex!(io, result)
@@ -391,8 +398,16 @@ function append_result_latex!(io::IOBuffer, result::R, fig::NamedTuple) where R
         fig.show && write(io, """
                 \\includegraphics{$(fig.fpath).png}">
                 """)
+
+    elseif hasmethod(Base.show, (IO, MIME"text/latex", R))
+        Base.@invokelatest Base.show(io, MIME("text/latex"), result)
+
     else
-        Base.@invokelatest Base.show(io, result)
+        if hasmethod(Base.show, (IO, MIME"text/plain", R))
+            Base.@invokelatest Base.show(io, MIME("text/plain"), result)
+        else
+            Base.@invokelatest Base.show(io, result)
+        end
     end
     return
 end

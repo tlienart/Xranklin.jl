@@ -65,17 +65,17 @@ Note also that this time is a one-off cost, subsequent plots should take negligi
 
 | Plotting package | Result | Time (min) |
 | ---------------- | ------ | ---------- |
-| [Plots.jl](#plots.jl) (GR backend)  | [link](/ttfx/plots/)        | {{ttfx plots}}        |
-| [CairoMakie.jl](#cairomakie.jl)     | [link](/ttfx/cairomakie/)   | {{ttfx cairomakie}}   |
-| [WGLMakie.jl](#wglmakie.jl)         | [link](/ttfx/wglmakie/)     | {{ttfx wglmakie}}     |
-| [PyPlot.jl](#pyplot.jl)             | [link](/ttfx/pyplot/)       | {{ttfx pyplot}}       |
-| [PGFPlots.jl](#pgfplots.jl)         | [link](/ttfx/pgfplots/)     | {{ttfx pgfplots}}     |
-| [PGFPlotsX.jl](#pgfplotsx.jl)       | [link](/ttfx/pgfplotsx/)    | {{ttfx pgfplotsx}}    |
-| [PlotlyJS.jl](#plotlyjs.jl)         | NA                          | NA                    |
-| [Gaston.jl](#gaston.jl)             | [link](/ttfx/gaston/)       | {{ttfx gaston}}       |
-| [UnicodePlots.jl](#unicodeplots.jl) | [link](/ttfx/unicodeplots/) | {{ttfx unicodeplots}} |
-| [Gadfly.jl](#gadfly.jl)             | [link](/ttfx/gadfly/)       | {{ttfx gadfly}}       |
-| [GLEPlot.jl](#gleplot.jl)           | [link](/ttfx/gleplot/)      | {{ttfx gleplot}}      |
+| [Plots.jl](#plots) (GR backend)  | [link](/ttfx/plots/)        | {{ttfx plots}}        |
+| [CairoMakie.jl](#cairomakie)     | [link](/ttfx/cairomakie/)   | {{ttfx cairomakie}}   |
+| [WGLMakie.jl](#wglmakie)         | [link](/ttfx/wglmakie/)     | {{ttfx wglmakie}}     |
+| [PyPlot.jl](#pyplot)             | [link](/ttfx/pyplot/)       | {{ttfx pyplot}}       |
+| [PGFPlots.jl](#pgfplots)         | [link](/ttfx/pgfplots/)     | {{ttfx pgfplots}}     |
+| [PGFPlotsX.jl](#pgfplotsx)       | [link](/ttfx/pgfplotsx/)    | {{ttfx pgfplotsx}}    |
+| [PlotlyJS.jl](#plotlyjs)         | NA                          | NA                    |
+| [Gaston.jl](#gaston)             | [link](/ttfx/gaston/)       | {{ttfx gaston}}       |
+| [UnicodePlots.jl](#unicodeplots) | [link](/ttfx/unicodeplots/) | {{ttfx unicodeplots}} |
+| [Gadfly.jl](#gadfly)             | [link](/ttfx/gadfly/)       | {{ttfx gadfly}}       |
+| [GLEPlot.jl](#gleplot)           | [link](/ttfx/gleplot/)      | {{ttfx gleplot}}      |
 
 \lskip
 
@@ -96,7 +96,7 @@ In short, if you see that one of your plot shows some stdout you don't want on y
 
 If you use one of the packages mentioned below as well as the suggested instructions, this should not be necessary.
 
-## Plots.jl
+## Plots
 
 [Plots.jl](https://github.com/JuliaPlots/Plots.jl) is one of the most common plotting package used.
 It is pretty easy to use and has [great documentation](https://docs.juliaplots.org/stable/).
@@ -220,7 +220,7 @@ Combined with [JSServe.jl](https://github.com/SimonDanisch/JSServe.jl) it can pr
 
 You don't need to install anything specific in your GA script but remember to add `WGLMakie` to the site environment.
 
-## PyPlot.jl
+## PyPlot
 
 [PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl) is an interface to [matplotlib](https://matplotlib.org/) and is a great option if you're already familiar with that.
 
@@ -276,7 +276,7 @@ this will guarantee that the right executable is used even when you're using the
 
 Remember to also add PyPlot to the site environment.
 
-## PGFPlots.jl
+## PGFPlots
 
 [PGFPlots.jl](https://github.com/JuliaTeX/PGFPlots.jl) is an interface to [PGFPlots](https://www.ctan.org/pkg/pgfplots)
 and produces LaTeX-style plots.
@@ -312,7 +312,7 @@ run: |
 
 Remember to also add PGFPlots to the site environment.
 
-## PGFPlotsX.jl
+## PGFPlotsX
 
 [PGFPlotsX.jl](https://github.com/KristofferC/PGFPlotsX.jl) is also an interface to [PGFPlots](https://www.ctan.org/pkg/pgfplots) and produces LaTeX-style plots but it does have much fewer dependencies than PGFPlots and its syntax is much closer to PGFPlots.
 
@@ -411,7 +411,7 @@ The overall structure is
 It doesn't require anything specific in your GA. Make sure the Javascript library is in your `/libs/` though, along with the PlotlyJS package in the site environment.
 
 
-## Gaston.jl
+## Gaston
 
 
 [Gaston.jl](https://github.com/mbaz/Gaston.jl) is an interface to [GnuPlot](http://gnuplot.sourceforge.net).
@@ -447,7 +447,7 @@ run: |
 Remember to also add Gaston to the site environment.
 
 
-## UnicodePlots.jl
+## UnicodePlots
 
 [UnicodePlots.jl](https://github.com/JuliaPlots/UnicodePlots.jl) is a plotting library produced text-based plots.
 This is meant for use in the REPL but you can actually generate ANSI text with it which can, in turn, be converted to HTML that can be injected in Franklin.
@@ -501,7 +501,7 @@ run: pip install ansi2html
 
 as well as adding UnicodePlots to the site environment.
 
-## Gadfly.jl
+## Gadfly
 
 [Gadfly.jl](https://github.com/GiovineItalia/Gadfly.jl) is a plotting system written in Julia and influenced by the Grammar of Graphics.
 
@@ -522,7 +522,7 @@ as well as adding UnicodePlots to the site environment.
 
 Gadfly doesn't require anything specific in your GA script, just remember to add it to the site environment.
 
-## GLEPlot.jl
+## GLEPlot
 
 [GLEPlot.jl](https://github.com/tlienart/GLEPlot.jl) is an **experimental** wrapper around the
 [Graphics Layout Engine](https://glx.sourceforge.io), a mature library geared around producing publication quality plots.
@@ -533,7 +533,7 @@ For now GLEPlot is not ready yet for consumption by general users.
 
 ```yml
 run: |
-    curl -L https://sourceforge.net/projects/glx/files/gle4%20%28Current%20Active%20Version%29/4.3.1/gle-4.3.1-Linux.zip/download > gle.zip
+    curl -L https://sourceforge.net/projects/glx/files/gle/4.3.2/gle-4.3.2-Linux.zip/download > gle.zip
     unzip gle.zip
 ```
 
