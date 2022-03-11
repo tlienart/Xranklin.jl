@@ -224,6 +224,8 @@ function reset_page_context!(
     empty!(lc.anchors)
     empty!(lc.headings)
     eqrefs(lc)["__cntr__"] = 0
+    setvar!(lc, :_hasmath, false)
+    setvar!(lc, :_hascode, false)
     setvar!(lc, :_auto_cell_counter, 0)
     setvar!(lc, :_paginator_name, "")
 
