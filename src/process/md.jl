@@ -217,17 +217,19 @@ function reset_page_context!(
         headings  = copy(lc.headings),
         eq_cntr   = eqrefs(lc)["__cntr__"],
         cell_cntr = getvar(lc, :_auto_cell_counter, 0),
-        paginator = getvar(lc, :_paginator_name, "")
+        paginator = getvar(lc, :_paginator_name, ""),
+        hasmath   = getvar(lc, :_hasmath),
+        hascode   = getvar(lc, :_hascode),
     )
 
     # Reset page counters and variables (headers etc)
     empty!(lc.anchors)
     empty!(lc.headings)
     eqrefs(lc)["__cntr__"] = 0
-    setvar!(lc, :_hasmath, false)
-    setvar!(lc, :_hascode, false)
     setvar!(lc, :_auto_cell_counter, 0)
     setvar!(lc, :_paginator_name, "")
+    setvar!(lc, :_hasmath, false)
+    setvar!(lc, :_hascode, false)
 
     # in the context of "ignore_cache", reset the notebook
     reset_notebook && reset_code_notebook!(lc)
@@ -253,6 +255,8 @@ function restore_page_context!(
     eqrefs(lc)["__cntr__"] = state.eq_cntr
     setvar!(lc, :_auto_cell_counter, state.cell_cntr)
     setvar!(lc, :_paginator_name, state.paginator)
+    setvar!(lc, :_hascode, state.hascode)
+    setvar!(lc, :_hasmath, state.hasmath)
     return
 end
 
