@@ -278,6 +278,7 @@ function process_md_file_io!(
             initial_pass::Bool=false,
             tohtml::Bool=true
         )::Nothing
+
     crumbs(@fname, fpath)
 
     # path of the file relative to path(:folder)
@@ -334,17 +335,17 @@ function process_md_file_io!(
     # was before the call to reset_page_context
     skip && restore_page_context!(lc, bk_state)
 
-    output = (tohtml ?
+    output = tohtml ?
                 _process_md_file_html(lc, page_content_md; skip) :
-                _process_md_file_latex(lc, page_content_md; skip)  )::String
+                _process_md_file_latex(lc, page_content_md; skip)
 
     # only here do we know whether `ignore_cache` was set to 'true'
     # if that's the case, reset the code notebook and re-evaluate.
     if from_cache && getvar(lc, :ignore_cache, false)
         reset_page_context!(lc, reset_notebook=true)
-        output = (tohtml ?
-                    _process_md_file_html(lc, page_content_md) :
-                    _process_md_file_latex(lc, page_content_md))::String
+        output = tohtml ?
+                  _process_md_file_html(lc, page_content_md) :
+                  _process_md_file_latex(lc, page_content_md)
     end
 
     # Now that the page has been evaluated, we can discard entries
@@ -418,13 +419,13 @@ function _process_md_file_html(
         setvar!(lc, :_generated_html, page_content_html)
     end
 
-    # Path 2 / skeleton
+    # Path 1 & 2, we start with the second one
+    # > path 2 / skeleton
     skeleton_path = path(:folder) / getvar(lc, :layout_skeleton, "")
     if !isempty(skeleton_path) && isfile(skeleton_path)
         return html2(read(skeleton_path, String), lc)
     end
-
-    # Path 1 / head * page *foot
+    # > path 1 / head * page *foot
     return _assemble_join_html(lc)
 end
 

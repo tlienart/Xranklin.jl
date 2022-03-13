@@ -55,22 +55,7 @@ function process_config(
         """
     # -------------------------------------------
 
-    if getvar(gc, :generate_rss)::Bool
-        # :website_url must be given
-        url = getvar(gc, :rss_website_url)::String
-        if isempty(url)
-            @warn """
-                Process config.md
-                When `generate_rss=true`, `rss_website_url` must be given.
-                Setting `generate_rss=false` in the meantime.
-                """
-            setvar!(gc, :generate_rss, false)
-        else
-            endswith(url, '/') || (url *= '/')
-            full_url =  url * getvar(gc, :rss_file)::String * ".xml"
-            setvar!(gc, :rss_feed_url, full_url)
-        end
-    end
+    _check_rss(gc)
 
     # -----------------------------------------------------
     # Check if any lxdefs were updated and, if so, mark all
@@ -105,6 +90,53 @@ end
 
 process_config(config::String; kw...) = process_config(config, cur_gc(); kw...)
 process_config(; kw...) = process_config(cur_gc(); kw...)
+
+
+"""
+    _check_rss(gc)
+
+Internal function to check whether the relevant variables and files are set
+properly when `generate_rss` is true.
+"""
+function _check_rss(
+            gc::GlobalContext
+        )::Nothing
+
+    getvar(gc, :generate_rss, false) || return
+
+    #
+    # CHECK 1
+    # :website_url must be given
+    url = getvar(gc, :rss_website_url, "")
+    if isempty(url)
+        @warn """
+            Process config.md
+            When `generate_rss=true`, `rss_website_url` must be given.
+            Setting `generate_rss=false` in the meantime.
+            """
+        setvar!(gc, :generate_rss, false)
+    else
+        endswith(url, '/') || (url *= '/')
+        full_url =  url * getvar(gc, :rss_file)::String * ".xml"
+        setvar!(gc, :rss_feed_url, full_url)
+    end
+
+    #
+    # CHECK 2
+    # :rss_layout_head + :rss_layout_item must exists
+    rss_head = getvar(gc, :rss_layout_head, "")
+    rss_item = getvar(gc, :rss_layout_item, "")
+    if !isfile(rss_head) || !isfile(rss_item)
+        @warn """
+            Process config.md
+            When `generate_rss=true`, `rss_layout_head` & `rss_layout_item`
+            must point to existing files.
+            Setting `generate_rss=false` in the meantime.
+            """
+        setvar!(gc, :generate_rss, false)
+    end
+    return
+end
 
 
 # ------------- #

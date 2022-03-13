@@ -15,12 +15,12 @@ const DefaultGlobalVars = Vars(
     :autosavefigs        => true,
     :skiplatex           => false,
     :autoshowfigs        => true,
-    :layout_skeleton     => "_layout/skeleton.html",
-    :layout_head         => "_layout/head.html",
-    :layout_foot         => "_layout/foot.html",
-    :layout_page_foot    => "_layout/page_foot.html",
-    :layout_tag          => "_layout/tag.html",
-    :layout_head_lx      => "_layout/latex/head.tex",
+    :layout_skeleton     => "_layout" / "skeleton.html",
+    :layout_head         => "_layout" / "head.html",
+    :layout_foot         => "_layout" / "foot.html",
+    :layout_page_foot    => "_layout" / "page_foot.html",
+    :layout_tag          => "_layout" / "tag.html",
+    :layout_head_lx      => "_layout" / "latex/head.tex",
     :parse_script_blocks => true,  # see html2; possibly disable DBB in <script>
     # Date format
     :date_format      => "U d, yyyy",
@@ -65,6 +65,8 @@ const DefaultGlobalVars = Vars(
     :rss_website_descr => "",
     :rss_file          => "feed",
     :rss_full_content  => false,
+    :rss_layout_head   => "_rss" / "head.xml",
+    :rss_layout_item   => "_rss" / "item.xml",
     # Tags
     :tags_prefix       => "tags",
     # Literate
@@ -107,7 +109,7 @@ robots_disallow: disallow the current page
 const DefaultLocalVars = Vars(
     # General
     :title        => nothing,
-    :date         => Dates.Date(1),
+    :date         => Date(1),
     :lang         => "julia",
     :tags         => String[],
     # :prerender    => true,
@@ -127,7 +129,7 @@ const DefaultLocalVars = Vars(
     :rss_category  => "",
     :rss_comments  => "",
     :rss_enclosure => "",
-    :rss_pubdate   => Dates.Date(1),
+    :rss_pubdate   => Date(1),
     # sitemap
     :sitemap_changefreq => "monthly",
     :sitemap_priority   => 0.5,

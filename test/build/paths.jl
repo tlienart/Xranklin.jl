@@ -6,7 +6,6 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     X.set_paths!(gc, pwd())
     @test isdir(X.path(:folder))
     @test X.path(:css) == joinpath(X.path(:folder), "_css")
-    @test X.code_output_path("foo.png") == "foo.png"
 
     @test X.get_rpath(X.path(:folder)/"foo"/"bar.md") == "foo"/"bar.md"
 end

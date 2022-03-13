@@ -87,6 +87,7 @@ include("$p/context.jl")
 include("$p/serialize.jl")
 include("$p/anchors.jl")
 include("$p/tags.jl")
+include("$p/rss.jl")
 include("$p/default_context.jl")
 
 p = "context/code"

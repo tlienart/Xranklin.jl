@@ -127,8 +127,13 @@ function full_pass(
     end
     # reprocess
     for r in to_reprocess
-        reprocess(r, gc; skip_files, final, msg="(depends on updated vars/anchors)")
+        reprocess(r, gc;
+            skip_files, final, msg="(depends on updated vars/anchors)"
+        )
     end
+
+    # RSS generation
+    final && generate_rss(gc)
 
     # ---------------------------------------------------------
     println("")

@@ -60,9 +60,11 @@ const TABLE_SEP_COL_PAT = r"(\:?-+\:?)"
 # MISC #
 # ---- #
 
-"""
-    PREPATH_FIX_PAT
-
-Link fixing (see in process_file / final pass).
-"""
+"Link fixing (see in process_file / final pass)."
 const PREPATH_FIX_PAT = r"(src|href|formaction|action|url)\s*?=\s*?([\"\']?)\/"
+
+"Simple link removal (see rss)."
+const HTML_LINK_PAT = Regex(raw"""<a\shref=(?:"|')?\#.*?>(.*?)</a>""")
+
+"Simple comment removal (see rss)."
+const HTML_COMMENT_PAT = r"<!--(.|\n)*?-->"

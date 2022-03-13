@@ -21,33 +21,17 @@ function set_paths!(gc::GlobalContext, folder::String)
     P[:css]        = f / "_css"
     P[:layout]     = f / "_layout"
     P[:libs]       = f / "_libs"
-    P[:rss]        = f / "_rss"          # optional/generated
 
     # output
     P[:site]  = f / "__site"
     P[:pdf]   = f / "__pdf"
     P[:cache] = f / "__cache"
 
-    P[:code_out]   = ""
-
     # keep track of prefix, see get_rpath, get_ropath
     setgvar!(:_idx_rpath,  lastindex(P[:folder] / "") + 1)
     setgvar!(:_idx_ropath, lastindex(P[:site] / "") + 1)
     return
 end
-
-
-"""
-    code_output_path(s="")
-
-Return the output_path associated with a code block.
-This makes it easy to have a code block that saves something to file
-and then later have something that loads that file e.g.:
-
-* in the code block: `savefig(output_path("f1.png"))`
-* in the markdown: `\fig{"f1.png"}`
-"""
-code_output_path(s::String="") = path(:code_out) / s
 
 
 """
