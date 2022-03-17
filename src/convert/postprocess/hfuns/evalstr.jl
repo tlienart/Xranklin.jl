@@ -19,14 +19,10 @@ function eval_str(estr::SS)::Any
         estr = strip(lstrip(estr, '>'))
     end
     code     = _eval_str(estr)
-    captured = (value=nothing, output="")
-    try
-        captured = IOCapture.capture() do
-            include_string(softscope, cur_utils_module(), code)
-        end
-    catch e
-        return EvalStrError()
+    captured = IOCapture.capture(; rethrow=Union{}) do
+        include_string(softscope, cur_utils_module(), code)
     end
+    captured.error && return EvalStrError()
     return captured.value
 end
 eval_str(es::String) = eval_str(subs(es))
