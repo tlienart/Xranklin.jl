@@ -68,3 +68,6 @@ const HTML_LINK_PAT = Regex(raw"""<a\shref=(?:"|')?\#.*?>(.*?)</a>""")
 
 "Simple comment removal (see rss)."
 const HTML_COMMENT_PAT = r"<!--(.|\n)*?-->"
+
+"Simple empty line removal (see rss)."
+const EMPTY_LINE_PAT = r"\n[\s\n]*\n"

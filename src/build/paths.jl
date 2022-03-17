@@ -10,7 +10,7 @@ paths() = getgvar(:_paths)::LittleDict{Symbol, String}
 
 Return the path corresponding to `s` e.g. `path(:folder)`.
 """
-path(s::Symbol)::String = get(paths(), s, "")
+path(s::Symbol)::String = get(paths(), s, "xxx")
 
 
 function set_paths!(gc::GlobalContext, folder::String)
@@ -21,6 +21,7 @@ function set_paths!(gc::GlobalContext, folder::String)
     P[:css]        = f / "_css"
     P[:layout]     = f / "_layout"
     P[:libs]       = f / "_libs"
+    P[:rss]        = f / "_rss"
 
     # output
     P[:site]  = f / "__site"

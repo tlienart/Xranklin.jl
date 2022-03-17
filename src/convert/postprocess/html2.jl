@@ -32,8 +32,13 @@ function html2(
     # Keep track of the current gc and lc, these may be changed
     # by the call to hfuns but should be re-set afterwards
     # we use the direct `env/setenv` for local since it may be nothing!
-    cgc = cur_gc()
-    clc = env(:cur_local_ctx)
+    if c isa GlobalContext
+        cgc = c
+        clc = env(:cur_local_ctx)
+    else
+        cgc = c.glob
+        clc = c
+    end
 
     io     = IOBuffer()
     idx    = 0

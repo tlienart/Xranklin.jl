@@ -42,13 +42,12 @@ function process_file(
     # -> if it's marked as "to be skipped"
     skip = startswith(fpath, path(:layout)) ||  # no copy
            startswith(fpath, path(:rss))    ||  # no copy
-           fpair in skip_files                     # skip
+           fpair in skip_files                  # skip
     skip && return
 
     # Now that we know the file should not be ignored, form the output path
     # i.e. the path where it's expected the file will be written or copied
     opath = get_opath(fpair, case)
-
     #
     # There are now two processing cases:
     # 1. the file is a MD or HTML file, it should be processed by Franklin to

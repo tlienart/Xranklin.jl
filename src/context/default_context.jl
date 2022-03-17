@@ -170,13 +170,14 @@ const DefaultLocalVars = Vars(
     :_generated_latex => "",
 )
 const DefaultLocalVarsAlias = Alias(
-    :fd_rpath     => :_relative_path,
-    :fd_url       => :_relative_url,
-    :fd_ctime     => :_creation_time,
-    :fd_mtime     => :_modification_time,
-    :reeval       => :ignore_cache,
-    :hasmath      => :_hasmath,
-    :hascode      => :_hascode,
+    :fd_rpath        => :_relative_path,
+    :fd_url          => :_relative_url,
+    :fd_ctime        => :_creation_time,
+    :fd_mtime        => :_modification_time,
+    :reeval          => :ignore_cache,
+    :hasmath         => :_hasmath,
+    :hascode         => :_hascode,
+    :rss_description => :rss_descr
 )
 
 ##############################################################################

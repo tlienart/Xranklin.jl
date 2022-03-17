@@ -96,7 +96,7 @@ process_config(; kw...) = process_config(cur_gc(); kw...)
     _check_rss(gc)
 
 Internal function to check whether the relevant variables and files are set
-properly when `generate_rss` is true.
+properly when `generate_rss` is true. This is called in `process_config`.
 """
 function _check_rss(
             gc::GlobalContext
