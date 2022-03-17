@@ -47,7 +47,7 @@ function serve(d::String = "";
 
             # Base url prefix / prepath optional override
             prepath::String = "",
-            prefix::String = "",
+            prefix::String  = "",
             base_url_prefix::String = ifelse(isempty(prepath), prefix, prepath),
 
             # Debugging options

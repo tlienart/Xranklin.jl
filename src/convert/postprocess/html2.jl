@@ -1,4 +1,5 @@
-const EMPTY_DBB = "__EMPTY_DBB__"
+const EMPTY_DBB     = "__EMPTY_DBB__"
+const EMPTY_DBB_PAT = Regex("(?:<p>\\s*$(EMPTY_DBB)\\s*</p>)|(?:$(EMPTY_DBB))")
 
 """
     html2(s, c)
@@ -199,6 +200,6 @@ function html2(
         end # end dbb
     end
     out = String(take!(io))
-    out = replace(out, Regex("(?:<p>\\s*$(EMPTY_DBB)\\s*</p>)|(?:$(EMPTY_DBB))") => "")
+    out = replace(out, EMPTY_DBB_PAT => "")
     return out
 end

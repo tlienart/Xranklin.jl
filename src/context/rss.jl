@@ -100,7 +100,7 @@ function form_rss_item(
     # form the item, resolve `{{...}}`
     item = html2(item_template, lc)
     # remove skipped lines
-    item = replace(item, r"\n[\s\n]*\n" => "\n")
+    item = replace(item, EMPTY_LINE_PAT => "\n")
     # naive replacement of links by plaintext
     item = replace(item, HTML_LINK_PAT => s"\1")
 

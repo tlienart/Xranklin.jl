@@ -68,10 +68,12 @@ function update_files_to_watch!(
                 continue
             end
 
-            if startswith(fpath, path(:css)) ||
-                   startswith(fpath, path(:layout)) ||
-                   startswith(fpath, path(:libs)) ||
-                   file == "config.md" || file == "utils.jl"
+            if startswith(fpath, path(:css))    ||
+               startswith(fpath, path(:layout)) ||
+               startswith(fpath, path(:libs))   ||
+               startswith(fpath, path(:rss))    ||
+               file == "config.md"              ||
+               file == "utils.jl"
                 # files that, when they get changed, might change the aspect of
                 # the full website
                 add_if_new_file!(wf[:infra], fpair, in_loop)
