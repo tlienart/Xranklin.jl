@@ -73,20 +73,25 @@ Once returned the blocks need to be validated.
     * reference to a variable that doesn't exist
     * reference to a variable that doesn't have the right type
 """
-function find_henv(parts::Vector{Block}, idx::Int)::Tuple{Vector{HEnvPart},Int}
-    # first block (if/for)
-    block       = parts[idx]
-    fn, args... = FP.split_args(strip(content(block)))
-    fname       = Symbol(lowercase(fn))
+function find_henv(
+            parts::Vector{Block},
+            idx::Int,
+            fname::Symbol,
+            args::Vector{String}
+        )::Tuple{Vector{HEnvPart},Int}
 
+    # first block (if/for)
+    block    = parts[idx]
     henv     = [HEnvPart(fname, block, args)]
     branch   = fname in INTERNAL_HENV_IF
     has_else = false
 
-    closing_index  = idx+1
-    henv_depth     = 1
+    closing_index = idx+1
+    henv_depth    = 1
+
     # look at blocks ahead until the environment is closed with {{end}}
     for j in idx+1:length(parts)
+
         candb        = parts[j]
         candb.name  == :DBB || continue
         cand         = strip(content(candb))
@@ -116,10 +121,11 @@ function find_henv(parts::Vector{Block}, idx::Int)::Tuple{Vector{HEnvPart},Int}
             end
         end
     end
-    # check
-    if henv_depth > 0
-        return (HEnvPart[], closing_index)
-    end
+    
+    # if not closed properly, return an empty env
+    henv_depth > 0 && return (HEnvPart[], closing_index)
+
+    # otherwise return the full environment
     return (henv, closing_index)
 end
 

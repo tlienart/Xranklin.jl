@@ -9,18 +9,30 @@ end
 
 Take an e-string `e"..."` replace any `\$...` with a locvar getter and evaluate
 the logic in the current utils module.
+
+Note that this is a bit slow because of the way the code is evaluated in the
+Utils module whilst keeping track of whether the code executed fine or not and
+capturing the results. So the recommendation for users is to use this
+occasionally for simple logic; otherwise write a hfun.
+
 See tests for examples.
 """
 function eval_str(estr::SS)::Any
-    estr = strip(estr)
+    estr = replace(strip(estr), "\\\"" => "⁰")
+
     if startswith(estr, "e")
         estr = strip(strip(lstrip(estr, 'e'), '\"'))
     else
         estr = strip(lstrip(estr, '>'))
     end
-    code     = _eval_str(estr)
+
+    code = _eval_str(estr)
     captured = IOCapture.capture(; rethrow=Union{}) do
-        include_string(softscope, cur_utils_module(), code)
+        include_string(
+            softscope,
+            cur_utils_module(),
+            replace(code, "⁰" => "\"")
+        )
     end
     captured.error && return EvalStrError()
     return captured.value
@@ -28,9 +40,16 @@ end
 eval_str(es::String) = eval_str(subs(es))
 
 
-# e"foo($bar)" --> "foo(getlvar(:bar))"
-# (the resulting string can then be evaluated in the utils code module so has access to functions there)
-function _eval_str(code::SS)
+"""
+    _eval_str(code)
+
+Go over code looking for un-escaped dollar signs and replace those with locvar
+injections.
+"""
+function _eval_str(
+            code::SS
+        )::String
+
     main_io = IOBuffer()
     tmp_io  = IOBuffer()
     prev    = '\0'
@@ -72,4 +91,5 @@ function _eval_str(code::SS)
         prev = cur
     end
     code = String(take!(main_io))
+    return code
 end
