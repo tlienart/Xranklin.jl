@@ -137,7 +137,7 @@ function full_pass(
     end
 
     # RSS generation
-    final && getvar(gc, :generate_rss, false) && final && generate_rss(gc)
+    final && getvar(gc, :generate_rss, false) && generate_rss(gc)
 
     # ---------------------------------------------------------
     println("")
