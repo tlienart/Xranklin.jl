@@ -78,11 +78,18 @@ function serve(d::String = "";
 
     # if there is a utils.jl that was cached, check if it has changed,
     # if it has, we clear even if clear is false
-    cached  = path(:cache)  / "utils.jl"
-    current = path(:folder) / "utils.jl"
+    cached_config  = path(:cache)  / "config.md"
+    current_config = path(:folder) / "config.md"
+    cached_utils   = path(:cache)  / "utils.jl"
+    current_utils  = path(:folder) / "utils.jl"
+
+    config_unchanged = !any(isfile, (cached_config, current_config)) ||
+                        filecmp(cached_config, current_config)
+    utils_unchanged  = !any(isfile, (cached_utils, current_utils)) ||
+                        filecmp(cached_utils, current_utils)
 
     # if clear, destroy output directories if any
-    if clear || (any(isfile, (cached, current)) && !filecmp(cached, current))
+    if clear || !utils_unchanged
         for odir in (path(:site), path(:pdf), path(:cache))
             rm(odir; force=true, recursive=true)
         end
@@ -115,7 +122,7 @@ function serve(d::String = "";
 
     # do the initial build
     process_utils(gc)
-    full_pass(gc, wf; final)
+    full_pass(gc, wf; final, allow_full_skip=config_unchanged & utils_unchanged)
 
     # ---------------------------------------------------------------
     # Start the build loop unless we're in single pass mode (single)
@@ -181,11 +188,12 @@ function serialize_contexts(gc::GlobalContext)::Nothing
     mkpath(path(:cache))
     serialize_gc(gc)
 
-    # if utils changes from one to next, amounts to "clear"
-    futils = path(:folder) / "utils.jl"
-    if isfile(futils)
-        @info "📓 keep copy of $(hl("utils", :cyan))..."
-        cp(futils, path(:cache) / "utils.jl", force=true)
+    for fn in ("config.md", "utils.jl")
+        futils = path(:folder) / fn
+        if isfile(futils)
+            @info "📓 keep copy of $(hl(fn, :cyan))..."
+            cp(futils, path(:cache) / fn, force=true)
+        end
     end
 
     δt = time() - start; @info """

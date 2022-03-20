@@ -29,7 +29,8 @@ function process_file(
             skip_files::Vector{Pair{String, String}}=Pair{String, String}[],
             initial_pass::Bool=false,
             final::Bool=false,
-            reproc::Bool=false
+            reproc::Bool=false,
+            allow_full_skip::Bool=false
         )::Nothing
 
     crumbs(@fname, "$(fpair.first) => $(fpair.second)")
@@ -64,7 +65,10 @@ function process_file(
 
         if case == :md
             # process the file and write the result at 'opath'
-            process_md_file(gc, fpath, opath; initial_pass)
+            process_md_file(
+                gc, fpath, opath;
+                initial_pass, allow_full_skip
+            )
 
             # recover the context associated with that page and check if the
             # output path needs to be corrected to take a 'slug' into account

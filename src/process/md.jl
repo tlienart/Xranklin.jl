@@ -38,6 +38,7 @@ function process_md_file(
             fpath::String,
             opath::String;
             initial_pass::Bool=false,
+            allow_full_skip::Bool=false,
             kw...
         )::Nothing
     crumbs(@fname, fpath)
@@ -59,7 +60,7 @@ function process_md_file(
     io = IOBuffer()
     process_md_file_io!(
         io, gc, fpath;
-        opath, initial_pass, kw...
+        opath, initial_pass, allow_full_skip, kw...
     )
 
     # paginated or not, write the base unless there's nothing to write
@@ -262,7 +263,7 @@ end
 
 
 """
-    process_md_file_io!(io, gc, fpath, opath)
+    process_md_file_io!(io, gc, fpath; kw...)
 
 Process a markdown file located at `fpath` within global context `gc` and
 write the result to the iostream `io`.
@@ -276,6 +277,7 @@ function process_md_file_io!(
             fpath::String;
             opath::String="",
             initial_pass::Bool=false,
+            allow_full_skip::Bool=false,
             tohtml::Bool=true
         )::Nothing
 
@@ -321,7 +323,7 @@ function process_md_file_io!(
         # check whether the output path is there and if so we skip
         if isfile(opath)
             @info """
-                ⏩ page '$rpath' hasn't changed, skipping the conversion...
+                ⏩ page '$rpath' hasn't changed, skipping some of the conversion...
                 """
             skip = true
         end
@@ -335,9 +337,15 @@ function process_md_file_io!(
     # was before the call to reset_page_context
     skip && restore_page_context!(lc, bk_state)
 
-    output = tohtml ?
-                _process_md_file_html(lc, page_content_md; skip) :
-                _process_md_file_latex(lc, page_content_md; skip)
+    output     = ""
+    early_stop = false
+    if !(skip && allow_full_skip)
+        output = tohtml ?
+                    _process_md_file_html(lc, page_content_md; skip) :
+                    _process_md_file_latex(lc, page_content_md; skip)
+    else
+        early_stop = true
+    end
 
     # only here do we know whether `ignore_cache` was set to 'true'
     # if that's the case, reset the code notebook and re-evaluate.
@@ -346,6 +354,14 @@ function process_md_file_io!(
         output = tohtml ?
                   _process_md_file_html(lc, page_content_md) :
                   _process_md_file_latex(lc, page_content_md)
+        early_stop = false
+    end
+
+    if early_stop
+        @info """
+            ⏩⏩ also no change of context, skipping reest of the conversion...
+            """
+        return
     end
 
     # Now that the page has been evaluated, we can discard entries
@@ -377,7 +393,6 @@ function process_md_file_io!(
     # check whether any tag has been removed by comparing
     # to 'bk_tags'
     for id in setdiff(old_keys, new_keys)
-        @show "Here?"
         rm_tag(gc, id, lc.rpath)
     end
     # do the opposite and add any new tags
@@ -493,7 +508,12 @@ end
     _process_md_file_latex
 
 """
-function _process_md_file_latex(lc::LocalContext, page_content_md::String; skip=false)
+function _process_md_file_latex(
+            lc::LocalContext,
+            page_content_md::String;
+            skip=false
+        )
+
     page_content_latex = getvar(lc, :_generated_latex, "")
     if !skip || isempty(page_content_latex)
         page_content_latex = latex(page_content_md, lc)

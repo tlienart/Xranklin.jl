@@ -22,6 +22,9 @@ since any code cell might call from Utils and we don't know which ones do.
     layout_changed: whether this was triggered by a layout change
     config_changed: whether this was triggered by a config change
     utils_changed: whether this was triggered by a utils change
+    allow_full_skip: in the initial pass, if the config and utils haven't
+                         changed since last time, allow complete skipping of
+                         page builds if nothing has changed.
 
 NOTE: it's not straightforward to parallelise this since pages can request
 access to other pages' context or the global context menaing there's a fair
@@ -34,6 +37,7 @@ function full_pass(
             layout_changed::Bool=false,
             config_changed::Bool=false,
             utils_changed::Bool=false,
+            allow_full_skip::Bool=false,
             final::Bool=false
             )::Nothing
 
@@ -103,7 +107,7 @@ function full_pass(
     for (case, dict) in watched_files, (fp, t) in dict
         process_file(
             gc, fp, case, dict[fp];
-            skip_files, initial_pass, final
+            skip_files, initial_pass, final, allow_full_skip
         )
     end
 
