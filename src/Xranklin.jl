@@ -139,6 +139,8 @@ include("$p/input.jl")
 include("$p/hyperref.jl")
 include("$p/evalstr.jl")
 include("$p/henv.jl")
+include("$p/henv_for.jl")
+include("$p/henv_if.jl")
 include("$p/tags_pagination.jl")
 include("$p/dates.jl")
 

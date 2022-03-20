@@ -1,35 +1,3 @@
-#= Conditional blocks
-
-{{if XXX}}          [==1]
-
-{{elseif XXX}}      [>=0]
-
-{{else}}            [∈{0,1}]
-
-{{end}}             [==1]
-
-CONDS FORMAT
-------------
-
-{{if var}}
-{{if e"f($var)"}}
-{{if e"""f($var)"""}}
-
-v        --> equivalent to e"$v"
-e"$v"    --> equivalent to e"getlvar(:v)"
-e"f($v)" --> run in utils module
-e"..."  --> ANY failure and ignore code block (with warning)
-
----------------------------------
-. find all corresponding DBB
-. assemble them into COND blocks
-. go through them in sequence (allow evaluation as )
-
----------------------------------
-. derive cond blocks (ispage, ...) should basically be specific if blocks
-=#
-
-
 """
     HEnvPart
 
@@ -121,22 +89,13 @@ function find_henv(
             end
         end
     end
-    
+
     # if not closed properly, return an empty env
     henv_depth > 0 && return (HEnvPart[], closing_index)
 
     # otherwise return the full environment
     return (henv, closing_index)
 end
-
-
-_estr(s)     = "e\"$s\""
-_nestr(s)    = replace(s, r"^e\"" => "e\"!")
-_e_dollar(s) = raw"$" * s
-
-_isemptyvar(v::T) where T = hasmethod(isempty, (T,)) ? isempty(v) : false
-_isemptyvar(::Nothing)    = true
-_isemptyvar(v::Date)      = (v == Date(1))
 
 
 """
@@ -154,160 +113,11 @@ function resolve_henv(
     env_name = first(henv).name
     crumbs(@fname, env_name)
 
-    # ------------------------------------------------
-    # IF-style h-env
-    # > find the scope corresponding to the validated
-    #    condition if any
-    # > if a scope is found, recurse on it in context
-    #    `c` and write the result to `io`
     if env_name in INTERNAL_HENV_IF
-        scope = ""
-        # evaluates conditions with `_resolve_henv_cond`
-        # the first one that is validated has its scope
-        # surfaced and recursed over
-        for (i, p) in enumerate(henv)
-            p.name == :end && continue
-            if _resolve_henv_cond(p)
-                b_cur = p.block
-                b_nxt = henv[i+1].block
-                scope = subs(
-                    parent_string(b_cur),
-                    next_index(b_cur),
-                    prev_index(b_nxt)
-                    ) |> string
-                break
-            end
-        end
-        # recurse over the validated scope
-        write(io, html2(scope, c))
+        resolve_henv_if(io, henv, c)
 
-    # ------------------------------------------------
-    # FOR-style h-env
-    # > resolve the scope with a context in which the
-    #    variable(s) from the iterator are inserted
     elseif env_name in INTERNAL_HENV_FOR
-        # scope of the loop
-        scope = subs(
-            parent_string(henv[1].block),
-            next_index(henv[1].block),
-            prev_index(henv[end].block)
-        ) |> string
-
-        # {{for x in iter}}       --> {{for (x) in iter}}
-        # {{for (x, y) in iter}}
-        argiter    = join(henv[1].args, " ")
-        vars, iter = strip.(split(argiter, " in "))
-
-        if is_estr(iter)
-            iter = eval_str(iter)
-        else
-            iter = getvar(c, Symbol(iter))
-        end
-
-        # (x, y, z) => [:x, :y, :z]
-        vars = strip.(split(strip(vars, ['(', ')']), ",")) .|> Symbol
-
-        # check if there are vars with the same name in local context, if
-        # so, save them, note that we filter to see if the var is in the
-        # direct context (so not the global context associated with loc)
-        cvars = union(keys(c.vars), keys(c.vars_aliases))
-        saved_vars = [
-            v => getlvar(v)
-            for v in vars if v in cvars
-        ]
-
-        # XXX lots of things to check here
-        if length(vars) == 1
-            name = vars[1]
-            for val in iter
-                setvar!(c, name, val)
-                write(io, html2(scope, c))
-            end
-        else
-            for vals in iter
-                for (name, value) in zip(vars, vals)
-                    setvar!(c, name, value)
-                end
-                write(io, html2(scope, c))
-            end
-        end
-
-        # reinstate or destroy bindings
-        for (name, value) in saved_vars
-            if value === nothing
-                delete!(c.vars, name)
-            else
-                c.vars[name] = value
-            end
-        end
+        resolve_henv_for(io, henv, c)
     end
     return
-end
-
-
-function _resolve_henv_cond(
-            henv::HEnvPart
-        )::Bool
-
-    crumbs(@fname)
-
-    # XXX assumptions about the number of arguments (henv.args)
-    env_name = henv.name
-    env_name == :else && return true
-    args     = henv.args
-
-    # placeholder for the condition to be evaluated
-    cond_str = _estr("false")
-
-    if env_name in (:if, :elseif)
-        # XXX
-        @assert length(args) == 1
-
-        # argument is either an e-string or a single variable 'var' which
-        # is turned into a corresponding estring with '$var'
-        cond_str = args[1]
-        if !startswith(cond_str, "e\"")
-            cond_str = _estr("(\$$cond_str)")
-        end
-
-    # IS DEF
-    elseif env_name in (:ifdef, :isdef, :isdefined, :ifndef, :ifnotdef, :isndef, :isnotdef)
-        cond_str = _estr("""
-            (getlvar(:$(args[1])) !== nothing)
-            """)
-        if env_name in (:ifndef, :ifnotdef, :ifnotdefined, :isndef, :isnotdef)
-            cond_str = _nestr(cond_str)
-        end
-
-    # IS EMPTY
-    elseif env_name in (:ifempty, :isempty, :ifnempty, :ifnotempty, :isnotempty)
-        cond_str = _estr("""
-            Xranklin._isemptyvar(getlvar(:$(args[1])))
-            """)
-        if env_name in (:ifnempty, :ifnotempty, :isnotempty)
-            cond_str = _nestr(cond_str)
-        end
-
-    # IS PAGE
-    elseif env_name in (:ispage, :ifpage, :isnotpage, :ifnotpage)
-        cond_str = _estr("""
-            begin
-                rp = splitext(Xranklin.unixify(getlvar(:_relative_path)))[1]
-                any(p -> Xranklin.match_url(rp, p), $args)
-            end
-            """)
-        if env_name in (:isnotpage, :ifnotpage)
-            cond_str = _nestr(cond_str)
-        end
-
-    elseif env_name == :hasmath
-        cond_str = _estr("getlvar(:_hasmath)")
-
-    elseif env_name == :hascode
-        cond_str = _estr("getlvar(:_hascode)")
-
-    end
-
-    # XXX cast will fail
-    return Bool(eval_str(cond_str))
 end

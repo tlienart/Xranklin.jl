@@ -1,6 +1,6 @@
 struct EvalStrError end
 
-is_estr(s::SS; allow_short=false) = begin
+is_estr(s; allow_short=false) = begin
     startswith(s, "e\"") || (allow_short && startswith(s, "> "))
 end
 
