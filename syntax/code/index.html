@@ -335,7 +335,7 @@ randstring(5)
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">randstring(5)</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">"XmeJs"</code></pre></div></fieldset>
+<div class="code-output"><pre><code class="code-result language-plaintext">"P103s"</code></pre></div></fieldset>
 
 </div><div class="trim">
 
@@ -734,7 +734,8 @@ y = @. sin(exp(x)) * sinc(x)
 figure(figsize=(6, 4))
 plot(x, y)
 gcf()</code></pre>
-<div class="code-output"><img class="code-figure" src="/Xranklin.jl/assets/syntax/code/figs-html/__autofig_1458796918183576839.svg">
+<div class="code-output"><pre class="fig-stdout"><code class="code-stdout language-plaintext">Matplotlib is building the font cache; this may take a moment.
+</code></pre><img class="code-figure" src="/Xranklin.jl/assets/syntax/code/figs-html/__autofig_1458796918183576839.svg">
 </div><p>Note that it's the figure object that is showable as SVG in PyPlot and so we must do
 <code>gcf()</code> here to have it be the effective result of the cell and have the plot shown.</p>
 <h3 id="html_show" ><a href="#html_show"> HTML show</a></h3><p>Some packages define objects which indicate how to show objects with a <code>MIME&quot;text/html&quot;</code>,
