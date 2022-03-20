@@ -34,6 +34,7 @@ function generate_rss(
     rps = [
         (rp, _rssdate(c))
         for (rp, c) in gc.children_contexts
+        if !isempty(getvar(c, :rss_descr, ""))
     ]
     sort!(rps, by=x->x[2], rev=true)
 
