@@ -27,6 +27,7 @@ function build_loop(
         # check if some files have been deleted; if so remove the ref
         # to that file from the watched files and the gc children if
         # it's one of the child page.
+        redo_fullpass = false
         for d ∈ values(watched_files), (fp, _) in d
             fpath = joinpath(fp...)
             rpath = get_rpath(fpath)
@@ -44,6 +45,8 @@ function build_loop(
                         isfile(opath2) && rm(opath2)
                     end
                     delete!(gc.children_contexts, rpath)
+                    @info "❌ removed file $(hl(str_fmt(rpath), :cyan))"
+                    redo_fullpass = true
                 end
                 # if the file was in the depsmap, remove it
                 delete!(gc.deps_map, rpath)
@@ -51,6 +54,14 @@ function build_loop(
         end
         # scan the directory and add the new files to the watched_files
         update_files_to_watch!(watched_files, path(:folder); in_loop=true)
+        # if files were deleted from the children contexts, we must
+        # retrigger a full pass so that things like page lists etc are
+        # properly updated; utils need to be re-evaluated to take this
+        # into account.
+        if redo_fullpass
+            @info " → triggering full pass [page(s) removed]"
+            full_pass(gc, watched_files; utils_changed=true)
+        end
 
     # ========
     # BLOCK B
