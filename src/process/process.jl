@@ -151,6 +151,10 @@ function reprocess(
     fpair = path(:folder) => rpath
     fpair in skip_files && return
 
+    # check if the file still exists (it might have been removed e.g. in the case
+    # of rm_tag_page)
+    isfile(joinpath(fpair...)) || return
+
     # otherwise reprocess the file
     case = ifelse(splitext(rpath)[2] == ".html", :html, :md)
     start = time(); @info """

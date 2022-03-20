@@ -377,6 +377,7 @@ function process_md_file_io!(
     # check whether any tag has been removed by comparing
     # to 'bk_tags'
     for id in setdiff(old_keys, new_keys)
+        @show "Here?"
         rm_tag(gc, id, lc.rpath)
     end
     # do the opposite and add any new tags

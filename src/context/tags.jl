@@ -53,7 +53,7 @@ function rm_tag(
             gc::GlobalContext,
             id::String,
             rpath::String
-        )::String
+        )::Nothing
 
     crumbs(@fname, "$id (from $rpath)")
 
@@ -88,7 +88,11 @@ tag_path(gc, id) = path(:site) / tag_rpath(gc, id)
 
 Write a new (or re-write) a tag page.
 """
-function write_tag_page(gc::GlobalContext, id::String)::Nothing
+function write_tag_page(
+            gc::GlobalContext,
+            id::String
+        )::Nothing
+
     trp = tag_rpath(gc, id)
     tp  = tag_path(gc, id)
     mkpath(splitdir(tp)[1])
