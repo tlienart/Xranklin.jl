@@ -16,7 +16,7 @@ Most of what's offered by Franklin is also offered by Xranklin (apart from what'
 ## How to help test this?
 
 **Assumptions**:
-* you're familiar with Franklin, and already have a website repo that works,
+* you are familiar with Franklin, and already have a website repo that works,
 * you're using GitHub and GitHub deployment (if not, it's also great, but you'll be more on your own for now),
 * you're using Julia 1.6+
 * your editor uses LF (lines end with `\n`, this is only a concern for you if you're on Windows but if you use a modern editor, it should be the default or easy to set)
