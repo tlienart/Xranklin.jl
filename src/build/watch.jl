@@ -37,8 +37,9 @@ function update_files_to_watch!(
             wf::LittleDict{Symbol, TrackedFiles},
             folder::String;
             in_loop::Bool=false
-            )::LittleDict{Symbol, TrackedFiles}
+        )::Tuple{LittleDict{Symbol, TrackedFiles}, Bool}
 
+    newpg    = false
     f2i, d2i = files_and_dirs_to_ignore()
 
     # go over all files in the folder and add them to watched_files
@@ -83,10 +84,11 @@ function update_files_to_watch!(
                 add_if_new_file!(wf[:other], fpair, in_loop)
 
             elseif fext == ".md"
-                add_if_new_file!(wf[:md], fpair, in_loop)
+                newpg |= add_if_new_file!(wf[:md], fpair, in_loop)
+
 
             elseif fext in (".html", ".htm")
-                add_if_new_file!(wf[:html], fpair, in_loop)
+                newpg |= add_if_new_file!(wf[:html], fpair, in_loop)
 
             else
                 # any other files (e.g. Project.toml) just get copied over
@@ -95,7 +97,7 @@ function update_files_to_watch!(
             end
         end
     end
-    return wf
+    return wf, newpg
 end
 
 
@@ -106,8 +108,8 @@ Sets up a new dictionary of watched files and updates it with the function
 `update_files_to_watch!`.
 """
 function find_files_to_watch(folder::String)
-    wf = new_wf()
-    return update_files_to_watch!(wf, folder)
+    wf, _ = update_files_to_watch!(new_wf(), folder)
+    return wf
 end
 
 
@@ -121,9 +123,9 @@ function add_if_new_file!(
             dict::TrackedFiles,
             fpair::Pair{String, String},
             in_loop::Bool=false
-            )::Nothing
+            )::Bool
     # check if the file is already watched
-    haskey(dict, fpair) && return nothing
+    haskey(dict, fpair) && return false
     # if not, track it
     fpath = joinpath(fpair...)
     in_loop && @info """
@@ -132,7 +134,7 @@ function add_if_new_file!(
     # save it's modification time, set to zero if it's a new file in a loop
     # to force its processing
     dict[fpair] = ifelse(in_loop, 0, mtime(fpath))
-    return nothing
+    return true
 end
 
 

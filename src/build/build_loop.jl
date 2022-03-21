@@ -28,38 +28,44 @@ function build_loop(
         # to that file from the watched files and the gc children if
         # it's one of the child page.
         redo_fullpass = false
-        for d ∈ values(watched_files), (fp, _) in d
-            fpath = joinpath(fp...)
-            rpath = get_rpath(fpath)
-            if !isfile(fpath)
-                delete!(d, fp)
-                # remove output files associated with fp
-                # in the case of a slug, this needs to be re-done as there
-                # will be two dependent files (one at opath, one at slug)
-                opath = get_opath(fpath)
-                isfile(opath) && rm(opath)
-                if rpath in keys(gc.children_contexts)
-                    lc = gc.children_contexts[rpath]
-                    if !isempty(getvar(lc, :slug, ""))
-                        opath2 = getvar(lc, :_output_path, "")
-                        isfile(opath2) && rm(opath2)
+        for d ∈ values(watched_files)
+            rm_from_d = Pair{String,String}[]
+            for (fp, _) in d
+                fpath = joinpath(fp...)
+                rpath = get_rpath(fpath)
+                if !isfile(fpath)
+                    push!(rm_from_d, fp)
+                    # remove output files associated with fp
+                    # in the case of a slug, this needs to be re-done as there
+                    # will be two dependent files (one at opath, one at slug)
+                    opath = get_opath(fpath)
+                    isfile(opath) && rm(opath)
+                    if rpath in keys(gc.children_contexts)
+                        lc = gc.children_contexts[rpath]
+                        if !isempty(getvar(lc, :slug, ""))
+                            opath2 = getvar(lc, :_output_path, "")
+                            isfile(opath2) && rm(opath2)
+                        end
+                        delete!(gc.children_contexts, rpath)
+                        @info "❌ removed file $(hl(str_fmt(rpath), :cyan))"
+                        redo_fullpass = true
                     end
-                    delete!(gc.children_contexts, rpath)
-                    @info "❌ removed file $(hl(str_fmt(rpath), :cyan))"
-                    redo_fullpass = true
+                    # if the file was in the depsmap, remove it
+                    delete!(gc.deps_map, rpath)
                 end
-                # if the file was in the depsmap, remove it
-                delete!(gc.deps_map, rpath)
+            end
+            for fp in rm_from_d
+                delete!(d, fp)
             end
         end
         # scan the directory and add the new files to the watched_files
-        update_files_to_watch!(watched_files, path(:folder); in_loop=true)
+        _, newpg = update_files_to_watch!(watched_files, path(:folder); in_loop=true)
         # if files were deleted from the children contexts, we must
         # retrigger a full pass so that things like page lists etc are
         # properly updated; utils need to be re-evaluated to take this
         # into account.
-        if redo_fullpass
-            @info " → triggering full pass [page(s) removed]"
+        if redo_fullpass || newpg
+            @info " → triggering full pass [page(s) added or removed]"
             full_pass(gc, watched_files; utils_changed=true)
         end
 
@@ -72,6 +78,10 @@ function build_loop(
     else
         for (case, d) in watched_files, (fp, t) in d
             fpath = joinpath(fp...)
+            # the file may just have been deleted, it will be picked up by the
+            # 'removed file' part above but in the meantime we just skip it
+            isfile(fpath) || continue
+
             rpath = get_rpath(fpath)
             # was there a modification to the file? otherwise skip
             cur_t = mtime(fpath)
