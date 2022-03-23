@@ -93,16 +93,17 @@ function process_file(
                 end
             end
 
+            adjust_base_url(gc, rpath, opath; final)
+
+            if !isempty(getvar(lc, :_paginator_name, ""))
+                # copy the `odir/1/index.html` (which must exist) to odir/index.html
+                odir = dirname(opath)
+                cp(odir / "1" / "index.html", odir / "index.html", force=true)
+            end
+
         elseif case == :html
             process_html_file(gc, fpath, opath)
-        end
-
-        adjust_base_url(gc, rpath, opath; final)
-
-        if !isempty(getvar(lc, :_paginator_name, ""))
-            # copy the `odir/1/index.html` (which must exist) to odir/index.html
-            odir = dirname(opath)
-            cp(odir / "1" / "index.html", odir / "index.html", force=true)
+            adjust_base_url(gc, rpath, opath; final)
         end
 
         #
