@@ -44,6 +44,11 @@ function full_pass(
     initial_pass = !any((layout_changed, config_changed, utils_changed))
     final && setvar!(gc, :_final, true)
 
+    # when resetting the context in the case of a utils change, we keep
+    # track of the nb_indep_code associated with each child context so
+    # it can be considered and more cells can be skipped
+    bk_indep_code = LittleDict{String, LittleDict{String, CodeRepr}}()
+
     # depending on the case, we'll have to re-consider
     # utils or config specifically
     if initial_pass
@@ -68,7 +73,17 @@ function full_pass(
         # a new GC as the utils.jl might have removed some signatures which then
         # can't be used anymore. (e.g. if Foo was defined then removed).
         folder = path(:folder)
-        gc     = DefaultGlobalContext()
+
+        # save independent code to allow to avoid reloading those cells
+        # which are explicitly marked as independent from utils (as well
+        # as from anything else).
+        for (rp, c) in gc.children_contexts
+            if !isempty(c.nb_code.indep_code)
+                bk_indep_code[rp] = deepcopy(c.nb_code.indep_code)
+            end
+        end
+
+        gc = DefaultGlobalContext()
         set_paths!(gc, folder)
 
         process_utils(gc)
@@ -103,8 +118,18 @@ function full_pass(
     println("")
     # ---------------------------------------------
 
+    # reinstate independent code from backup (see utils changed)
+    # this will only happen if bk_indep_code exists which only happens
+    # if the utils have changed
+    for rp in keys(bk_indep_code)
+        lc = DefaultLocalContext(gc; rpath=rp)
+        merge!(lc.nb_code.indep_code, bk_indep_code[rp])
+        gc.children_contexts[rp] = lc
+    end
+
     # Go over all the watched files and run `process_file` on them
     for (case, dict) in watched_files, (fp, t) in dict
+        # process
         process_file(
             gc, fp, case, dict[fp];
             skip_files, initial_pass, final, allow_full_skip

@@ -73,6 +73,7 @@ function serialize_lc(lc::LocalContext)
         nb_vars_cp = lc.nb_vars.code_pairs,  # serialisable since lc.vars is
         nb_code_cp = lc.nb_code.code_pairs,  # as (string only)
         nb_code_cn = lc.nb_code.code_names,  # as
+        nb_code_ic = lc.nb_code.indep_code,  # as
         # nb_code
         to_trigger = lc.to_trigger,  # as
         page_hash  = lc.page_hash[], # as
@@ -104,6 +105,7 @@ function deserialize_lc(rp::String, gc::GlobalContext)
     append!(lc.nb_vars.code_pairs, nt.nb_vars_cp)
     append!(lc.nb_code.code_pairs, nt.nb_code_cp)
     append!(lc.nb_code.code_names, nt.nb_code_cn)
+    merge!(lc.nb_code.indep_code,  nt.nb_code_ic)
     stale_notebook!(lc.nb_vars)
     stale_notebook!(lc.nb_code)
 
