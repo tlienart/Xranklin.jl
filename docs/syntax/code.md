@@ -208,7 +208,7 @@ will be shown in the REPL.
 
 ### Marking a cell as independent
 
-If a code block is fully independent of any other code blocks on the page, you can mark it as _independent_ (with `# indep`), this will allow Franklin to skip re-evaluating this block when other code blocks around it change.
+If a code block is fully independent of any other code blocks on the page, **and** of the `Utils` module, you can mark it as _independent_ (with `# indep`), this will allow Franklin to skip re-evaluating this block when other code blocks around it change.
 
 To clarify this, imagine you have a page with two blocks _A_ and _B_.
 By default if _A_ is modified, _B_ will be re-evaluated because Franklin considers that _B_ might
