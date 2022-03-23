@@ -181,8 +181,8 @@ function _paginated(
         # form the page with inserted content
         ctt_i = replace(ctt, PAGINATOR_TOKEN => ins_i)
         # write the file
-        dst = mkpath(odir / string(pgi))
-        write(dst / "index.html", ctt_i)
+        dst = mkpath(odir / string(pgi)) / "index.html"
+        write(dst, ctt_i)
     end
     # copy the `odir/1/index.html` (which must exist) to odir/index.html
     cp(odir / "1" / "index.html", odir / "index.html", force=true)

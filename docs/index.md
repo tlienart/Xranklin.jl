@@ -61,12 +61,13 @@ _click on the '&check;' sign to know more_
 To install Franklin with Julia *≥ 1.5*, in a Julia REPL do
 
 * hit \kbd{]} to enter package mode,
-* write `add Franklin` and press \kbd{enter}.
+* write `add Franklin FranklinTemplates` and press \kbd{enter}.
 
 You can then just try it out:
 
 ```julia-repl
-julia> using Franklin
+julia> using FranklinTemplates: newsite
+julia> using Franklin: serve
 julia> newsite("mySite", template="pure-sm")
 ✓ Website folder generated at "mySite" (now the current directory).
 → Use serve() from Franklin to see the website in your browser.

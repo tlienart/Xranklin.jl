@@ -75,7 +75,12 @@ anymatch(v1, v2) = any(a == b for a in v1, b in v2)
 
 Try to match two url indicators.
 """
-function match_url(base::AbstractString, cand::AbstractString)
+function match_url(
+            base::AbstractString,
+            cand::AbstractString
+        )::Bool
+
+    base == cand && return true
     sbase = first(base) === '/' ? base[2:end] : base
     scand = first(cand) === '/' ? cand[2:end] : cand
     # joker-style syntax

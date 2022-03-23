@@ -196,8 +196,8 @@ function _check_ispage(args, c::LocalContext)
             """
         err = true
     else
-        rp   = splitext(unixify(c.rpath))[1]
-        flag = any(a -> match_url(rp, a), args)
+        rurl = get_rurl(c)
+        flag = any(a -> match_url(rurl, a), args)
     end
     return (flag, err)
 end

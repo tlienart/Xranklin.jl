@@ -68,15 +68,21 @@ end
 ####################################
 
 function hfun_ttfx(p)
-    p = first(p)
-    r = HTTP.request(
-        "GET",
-        "https://raw.githubusercontent.com/tlienart/Xranklin.jl/gh-ttfx/ttfx/$(p)/timer"
-    )
-    r2 = HTTP.request(
-        "GET",
-        "https://raw.githubusercontent.com/tlienart/Xranklin.jl/gh-ttfx/ttfx/$(p)/timer2"
-    )
+    p  = first(p)
+    r  = ""
+    r2 = ""
+    try
+        r = HTTP.request(
+            "GET",
+            "https://raw.githubusercontent.com/tlienart/Xranklin.jl/gh-ttfx/ttfx/$(p)/timer"
+        )
+        r2 = HTTP.request(
+            "GET",
+            "https://raw.githubusercontent.com/tlienart/Xranklin.jl/gh-ttfx/ttfx/$(p)/timer2"
+        )
+    catch e
+        return ""
+    end
     t  = first(reinterpret(Float64, r.body))
     t2 = first(reinterpret(Float64, r2.body))
     return "$(t)min / $(t2)s"

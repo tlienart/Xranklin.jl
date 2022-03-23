@@ -27,7 +27,7 @@ In the rest of this page we go over what the different files and folders do.
 
 \tip{
   Paths on this page (and generally, in these docs) are all meant relative to the website folder.
-  So for instance if we talk about `foo/bar.md` it's located at `TestWebsite/foo/bar.md`.
+  So for instance if we talk about `foo/bar.md`, it's located at `TestWebsite/foo/bar.md`.
 }
 
 ### Index file
@@ -96,7 +96,7 @@ and the `base_url_prefix` is then `theWebsite`.
 
 The `_layout/` folder will usually contain a `head.html` and `foot.html` which are placed respectively at the top and bottom of each generated HTML page (cf. the [page structure](/workflow/getting_started/#page_structure) diagram).
 
-These files are where you should indicate the base layout of your pages and, for instance, where you might indicate what CSS or JS to load on pages.
+These files are where you should indicate the base layout of your pages, and, for instance, where you might indicate what CSS or JS to load on pages.
 See [how to adapt a layout](/workflow/adapting_layout/) for more details on how to specify these files if you want to write your own layout.
 
 It is often convenient to split the layout of your site into components, and each of these
@@ -206,7 +206,7 @@ For other files (images etc):
 
 \lskip
 
-**Note**: in some cases you will want some paths to be maintained. This can be done with the global page variable `keep_path`. For instance with things like Google Analytics, you may have to prove ownership of your site by placing a custom HTML file in a given location (see [this tutorial](https://support.google.com/webmasters/answer/9008080#html_verification)).
+**Note**: in some cases you will want some paths to be kept _as is_. This can be done with the global page variable `keep_path`. For instance with things like Google Analytics, you may have to prove ownership of your site by placing a custom HTML file in a given location (see [this tutorial](https://support.google.com/webmasters/answer/9008080#html_verification)).
 For such cases you would indicate `keep_path=["the/path.html"]` and Franklin would respect that:
 
 ```plaintext

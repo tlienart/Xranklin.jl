@@ -6,7 +6,6 @@ Notes:
  -->
 
 +++
-
 author = "Thibaut Lienart"
 
 # Base URL prefix when live
@@ -70,6 +69,8 @@ menu = [
 
 [page vars]: /syntax/vars+funs/
 [code eval]: /syntax/code/
+[hfuns]: /syntax/vars+funs/
+[hfun]: /syntax/vars+funs/
 
 [GA]: https://docs.github.com/en/actions
 

@@ -1,5 +1,5 @@
 <!--
- LAST REVISION: Feb 21, 2022  (full page ok)
+ LAST REVISION: Mar 21, 2022  (full page ok)
  -->
 
 +++
@@ -10,13 +10,14 @@ menu_title = header
 
 ## Generate a site from a template
 
-To get started with Franklin, use the `newsite` function
+To get started with Franklin, you use the `FranklinTemplates.newsite` function
 in a Julia REPL.
 That function will generate a _website folder_ on your computer that's ready
 to be built by Franklin, and that you can modify at will:
 
-```
-using Franklin
+```julia
+using FranklinTemplates: newsite
+using Franklin, FranklinTemplates
 newsite("TestWebsite"; template="hyde")
 ```
 
@@ -25,7 +26,7 @@ The execution of this command will also move you to that folder (i.e. `cd TestWe
 The first argument of `newsite` is the title of the folder that will be created,
 and moved to (you can change that later).
 If you are already in a folder that you previous created for this purpose, just indicate the
-current path with `"."`.
+current path with `"."` (i.e.: `newsite(".", ...)`).
 
 The `template=` keyword argument allows you to specify one of the few
 [simple templates](https://tlienart.github.io/FranklinTemplates.jl/)
@@ -34,7 +35,7 @@ In particular, if you just want a super basic template to experiment with, the
 `"sandbox"` template should prove useful.
 
 \note{
-  Most of these templates are adapted, simplified versions of common standard
+  Most of these templates are adapted, simplified, versions of common standard
   static site templates.
   They are not meant to be fully polished but should be easy to adjust to your liking
   once you're familiar with how Franklin operates.\\
@@ -59,10 +60,10 @@ You can now visit your site at `http://localhost:8000` (the page should have bee
 
 At a high level, the `serve` function does the following:
 
-1. builds all your pages in an initial first pass,
+1. goes through all your pages in a first initial pass and (re)builds them if necessary,
 1. starts [LiveServer][liveserver] which
-  1. starts a browser,
-  1. watches files for changes and reloads updated pages.
+  * starts a browser,
+  * watches files for changes and reloads updated pages.
 
 There's a number of keyword arguments to `serve` which you might find useful, do `?serve`
 in your REPL to get the relevant docstring.
@@ -89,7 +90,15 @@ Passing `launch=false` to `serve` can be convenient as you may already have a
 browser tab pointing to the right address (e.g. `localhost:8000`) and may not want to open
 a new one every time you restart the server.
 
+\tip{
+  It is strongly recommended to use Franklin in a REPL and not do something like `julia -e "using Franklin; ..."`.
+  Indeed, you may have to stop or restart the servers occasionally and doing so in a "hot" REPL session will be
+  significantly faster.
+}
+
 ## Page structure
+
+### Head/Foot structure
 
 When using Franklin, it is useful to have a rough understanding of how the HTML pages
 are generated.
@@ -101,7 +110,7 @@ For a source page with the following Markdown:
 Some **text** here.
 ```
 
-a HTML page will be generated that looks like this:
+a HTML page will (typically) be generated with the following structure:
 
 ```plaintext
 ┌──────────────────────────────────────────────┐
@@ -163,18 +172,18 @@ For instance it could look like
 
 and so instead of separating the head, content and foot, it's a single file where you just indicate where the content goes.
 
-If you do have a skeleton file in your `_layout` folder and also have a head and foot files, only the skeleton will be considered.
+If you do have a skeleton file in your `_layout` folder, and also have a head and foot files, only the skeleton will be considered.
 
 
 ## Next steps
 
 Now that you have a working website that you can render locally and experiment with,
-you should try to further modify the `.md` file(s) in the folder and the `.html` files in the
-`_layout` folder and try to get an intuition for how things work.
+you should try to further modify the `.md` file(s) in the folder, and the `.html` files in the
+`_layout` folder, and try to get an intuition for how things work.
 
-The rest of the docs is there to help you when things don't work like you would expect them to 😅.
-Remember also to:
+The rest of the docs is there to help you when things don't work like you might expect them to.
+You may also want to:
 
 * join the `#franklin` channel of the [Julia Slack](https://join.slack.com/t/julialang/shared_invite/zt-w0pifg7p-18IUSkZy_WpofNumiTTROQ) to get help with small questions quickly,
 * ask questions on the [Julia Discourse](https://discourse.julialang.org/) adding the tag `franklin`, and
-* open issues on [the repository][franklin-repo] if you encounter a bug.
+* open issues in [the repository][franklin-repo] if you encounter a bug.
