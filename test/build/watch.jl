@@ -26,9 +26,14 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     @test all(!X._isempty, d2i)
 
     @test X.should_ignore(abspath("README.md"), f2i, d2i)
+    @test !X.should_ignore(abspath("index.md"), f2i, d2i)
     @test X.should_ignore(abspath("node_modules/"), f2i, d2i)
     @test X.should_ignore(abspath("abc/defghi/"), f2i, d2i)
     @test X.should_ignore(abspath("foobar.md"), f2i, d2i)
+    @test X.should_ignore(abspath(".DS_Store"), f2i, d2i)
+    @test !X.should_ignore(abspath("DS_Store"), f2i, d2i)
+    @test !X.should_ignore(abspath("fff/index.md"), f2i, d2i)
+    @test X.should_ignore(abspath("fff/.DS_Store"), f2i, d2i)
 end
 
 @testset "addnewfile" begin

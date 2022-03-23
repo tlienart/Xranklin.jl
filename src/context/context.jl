@@ -381,12 +381,26 @@ end
 Retrieve a value corresponding to symbol `n` from a local context with rpath
 `rpath` if it exists.
 """
-function getvarfrom(n::Symbol, rpath::String, d=nothing)
-    # is there such an rpath in current GC ? if not but the rpath corresponds
-    # to a file, then trigger a process of that file and try again
+function getvarfrom(
+            n::Symbol,
+            rpath::String,
+            d=nothing
+        )
+
     clc = env(:cur_local_ctx)
     clc === nothing && return d
     glob = clc.glob
+    ext  = splitext(rpath)[2]
+    if isempty(ext)
+        rpath *= ".md"
+    elseif ext != ".md"
+        @warn """
+            getvarfrom(...)
+            Trying to access a var from context '$rpath', expected a path
+            either without extension or with a `.md` extension.
+            """
+        return d
+    end
 
     if rpath ∉ keys(glob.children_contexts)
         # if there's no file at that rpath, process_md_file will not do
@@ -395,12 +409,14 @@ function getvarfrom(n::Symbol, rpath::String, d=nothing)
         process_md_file(glob, rpath; initial_pass=true)
         # if rpath didn't correspond to a file then it's still not in the children
         # contexts key and we should return the default
-        rpath ∉ keys(glob.children_contexts) && return d
+        if rpath ∉ keys(glob.children_contexts)
+            return d
+        end
     end
     # here we do have rpath as a child, add the relevant symbol as a requested
     # variable and return the value
     ctx = glob.children_contexts[rpath]
-    n = get(ctx.vars_aliases, n, n)
+    n   = get(ctx.vars_aliases, n, n)
     if n in keys(ctx.vars)
         clc.req_vars[rpath] = union!(
             get(clc.req_vars, rpath, Set{Symbol}()),

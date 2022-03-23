@@ -20,8 +20,6 @@ function process_md_file(
             rpath::String;
             kw...
         )
-    crumbs(@fname, rpath)
-
     fpath = path(:folder) / rpath
     opath = get_opath(fpath)
     process_md_file(gc, fpath, opath; kw...)
@@ -41,6 +39,7 @@ function process_md_file(
             allow_full_skip::Bool=false,
             kw...
         )::Nothing
+
     crumbs(@fname, fpath)
 
     # check if the file should be skipped
@@ -50,6 +49,7 @@ function process_md_file(
         isfile(opath) && rm(opath)
         return
     end
+
     # 2> if it's the initial pass, check if the file has already been processed
     #    (if it's already in the gc children contexts); this may happen if an
     #`   earlier file processing was triggered by getvarfrom
