@@ -196,7 +196,7 @@ function _check_ispage(args, c::LocalContext)
             """
         err = true
     else
-        rurl = get_rurl(c)
+        rurl = getvar(c, :_relative_url, "")
         flag = any(a -> match_url(rurl, a), args)
     end
     return (flag, err)

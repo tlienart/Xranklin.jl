@@ -205,6 +205,9 @@ getglob(c::LocalContext)::GlobalContext  = c.glob
 is_recursive(c::GlobalContext) = false
 is_recursive(c::LocalContext)  = c.is_recursive[]
 
+set_recursive!(c::GlobalContext) = c
+set_recursive!(c::LocalContext)  = (c.is_recursive[] = true; c)
+
 is_math(c::GlobalContext) = false
 is_math(c::LocalContext)  = c.is_math[]
 

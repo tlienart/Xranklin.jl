@@ -42,7 +42,7 @@ Extract the relative path out of the full path to a file.
 
 ## Example
 
-    `/foo/bar/baz/site/blog/page.md` --> `blog/page.md`
+    `/foo/bar/baz/site_folder/blog/page.md` --> `blog/page.md`
 """
 get_rpath(fpath::String) = fpath[(getgvar(:_idx_rpath)::Int):end]
 get_rpath() = cur_lc().rpath

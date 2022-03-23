@@ -12,11 +12,12 @@ brace blocks).
 
 ## Errors (see XXX)
 """
-html2(s::String, c::Context; kw...) = html2(FP.html_partition(s; kw...), c)
+html2(s::String, c::Context; only=Symbol[], kw...) = html2(FP.html_partition(s; kw...), c; only)
 
 function html2(
             parts::Vector{Block},
-            c::Context
+            c::Context;
+            only::Vector{Symbol}=Symbol[]
         )::String
 
     crumbs(@fname)
@@ -62,7 +63,7 @@ function html2(
                 write(io, string(b.ss))
             end
         else
-            idx = resolve_dbb(io, parts, idx, c, cgc, clc)
+            idx = resolve_dbb(io, parts, idx, c, cgc, clc; only)
         end
     end # end while
     out = String(take!(io))

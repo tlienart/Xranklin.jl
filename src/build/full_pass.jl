@@ -85,8 +85,8 @@ function full_pass(
 
     # check that there's an index page (this is what the server will
     # expect to point to)
-    hasindex = isfile(path(:folder)/"index.md") ||
-               isfile(path(:folder)/"index.html")
+    hasindex = isfile(path(:folder) / "index.md")   ||
+               isfile(path(:folder) / "index.html")
     if !hasindex
         @warn """
             Full pass

@@ -117,8 +117,8 @@ end
         b = [3,4,5]
         z = zip(a, b)
         +++
-        {{for (x, y) in z}}
-            {{x}} - {{y}}
+        {{for (title, y) in z}}
+            {{title}} - {{y}}
         {{end}}
         """
     h = html(s, nop=true)

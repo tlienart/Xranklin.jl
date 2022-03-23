@@ -8,7 +8,8 @@ function resolve_dbb(
             idx::Int,
             c::Context,
             gc::GlobalContext,
-            lc::Union{Nothing, LocalContext}
+            lc::Union{Nothing, LocalContext};
+            only::Vector{Symbol}=Symbol[]
         )::Int
 
     crumbs(@fname)
@@ -37,6 +38,11 @@ function resolve_dbb(
     fname    = Symbol(lowercase(first(split_cb)))
     args     = split_cb[2:end] # may be empty
     dots     = ifelse(isempty(args), "", " ...")
+
+    if !isempty(only) && fname ∉ only
+        write(io, parts[idx].ss)
+        return idx
+    end
 
     # A | if and variations
     if fname in INTERNAL_HENVS

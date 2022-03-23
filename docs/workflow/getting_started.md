@@ -165,7 +165,7 @@ For instance it could look like
 <html lang="en">
 <head> ... </head>
 <body>
-  {{page_content}}  <!-- this inserts the HTML converted from markdown -->
+  {{page_content}}  <!-- this inserts the partially converted Markdown -->
 </body>
 </html>
 ```

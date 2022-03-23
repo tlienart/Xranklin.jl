@@ -61,7 +61,7 @@ function hfun_paginate(p::VS; tohtml::Bool=true)::String
     isempty(c) || return c
     tohtml     || return
 
-    ps = Symbol.(p)
+    ps   = Symbol.(p)
     iter = getlvar(ps[1])
     npp  = getlvar(ps[2])
 
@@ -101,11 +101,12 @@ function hfun_paginate(p::VS; tohtml::Bool=true)::String
 
     # was there already a pagination element on this page?
     # if so, warn and ignore.
-    if !isempty(getlvar(:_paginator_name)::String)
+    u = getlvar(:_paginator_name, "")
+    if !isempty(u) && u != p[1]
         @warn """
             $wm
-            Multiple calls to '{{paginate ...}}' on the page. You can have at
-            most one. Ignoring this one.
+            Multiple calls to '{{paginate ...}}' on the page with different iterators.
+            You can have at most one. Ignoring this one.
             """
     end
 

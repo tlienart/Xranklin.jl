@@ -120,10 +120,8 @@ function _hfun_insert(p::String, base::String;
     return read(fpath, String)
 end
 
-
 """
     hfun_page_content()
-
 Insert the converted page content. This is useful in the context of the
 skeleton layout (see also `_process_md_file_html` and `:layout_skeleton`).
 Other than that context, the user should probably not use it.

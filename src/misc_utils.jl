@@ -76,20 +76,16 @@ anymatch(v1, v2) = any(a == b for a in v1, b in v2)
 Try to match two url indicators.
 """
 function match_url(
-            base::AbstractString,
-            cand::AbstractString
+            base::AbstractString,       # comes from get_rurl
+            cand::AbstractString        # candidate in args
         )::Bool
 
+    base = strip(replace(base, "/index.html" => "", "/1/" => ""), '/')
+    cand = strip(replace(cand, "/index.html" => ""), '/')
     base == cand && return true
-    sbase = first(base) === '/' ? base[2:end] : base
-    scand = first(cand) === '/' ? cand[2:end] : cand
+
     # joker-style syntax
-    if endswith(scand, "/*")
-        return startswith(sbase, scand[1:prevind(scand, lastindex(scand), 2)])
-    elseif endswith(scand, "/")
-        scand = scand[1:prevind(scand, lastindex(scand))]
-    end
-    return noext(scand) == sbase
+    return endswith(cand, "/*") && startswith(base, cand[1:prevind(cand, lastindex(cand), 2)])
 end
 
 # get the function name (used in crumbs)

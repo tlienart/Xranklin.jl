@@ -63,15 +63,17 @@ function process_md_file(
         opath, initial_pass, allow_full_skip, kw...
     )
 
+    # this early stop can happen if process_md_file_io was interrupted early
+    # see the page hash checks
+    io.size == 0 && return
+
     # paginated or not, write the base unless there's nothing to write
     # if there's nothing to write, there's also no pagination so we can
     # stop early but in all cases start by cleaning up the paginated dirs
     # so that we don't end up with spurious  dirs
     odir = dirname(opath)
     _cleanup_paginated(odir)
-    # this early stop can happen if process_md_file_io was interrupted early
-    # see the page hash checks
-    io.size == 0 && return
+
     # Base
     #   index.md     -> index.html
     #   foo/index.md -> foo/index.html
@@ -166,7 +168,8 @@ function _paginated(
     npg   = ceil(Int, niter / npp)
 
     # base content (contains the PAGINATOR_TOKEN)
-    ctt = read(opath, String)
+    ctt = getvar(lc, :_generated_html, "")
+    ctt = html2(ctt, lc; only=[:paginate])
 
     # repeatedly write the content replacing the PAGINATOR_TOKEN
     for pgi = 1:npg
@@ -176,13 +179,17 @@ function _paginated(
         rge_i = sta_i:end_i
         # form the insertion
         ins_i = prod(String(e) for e in iter[rge_i])
+        # file destination
+        dst = mkpath(odir / string(pgi)) / "index.html"
         # process it in the local context
-        ins_i = html(ins_i, lc)
+        ins_i = html(ins_i, set_recursive!(lc))
+        # adjust lc
+        setvar!(lc, :_relative_url, get_rurl(get_ropath(dst)))
         # form the page with inserted content
         ctt_i = replace(ctt, PAGINATOR_TOKEN => ins_i)
+        setvar!(lc, :_generated_html, ctt_i)
         # write the file
-        dst = mkpath(odir / string(pgi)) / "index.html"
-        write(dst, ctt_i)
+        write(dst, _process_md_file_html(lc, "", skip=true))
     end
     # copy the `odir/1/index.html` (which must exist) to odir/index.html
     cp(odir / "1" / "index.html", odir / "index.html", force=true)
@@ -431,7 +438,9 @@ function _process_md_file_html(
     # Conversion of the content + wrap into tags if required
     page_content_html = getvar(lc, :_generated_html, "")
     if !skip || isempty(page_content_html)
-        page_content_html = html(page_content_md, lc)
+        # the set_recursive means the conversion is not complete
+        # it leaves all DBB to be converted later
+        page_content_html = html(page_content_md, set_recursive!(lc))
         setvar!(lc, :_generated_html, page_content_html)
     end
 
@@ -439,7 +448,10 @@ function _process_md_file_html(
     # > path 2 / skeleton
     skeleton_path = path(:folder) / getvar(lc, :layout_skeleton, "")
     if !isempty(skeleton_path) && isfile(skeleton_path)
-        return html2(read(skeleton_path, String), lc)
+        # inject the partially processed page content
+        ct = html2(read(skeleton_path, String), lc; only=[:page_content])
+        # finish the processing
+        return html2(ct, lc)
     end
     # > path 1 / head * page *foot
     return _assemble_join_html(lc)
@@ -458,10 +470,10 @@ function _assemble_join_html(lc::LocalContext)::String
     page_foot_path = path(:folder) / getvar(lc, :layout_page_foot, "")
     page_foot_html = ""
     if !isempty(page_foot_path) && isfile(page_foot_path)
-        page_foot_html = html2(read(page_foot_path, String), lc)
+        page_foot_html = read(page_foot_path, String)
     end
 
-    #1
+    #
     # PAGE (with PAGE FOOT)
     #
     c_tag     = getvar(lc, :content_tag,   "")
@@ -490,17 +502,17 @@ function _assemble_join_html(lc::LocalContext)::String
     # > HEAD
     head_path = path(:folder) / getgvar(:layout_head)::String
     if !isempty(head_path) && isfile(head_path)
-        full_page_html = html2(read(head_path, String), lc)
+        full_page_html = read(head_path, String)
     end
     # > PAGE
     full_page_html *= body_html
     # > FOOT
     foot_path = path(:folder) / getgvar(:layout_foot)::String
     if !isempty(foot_path) && isfile(foot_path)
-        full_page_html *= html2(read(foot_path, String), lc)
+        full_page_html *= read(foot_path, String)
     end
 
-    return full_page_html
+    return html2(full_page_html, lc)
 end
 
 
