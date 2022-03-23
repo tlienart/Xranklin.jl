@@ -80,8 +80,9 @@ function match_url(
             cand::AbstractString        # candidate in args
         )::Bool
 
-    base = strip(replace(base, "/index.html" => "", "/1/" => ""), '/')
-    cand = strip(replace(cand, "/index.html" => ""), '/')
+    base = strip(replace(base, r"(?:^|/)index.html" => "", "/1/" => ""), '/')
+    cand = strip(replace(cand, r"(?:^|/)index.html" => "", r"/?404/" => "404.html"), '/')
+
     base == cand && return true
 
     # joker-style syntax
