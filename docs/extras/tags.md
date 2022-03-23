@@ -4,7 +4,7 @@ header = "Using tags and pagination"
 menu_title = "Tags & pagination"
 
 item_list = [
-  "* item $i\n"
+  "* item number $i\n"
   for i in 1:10
 ]
 +++

@@ -171,6 +171,8 @@ function _paginated(
     ctt = getvar(lc, :_generated_html, "")
     ctt = html2(ctt, lc; only=[:paginate])
 
+    final = getvar(gc, :_final, false)
+
     # repeatedly write the content replacing the PAGINATOR_TOKEN
     for pgi = 1:npg
         # range of items we should put on page 'pgi'
@@ -189,10 +191,15 @@ function _paginated(
         ctt_i = replace(ctt, PAGINATOR_TOKEN => ins_i)
         setvar!(lc, :_generated_html, ctt_i)
         # write the file
-        write(dst, _process_md_file_html(lc, "", skip=true))
+        open(dst, "w") do f
+            write(f, _process_md_file_html(lc, "", skip=true))
+        end
+        # adjust prefix if needed
+        if final
+            adjust_base_url(lc, dst, final=true)
+            setvar!(lc, :_applied_base_url_prefix, "")
+        end
     end
-    # copy the `odir/1/index.html` (which must exist) to odir/index.html
-    cp(odir / "1" / "index.html", odir / "index.html", force=true)
     return
 end
 
