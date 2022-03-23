@@ -99,7 +99,7 @@ function process_file(
 
         adjust_base_url(gc, rpath, opath; final)
 
-        if !isempty(getvar(lc, :_paginator_name))
+        if !isempty(getvar(lc, :_paginator_name, ""))
             # copy the `odir/1/index.html` (which must exist) to odir/index.html
             odir = dirname(opath)
             cp(odir / "1" / "index.html", odir / "index.html", force=true)
