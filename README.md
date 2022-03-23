@@ -11,7 +11,7 @@ The code has basically been written from scratch and your help is needed to unco
 
 Most of what's offered by Franklin is also offered by Xranklin (apart from what's listed in [this issue](https://github.com/tlienart/Xranklin.jl/issues/65) which we should make as precise as possible).
 
-[**Link to the new docs**](https://tlienart.github.io/Xranklin.jl/) (under active construction, note that the search won't work, and I'm aware that the nav does not work well on mobile phone).
+[**Link to the new docs**](https://tlienart.github.io/Xranklin.jl/) (under active construction, note that the search won't work, and I'm also aware that the nav does not work well on mobile phone).
 
 ## How to help test this?
 
