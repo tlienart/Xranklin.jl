@@ -108,6 +108,9 @@ function _check_cond(
     elseif env_name in (:hasmath, :hascode)
         flag = getvar(c, env_name, false)
 
+    elseif env_name == (:isfinal)
+        flag = getvar(getglob(c), :_final, false)
+
     # no other case (see hfuns/utils.jl)
     end
     return (flag, err)
