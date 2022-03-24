@@ -18,6 +18,7 @@ const INTERNAL_HENV_IF = [
     :ispage, :ifpage,
     :isnotpage, :ifnotpage,
     :hasmath, :hascode,
+    :isfinal
 ]
 const INTERNAL_HENV_FOR = [
     :for
