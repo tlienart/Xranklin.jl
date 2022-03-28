@@ -40,7 +40,9 @@ function lx_literate(p::VS; tohtml::Bool=true)::String
     if !endswith(rpath, ".jl")
         @warn """
             \\literate{...}
-            The relative path '$rpath' does not end with '.jl'.
+            The relative path
+                <$rpath>
+            does not end with '.jl'.
             """
         return failed_lxc("literate", p)
     end
@@ -50,8 +52,9 @@ function lx_literate(p::VS; tohtml::Bool=true)::String
     if !isfile(fpath)
         @warn """
             \\literate{...}
-            Couldn't find a literate file at path '$fpath' (resolved
-            from '$rpath').
+            Couldn't find a literate file at path
+                <$fpath>
+            (resolved from '$rpath').
             """
         return failed_lxc("literate", p)
     end
@@ -87,7 +90,7 @@ function _process_literate_file(rpath::String, fpath::String)::String
                 It looks like you have not imported Literate in your Utils.
                 Add 'using Literate' or 'import Literate' in your utils.jl.
                 """
-            return failed_lxc("literate", p)
+            return failed_lxc("literate", VS())
         else
             setenv!(:literate, true)
         end
@@ -98,14 +101,15 @@ function _process_literate_file(rpath::String, fpath::String)::String
     # introduced the 4-backticks fence (as opposed to 3 earlier).
     literate_toml    = (pathof(L) |> dirname  |> dirname) / "Project.toml"
     literate_version = VersionNumber(
-                            TOML.parsefile(literate_toml)["version"])
+        TOML.parsefile(literate_toml)["version"]
+    )
     if !(v"2.9" <= literate_version)
         @warn """
             \\literate{...}
             It looks like you're using a version of Literate that's older than
             v2.9. Please update your version of Literate.
             """
-        return failed_lxc("literate", p)
+        return failed_lxc("literate", VS())
     end
 
     # add the dependency lc.rpath <=> literate rpath
