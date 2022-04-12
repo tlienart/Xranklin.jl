@@ -16,6 +16,7 @@ Runs Franklin in the current directory.
     final (Bool): whether it's the build (e.g. for CI or publication), in this
                   case all links are adjusted to reflect the 'prepath'.
     single (Bool): do a single build pass and stop.
+    eval (Bool): if set to false, ignore all code evaluations.
 
     prepath/prefix/base_url_prefix: override the base url prefix (e.g. from
                                     the deploy.yml.
@@ -44,11 +45,14 @@ function serve(d::String = "";
             clear::Bool    = false,
             final::Bool    = false,
             single::Bool   = final,
+            eval::Bool     = true,
+            nocode::Bool   = !eval,
 
             # Base url prefix / prepath optional override
             prepath::String = "",
             prefix::String  = "",
-            base_url_prefix::String = ifelse(isempty(prepath), prefix, prepath),
+            base_url_prefix::String = ifelse(isempty(prepath),
+                                             prefix, prepath),
 
             # Debugging options
             debug::Bool   = false,
@@ -60,7 +64,7 @@ function serve(d::String = "";
             launch::Bool = true,
             )
 
-    folder = ifelse(isempty(folder), pwd(), dir)
+
 
     if debug
         Logging.disable_logging(Logging.Debug - 100)
@@ -69,11 +73,14 @@ function serve(d::String = "";
         ENV["JULIA_DEBUG"] = ""
     end
 
+    setenv!(:nocode, nocode)
+
     # Instantiate the global context, this also creates a global vars and code
     # notebooks which each have their module. The first creation of a module
     # will also create the overall `parent_module` in which all modules (for
     # both the global and the local contexts) will live.
-    gc = DefaultGlobalContext()
+    gc     = DefaultGlobalContext()
+    folder = ifelse(isempty(folder), pwd(), dir)
     set_paths!(gc, folder)
 
     # if there is a utils.jl that was cached, check if it has changed,

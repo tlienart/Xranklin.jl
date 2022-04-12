@@ -295,10 +295,8 @@ function process_md_file_io!(
             tohtml::Bool=true
         )::Nothing
 
-    crumbs(@fname, fpath)
-
-    # path of the file relative to path(:folder)
     rpath = get_rpath(fpath)
+    crumbs(@fname, rpath)
 
     # CONTEXT
     # -------
@@ -306,6 +304,12 @@ function process_md_file_io!(
     # create it if it doesn't
     in_gc = rpath in keys(gc.children_contexts)
     lc = in_gc ? gc.children_contexts[rpath] : DefaultLocalContext(gc; rpath)
+
+    off   = ifelse(is_recursive(lc), "...", "")
+    start = time();
+    initial_pass || @info """
+        $(off)⌛ [md-processing] $(hl(str_fmt(rpath), :cyan))
+        """
 
     from_cache    = false
     previous_hash = zero(UInt64)
@@ -335,7 +339,7 @@ function process_md_file_io!(
         # LC was loaded from cache (so that in_gc is true)
         # additionally it looks like the page hasn't changed, we just
         # check whether the output path is there and if so we skip
-        if isfile(opath)
+        if isfile(opath) && !initial_pass
             @info """
                 ⏩ page '$rpath' hasn't changed, skipping some of the conversion...
                 """
@@ -371,9 +375,9 @@ function process_md_file_io!(
         early_stop = false
     end
 
-    if early_stop
+    if early_stop && !initial_pass
         @info """
-            ⏩⏩ also no change of context, skipping reest of the conversion...
+            ⏩⏩ also no change of context, skipping rest of the conversion...
             """
         return
     end
@@ -416,6 +420,9 @@ function process_md_file_io!(
         add_tag(gc, id, name, lc.rpath)
     end
 
+    initial_pass || @info """
+        $(off)... [md-processing] ✔ $(hl(time_fmt(time()-start)))
+        """
     return
 end
 

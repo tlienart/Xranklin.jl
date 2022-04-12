@@ -65,6 +65,7 @@ const FRANKLIN_ENV = LittleDict{Symbol, Any}(
     :cur_local_ctx     => nothing,        # current local context
     :skipped_files     => Set{String}(),
     :literate          => false,          # whether literate is loaded in utils
+    :nocode            => false,          # whether to evaluate code cells
 )
 env(s::Symbol)        = FRANKLIN_ENV[s]
 setenv!(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)

@@ -53,11 +53,17 @@ function _resolve_show(
     name = strip(p[1])
     idx  = findfirst(==(name), nb.code_names)
     if idx === nothing
-        @warn """
-            \\$command{$name}
-            No cell found with name '$name'.
-            """
-        return failed_lxc("show", p)
+        if !env(:nocode)
+            @warn """
+                \\$command{$name}
+                No cell found with name '$name'.
+                """
+            return failed_lxc("show", p)
+        else
+            return html_div("""
+                ⚠ No Code Mode, no cached code representation found ⚠.
+                """, class="code-output")
+        end
     end
     id = idx::Int
     re = nb.code_pairs[id].repr

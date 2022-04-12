@@ -25,6 +25,7 @@ function eval_code_cell!(
 
     # stop early if there's no code to evaluate
     isempty(cell_code) && return
+    env(:nocode) && cell_name != "utils" && return
 
     # recover the notebook context, the cell index we're looking at
     # and the hash of the code (used for autofigs)

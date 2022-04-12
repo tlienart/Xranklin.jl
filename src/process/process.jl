@@ -59,9 +59,6 @@ function process_file(
     off = ifelse(reproc, "... ", "")
     if case in (:md, :html)
         rpath = get_rpath(fpath)
-        start = time(); @info """
-            $(off)⌛ processing $(hl(str_fmt(rpath), :cyan))
-            """
 
         if case == :md
             # process the file and write the result at 'opath'
@@ -105,14 +102,6 @@ function process_file(
             process_html_file(gc, fpath, opath)
             adjust_base_url(gc, rpath, opath; final)
         end
-
-        #
-        # End of processing for MD/HTML file
-        #
-        ropath = "__site" / get_ropath(opath)
-        @info """
-            $(off)... [process] ✔ $(hl(time_fmt(time()-start))), wrote $(hl(str_fmt(ropath), :cyan))
-            """
 
     else
         # copy the file over if

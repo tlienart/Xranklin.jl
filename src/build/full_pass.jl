@@ -33,6 +33,7 @@ bit of interplay that's possible.
 function full_pass(
             gc::GlobalContext,
             watched_files::LittleDict{Symbol, TrackedFiles};
+            # kwargs
             skip_files::Vector{Pair{String, String}}=Pair{String, String}[],
             layout_changed::Bool=false,
             config_changed::Bool=false,
