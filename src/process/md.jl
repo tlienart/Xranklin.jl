@@ -303,7 +303,9 @@ function process_md_file_io!(
     # retrieve the context from gc's children if it exists or
     # create it if it doesn't
     in_gc = rpath in keys(gc.children_contexts)
-    lc = in_gc ? gc.children_contexts[rpath] : DefaultLocalContext(gc; rpath)
+    lc = in_gc ?
+          gc.children_contexts[rpath] :
+          DefaultLocalContext(gc; rpath)
 
     off   = ifelse(is_recursive(lc), "...", "")
     start = time();
@@ -467,6 +469,7 @@ function _process_md_file_html(
         # finish the processing
         return html2(ct, lc)
     end
+
     # > path 1 / head * page *foot
     return _assemble_join_html(lc)
 end

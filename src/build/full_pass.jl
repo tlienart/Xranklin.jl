@@ -121,7 +121,7 @@ function full_pass(
 
     # reinstate independent code from backup (see utils changed)
     # this will only happen if bk_indep_code exists which only happens
-    # if the utils have changed
+    # if the utils.jl has changed
     for rp in keys(bk_indep_code)
         lc = DefaultLocalContext(gc; rpath=rp)
         merge!(lc.nb_code.indep_code, bk_indep_code[rp])
@@ -129,12 +129,17 @@ function full_pass(
     end
 
     # Go over all the watched files and run `process_file` on them
-    for (case, dict) in watched_files, (fp, t) in dict
-        # process
-        process_file(
-            gc, fp, case, dict[fp];
-            skip_files, initial_pass, final, allow_full_skip
-        )
+    for (case, dict) in watched_files
+        flag = initial_pass && case == :md
+        for (fp, t) in dict
+            t0 = flag ? tic() : 0.0
+            process_file(
+                gc, fp, case, dict[fp];
+                skip_files, initial_pass, final, allow_full_skip
+            )
+            rp = get_rpath(joinpath(fp...))
+            flag && toc(t0, "full pass $rp")
+        end
     end
 
     # REPROCESSING (2nd pass)

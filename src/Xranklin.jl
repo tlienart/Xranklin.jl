@@ -70,6 +70,31 @@ const FRANKLIN_ENV = LittleDict{Symbol, Any}(
 env(s::Symbol)        = FRANKLIN_ENV[s]
 setenv!(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
 
+
+const TIMER  = LittleDict{Float64,Pair{String, Float64}}()
+const TIMERN = Ref(0)
+
+nest()  = (TIMERN[] += 1)
+dnest() = (TIMERN[] -= 1)
+
+tic() = begin
+    nest()
+    t0 = time()
+    TIMER[t0] = "" => 0.0
+    return t0
+end
+toc(t0, s) = begin
+    depth = dnest()
+    δt = time() - t0
+    s  = "."^depth * " (d:$depth) $s $(time_fmt(δt))" => δt
+    @info s.first
+    TIMER[t0] = s
+    return
+end
+
+
+
+
 # ------------------------------------------------------------------------
 
 include("misc_utils.jl")
