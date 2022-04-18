@@ -1,3 +1,33 @@
+#=
+XXX
+
+full pass / INITIAL PASS ==========================
+
+Case 1 / from scratch (no cache)
+Case 2 / from cache with no modification to config/utils
+
+  > (A) loop over all pages, for each:
+    try to build page content (only)
+      - since (1) create DefaultLocalContext
+      - must not trigger other pages
+          (getvarfrom should return nothing and mark
+           the page for retrigger)
+      - must not consider layout
+      - must keep partition in LC
+
+  > (B) loop over pages to retrigger, for each:
+    build page content, (final since depth <= 1 assumption)
+      - recover local context (must be there)
+      - use partition from (A) stored in LC
+
+  > (C) loop over all pages, for each:
+    assemble the page
+      - resolve layout around content from (A) or (B)
+
+
+=#
+
+
 """
     full_pass(watched_files; kw...)
 
@@ -130,13 +160,16 @@ function full_pass(
 
     # Go over all the watched files and run `process_file` on them
     for (case, dict) in watched_files
+        # XXX PERF XXX
         flag = initial_pass && case == :md
         for (fp, t) in dict
+            # XXX PERF XXX
             t0 = flag ? tic() : 0.0
             process_file(
                 gc, fp, case, dict[fp];
                 skip_files, initial_pass, final, allow_full_skip
             )
+            # XXX PERF XXX
             rp = get_rpath(joinpath(fp...))
             flag && toc(t0, "full pass $rp")
         end

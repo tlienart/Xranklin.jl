@@ -71,6 +71,10 @@ function hfun_ttfx(p)
     p  = first(p)
     r  = ""
     r2 = ""
+
+    # XXX PERF XXX
+    return ""
+
     try
         r = HTTP.request(
             "GET",
