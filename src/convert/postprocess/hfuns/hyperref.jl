@@ -10,7 +10,7 @@ function hfun_toc(p::VS)::String
     isempty(c) || return c
 
     # retrieve the headings of the local context
-    # (type PageHeadings = LittleDict{String, Tuple{Int, Int}})
+    # (type PageHeadings = Dict{String, Tuple{Int, Int}})
     headings = cur_lc().headings
     isempty(headings) && return ""
 
@@ -163,7 +163,7 @@ end
 """
 function hfun_footnotes()::String
     ctx = cur_ctx()
-    isglob(ctx) && return ""
+    is_glob(ctx) && return ""
     refs  = refrefs(ctx)
     fns   = [k for k in keys(refs) if first(k) == '^']
     fn_io = IOBuffer()

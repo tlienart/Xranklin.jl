@@ -45,8 +45,15 @@ context `c`.
                     should be ignored in the partitioning. Another one is
                     `tokens` which allows to pass tokens from a previous pass.
 """
-function convert_md(md::SS, c::Context;
-                    tohtml=true, nop=false, kw...)
+function convert_md(
+            md::SS,
+            c::Context;
+            # kwargs
+            tohtml::Bool = true,
+            nop::Bool    = false,
+            kw...
+        )::String
+
     # stream to which the converted text will be written
     io = IOBuffer()
     if is_math(c)
@@ -110,6 +117,8 @@ function convert_md(md::SS, c::Context;
     end
     return String(take!(io))
 end
+
+convert_md(s::String, a...; kw...) = convert_md(subs(s), a...; kw...)
 
 
 function math(md::SS, c::LocalContext; kw...)

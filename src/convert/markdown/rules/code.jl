@@ -242,7 +242,7 @@ function html_code_block(
             )
         end
         if ci.auto
-            post = lx_show([ci.name])
+            post = lx_show([ci.name]; lc=c)
         end
         code = ci.code |> _hide_lines |> _hescape
     else
@@ -270,7 +270,7 @@ function latex_code_block(
             eval_code_cell!(c, ci.code, ci.name; force=ci.force)
         end
         if ci.auto
-            post = lx_show([ci.name]; tohtml=false)
+            post = lx_show([ci.name]; tohtml=false, lc=c)
         end
         code = ci.code |> _hide_lines |> _hescape
     else

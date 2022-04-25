@@ -3,11 +3,20 @@
 
 Show representation of the cell output + value in a plaintext code block.
 """
-function lx_show(p::VS; tohtml::Bool=true)::String
+function lx_show(
+            p::VS;
+            tohtml::Bool=true,
+            lc::Union{Nothing,LocalContext}=nothing
+        )::String
+
     c = _lx_check_nargs(:show, p, 1)
     isempty(c) || return c
     # ------------------------------
-    return _resolve_show("show", p; case=ifelse(tohtml, :html, :latex))
+    return _resolve_show(
+            "show", p;
+            case=ifelse(tohtml, :html, :latex),
+            lc
+    )
 end
 
 
@@ -45,10 +54,17 @@ Helper function for `\\show` and `\\mdshow`.
 """
 function _resolve_show(
         command::String, p::VS;
-        case::Symbol=:html
+        case::Symbol=:html,
+        lc::Union{Nothing, LocalContext}=nothing
         )::String
+
+    if isnothing(lc)
+        ctx = cur_lc()
+    else
+        ctx = lc
+    end
+
     # recover the code_pair representation
-    ctx  = cur_lc()
     nb   = ctx.nb_code
     name = strip(p[1])
     idx  = findfirst(==(name), nb.code_names)

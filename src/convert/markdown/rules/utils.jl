@@ -61,7 +61,7 @@ escape_xml(s::SS) = occursin(XML_SPECIAL, s) ?
     replace(s, XML_SPECIAL => replace_unsafe_char) : s
 
 const XML_SPECIAL = Regex("[&<>\"]")
-const UNSAFE_MAP  = LittleDict(
+const UNSAFE_MAP  = Dict(
     "&"  => "&amp;",
     "<"  => "&lt;",
     ">"  => "&gt;",

@@ -1,23 +1,28 @@
 """
     DepsMap
 
-FWD: rpath_md1 => [rpath_f1, rpath_f2, ...]    e.g. page.md     => [literate.jl]
-BWD: rpath_f1  => [rpath_md1, rpath_md2, ...]  e.g. literate.jl => [page.md]
-hashes: {rpath_f1 => filehash}                 e.g. literate.jl => 0xb141aac7
+Object attached to GC to keep track of files that a page may depend on. For
+instance, a page may depend on one or more literate files.
+The map keeps track of the forward and backward link as both are useful
+see `have_changed_deps` further down.
+
+FWD: rpath_md1 => [rpath_f1, rpath_f2, ...]   e.g. page.md     => [literate.jl]
+BWD: rpath_f1  => [rpath_md1, rpath_md2, ...] e.g. literate.jl => [page.md]
+hashes: {rpath_f1 => filehash}                e.g. literate.jl => 0xb141aac7
 """
 struct DepsMap
-    fwd::LittleDict{String, Set{String}}
+    fwd::Dict{String, Set{String}}
     fwd_keys::Set{String}                   # all pages with deps
-    bwd::LittleDict{String, Set{String}}
+    bwd::Dict{String, Set{String}}
     bwd_keys::Set{String}                   # all deps
-    hashes::LittleDict{String, UInt32}
+    hashes::Dict{String, UInt32}
 end
 DepsMap() = DepsMap(
-    LittleDict{String, Set{String}}(),
+    Dict{String, Set{String}}(),
     Set{String}(),
-    LittleDict{String, Set{String}}(),
+    Dict{String, Set{String}}(),
     Set{String}(),
-    LittleDict{String, UInt32}()
+    Dict{String, UInt32}()
 )
 
 function push!(dm::DepsMap, a::String, b::String)::Nothing
@@ -85,11 +90,11 @@ end
     have_changed_deps(dm)
 
 Set of pages rpaths which have one or more dependent file (e.g. a literate
-script) that has changed. This is used in the initial pass to eliminate
-pages which may otherwise have been skipped if they've not changed.
+script) that has changed. This is used in the initial pass to eliminate pages
+which may otherwise have been skipped if they've not changed.
 
-E.g. if page A.md depends upon B.jl and A.md hasn't changed, then it would
-be skipped. But of course this shouldn't happen if B.jl has changed.
+E.g. if page A.md depends upon B.jl and A.md hasn't changed, then it would be
+skipped. But of course this shouldn't happen if B.jl has changed.
 
 In this example, it would be spotted that B.jl has changed and, using the
 backward element of the depency map, we would return A.md in the set.

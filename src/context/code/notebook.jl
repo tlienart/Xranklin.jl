@@ -61,14 +61,14 @@ end
 
 
 """
-    _refresh_indep_code!(lc)
+    refresh_indep_code!(lc)
 
 Go over the `indep_code` mapping of the local context's code notebook to check
 if any entries has code not contained in the code notebook's code pairs.
 This can happen if an indep code block gets modified.
 See process/md/process_md_file_io!
 """
-function _refresh_indep_code!(lc::LocalContext)
+function refresh_indep_code!(lc::LocalContext)
     actual_code_on_page = Set([cp.code for cp in lc.nb_code.code_pairs])
     keys_to_remove = Set{String}()
     for k in keys(lc.nb_code.indep_code)

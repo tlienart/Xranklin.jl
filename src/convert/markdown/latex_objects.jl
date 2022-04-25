@@ -348,8 +348,16 @@ resolve and return.
 Note that if we're here we've already been through is_in_utils though either
 the definition is in the utils module or it's internal but it exists.
 """
-function from_utils(n::Symbol, i::Int, blocks::Vector{Block}, ctx::LocalContext;
-                    isenv=false, tohtml=true, brackets=Block[])
+function from_utils(
+            n::Symbol,
+            i::Int,
+            blocks::Vector{Block},
+            ctx::LocalContext;
+            isenv=false,
+            tohtml=true,
+            brackets=Block[]
+        )::Tuple{Block, Int}
+
     args = String[]
     if isenv
         fsymb    = Symbol("env_$n")
@@ -385,6 +393,7 @@ function from_utils(n::Symbol, i::Int, blocks::Vector{Block}, ctx::LocalContext;
     end
 
     mdl = ifelse(internal, @__MODULE__, ctx.glob.nb_code.mdl)
+    Core.eval(mdl, :(cur_lc() = ctx))
     f   = getproperty(mdl, fsymb)
     o   = outputof(f, args; tohtml)
 
@@ -433,7 +442,7 @@ function normalize_env_name(oname::SS)::String
 end
 
 
-const CUB_TMPL = LittleDict{Symbol,FP.BlockTemplate}(e.opening => e for e in [
+const CUB_TMPL = Dict{Symbol,FP.BlockTemplate}(e.opening => e for e in [
    FP.BlockTemplate(:CU_BRACKETS, :CU_BRACKET_OPEN, :CU_BRACKET_CLOSE, nesting=true),
    ])
 

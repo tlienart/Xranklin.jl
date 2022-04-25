@@ -5,7 +5,7 @@
 function build_loop(
             cycle_counter::Int,
             ::LiveServer.FileWatcher,
-            watched_files::LittleDict{Symbol, TrackedFiles}
+            watched_files::Dict{Symbol, TrackedFiles}
             )::Nothing
 
     # Ensure to have the latest, up-to-date global context
@@ -106,7 +106,7 @@ function build_loop(
                 msg *= " → triggering full pass [layout changed]"; @info msg
                 full_pass(gc, watched_files; skip_files, layout_changed=true)
 
-            # config chagned
+            # config changed
             elseif fpath == path(:folder) / "config.md"
                 msg *= " → triggering full pass [config changed]"; @info msg
                 full_pass(gc, watched_files; config_changed=true)

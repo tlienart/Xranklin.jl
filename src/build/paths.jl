@@ -3,7 +3,7 @@
 
 Retrieve the dictionary of paths.
 """
-paths() = getgvar(:_paths)::LittleDict{Symbol, String}
+paths() = getgvar(:_paths)::Dict{Symbol, String}
 
 """
     path(s)
@@ -45,8 +45,7 @@ Extract the relative path out of the full path to a file.
     `/foo/bar/baz/site_folder/blog/page.md` --> `blog/page.md`
 """
 get_rpath(fpath::String) = fpath[(getgvar(:_idx_rpath)::Int):end]
-get_rpath() = cur_lc().rpath
-get_rdir()  = dirname(get_rpath())
+
 
 """
     get_ropath(opath)
@@ -215,5 +214,3 @@ function get_rurl(rpath::String)
     startswith(rp, '/') && return rp
     return "/$rp"
 end
-get_rurl(lc::LocalContext) = get_rurl(lc.rpath)
-get_rurl() = get_rurl(cur_lc())

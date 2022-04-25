@@ -129,7 +129,13 @@ function serve(d::String = "";
 
     # do the initial build
     process_utils(gc)
-    full_pass(gc, wf; final, allow_full_skip=config_unchanged & utils_unchanged)
+    full_pass(
+        gc, wf;
+        initial_pass=true,
+        config_changed=!config_unchanged,
+        utils_changed=!utils_unchanged,
+        final,
+    )
 
     # ---------------------------------------------------------------
     # Start the build loop unless we're in single pass mode (single)

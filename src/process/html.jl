@@ -51,7 +51,7 @@ function process_html_file_io!(
             )
 
     # ensure we're in the relevant context
-    if isglob(ctx)
+    if is_glob(ctx)
         set_current_global_context(ctx)
     else
         set_current_local_context(ctx)

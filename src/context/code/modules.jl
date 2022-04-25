@@ -4,8 +4,16 @@
 Return a standardised module name either with the given id or with a short
 hash of the given id if `h=true`.
 """
-function modulename(id::String, h::Bool=false)::Symbol
-    p = uppercase(ifelse(h, first(string(hash(id)), 7), id))
+function modulename(
+            id::String,
+            h::Bool=false
+        )::Symbol
+
+    p = ifelse(
+            h,
+            first(string(hash(id)), 7),
+            id
+        ) |> uppercase
     return Symbol("__FRANKLIN_$(p)")
 end
 
@@ -47,8 +55,11 @@ module in Main.
         :__FRANKLIN_...
         :__FRANKLIN_...
 """
-function parent_module(; wipe::Bool=false)::Module
-    n  = modulename("parent")
+function parent_module(;
+            wipe::Bool=false
+         )::Module
+
+    n = modulename("parent")
     if !wipe && ismodule(n)
         return getfield(Main, n)
     end
@@ -62,13 +73,18 @@ end
 Either return the a submodule with name `n` if it exists as a child of the
 parent module or create a new one and return it.
 """
-function submodule(n::Symbol; wipe::Bool=false, utils::Bool=false)
+function submodule(
+            n::Symbol;
+            wipe::Bool=false,
+            utils::Bool=false,
+            rpath::String=""
+        )::Module
+
     p = parent_module()
     if !wipe && ismodule(n, p)
         m = getfield(p, n)
     else
         m = newmodule(n, p)
-        Core.eval(m, Meta.parse("using $(env(:module_name))"))
     end
     utils && using_utils!(m)
     return m
@@ -109,4 +125,45 @@ function parse_code(code::String)
         push!(exs, ex)
     end
     exs
+end
+
+
+"""
+    modules_setup(m)
+
+Setup the module with getvar etc.
+"""
+modules_setup(c::Context) = begin
+    F = env(:module_name)
+    rpath = c isa GlobalContext ? "__global__" : c.rpath
+    for m in (c.nb_vars.mdl, c.nb_code.mdl)
+        include_string(m, """
+            using $F
+            const __gc = cur_gc()
+            const __lc = get(__gc.children_contexts, "$rpath", nothing)
+
+            getlvar(n::Symbol, d=nothing; default=d) =
+                getvar(__lc, __lc, n, default)
+            getgvar(n::Symbol, d=nothing; default=d) =
+                getvar(__gc, __lc, n, default)
+            getvarfrom(n::Symbol, rpath::String, d=nothing; default=d) =
+                getvar(__gc.children_contexts[rpath], __lc, n, default)
+
+            setlvar!(n::Symbol, v) = setvar!(__lc, n, v)
+            setgvar!(n::Symbol, v) = setvar!(__gc, n, v)
+
+            # legacy commands
+            locvar(n, d=nothing; default=d)     = getlvar(Symbol(n); default)
+            globvar(n, d=nothing; default=d)    = getgvar(Symbol(n); default)
+            pagevar(s, n, d=nothing; default=d) = begin
+                rp = ifelse(endswith(s, ".md"), s, s * ".md")
+                getvarfrom(Symbol(n), rp; default)
+            end
+
+            get_page_tags() = get_page_tags(__lc)
+            get_rpath()     = isnothing(__lc) ? "" : __lc.rpath
+            """
+        )
+    end
+    return
 end

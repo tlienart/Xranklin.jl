@@ -156,15 +156,11 @@ Return the dictionary of `{id => name}` for the tags on the current page.
 
 This is exported so that users can leverage it in their Utils module.
 """
-function get_page_tags(lc::LocalContext)::LittleDict{String,String}
+function get_page_tags(lc::LocalContext)::Dict{String,String}
     tags = getvar(lc, :tags, String[])
     return get_tags_dict(tags)
 end
-function get_page_tags()::LittleDict{String,String}
-    lc = cur_lc()
-    lc === nothing && return LittleDict{String,String}()
-    return get_page_tags(lc)
-end
+get_page_tags(::Nothing)  = Dict{String,String}()
 get_page_tags(rp::String) = get_page_tags(cur_gc().children_contexts[rp])
 
 
@@ -174,8 +170,8 @@ get_page_tags(rp::String) = get_page_tags(cur_gc().children_contexts[rp])
 
 Form the `{id => name}` out of the list of tag names.
 """
-function get_tags_dict(tags::Vector{String})::LittleDict{String,String}
-    tags_dict = LittleDict{String, String}()
+function get_tags_dict(tags::Vector{String})::Dict{String,String}
+    tags_dict = Dict{String, String}()
     for t in tags
         id = string_to_anchor(t)
         if id ∉ keys(tags_dict)

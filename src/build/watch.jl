@@ -7,17 +7,16 @@ Structure: {(root => file) => mtime} where `root` is the root of
 the path, file is the filename with extension, and mtime is an
 indication of when the file was last modified.
 """
-const TrackedFiles = LittleDict{Pair{String, String}, Float64}
+const TrackedFiles = Dict{Pair{String, String}, Float64}
 
 
-new_wf() = LittleDict{Symbol, TrackedFiles}(
+new_wf() = Dict{Symbol, TrackedFiles}(
     e => TrackedFiles()
     for e in (
         :other,
         :infra,
-        :md,
         :html,
-        :literate
+        :md,
     )
 )
 
@@ -30,14 +29,13 @@ Walk through `folder` and look for files to track sorting them by type.
 * :md for all `.md` files that need to be watched excluding `config.md`
 * :html for all `.html` files
 * :infra for layout, libs, css files as well as `config.md` and `utils.jl`
-* :literate for all files that are in the `_literate` folder
 * :other files for anything else (these files will just be copied over)
 """
 function update_files_to_watch!(
-            wf::LittleDict{Symbol, TrackedFiles},
+            wf::Dict{Symbol, TrackedFiles},
             folder::String;
             in_loop::Bool=false
-        )::Tuple{LittleDict{Symbol, TrackedFiles}, Bool}
+        )::Tuple{Dict{Symbol, TrackedFiles}, Bool}
 
     newpg    = false
     f2i, d2i = files_and_dirs_to_ignore()

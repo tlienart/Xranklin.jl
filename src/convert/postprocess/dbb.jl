@@ -125,6 +125,7 @@ function _dbb_fun(
         )::Nothing
 
     fsymb = Symbol("hfun_$fname")
+    Core.eval(mdl, :(cur_lc() = lc))
     f     = getproperty(mdl, fsymb)
     out   = outputof(f, args; tohtml=true)
     if isempty(out)
@@ -132,11 +133,6 @@ function _dbb_fun(
     else
         write(io, out)
     end
-
-    # re-set current local and global context, just in case these were
-    # changed by the call to the hfun (e.g. by triggering a processing)
-    set_current_global_context(gc)
-    lc === nothing || set_current_local_context(lc)
     return
 end
 

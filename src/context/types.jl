@@ -3,11 +3,11 @@
 
 Mapping `:varname => value`.
 
-Legacy note: allowed types are not kept track of anymore. But when extracting
+[Legacy note] allowed types are not kept track of anymore. But when extracting
 values via `getvar(...)` a default value can be specified and effectively acts
 as a type constraint.
 """
-const Vars = LittleDict{Symbol, Any}
+const Vars = Dict{Symbol, Any}
 
 
 """
@@ -33,7 +33,6 @@ Set the value of a variable (overwriting existing one if any).
 setvar!(v::Vars, name::Symbol, val) = (v[name] = val; nothing)
 
 
-# ============================================================================
 """
     LxDef{T}
 
@@ -81,7 +80,7 @@ pastdef(λ::LxDef) = LxDef(λ.nargs, λ.def)
 
 Mapping `lx_name => definition`.
 """
-const LxDefs = LittleDict{String, LxDef}
+const LxDefs = Dict{String, LxDef}
 
 
 """
@@ -127,7 +126,7 @@ will given an entry
 
     `foo_bar => (1, 3, "Foo <strong>bar</strong>")
 """
-const PageHeadings = LittleDict{
+const PageHeadings = Dict{
     String,
     Tuple{Int, Int, String}
 }
@@ -138,7 +137,7 @@ const PageHeadings = LittleDict{
 
 Mapping `anchor => target`.
 """
-const PageRefs = LittleDict{
+const PageRefs = Dict{
     String,  # e.g. from '[the link]' to 'the_link'
     String   # e.g. 'https://example.com' or '#the_note'
 }
@@ -149,12 +148,12 @@ const PageRefs = LittleDict{
 
 See anchors.jl, eltype of one of the fields of GC.
 
-Fields
-------
-    * id: the id of the anchor (e.g.: 'foo_bar')
-    * locs: list of rpaths that define the anchor, the last one is the one
-        that gets used.
-    * reqs: set of rpaths that require the anchor.
+## Fields
+
+    * id   : the id of the anchor (e.g.: 'foo_bar')
+    * locs : list of rpaths that define the anchor, the last one is the one
+              that gets used.
+    * reqs : set of rpaths that require the anchor.
 """
 struct Anchor
     id::String
@@ -170,11 +169,11 @@ Anchor(id::String, loc::String) = Anchor(id, [loc], Set{String}())
 
 See tags.jl, eltype of one of the fields of GC.
 
-Fields
-------
-    * id: the id of the tag (e.g.: 'foo_bar')
-    * name: full tag name (e.g. "Foo Bar")
-    * locs: set of rpaths that indicate this tag.
+## Fields
+
+    * id   : the id of the tag (e.g.: 'foo_bar')
+    * name : full tag name (e.g. "Foo Bar")
+    * locs : set of rpaths that indicate this tag.
 """
 struct Tag
     id::String

@@ -224,9 +224,6 @@ function reset_page_context!(
             reset_notebook=false
         )::NamedTuple
 
-    # set it as current context in case it isn't
-    set_current_local_context(lc)
-
     state = (
         anchors   = copy(lc.anchors),
         headings  = copy(lc.headings),
@@ -359,7 +356,7 @@ function process_md_file_io!(
 
     output     = ""
     early_stop = false
-    if !(skip && allow_full_skip)
+    if !(skip & allow_full_skip)
         output = tohtml ?
                     _process_md_file_html(lc, page_content_md; skip) :
                     _process_md_file_latex(lc, page_content_md; skip)
@@ -387,7 +384,7 @@ function process_md_file_io!(
     # Now that the page has been evaluated, we can discard entries
     # from `indep_code` mapping that are obsolete (e.g. if an indep
     # cell changed!)
-    _refresh_indep_code!(lc)
+    refresh_indep_code!(lc)
 
     #
     # HTML WRITE

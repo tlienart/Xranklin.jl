@@ -76,7 +76,7 @@ const DefaultGlobalVars = Vars(
     :tabs_to_spaces => 2,   # \t -> ' ' conversion (see convert_list)
     # Paths related
     :_offset_lxdefs => -typemax(Int),
-    :_paths         => LittleDict{Symbol, String}(),
+    :_paths         => Dict{Symbol, String}(),
     :_idx_rpath     => 1,
     :_idx_ropath    => 1,
     # Utils related
@@ -85,8 +85,8 @@ const DefaultGlobalVars = Vars(
     :_utils_envfun_names => Symbol[],
     :_utils_var_names    => Symbol[],
     # Hyperrefs
-    :_refrefs => LittleDict{String, String}(),  # id => location
-    :_bibrefs => LittleDict{String, String}(),  # id => location
+    :_refrefs => Dict{String, String}(),  # id => location
+    :_bibrefs => Dict{String, String}(),  # id => location
     # Is it the final build (prepath application)
     :_final => false,
 )
@@ -155,9 +155,9 @@ const DefaultLocalVars = Vars(
     # set of anchor ids defined on the page (used to check removals)
     :_anchors => Set{String}(),
     # references (note: headings are part of context, see ctx.headings)
-    :_refrefs => LittleDict{String, String}(),
-    :_eqrefs  => LittleDict{String, Int}("__cntr__" => 0),
-    :_bibrefs => LittleDict{String, String}(),
+    :_refrefs => Dict{String, String}(),
+    :_eqrefs  => Dict{String, Int}("__cntr__" => 0),
+    :_bibrefs => Dict{String, String}(),
     # cell counter
     :_auto_cell_counter => 0,
     # pagination
@@ -166,8 +166,12 @@ const DefaultLocalVars = Vars(
     # Check if a base url prefix was applied
     :_applied_base_url_prefix => "",
     # Generated HTML (when skipping, allows to recover previously generated)
-    :_generated_html  => "",
-    :_generated_latex => "",
+    :_generated_ihtml  => "",
+    :_rm_anchors       => Set{String}(),
+    :_rm_tags          => Set{String}(),
+    :_add_tags         => Vector{Pair{String}}(),
+    :_generated_html   => "",
+    :_generated_latex  => "",
 )
 const DefaultLocalVarsAlias = Alias(
     :fd_rpath        => :_relative_path,
@@ -192,14 +196,13 @@ function DefaultGlobalContext()
 end
 
 function DefaultLocalContext(gc::GlobalContext; rpath::String="")
-    lc = LocalContext(
+    LocalContext(
             gc,
             deepcopy(DefaultLocalVars),
-            LxDefs(),
+            LxDefs();
             alias=copy(DefaultLocalVarsAlias),
-            rpath=rpath
-         )
-    return set_current_local_context(lc)
+            rpath
+    )
 end
 
 DefaultLocalContext(; kw...) = DefaultLocalContext(DefaultGlobalContext(); kw...)
@@ -208,15 +211,13 @@ DefaultLocalContext(; kw...) = DefaultLocalContext(DefaultGlobalContext(); kw...
 SimpleLocalContext(gc::GlobalContext; rpath::String="") =
     LocalContext(gc; rpath)
 
+
 ##############################################################################
 # These will fail for contexts that haven't been constructed out of Default
 # NOTE: anchors is GC so that anchors can be used across pages.
 
-eqrefs(c::LocalContext)   = getvar(c, :_eqrefs,  LittleDict{String, Int}())
-bibrefs(c::LocalContext)  = getvar(c, :_bibrefs, LittleDict{String, String}())
+eqrefs(c::LocalContext)   = getvar(c, :_eqrefs,  Dict{String, Int}())
+bibrefs(c::LocalContext)  = getvar(c, :_bibrefs, Dict{String, String}())
 
-eqrefs()  = eqrefs(cur_lc())
-bibrefs() = bibrefs(cur_lc())
-
-refrefs(c::Context) = c.vars[:_refrefs]::LittleDict{String, String}
+refrefs(c::Context) = c.vars[:_refrefs]::Dict{String, String}
 refrefs()           = merge(refrefs(cur_gc()), refrefs(cur_lc()))

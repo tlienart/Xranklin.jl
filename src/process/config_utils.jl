@@ -31,7 +31,7 @@ function process_config(
     # keep track of current lxdefs to see if the config.md redefines
     # them; if that's the case (either changed or removed) update all
     # pages dependent on these defs at the end of this function.
-    old_lxdefs = LittleDict{String, UInt64}(
+    old_lxdefs = Dict{String, UInt64}(
         n => hash(lxd.def)
         for (n, lxd) in gc.lxdefs
     )

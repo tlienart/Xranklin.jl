@@ -38,8 +38,8 @@ function eval_vars_cell!(ctx::Context, cell_code::SS)::Nothing
         pruned_vars  = prune_vars_bindings(ctx)
         updated_vars = union!(pruned_vars, vnames)
         if !isempty(updated_vars)
-            gc = getglob(ctx)
-            id = getid(ctx)
+            gc = get_glob(ctx)
+            id = get_id(ctx)
             for (rpath, sctx) in gc.children_contexts
                 id == rpath && continue
                 trigger = id in keys(sctx.req_vars) &&
@@ -123,7 +123,7 @@ function prune_vars_bindings(ctx::Context)::Vector{Symbol}
 
     # Remove all bindings apart from the ones that have a default value in
     # which case, use that default.
-    defaults = ifelse(isglob(ctx), DefaultGlobalVars, DefaultLocalVars)
+    defaults = ifelse(is_glob(ctx), DefaultGlobalVars, DefaultLocalVars)
     keys_defaults = keys(defaults)
     bindings_with_default = [b for b in pruned_bindings if b in keys_defaults]
     for b in pruned_bindings

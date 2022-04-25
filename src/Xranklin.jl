@@ -17,20 +17,18 @@ import Base: push!, delete!, merge!
 # ------------------------------------------------------------------------
 # external dependencies part of the Franklin universe
 
+import LiveServer
 import FranklinParser
-const FP = FranklinParser
 import FranklinParser: SS, Token, Block, Group,
                        subs, content, dedent, parent_string,
                        from, to, prev_index, next_index, next_chars
-
-import LiveServer
+const FP = FranklinParser
 
 # ------------------------------------------------------------------------
 # external dependencies not part of the Franklin universe
 
 import URIs
 import IOCapture
-import OrderedCollections: LittleDict
 
 # copied from CommonMark.jl, used in dealing with autolink
 @inline issafe(c::Char) = c in "?:/,-+@._()#=*&%" ||
@@ -38,26 +36,21 @@ import OrderedCollections: LittleDict
 normalize_uri(s) = URIs.escapeuri(s, issafe)
 
 # ------------------------------------------------------------------------
+# Main functions
+export serve, build, html, latex
 
-export serve, build
-export newsite
-export path
+# Useful functions for hfuns
+export getvar, setvar!, cur_gc
 
-# Conversion functions
-export html, latex
+# export get_page_tags, get_all_tags, get_rpath,
+#
+# export attach
+# export auto_cell_name
 
-# Access contexts
-export getvar, getvarfrom, getlvar, getgvar, setlvar!, setgvar!, assetpath
-export get_page_tags, get_all_tags
-export cur_lc, cur_gc, get_rurl, get_rpath
-export attach
-export auto_cell_name
-# legacy
-export locvar, globvar, pagevar
 
 # ------------------------------------------------------------------------
 
-const FRANKLIN_ENV = LittleDict{Symbol, Any}(
+const FRANKLIN_ENV = Dict{Symbol, Any}(
     :module_name       => "Xranklin",     # TODO: remove here, in newmodule, in delay
     :strict_parsing    => false,          # if true, fail on any parsing issue
     :offset_lxdefs     => -typemax(Int),  # helps keep track of order in lxcoms/envs
@@ -71,7 +64,7 @@ env(s::Symbol)        = FRANKLIN_ENV[s]
 setenv!(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
 
 
-const TIMER  = LittleDict{Float64,Pair{String, Float64}}()
+const TIMER  = Dict{Float64,Pair{String, Float64}}()
 const TIMERN = Ref(0)
 
 nest()  = (TIMERN[] += 1)
@@ -92,9 +85,6 @@ toc(t0, s) = begin
     return
 end
 
-
-
-
 # ------------------------------------------------------------------------
 
 include("misc_utils.jl")
@@ -106,13 +96,15 @@ include("html_utils.jl")
 # to 'Notebook' objects which are tied to code environment.
 
 p = "context"
-include("$p/types.jl")
-include("$p/deps_map.jl")
-include("$p/context.jl")
-include("$p/serialize.jl")
-include("$p/anchors.jl")
-include("$p/tags.jl")
-include("$p/rss.jl")
+include("$p/types.jl")         # Vars, LxDef, PageHeadings, PageRefs, Anchor, Tag
+include("$p/deps_map.jl")      # DepsMap, has_changed_deps
+include("$p/notebook.jl")      # VarsNotebook, CodeNotebook
+include("$p/context.jl")       # GlobalContext, LocalContext, getvar
+include("$p/context_utils.jl")
+# include("$p/serialize.jl")
+# include("$p/anchors.jl")
+# include("$p/tags.jl")
+# include("$p/rss.jl")
 include("$p/default_context.jl")
 
 p = "context/code"
@@ -122,74 +114,75 @@ include("$p/notebook_vars.jl")
 include("$p/notebook_code.jl")
 
 # ------------------------------------------------------------------------
-
-include("convert/regex.jl")
-
-# ===> MARKDOWN
-
-# >> LxFuns
-p = "convert/markdown/lxfuns/"
-include("$p/utils.jl")
-include("$p/hyperrefs.jl")
-include("$p/show.jl")
-include("$p/literate.jl")
-include("$p/misc.jl")
-
-p = "convert/markdown/envfuns/"
-include("$p/utils.jl")
-include("$p/math.jl")
-
-# >> LxObjects
-p = "convert/markdown"
-include("$p/latex_objects.jl")
-
-# >> Core
-include("$p/md_core.jl")
-
-# >> Rules
-p = "convert/markdown/rules/"
-include("$p/utils.jl")
-include("$p/text.jl")
-include("$p/list.jl")
-include("$p/table.jl")
-include("$p/heading.jl")
-include("$p/code.jl")
-include("$p/math.jl")
-include("$p/link.jl")
-
-# ===> POSTPROCESSING
-
-p = "convert/postprocess/hfuns"
-include("$p/utils.jl")
-include("$p/input.jl")
-include("$p/hyperref.jl")
-include("$p/evalstr.jl")
-include("$p/henv.jl")
-include("$p/henv_for.jl")
-include("$p/henv_if.jl")
-include("$p/tags_pagination.jl")
-include("$p/dates.jl")
-
-p = "convert/postprocess"
-include("$p/utils.jl")
-include("$p/dbb.jl")
-include("$p/html2.jl")
-include("$p/latex2.jl")
-
-# ------------------------------------------------------------------------
-
-p = "process"
-include("$p/process.jl")
-include("$p/config_utils.jl")
-include("$p/md.jl")
-include("$p/html.jl")
-include("$p/tex.jl")
-
-p = "build"
-include("$p/paths.jl")
-include("$p/watch.jl")
-include("$p/full_pass.jl")
-include("$p/build_loop.jl")
-include("$p/serve.jl")
+#
+# include("convert/regex.jl")
+#
+# # ===> MARKDOWN
+#
+# # >> LxFuns
+# p = "convert/markdown/lxfuns/"
+# include("$p/utils.jl")
+# include("$p/hyperrefs.jl")
+# include("$p/show.jl")
+# include("$p/literate.jl")
+# include("$p/misc.jl")
+#
+# p = "convert/markdown/envfuns/"
+# include("$p/utils.jl")
+# include("$p/math.jl")
+#
+# # >> LxObjects
+# p = "convert/markdown"
+# include("$p/latex_objects.jl")
+#
+# # >> Core
+# include("$p/md_core.jl")
+#
+# # >> Rules
+# p = "convert/markdown/rules/"
+# include("$p/utils.jl")
+# include("$p/text.jl")
+# include("$p/list.jl")
+# include("$p/table.jl")
+# include("$p/heading.jl")
+# include("$p/code.jl")
+# include("$p/math.jl")
+# include("$p/link.jl")
+#
+# # ===> POSTPROCESSING
+#
+# p = "convert/postprocess/hfuns"
+# include("$p/utils.jl")
+# include("$p/input.jl")
+# include("$p/hyperref.jl")
+# include("$p/evalstr.jl")
+# include("$p/henv.jl")
+# include("$p/henv_for.jl")
+# include("$p/henv_if.jl")
+# include("$p/tags_pagination.jl")
+# include("$p/dates.jl")
+#
+# p = "convert/postprocess"
+# include("$p/utils.jl")
+# include("$p/dbb.jl")
+# include("$p/html2.jl")
+# include("$p/latex2.jl")
+#
+# # ------------------------------------------------------------------------
+#
+# p = "process"
+# include("$p/process.jl")
+# include("$p/config_utils.jl")
+# include("$p/md.jl")
+# include("$p/md2.jl")
+# include("$p/html.jl")
+# include("$p/tex.jl")
+#
+# p = "build"
+# include("$p/paths.jl")
+# include("$p/watch.jl")
+# include("$p/full_pass.jl")
+# include("$p/build_loop.jl")
+# include("$p/serve.jl")
 
 end

@@ -109,7 +109,7 @@ function _check_cond(
         flag = getvar(c, env_name, false)
 
     elseif env_name == (:isfinal)
-        flag = getvar(getglob(c), :_final, false)
+        flag = getvar(get_glob(c), :_final, false)
 
     # no other case (see hfuns/utils.jl)
     end

@@ -10,10 +10,7 @@ brace blocks).
 * globvar `parse_script_blocks` whether to parse `{{...}}` blocks in <script>
    blocks or not.
 
-## Errors (see XXX)
 """
-html2(s::String, c::Context; only=Symbol[], kw...) = html2(FP.html_partition(s; kw...), c; only)
-
 function html2(
             parts::Vector{Block},
             c::Context;
@@ -69,4 +66,15 @@ function html2(
     out = String(take!(io))
     out = replace(out, EMPTY_DBB_PAT => "")
     return out
+end
+
+function html2(
+            s::String,
+            c::Context;
+            only=Symbol[],
+            kw...           # kw for the partitioning
+        )
+
+    parts = FP.html_partition(s; kw...)
+    return html2(parts, c; only)
 end
