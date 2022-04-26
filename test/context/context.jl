@@ -27,6 +27,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
 
     # Misc
     @test isempty(gc.children_contexts)
+    @test X.cur_utils_module() === gc.nb_code.mdl
 end
 
 
@@ -124,86 +125,47 @@ end
     @test getvar(lc, :bat) == 10
 
     @test :lc in lc.req_vars["local2"]
+
+    @test setvar!(nothing) === nothing
+
+    # Legacy commands
+    @test lc.nb_code.mdl.locvar("foo") == 0
+    @test lc.nb_code.mdl.globvar("bar") == -1
+    @test lc.nb_code.mdl.pagevar("local2", "lc") == 10
 end
 
 
-# XXX XXX
-#
-#
-#
-#
-# @testset "cur_ctx" begin
-#     # no current context set
-#     lc = X.DefaultLocalContext()
-#     @test X.cur_gc() === lc.glob
-#
-#     @test getlvar(:lang) == getvar(lc, :lang)
-#     @test getgvar(:prepath) == getvar(lc.glob, :prepath) == ""
-#
-#     # legacy access
-#     @test locvar(:lang) == getvar(lc, :lang) == "julia"
-#     @test globvar(:base_url_prefix) == getvar(lc.glob, :prepath) == ""
-#
-#     X.setvar!(lc.glob, :prepath, "foo")
-#     @test globvar(:base_url_prefix) == "foo"
-#
-#     @test getgvar(:prepath) == "foo"
-#     @test getlvar(:lang) == "julia"
-#     setgvar!(:prepath, "bar")
-#     @test getgvar(:prepath) == "bar"
-#     setlvar!(:lang, "python")
-#     @test getlvar(:lang) == "python"
-# end
-#
-# @testset "pagevar" begin
-#     X.setenv!(:cur_local_ctx, nothing)
-#     gc = X.GlobalContext()
-#     lc1 = X.LocalContext(gc, rpath="C1.md")
-#     X.setvar!(lc1, :a, 123)
-#     lc2 = X.LocalContext(gc, rpath="C2.md")
-#     X.setvar!(lc2, :b, 321)
-#     X.set_current_local_context(lc2)
-#     @test getvarfrom(:a, "C1.md", 0) == 123
-#     @test getvarfrom(:b, "C2.md", 0) == 321  # dumb but should work
-#
-#     @test "C1.md" in keys(lc2.req_vars)
-#     @test lc2.req_vars["C1.md"] == Set([:a])
-#
-#     @test pagevar("C1.md", :a) == 123
-# end
-#
-#
-# @testset "ordering" begin
-#     lc = X.DefaultLocalContext()
-#     gc = lc.glob
-#     X.setvar!(gc, :a, 5)
-#     X.setvar!(gc, :b, [1, 2])
-#
-#     X.setvar!(gc, :b, 0)
-#     @test getvar(lc, :b) == 0
-#     @test getvar(lc, :a) == getvar(gc, :a) == 5
-#
-#     lc = X.DefaultLocalContext()
-#     gc = lc.glob
-#     X.setvar!(gc, :lang, "foo")
-#     @test getvar(lc, :lang) == "foo"
-#
-#     lc = X.DefaultLocalContext()
-#     gc = lc.glob
-#     X.setvar!(gc, :lang, "foo")
-#     X.eval_vars_cell!(lc, X.subs("""lang = "bar";"""))
-#     @test getvar(lc, :lang) == "bar"
-#
-#     gc = X.GlobalContext()
-#     X.setvar!(gc, :a, 5)
-#     X.setvar!(gc, :b, [1, 2])
-#     X.setdef!(gc, "abc", X.LxDef(0, "hello"))
-#     lc = X.LocalContext(gc, rpath="REQ")
-#     v = "b = 0"
-#     X.eval_vars_cell!(lc, X.subs(v))
-#
-#     @test getvar(lc, :a) == getvar(gc, :a)
-#     @test getvar(lc, :b) == 0
-#     @test X.hasdef(lc, "abc") === true
-#     @test X.getdef(lc, "abc").def == "hello"
-# end
+@testset "ordering" begin
+    lc = X.DefaultLocalContext(; rpath="loc")
+    gc = lc.glob
+    X.setvar!(gc, :a, 5)
+    X.setvar!(gc, :b, [1, 2])
+
+    X.setvar!(gc, :b, 0)
+    @test getvar(lc, :b) == 0
+    @test getvar(lc, :a) == getvar(gc, :a) == 5
+
+    lc = X.DefaultLocalContext(; rpath="loc")
+    gc = lc.glob
+    X.setvar!(gc, :lang, "foo")
+    @test getvar(lc, :lang) == "foo"
+
+    lc = X.DefaultLocalContext(; rpath="loc")
+    gc = lc.glob
+    X.setvar!(gc, :lang, "foo")
+    X.eval_vars_cell!(lc, X.subs("""lang = "bar";"""))
+    @test getvar(lc, :lang) == "bar"
+
+    gc = X.GlobalContext()
+    X.setvar!(gc, :a, 5)
+    X.setvar!(gc, :b, [1, 2])
+    X.setdef!(gc, "abc", X.LxDef(0, "hello"))
+    lc = X.LocalContext(gc, rpath="REQ")
+    v = "b = 0"
+    X.eval_vars_cell!(lc, X.subs(v))
+
+    @test getvar(lc, :a) == getvar(gc, :a)
+    @test getvar(lc, :b) == 0
+    @test X.hasdef(lc, "abc") === true
+    @test X.getdef(lc, "abc").def == "hello"
+end

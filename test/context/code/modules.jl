@@ -32,3 +32,18 @@ end
     sm = X.submodule(:foobar; wipe=true)
     @test !isdefined(sm, :foo)
 end
+
+
+@testset "using utils" begin
+    gc = X.DefaultGlobalContext()
+    setvar!(gc, :abc, 1//2)
+    utils = """
+        foo() = getgvar(:abc)
+        """
+    X.eval_code_cell!(gc, strip(utils), "utils")
+    @test X.cur_utils_module().foo() == 1//2
+
+    m = X.newmodule(:test)
+    X.using_utils!(m)
+    @test m.Utils.foo() == 1//2
+end

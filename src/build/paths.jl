@@ -3,7 +3,7 @@
 
 Retrieve the dictionary of paths.
 """
-paths() = getgvar(:_paths)::Dict{Symbol, String}
+paths() = (cur_gc().vars[:_paths])::Dict{Symbol, String}
 
 """
     path(s)
@@ -29,8 +29,8 @@ function set_paths!(gc::GlobalContext, folder::String)
     P[:cache] = f / "__cache"
 
     # keep track of prefix, see get_rpath, get_ropath
-    setgvar!(:_idx_rpath,  lastindex(P[:folder] / "") + 1)
-    setgvar!(:_idx_ropath, lastindex(P[:site] / "") + 1)
+    setvar!(gc, :_idx_rpath,  lastindex(P[:folder] / "") + 1)
+    setvar!(gc, :_idx_ropath, lastindex(P[:site] / "") + 1)
     return
 end
 

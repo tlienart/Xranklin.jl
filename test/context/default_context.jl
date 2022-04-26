@@ -11,7 +11,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
 end
 
 @testset "defaultlocal" begin
-    lc = X.DefaultLocalContext()
+    lc = X.DefaultLocalContext(; rpath="loc")
     @test lc isa X.LocalContext
     @test getvar(lc, :_hasmath, true) === false
 end

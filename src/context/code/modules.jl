@@ -155,10 +155,7 @@ modules_setup(c::Context) = begin
             # legacy commands
             locvar(n, d=nothing; default=d)     = getlvar(Symbol(n); default)
             globvar(n, d=nothing; default=d)    = getgvar(Symbol(n); default)
-            pagevar(s, n, d=nothing; default=d) = begin
-                rp = ifelse(endswith(s, ".md"), s, s * ".md")
-                getvarfrom(Symbol(n), rp; default)
-            end
+            pagevar(s, n, d=nothing; default=d) = getvarfrom(Symbol(n), s; default)
 
             get_page_tags() = get_page_tags(__lc)
             get_rpath()     = isnothing(__lc) ? "" : __lc.rpath

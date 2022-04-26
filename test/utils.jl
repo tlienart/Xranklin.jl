@@ -4,7 +4,6 @@ using Test
 using Dates
 using Logging
 using Colors
-using OrderedCollections
 import Base: (//)
 
 import LiveServer
@@ -50,7 +49,7 @@ function testdir(; tag=true)
     gc = X.DefaultGlobalContext();
     X.set_paths!(gc, d);
     if !tag
-        setgvar!(:content_tag, "")
+        setvar!(gc, :content_tag, "")
     end
     d, gc
 end

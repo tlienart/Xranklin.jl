@@ -96,12 +96,12 @@ include("html_utils.jl")
 # to 'Notebook' objects which are tied to code environment.
 
 p = "context"
-include("$p/types.jl")         # Vars, LxDef, PageHeadings, PageRefs, Anchor, Tag
-include("$p/deps_map.jl")      # DepsMap, has_changed_deps
-include("$p/notebook.jl")      # VarsNotebook, CodeNotebook
-include("$p/context.jl")       # GlobalContext, LocalContext, getvar
-include("$p/context_utils.jl")
-# include("$p/serialize.jl")
+include("$p/types.jl")          # Vars, LxDef, PageHeadings, PageRefs, Anchor, Tag
+include("$p/deps_map.jl")       # DepsMap, has_changed_deps
+include("$p/notebook.jl")       # VarsNotebook, CodeNotebook
+include("$p/context.jl")        # GlobalContext, LocalContext
+include("$p/context_utils.jl")  # getvar, setvar, getdef, setdef, attach
+include("$p/serialize.jl")
 # include("$p/anchors.jl")
 # include("$p/tags.jl")
 # include("$p/rss.jl")
@@ -114,9 +114,9 @@ include("$p/notebook_vars.jl")
 include("$p/notebook_code.jl")
 
 # ------------------------------------------------------------------------
-#
-# include("convert/regex.jl")
-#
+
+include("convert/regex.jl")
+
 # # ===> MARKDOWN
 #
 # # >> LxFuns
@@ -138,9 +138,9 @@ include("$p/notebook_code.jl")
 # # >> Core
 # include("$p/md_core.jl")
 #
-# # >> Rules
-# p = "convert/markdown/rules/"
-# include("$p/utils.jl")
+# >> Rules
+p = "convert/markdown/rules/"
+include("$p/utils.jl")
 # include("$p/text.jl")
 # include("$p/list.jl")
 # include("$p/table.jl")
@@ -178,8 +178,8 @@ include("$p/notebook_code.jl")
 # include("$p/html.jl")
 # include("$p/tex.jl")
 #
-# p = "build"
-# include("$p/paths.jl")
+p = "build"
+include("$p/paths.jl")
 # include("$p/watch.jl")
 # include("$p/full_pass.jl")
 # include("$p/build_loop.jl")
