@@ -26,7 +26,7 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 end
 
 @testset "ref" begin
-    c = X.DefaultLocalContext()
+    c = X.DefaultLocalContext(;rpath="loc")
     s = """
       [A]: https://example.com
       """
@@ -137,10 +137,19 @@ end
     h = html(s, nop=true)
     @test isapproxstr(h, """
         <a href="https://example.com">A</a>
-        and<sup><a href="#fn_1">[1]</a></sup><a id="fnref_1"></a>
-        but<sup><a href="#fn_foo_bar">[2]</a></sup><a id="fnref_foo_bar"></a>
-        and<sup><a href="#fn_1">[1]</a></sup><a id="fnref_1"></a>
-        and<sup><a href="#fn_bar">[3]</a></sup><a id="fnref_bar"></a>
-        <a href="https://julialang.org">B</a> [NOT]
+        and
+        <sup><a href="#fn_1">[1]</a></sup>
+        <a id="fnref_1"></a>
+        but
+        <sup><a href="#fn_foo_bar">[2]</a></sup>
+        <a id="fnref_foo_bar"></a>
+        and
+        <sup><a href="#fn_1">[1]</a></sup>
+        <a id="fnref_1"></a>
+        and
+        <sup><a href="#fn_bar">[3]</a></sup>
+        <a id="fnref_bar"></a>
+        <a href="https://julialang.org">B</a>
+        [NOT]
         """)
 end

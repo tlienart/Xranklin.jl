@@ -36,7 +36,7 @@ end
 
 
 """
-    get_rpath(fpath)
+    get_rpath(gc, fpath)
 
 Extract the relative path out of the full path to a file.
 
@@ -44,11 +44,12 @@ Extract the relative path out of the full path to a file.
 
     `/foo/bar/baz/site_folder/blog/page.md` --> `blog/page.md`
 """
-get_rpath(fpath::String) = fpath[(getgvar(:_idx_rpath)::Int):end]
+get_rpath(gc::GlobalContext, fpath::String) =
+    fpath[(getvar(gc, :_idx_rpath, 1)::Int):end]
 
 
 """
-    get_ropath(opath)
+    get_ropath(gc, opath)
 
 Extract the relative path out of the full output path to a file.
 
@@ -56,7 +57,8 @@ Extract the relative path out of the full output path to a file.
 
     `/foo/bar/__site/baz/biz.md` --> `baz/biz.md`
 """
-get_ropath(fpath::String) = fpath[(getgvar(:_idx_ropath)::Int):end]
+get_ropath(gc::GlobalContext, fpath::String) =
+    fpath[(getvar(gc, :_idx_ropath, 1)::Int):end]
 
 
 """
@@ -104,37 +106,42 @@ end
 Form the base output path depending on `base` stripping away `_` for special
 folders like `_css` or `_libs`.
 """
-function form_output_base_path(base::String)::String
+function form_output_base_path(
+            gc::GlobalContext,
+            base::String
+        )::String
+
     if startswith(base, path(:assets)) ||
        startswith(base, path(:css))    ||
        startswith(base, path(:layout)) ||
        startswith(base, path(:libs))
        # for special folders, strip away the preceding `_`
-       return path(:site) / lstrip(get_rpath(base), '_')
+       return path(:site) / lstrip(get_rpath(gc, base), '_')
    end
-   return outpath = path(:site) / get_rpath(base)
+   return outpath = path(:site) / get_rpath(gc, base)
 end
 
 
-"""
-    keep_path(fpath)
-
-Check a file path against the global variable `:keep_path` to see
-if either there's an exact match (including extension) or whether
-it's a dir indicator and fpath starts with it.
-"""
-function keep_path(fpath::String)
-    keep = getgvar(:keep_path)::Vector{String}
-    isempty(keep) && return false
-    rpath = get_rpath(fpath)
-    # check if either we have an exact match blog/page.md == blog/page.md
-    # or if it's a dir and the starts match blog/page.md <> blog/
-    for k in keep
-        k == rpath && return true
-        endswith(k, '/') && startswith(rpath, k) && return true
-    end
-    return false
-end
+# XXX
+# """
+#     keep_path(fpath)
+#
+# Check a file path against the global variable `:keep_path` to see
+# if either there's an exact match (including extension) or whether
+# it's a dir indicator and fpath starts with it.
+# """
+# function keep_path(fpath::String)
+#     keep = getgvar(:keep_path)::Vector{String}
+#     isempty(keep) && return false
+#     rpath = get_rpath(fpath)
+#     # check if either we have an exact match blog/page.md == blog/page.md
+#     # or if it's a dir and the starts match blog/page.md <> blog/
+#     for k in keep
+#         k == rpath && return true
+#         endswith(k, '/') && startswith(rpath, k) && return true
+#     end
+#     return false
+# end
 
 
 """

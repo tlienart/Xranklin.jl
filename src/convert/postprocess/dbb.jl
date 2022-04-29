@@ -73,11 +73,11 @@ function resolve_dbb(
     # B | utils function or internal function (utils have priority)
     elseif (internal = fname in utils_hfun_names(lc.glob)) || fname in INTERNAL_HFUNS
         # run the function either in the Utils module or internally
-        _dbb_fun(lc, io, fname, args, gc, lc; internal)
+        _dbb_fun(lc, io, fname, args; internal)
 
     # C | fill attempt
     else
-        _dbb_fill(lc, io, fname, args, dots, gc, lc)
+        _dbb_fill(lc, io, fname, args, dots)
 
     end
     return idx
@@ -143,7 +143,7 @@ function _dbb_fill(
     res  = ""
     fail = !isempty(args)
 
-    if !fail && (v = getvar(lc, fname) !== nothing)
+    if !fail && ((v = getvar(lc, fname)) !== nothing)
         res = string(v)
 
     # try fill from Utils

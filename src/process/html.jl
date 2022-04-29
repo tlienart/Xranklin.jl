@@ -20,7 +20,7 @@ function process_html_file(
 
     crumbs(@fname, fpath)
 
-    rpath  = get_rpath(fpath)
+    rpath  = get_rpath(gc, fpath)
     in_gc  = rpath in keys(gc.children_contexts)
     lc     = in_gc ?
                gc.children_contexts[rpath] :

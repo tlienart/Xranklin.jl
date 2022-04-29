@@ -28,19 +28,18 @@ end
     include(p/"md_latex_obj.jl")
 end
 
+@testset "MD2x" begin
+    p = "convert/md2x"
+    # rules
+    include(p/"rules_text.jl")
+    include(p/"rules_header.jl")
+    include(p/"rules_maths.jl")
+    include(p/"rules_def.jl")
+    include(p/"rules_list.jl")
+    include(p/"rules_table.jl")
+    include(p/"rules_link.jl")
+end
 
-# @testset "MD2x" begin
-#     p = "convert/md2x"
-#     # rules
-#     include(p/"rules_text.jl")
-#     include(p/"rules_header.jl")
-#     include(p/"rules_maths.jl")
-#     include(p/"rules_def.jl")
-#     include(p/"rules_list.jl")
-#     include(p/"rules_table.jl")
-#     include(p/"rules_link.jl")
-# end
-#
 # @testset "HFuns" begin
 #     p = "convert/hfuns"
 #     include(p/"evalstr.jl")

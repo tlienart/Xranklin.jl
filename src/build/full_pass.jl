@@ -189,7 +189,7 @@ function process_all_md_files(
     # touches an already-assigned object
     for (fp, _) in watched
         fpath = joinpath(fp...)
-        rpath = get_rpath(fpath)
+        rpath = get_rpath(gc, fpath)
         if rpath ∉ keys(gc.children_contexts)
             # just instantiating the object will append it to children contexts
             DefaultLocalContext(gc; rpath)
@@ -207,7 +207,7 @@ function process_all_md_files(
         skip_dict[fp] && continue
 
         fpath = joinpath(fp...)
-        rpath = get_rpath(fpath)
+        rpath = get_rpath(gc, fpath)
 
         @show rpath
 
@@ -251,7 +251,7 @@ function process_all_md_files(
         skip_dict[fp] && continue
 
         fpath = joinpath(fp...)
-        rpath = get_rpath(fpath)
+        rpath = get_rpath(gc, fpath)
 
         @show rpath
 
@@ -278,7 +278,7 @@ function process_all_html_files(
 
         fpath = joinpath(fp...)
         opath = get_opath(fpath)
-        rpath = get_rpath(fpath)
+        rpath = get_rpath(gc, fpath)
 
         process_html_file(gc, fpath, opath)
         adjust_base_url(gc, rpath, opath; final)

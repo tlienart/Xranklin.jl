@@ -32,7 +32,7 @@ function build_loop(
             rm_from_d = Pair{String,String}[]
             for (fp, _) in d
                 fpath = joinpath(fp...)
-                rpath = get_rpath(fpath)
+                rpath = get_rpath(gc, fpath)
                 if !isfile(fpath)
                     push!(rm_from_d, fp)
                     # remove output files associated with fp
@@ -82,7 +82,7 @@ function build_loop(
             # 'removed file' part above but in the meantime we just skip it
             isfile(fpath) || continue
 
-            rpath = get_rpath(fpath)
+            rpath = get_rpath(gc, fpath)
             # was there a modification to the file? otherwise skip
             cur_t = mtime(fpath)
             cur_t <= t && continue

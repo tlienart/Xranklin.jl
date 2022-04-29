@@ -226,17 +226,20 @@ function _refref(b::Block, c::Context; tohtml=true)
 
     isempty(ref_A) && return ""
 
-    ref_A = string_to_anchor(ref_A; keep_first_caret=true)
-    ref_B = strip(subs(parent_string(ss), next_index(t2), to(ss)))
+    ref_id   = string_to_anchor(ref_A; keep_first_caret=true)
+    ref_full = strip(subs(parent_string(ss), next_index(t2), to(ss)))
 
-    if first(ref_A) == '^'
-        ref_B = convert_md(ref_B, c; tohtml, nop=true)
+    if first(ref_id) == '^'
+        ref_full = convert_md(ref_full, c; tohtml, nop=true)
+        if !is_glob(c)
+            c.vars[:_fnrefs][ref_id] = (c.vars[:_fnrefs]["__cntr__"] += 1)
+        end
     else
-        ref_B = normalize_uri(ref_B)
+        ref_full = normalize_uri(ref_full)
     end
 
     refrefs_ = refrefs(c)
-    refrefs_[ref_A] = ref_B
+    refrefs_[ref_id] = ref_full
 
     return ""
 end

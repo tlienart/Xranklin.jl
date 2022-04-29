@@ -152,16 +152,13 @@ function hfun_link_a(
 
     ref, title = p
     title      = sstrip(title, '\"')
-    refrefs_   = refrefs(lc; all=true)
+    refrefs_   = merge(refrefs(cur_gc()), refrefs(lc))
     keysrefs   = keys(refrefs_)
     ref ∈ keysrefs || return "[$title]"
+
+    # footnote case
     if first(ref) == '^'
-        # get the index of the footnote
-        i = 0
-        for k in keysrefs
-            i += ifelse(first(k) == '^', 1, 0)
-            k == ref && break
-        end
+        i       = get(getvar(lc, :_fnrefs, Dict{String, Int}()), ref, 0)
         id      = chop(ref, head=1, tail=0)
         id_to   = "#fn_$id"
         id_from = "fnref_$id"
@@ -186,7 +183,7 @@ function hfun_img_a(
 
     ref, alt = p
     alt      = strip(alt, '\"') |> string
-    refrefs_ = refrefs()
+    refrefs_ = merge(refrefs(cur_gc()), refrefs(lc))
     ref ∈ keys(refrefs_) || return "![$alt]"
     return html_img(refrefs_[ref]; alt)
 end

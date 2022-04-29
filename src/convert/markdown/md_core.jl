@@ -108,8 +108,8 @@ function html(md::SS, c::Context; kw...)
     (is_recursive(c) | is_glob(c)) && return r
     return html2(r, c)
 end
-html(md::SS; kw...)            = html(md, DefaultLocalContext(; rpath="__local__"))
-html(md::String, c...; kw...)  = html(subs(md), c...; kw...)
+html(md::SS; kw...)           = html(md, DefaultLocalContext(; rpath="__local__"); kw...)
+html(md::String, c...; kw...) = html(subs(md), c...; kw...)
 
 
 function latex(md::SS, c::Context; kw...)
@@ -117,7 +117,7 @@ function latex(md::SS, c::Context; kw...)
     (is_recursive(c) | is_glob(c)) && return r
     return latex2(r, c)
 end
-latex(md::SS; kw...)           = latex(md, DefaultLocalContext(; rpath="__local__"))
+latex(md::SS; kw...)           = latex(md, DefaultLocalContext(; rpath="__local__"); kw...)
 latex(md::String, c...; kw...) = latex(subs(md), c...; kw...)
 
 

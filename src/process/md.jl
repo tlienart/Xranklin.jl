@@ -53,7 +53,7 @@ function process_md_file(
     # 2> if it's the initial pass, check if the file has already been processed
     #    (if it's already in the gc children contexts); this may happen if an
     #`   earlier file processing was triggered by getvarfrom
-    rpath = get_rpath(fpath)
+    rpath = get_rpath(gc, fpath)
 
     # otherwise process the page and write to opath if there is anything
     # to write (if the page hasn't changed, nothing new will be written)
@@ -292,7 +292,7 @@ function process_md_file_io!(
             tohtml::Bool=true
         )::Nothing
 
-    rpath = get_rpath(fpath)
+    rpath = get_rpath(gc, fpath)
     crumbs(@fname, rpath)
 
     # CONTEXT

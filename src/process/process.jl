@@ -58,7 +58,7 @@ function process_file(
     #
     off = ifelse(reproc, "... ", "")
     if case in (:md, :html)
-        rpath = get_rpath(fpath)
+        rpath = get_rpath(gc, fpath)
 
         if case == :md
             # process the file and write the result at 'opath'
@@ -119,8 +119,8 @@ process_file(fpair::Pair{String,String}, case::Symbol, t::Float64=0.0; kw...) =
 
 
 function set_meta_parameters(lc::LocalContext, fpath::String, opath::String)
-    rpath  = get_rpath(fpath)
-    ropath = get_ropath(opath)
+    rpath  = get_rpath(lc.glob, fpath)
+    ropath = get_ropath(lc.glob, opath)
     s = stat(fpath)
     setvar!(lc, :_output_path, opath)
     setvar!(lc, :_relative_path, rpath)

@@ -156,6 +156,7 @@ const DefaultLocalVars = Vars(
     :_anchors => Set{String}(),
     # references (note: headings are part of context, see ctx.headings)
     :_refrefs => Dict{String, String}(),
+    :_fnrefs  => Dict{String, Int}("__cntr__" => 0),
     :_eqrefs  => Dict{String, Int}("__cntr__" => 0),
     :_bibrefs => Dict{String, String}(),
     # cell counter
@@ -219,9 +220,4 @@ SimpleLocalContext(gc::GlobalContext; rpath::String="") =
 eqrefs(c::LocalContext)   = getvar(c, :_eqrefs,  Dict{String, Int}())
 bibrefs(c::LocalContext)  = getvar(c, :_bibrefs, Dict{String, String}())
 
-refrefs(c::GlobalContext) = c.vars[:_refrefs]::Dict{String,String}
-function refrefs(lc::LocalContext, all=false)::Dict{String,String}
-    rlc = c.vars[:_refrefs]::Dict{String,String}
-    all || return rlc
-    return merge(refrefs(cur_gc()), rlc)
-end
+refrefs(c::Context) = c.vars[:_refrefs]::Dict{String,String}
