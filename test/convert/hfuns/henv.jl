@@ -1,7 +1,7 @@
 include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
 @testset "if basic" begin
-    lc = X.DefaultLocalContext()
+    lc = X.DefaultLocalContext(; rpath="loc")
     s = raw"""
         +++
         a = true
@@ -64,7 +64,7 @@ end
 end
 
 @testset "if > ifdef" begin
-    lc = X.DefaultLocalContext()
+    lc = X.DefaultLocalContext(;rpath="loc")
     s = raw"""
         +++
         a = "hello"
@@ -81,7 +81,7 @@ end
 end
 
 @testset "if > isempty" begin
-    lc = X.DefaultLocalContext()
+    lc = X.DefaultLocalContext(;rpath="loc")
     s = raw"""
         +++
         using Dates

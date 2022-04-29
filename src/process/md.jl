@@ -186,7 +186,7 @@ function _paginated(
         # process it in the local context
         ins_i = html(ins_i, set_recursive!(lc))
         # adjust lc
-        setvar!(lc, :_relative_url, get_rurl(get_ropath(dst)))
+        setvar!(lc, :_relative_url, get_rurl(get_ropath(gc, dst)))
         # form the page with inserted content
         ctt_i = replace(ctt, PAGINATOR_TOKEN => ins_i)
         setvar!(lc, :_generated_html, ctt_i)

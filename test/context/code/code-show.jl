@@ -79,14 +79,14 @@ end
         \\show{ex}
         """
     ch = c |> strip |> hash
-    h  = html(s, X.DefaultLocalContext(gc), nop=true)
+    h  = html(s, X.DefaultLocalContext(gc; rpath="loc"), nop=true)
     @test isapproxstr(h, """
         <pre><code class="julia">using Colors
         c1 = colorant&quot;red&quot;</code></pre>
-        <div class="code-output"><img class="code-figure" src="/assets/figs-html/__autofig_$ch.svg">
+        <div class="code-output"><img class="code-figure" src="/assets/loc/figs-html/__autofig_$ch.svg">
         </div>
         """)
-    @test isfile(d / "__site" / "assets" / "figs-html" / "__autofig_$ch.svg")
+    @test isfile(d / "__site" / "assets" / "loc" / "figs-html" / "__autofig_$ch.svg")
 end
 
 @testset "custom show" begin
@@ -107,7 +107,7 @@ end
         ```
         \show{ex}
         """
-    h = html(s, X.DefaultLocalContext(gc), nop=true)
+    h = html(s, X.DefaultLocalContext(gc; rpath="loc"), nop=true)
     @test isapproxstr(h, """
         <pre><code class="julia">1</code></pre>
         <div class="code-output">
@@ -121,7 +121,7 @@ end
         ```
         \show{ex}
         """
-    h = html(s, X.DefaultLocalContext(gc), nop=true)
+    h = html(s, X.DefaultLocalContext(gc; rpath="loc"), nop=true)
     @test isapproxstr(h, """
         <pre><code class="julia">Utils.Foo(1)</code></pre>
         <div class="code-output">
@@ -150,7 +150,7 @@ end
         ```
         \show{ex}
         """
-    h = html(s, X.DefaultLocalContext(gc), nop=true)
+    h = html(s, X.DefaultLocalContext(gc; rpath="loc"), nop=true)
     @test isapproxstr(h, """
         <pre><code class="julia">5</code></pre>
         <div class="code-output">

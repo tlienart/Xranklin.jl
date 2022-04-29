@@ -61,11 +61,11 @@ function readpg(rpath)
     read(opath, String)
 end
 
-estr(s) = Xranklin._eval_str(Xranklin.subs(s))
+estr(s) = Xranklin._eval_str(Xranklin.DefaultLocalContext(;rpath="loc"), Xranklin.subs(s))
 
 function lc_with_utils(utils="")
     gc = X.DefaultGlobalContext()
     X.process_utils(utils, gc)
-    lc = X.DefaultLocalContext(gc)
+    lc = X.DefaultLocalContext(gc; rpath="loc")
     return lc
 end

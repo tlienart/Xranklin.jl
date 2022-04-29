@@ -348,14 +348,14 @@ function append_result_html!(io::IOBuffer, result::R, fig::NamedTuple) where R
     elseif fig.save && hasmethod(Base.show, (IO, MIME"image/svg+xml", R))
         _write_img(result, fig.fpath * ".svg", MIME("image/svg+xml"))
         fig.show && write(io, """
-                <img class="code-figure" src="/$(get_ropath(fig.fpath)).svg">
+                <img class="code-figure" src="/$(get_ropath(cur_gc(), fig.fpath)).svg">
                 """)
         figshow = true
 
     elseif fig.save && hasmethod(Base.show, (IO, MIME"image/png", R))
         _write_img(result, fig.fpath * ".png", MIME("image/png"))
         fig.show && write(io, """
-                <img class="code-figure" src="/$(get_ropath(fig.fpath)).png">
+                <img class="code-figure" src="/$(get_ropath(cur_gc(), fig.fpath)).png">
                 """)
         figshow = true
 

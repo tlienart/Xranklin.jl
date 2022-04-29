@@ -19,7 +19,7 @@ end
     include(p/"modules.jl")
     include(p/"notebook_vars.jl")
     include(p/"notebook_code.jl")
-    # include(p/"code-show.jl")         # XXX need to unlock html first
+    include(p/"code-show.jl")
 end
 
 @testset "LaTeX" begin
@@ -40,12 +40,12 @@ end
     include(p/"rules_link.jl")
 end
 
-# @testset "HFuns" begin
-#     p = "convert/hfuns"
-#     include(p/"evalstr.jl")
-#     include(p/"henv.jl")
-# end
-#
+@testset "HFuns" begin
+    p = "convert/hfuns"
+    include(p/"evalstr.jl")
+    include(p/"henv.jl")
+end
+
 # @testset "EnvFuns" begin
 #     p = "convert/envfuns"
 #     include(p/"math.jl")

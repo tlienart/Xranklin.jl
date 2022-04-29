@@ -46,7 +46,7 @@ eval_str(lc, es::String) = eval_str(lc, subs(es))
 
 
 """
-    _eval_str(code)
+    _eval_str(lc, code)
 
 Go over code looking for un-escaped dollar signs and replace those with locvar
 injections.
