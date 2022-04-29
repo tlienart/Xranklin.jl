@@ -4,10 +4,10 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     s = raw"""
         abc \newcommand{\foo}{bar} def
         """
-    c = X.DefaultLocalContext()
+    c = X.DefaultLocalContext(; rpath="loc")
     h = html(s, c)
     @test isapproxstr(h, "<p>abc def</p>")
-    @test length(c.lxdefs.keys) == 1
+    @test length(keys(c.lxdefs) |> collect) == 1
     d = c.lxdefs["foo"]
     @test d isa X.LxDef{String}
     @test d.nargs == 0
@@ -18,20 +18,19 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     s = raw"""
         abc \newcommand{\foo}[1]{bar} def
         """
-    c = X.DefaultLocalContext()
+    c = X.DefaultLocalContext(; rpath="loc")
     h = html(s, c)
     @test isapproxstr(h, "<p>abc def</p>")
-    @test length(c.lxdefs.keys) == 1
+    @test length(keys(c.lxdefs)|>collect) == 1
     d = c.lxdefs["foo"]
     @test d.nargs == 1
 
     s = raw"""
         abc \newcommand{\foo}[ 1] {bar} def
         """
-    c = X.DefaultLocalContext()
+    c = X.DefaultLocalContext(; rpath="loc")
     h = html(s, c)
     @test isapproxstr(h, "<p>abc def</p>")
-    @test length(c.lxdefs.keys) == 1
     d = c.lxdefs["foo"]
     @test d.nargs == 1
 
@@ -45,18 +44,19 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         }
         def
         """
-    c = X.DefaultLocalContext()
+    c = X.DefaultLocalContext(;rpath="loc")
     h = html(s, c)
     @test isapproxstr(h, "<p>abc\n\ndef</p>")
     d = c.lxdefs["foo"]
     @test d.def == "bar\n  biz\n    boz\nbaz"
 end
 
+
 @testset "newenvironment" begin
     s = raw"""
         abc \newenvironment{foo}{bar}{baz} def
         """
-    c = X.DefaultLocalContext()
+    c = X.DefaultLocalContext(; rpath="loc")
     h = html(s, c)
     @test h // "<p>abc  def</p>"
     d = c.lxdefs["foo"]
@@ -67,11 +67,12 @@ end
     s = raw"""
         abc \newenvironment{foo}[1]{bar}{baz} def
         """
-    c = X.DefaultLocalContext()
+    c = X.DefaultLocalContext(; rpath="loc")
     h = html(s, c)
     d = c.lxdefs["foo"]
     @test d.nargs == 1
 end
+
 
 @testset "new* issues" begin
     nowarn()
@@ -79,7 +80,7 @@ end
     s = raw"""
         a \newcommand{foo}
         """
-    c = X.LocalContext(); h = html(s, c)
+    c = X.LocalContext(;rpath="l"); h = html(s, c)
     @test isempty(c.lxdefs)
     @test h // raw"""
         <p>a <span style="color:red;">[FAILED:]&gt;\newcommand{foo}&lt;</span></p>
@@ -88,7 +89,7 @@ end
     s = raw"""
         a \newenvironment{foo}{bar} b
         """
-    c = X.LocalContext(); h = html(s, c)
+    c = X.LocalContext(;rpath="l"); h = html(s, c)
     @test isempty(c.lxdefs)
     @test h // raw"""
         <p>a <span style="color:red;">[FAILED:]&gt;\newenvironment{foo}{bar}&lt;</span> b</p>
@@ -96,7 +97,7 @@ end
 
     # nargs block incorrect
     s = raw"""\newcommand{\bar} 2{hello}"""
-    c = X.LocalContext(); h = html(s, c)
+    c = X.LocalContext(;rpath="l"); h = html(s, c)
     @test isempty(c.lxdefs)
     @test h // raw"""
         <p><span style="color:red;">[FAILED:]&gt;\newcommand{\bar}&lt;</span> 2{hello}</p>

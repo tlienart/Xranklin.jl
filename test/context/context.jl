@@ -5,7 +5,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     @test gc isa X.Context
 
     @test X.is_glob(gc)
-    @test X.get_id(gc) == "__global__"
+    @test X.get_rpath(gc) == "__global__"
     @test X.get_glob(gc) === gc
     @test X.is_recursive(gc) == false
     @test X.set_recursive!(gc) === gc
@@ -16,7 +16,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     # Basic var access
     X.setvar!(gc, :a, 5)
     @test X.hasvar(gc, :a)
-    @test getvar(gc, :a) == 5
+    @test X.getvar(gc, :a) == 5
 
     # Basic def access
     X.setdef!(gc, "abc", X.LxDef(0, "hello"))
@@ -28,6 +28,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     # Misc
     @test isempty(gc.children_contexts)
     @test X.cur_utils_module() === gc.nb_code.mdl
+    @test X.get_rpath(nothing) === ""
 end
 
 
@@ -40,20 +41,20 @@ end
     lc = X.LocalContext(gc, rpath="REQ")
 
     @test X.is_glob(lc) == false
-    @test X.get_id(lc) == "REQ"
+    @test X.get_rpath(lc) == "REQ"
     @test X.get_glob(lc) === lc.glob
     @test X.is_recursive(lc) == false
     @test X.is_math(lc) == false
 
     # modules_setup (see further)
-    @test lc.nb_vars.mdl.get_rpath() == X.get_id(lc)
+    @test lc.nb_vars.mdl.get_rpath() == X.get_rpath(lc)
 
     # code assignment
     v = "b = 0"
     X.eval_vars_cell!(lc, X.subs(v))
 
-    @test getvar(lc, :a) == getvar(gc, :a)
-    @test getvar(lc, :b) == 0
+    @test X.getvar(lc, :a) == X.getvar(gc, :a)
+    @test X.getvar(lc, :b) == 0
     @test X.hasdef(lc, "abc") === true
     @test X.getdef(lc, "abc").def == "hello"
 
@@ -65,7 +66,7 @@ end
     @test gc.children_contexts["REQ"] === lc
 
     X.setvar!(lc, :b, 0)
-    @test getvar(gc.children_contexts["REQ"], :b) == 0
+    @test X.getvar(gc.children_contexts["REQ"], :b) == 0
 
     X.set_recursive!(lc)
     @test X.is_recursive(lc)
@@ -76,24 +77,24 @@ end
     gc = X.DefaultGlobalContext()
     lc = X.DefaultLocalContext(gc; rpath="local")
 
-    setvar!(gc, :ga, 5)
-    setvar!(lc, :la, 3)
+    X.setvar!(gc, :ga, 5)
+    X.setvar!(lc, :la, 3)
 
-    @test getvar(gc, :ga, 0) == 5
-    @test getvar(gc, :ga) == 5
-    @test getvar(gc, :la, 0) == 0
-    @test getvar(gc, :la; default=0) == 0
+    @test X.getvar(gc, :ga, 0) == 5
+    @test X.getvar(gc, :ga) == 5
+    @test X.getvar(gc, :la, 0) == 0
+    @test X.getvar(gc, :la; default=0) == 0
 
-    @test getvar(lc, :la) == 3
-    @test getvar(lc, :ga) == 5
+    @test X.getvar(lc, :la) == 3
+    @test X.getvar(lc, :ga) == 5
     @test :ga in lc.req_vars["__global__"]
 
-    @test getvar(nothing, lc, :la) == nothing
+    @test X.getvar(nothing, lc, :la) == nothing
 
     lc2 = X.DefaultLocalContext(gc; rpath="local2")
-    setvar!(lc2, :lb, 4)
+    X.setvar!(lc2, :lb, 4)
 
-    @test getvar(lc2, lc, :lb) == 4
+    @test X.getvar(lc2, lc, :lb) == 4
     @test :lb in lc.req_vars["local2"]
 
     # in module
@@ -107,11 +108,11 @@ end
     @test !X.hasvar(gc, :foo)
     @test X.hasvar(gc, :bar)
     @test X.hasvar(gc, :baz)
-    @test getvar(gc, :bar) == 1
-    @test getvar(gc, :baz) == 2
-    @test getvar(gc, :bat) == 4
+    @test X.getvar(gc, :bar) == 1
+    @test X.getvar(gc, :baz) == 2
+    @test X.getvar(gc, :bat) == 4
 
-    setvar!(lc2, :lc, 10)
+    X.setvar!(lc2, :lc, 10)
     include_string(lc.nb_code.mdl, """
         setlvar!(:foo, 0)
         setgvar!(:bar, -1)
@@ -119,14 +120,14 @@ end
         setlvar!(:baz, getgvar(:bar))
         setlvar!(:bat, getvarfrom(:lc, "local2"))
         """)
-    @test getvar(lc, :foo) == 0
-    @test getvar(gc, :bar) == -1
-    @test getvar(lc, :baz) == -1
-    @test getvar(lc, :bat) == 10
+    @test X.getvar(lc, :foo) == 0
+    @test X.getvar(gc, :bar) == -1
+    @test X.getvar(lc, :baz) == -1
+    @test X.getvar(lc, :bat) == 10
 
     @test :lc in lc.req_vars["local2"]
 
-    @test setvar!(nothing) === nothing
+    @test X.setvar!(nothing) === nothing
 
     # Legacy commands
     @test lc.nb_code.mdl.locvar("foo") == 0
@@ -142,19 +143,19 @@ end
     X.setvar!(gc, :b, [1, 2])
 
     X.setvar!(gc, :b, 0)
-    @test getvar(lc, :b) == 0
-    @test getvar(lc, :a) == getvar(gc, :a) == 5
+    @test X.getvar(lc, :b) == 0
+    @test X.getvar(lc, :a) == X.getvar(gc, :a) == 5
 
     lc = X.DefaultLocalContext(; rpath="loc")
     gc = lc.glob
     X.setvar!(gc, :lang, "foo")
-    @test getvar(lc, :lang) == "foo"
+    @test X.getvar(lc, :lang) == "foo"
 
     lc = X.DefaultLocalContext(; rpath="loc")
     gc = lc.glob
     X.setvar!(gc, :lang, "foo")
     X.eval_vars_cell!(lc, X.subs("""lang = "bar";"""))
-    @test getvar(lc, :lang) == "bar"
+    @test X.getvar(lc, :lang) == "bar"
 
     gc = X.GlobalContext()
     X.setvar!(gc, :a, 5)
@@ -164,8 +165,8 @@ end
     v = "b = 0"
     X.eval_vars_cell!(lc, X.subs(v))
 
-    @test getvar(lc, :a) == getvar(gc, :a)
-    @test getvar(lc, :b) == 0
+    @test X.getvar(lc, :a) == X.getvar(gc, :a)
+    @test X.getvar(lc, :b) == 0
     @test X.hasdef(lc, "abc") === true
     @test X.getdef(lc, "abc").def == "hello"
 end

@@ -39,7 +39,7 @@ function eval_vars_cell!(ctx::Context, cell_code::SS)::Nothing
         updated_vars = union!(pruned_vars, vnames)
         if !isempty(updated_vars)
             gc = get_glob(ctx)
-            id = get_id(ctx)
+            id = get_rpath(ctx)
             for (rpath, sctx) in gc.children_contexts
                 id == rpath && continue
                 trigger = id in keys(sctx.req_vars) &&

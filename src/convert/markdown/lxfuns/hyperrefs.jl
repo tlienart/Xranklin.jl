@@ -24,12 +24,16 @@ or biblabels etc.
 Includes a table of content, in the HTML case, this takes into account the
 page variables `mintoclevel` and `maxtoclevel`.
 """
-function lx_toc(; tohtml::Bool=true)::String
+function lx_toc(
+             lc::LocalContext;
+             tohtml::Bool=true
+         )::String
+
     # TODO in LaTeX it's a bit more subtle, we could play
     # with tocdepth setting, it won't be exactly the same
     tohtml || return "\\tableofcontents"
-    minlevel = getlvar(:mintoclevel)::Int
-    maxlevel = getlvar(:maxtoclevel)::Int
+    minlevel = getvar(lc, :mintoclevel, 1)
+    maxlevel = getvar(lc, :maxtoclevel, 6)
     return "{{toc $minlevel $maxlevel}}"
 end
 lx_tableofcontents = lx_toc
@@ -40,7 +44,12 @@ lx_tableofcontents = lx_toc
 
 Includes an anchor with a name so that it can be referenced elsewhere.
 """
-function lx_label(p::VS; tohtml::Bool=true)::String
+function lx_label(
+             lc::LocalContext,
+             p::VS;
+             tohtml::Bool=true
+         )::String
+
     c = _lx_check_nargs(:label, p, 1)
     isempty(c) || return c
     # -------------------------------
@@ -49,7 +58,6 @@ function lx_label(p::VS; tohtml::Bool=true)::String
     id = string_to_anchor(p[1])
     # keep track of the anchor, note that if there is already one
     # with that exact same id, then it will be overwritten!
-    lc = cur_lc()
     add_anchor(lc.glob, id, lc.rpath)
     class = getvar(lc.glob, :anchor_class, "anchor")
     return html_a(; id, class)
@@ -65,7 +73,12 @@ appearance of the reference.
 
 Example: \\biblabel{fukumizu04}{Fukumizu et al. (2004)}
 """
-function lx_biblabel(p::VS; tohtml::Bool=true)::String
+function lx_biblabel(
+             lc::LocalContext,
+             p::VS;
+             tohtml::Bool=true
+         )::String
+
     c = _lx_check_nargs(:biblabel, p, 2)
     isempty(c) || return c
     # ----------------------------------
@@ -78,8 +91,8 @@ function lx_biblabel(p::VS; tohtml::Bool=true)::String
         id  = string_to_anchor(p[1])
         txt = replace(p[2], r"^<p>|</p>\n?$" => "")
         bibrefs()[id] = txt
-        class = getgvar(:anchor_class, "anchor") * " " *
-                getgvar(:anchor_bib_class, "anchor-bib")
+        class = getvar(lc.glob, lc, :anchor_class, "anchor") * " " *
+                getvar(lc.glob, lc, :anchor_bib_class, "anchor-bib")
         return html_a(; id, class)
     end
 end
@@ -90,7 +103,12 @@ end
 
 Refer to an equation possibly defined later.
 """
-function lx_eqref(p::VS; tohtml::Bool=true)::String
+function lx_eqref(
+            lc::LocalContext,
+            p::VS;
+            tohtml::Bool=true
+        )::String
+
     c = _lx_check_nargs(:eqref, p, 1)
     isempty(c) || return c
     # -------------------------------
@@ -109,7 +127,12 @@ end
 
 Refer to a bib item possibly defined later.
 """
-function lx_cite(p::VS; tohtml::Bool=true, wp::Bool=false)::String
+function lx_cite(
+            lc::LocalContext,
+            p::VS;
+            tohtml::Bool=true,
+            wp::Bool=false
+        )::String
     s = ifelse(wp, :citep, :cite)
     c = _lx_check_nargs(s, p, 1)
     isempty(c) || return c

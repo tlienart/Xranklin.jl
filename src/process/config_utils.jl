@@ -35,8 +35,6 @@ function process_config(
         n => hash(lxd.def)
         for (n, lxd) in gc.lxdefs
     )
-    # discard current defs, it will be repopulated by the call to html
-    empty!(gc.lxdefs)
 
     # -------------------------------------------
     # Effective config processing: run html as
@@ -49,6 +47,7 @@ function process_config(
         """
 
     html(config, gc)
+
 
     δt = time() - start; @info """
         ... [config.md] ✔ $(hl(time_fmt(δt)))
@@ -208,7 +207,7 @@ process_utils(utils::String) = process_utils(utils, cur_gc())
 process_utils() = process_utils(cur_gc())
 
 
-utils_hfun_names()   = getgvar(:_utils_hfun_names)::Vector{Symbol}
-utils_lxfun_names()  = getgvar(:_utils_lxfun_names)::Vector{Symbol}
-utils_envfun_names() = getgvar(:_utils_envfun_names)::Vector{Symbol}
-utils_var_names()    = getgvar(:_utils_var_names)::Vector{Symbol}
+utils_hfun_names(gc)   = getvar(gc, :_utils_hfun_names)::Vector{Symbol}
+utils_lxfun_names(gc)  = getvar(gc, :_utils_lxfun_names)::Vector{Symbol}
+utils_envfun_names(gc) = getvar(gc, :_utils_envfun_names)::Vector{Symbol}
+utils_var_names(gc)    = getvar(gc, :_utils_var_names)::Vector{Symbol}

@@ -1,4 +1,22 @@
 """
+    {{last_modification_date}}
+
+"""
+hfun_last_modification_date(lc; tohtml=true) =
+    format_date(getvar(lc, :_modification_time, 0.0))
+
+
+"""
+    {{creation_date}}
+
+Note: this may not always be reliable depending as it depends on the file
+stats which may not always reflect the exact creation time.
+"""
+hfun_creation_date(lc; tohtml=true) =
+    format_date(getvar(lc, :_creation_time, 0.0))
+
+
+"""
     format_date()
 
 Convenience function taking a `DateTime` object and returning the corresponding
@@ -36,19 +54,3 @@ function format_date(d::Dates.DateTime)
     return Dates.format(d, format, locale="date_locale")
 end
 format_date(u::Float64) = format_date(Dates.unix2datetime(u))
-
-
-"""
-    {{last_modification_date}}
-
-"""
-hfun_last_modification_date() = format_date(getlvar(:_modification_time))
-
-
-"""
-    {{creation_date}}
-
-Note: this may not always be reliable depending as it depends on the file
-stats which may not always reflect the exact creation time.
-"""
-hfun_creation_date() = format_date(getlvar(:_creation_time))

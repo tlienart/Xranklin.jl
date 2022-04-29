@@ -9,4 +9,4 @@ not do anything).
 * handle reference links (see `_link_a` and `_img_a`).
 
 """
-latex2(s::String, ::Context) = s
+latex2(s::String, ::LocalContext) = s

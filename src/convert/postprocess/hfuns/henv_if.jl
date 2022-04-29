@@ -28,9 +28,9 @@ For a conditional henv, find the first branch that is respected and return
 the scope of that branch for it to be recursed over.
 """
 function resolve_henv_if(
+            lc::LocalContext,
             io::IOBuffer,
             henv::Vector{HEnvPart},
-            c::Context
         )::Nothing
 
     env_name = first(henv).name
@@ -40,7 +40,7 @@ function resolve_henv_if(
     # surfaced and recursed over
     for (i, p) in enumerate(henv)
         p.name == :end && continue
-        flag, err = _check_cond(p, c)
+        flag, err = _check_cond(lc, p)
         if err
             write(io, hfun_failed([env_name]))
             break
@@ -55,13 +55,13 @@ function resolve_henv_if(
             break
         end
     end
-    write(io, html2(string(scope), c))
+    write(io, html2(string(scope), lc))
     return
 end
 
 
 """
-    _check_henv_cond(p)
+    _check_henv_cond(lc, p)
 
 Return the boolean associated with condition `p` and a boolean indicating
 whether there was any error resolving the condition.
@@ -69,8 +69,8 @@ whether there was any error resolving the condition.
 Note: e-string allowed only for if/elseif.
 """
 function _check_cond(
+            lc::LocalContext,
             henv::HEnvPart,
-            c::Context
         )::Tuple{Bool, Bool}
 
     crumbs(@fname)
@@ -79,37 +79,37 @@ function _check_cond(
     flag, err = false, false
 
     if env_name == :else
-        flag, err = _check_else(args, c)
+        flag, err = _check_else(lc, args)
 
     elseif env_name in (:if, :elseif)
-        flag, err = _check_if(args, c)
+        flag, err = _check_if(lc, args)
 
     elseif env_name in (:ifdef, :isdef, :isdefined)
-        flag, err = _check_isdef(args, c)
+        flag, err = _check_isdef(lc, args)
 
     elseif env_name in (:ifndef, :ifnotdef, :isndef, :isnotdef, :isnotdefined)
-        flag, err = _check_isdef(args, c)
+        flag, err = _check_isdef(lc, args)
         flag      = !flag
 
     elseif env_name in (:ifempty, :isempty)
-        flag, err = _check_isempty(args, c)
+        flag, err = _check_isempty(lc, args)
 
     elseif env_name in (:ifnempty, :ifnotempty, :isnotempty)
-        flag, err = _check_isempty(args, c)
+        flag, err = _check_isempty(lc, args)
         flag      = !flag
 
     elseif env_name in (:ispage, :ifpage)
-        flag, err = _check_ispage(args, c)
+        flag, err = _check_ispage(lc, args)
 
     elseif env_name in (:isnotpage, :ifnotpage)
-        flag, err = _check_ispage(args, c)
+        flag, err = _check_ispage(lc, args)
         flag      = !flag
 
     elseif env_name in (:hasmath, :hascode)
-        flag = getvar(c, env_name, false)
+        flag = getvar(lc, env_name, false)
 
     elseif env_name == (:isfinal)
-        flag = getvar(get_glob(c), :_final, false)
+        flag = getvar(lc.glob, :_final, false)
 
     # no other case (see hfuns/utils.jl)
     end
@@ -122,7 +122,7 @@ end
 
 Flag set to true, error is false unless arguments are passed.
 """
-function _check_else(args, _)
+function _check_else(_, args)
     flag, err = true, false
     isempty(args) && return (flag, err)
     @warn """
@@ -140,7 +140,7 @@ end
 
 Flag set to true if getting `vname` from context does not return nothing.
 """
-function _check_isdef(args, c)
+function _check_isdef(lc, args)
     flag, err = false, false
     if isempty(args)
         @warn """
@@ -150,7 +150,7 @@ function _check_isdef(args, c)
             """
         err = true
     else
-        flag = all(a -> getvar(c, Symbol(a), nothing) !== nothing, args)
+        flag = all(a -> getvar(lc, Symbol(a), nothing) !== nothing, args)
     end
     return (flag, err)
 end
@@ -167,7 +167,7 @@ _isemptyvar(v::Date)      = (v == Date(1))
 Similar to isdef but checking if the relevant variables on top of being
 defined are also not-empty (or non-trivial).
 """
-function _check_isempty(args, c)
+function _check_isempty(lc, args)
     flag, err = false, false
     if isempty(args)
         @warn """
@@ -177,7 +177,7 @@ function _check_isempty(args, c)
             """
         err = true
     else
-        flag = all(a -> _isemptyvar(getvar(c, Symbol(a), nothing)), args)
+        flag = all(a -> _isemptyvar(getvar(lc, Symbol(a), nothing)), args)
     end
     return (flag, err)
 end
@@ -189,7 +189,7 @@ end
 
 Check if the current page matches one of the given paths.
 """
-function _check_ispage(args, c::LocalContext)
+function _check_ispage(lc, args)
     flag, err = false, false
     if isempty(args)
         @warn """
@@ -199,24 +199,15 @@ function _check_ispage(args, c::LocalContext)
             """
         err = true
     else
-        rurl = getvar(c, :_relative_url, "")
+        rurl = getvar(lc, :_relative_url, "")
         flag = any(a -> match_url(rurl, a), args)
     end
     return (flag, err)
 end
-function _check_ispage(args, c::GlobalContext)
-    @warn """
-        {{ispage ...}}
-        Found an {{ispage ...}} called from a GlobalContext (maybe in the
-        config file?). The notion of path is ambiguous and so this will be
-        marked as false by default.
-        """
-    return (false, false)
-end
 
 
 "{{if ...}} or {{elseif ...}}"
-function _check_if(args, c)
+function _check_if(lc, args)
     flag, err = false, false
     if length(args) != 1
         @warn """
@@ -228,7 +219,7 @@ function _check_if(args, c)
     else
         arg = args[1]
         if is_estr(arg)
-            v = eval_str(arg)
+            v = eval_str(lc, arg)
             if v isa EvalStrError
                 @warn """
                     {{if ...}} / {{elseif ...}}
@@ -247,7 +238,7 @@ function _check_if(args, c)
                 flag = v
             end
         else
-            v = getvar(c, Symbol(arg), nothing)
+            v = getvar(lc, Symbol(arg))
             if v === nothing
                 @warn """
                     {{if ...}} / {{elseif ...}}

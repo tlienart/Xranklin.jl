@@ -38,12 +38,9 @@ normalize_uri(s) = URIs.escapeuri(s, issafe)
 # ------------------------------------------------------------------------
 # Main functions
 export serve, build, html, latex
+export cur_gc
 
-# Useful functions for hfuns
-export getvar, setvar!, cur_gc
-
-# export get_page_tags, get_all_tags, get_rpath,
-#
+# XXX attach?
 # export attach
 # export auto_cell_name
 
@@ -102,9 +99,9 @@ include("$p/notebook.jl")       # VarsNotebook, CodeNotebook
 include("$p/context.jl")        # GlobalContext, LocalContext
 include("$p/context_utils.jl")  # getvar, setvar, getdef, setdef, attach
 include("$p/serialize.jl")
-# include("$p/anchors.jl")
-# include("$p/tags.jl")
-# include("$p/rss.jl")
+include("$p/anchors.jl")
+include("$p/tags.jl")
+include("$p/rss.jl")
 include("$p/default_context.jl")
 
 p = "context/code"
@@ -116,63 +113,63 @@ include("$p/notebook_code.jl")
 # ------------------------------------------------------------------------
 
 include("convert/regex.jl")
+include("convert/outputof.jl")
 
-# # ===> MARKDOWN
-#
-# # >> LxFuns
-# p = "convert/markdown/lxfuns/"
-# include("$p/utils.jl")
-# include("$p/hyperrefs.jl")
-# include("$p/show.jl")
-# include("$p/literate.jl")
-# include("$p/misc.jl")
-#
-# p = "convert/markdown/envfuns/"
-# include("$p/utils.jl")
-# include("$p/math.jl")
-#
-# # >> LxObjects
-# p = "convert/markdown"
-# include("$p/latex_objects.jl")
-#
-# # >> Core
-# include("$p/md_core.jl")
-#
+# ===> MARKDOWN
+
+# >> LxFuns
+p = "convert/markdown/lxfuns/"
+include("$p/utils.jl")
+include("$p/hyperrefs.jl")
+include("$p/show.jl")
+include("$p/literate.jl")
+include("$p/misc.jl")
+
+p = "convert/markdown/envfuns/"
+include("$p/utils.jl")
+include("$p/math.jl")
+
+# >> LxObjects
+p = "convert/markdown"
+include("$p/latex_objects.jl")
+
+# >> Core
+include("$p/md_core.jl")
+
 # >> Rules
 p = "convert/markdown/rules/"
 include("$p/utils.jl")
-# include("$p/text.jl")
-# include("$p/list.jl")
-# include("$p/table.jl")
-# include("$p/heading.jl")
-# include("$p/code.jl")
-# include("$p/math.jl")
-# include("$p/link.jl")
-#
-# # ===> POSTPROCESSING
-#
-# p = "convert/postprocess/hfuns"
-# include("$p/utils.jl")
-# include("$p/input.jl")
-# include("$p/hyperref.jl")
-# include("$p/evalstr.jl")
-# include("$p/henv.jl")
-# include("$p/henv_for.jl")
-# include("$p/henv_if.jl")
-# include("$p/tags_pagination.jl")
-# include("$p/dates.jl")
-#
-# p = "convert/postprocess"
-# include("$p/utils.jl")
-# include("$p/dbb.jl")
-# include("$p/html2.jl")
-# include("$p/latex2.jl")
-#
-# # ------------------------------------------------------------------------
-#
-# p = "process"
-# include("$p/process.jl")
-# include("$p/config_utils.jl")
+include("$p/text.jl")
+include("$p/list.jl")
+include("$p/table.jl")
+include("$p/heading.jl")
+include("$p/code.jl")
+include("$p/math.jl")
+include("$p/link.jl")
+
+# ===> POSTPROCESSING
+
+p = "convert/postprocess/hfuns"
+include("$p/utils.jl")
+include("$p/input.jl")
+include("$p/hyperref.jl")
+include("$p/evalstr.jl")
+include("$p/henv.jl")
+include("$p/henv_for.jl")
+include("$p/henv_if.jl")
+include("$p/tags_pagination.jl")
+include("$p/dates.jl")
+
+p = "convert/postprocess"
+include("$p/dbb.jl")
+include("$p/html2.jl")
+include("$p/latex2.jl")
+
+# ------------------------------------------------------------------------
+
+p = "process"
+include("$p/process.jl")
+include("$p/config_utils.jl")
 # include("$p/md.jl")
 # include("$p/md2.jl")
 # include("$p/html.jl")

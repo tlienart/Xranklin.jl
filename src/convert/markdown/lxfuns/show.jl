@@ -4,19 +4,18 @@
 Show representation of the cell output + value in a plaintext code block.
 """
 function lx_show(
+            lc::LocalContext,
             p::VS;
-            tohtml::Bool=true,
-            lc::Union{Nothing,LocalContext}=nothing
+            tohtml::Bool=true
         )::String
 
     c = _lx_check_nargs(:show, p, 1)
     isempty(c) || return c
     # ------------------------------
+    case = ifelse(tohtml, :html, :latex)
     return _resolve_show(
-            "show", p;
-            case=ifelse(tohtml, :html, :latex),
-            lc
-    )
+                lc, "show", p, case
+            )
 end
 
 
@@ -25,11 +24,19 @@ end
 
 Show string of cell output re-interpreting it as markdown.
 """
-function lx_mdshow(p::VS; tohtml::Bool=true)::String
+function lx_mdshow(
+            lc::LocalContext,
+            p::VS;
+            tohtml::Bool=true
+         )::String
+
     c = _lx_check_nargs(:show, p, 1)
     isempty(c) || return c
     # ------------------------------
-    return _resolve_show("mdshow", p; case=ifelse(tohtml, :rhtml, :rlatex))
+    case = ifelse(tohtml, :rhtml, :rlatex)
+    return _resolve_show(
+                lc, "mdshow", p, case
+            )
 end
 
 
@@ -38,11 +45,18 @@ end
 
 Show string of cell output as raw HTML.
 """
-function lx_htmlshow(p::VS; tohtml::Bool=true)::String
+function lx_htmlshow(
+            lc::LocalContext,
+            p::VS;
+            tohtml::Bool=true
+        )::String
+
     c = _lx_check_nargs(:show, p, 1)
     isempty(c) || return c
     # ------------------------------
-    return _resolve_show("htmlshow", p; case=:raw)
+    return _resolve_show(
+                lc, "htmlshow", p, :raw
+            )
 end
 
 
@@ -50,22 +64,17 @@ end
 """
     _resolve_show(command, p; case)
 
-Helper function for `\\show` and `\\mdshow`.
+Helper function for `\\show`, `\\mdshow`, and `\\htmlshow`.
 """
 function _resolve_show(
-        command::String, p::VS;
-        case::Symbol=:html,
-        lc::Union{Nothing, LocalContext}=nothing
+            lc::LocalContext,
+            command::String,
+            p::VS,
+            case::Symbol=:html
         )::String
 
-    if isnothing(lc)
-        ctx = cur_lc()
-    else
-        ctx = lc
-    end
-
     # recover the code_pair representation
-    nb   = ctx.nb_code
+    nb   = lc.nb_code
     name = strip(p[1])
     idx  = findfirst(==(name), nb.code_names)
     if idx === nothing
@@ -77,8 +86,10 @@ function _resolve_show(
             return failed_lxc("show", p)
         else
             return html_div("""
-                ⚠ No Code Mode, no cached code representation found ⚠.
-                """, class="code-output")
+                       ⚠ No Code Mode, no cached code representation found ⚠.
+                       """,
+                       class="code-output"
+                   )
         end
     end
     id = idx::Int
@@ -94,12 +105,12 @@ function _resolve_show(
     elseif case == :rhtml
         io = IOBuffer()
         println(io, re.raw)
-        return rhtml(String(take!(io)), ctx)
+        return rhtml(String(take!(io)), lc)
 
     elseif case == :raw
         return re.raw
 
     end
 
-    return rlatex(re.raw, ctx)
+    return rlatex(re.raw, lc)
 end

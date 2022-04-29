@@ -4,9 +4,9 @@
 # > resolve the scope with a context in which the
 #    variable(s) from the iterator are inserted
 function resolve_henv_for(
+            lc::LocalContext,
             io::IOBuffer,
             henv::Vector{HEnvPart},
-            c::Context
         )::Nothing
 
     # scope of the loop
@@ -27,7 +27,7 @@ function resolve_henv_for(
 
     # recover the iterator, either from an e-string or from a variable
     if is_estr(istr)
-        iter = eval_str(istr)
+        iter = eval_str(lc, istr)
         if iter isa EvalStrError
             @warn """
                 {{ for ... }}
@@ -39,7 +39,7 @@ function resolve_henv_for(
             return
         end
     else
-        iter = getvar(c, Symbol(istr))
+        iter = getvar(lc, Symbol(istr))
     end
 
     # "a"         => [:a]
@@ -51,9 +51,9 @@ function resolve_henv_for(
     # so, save them (because we'll overwrite them to resolve the for)
     # note that we filter to see if the var is in the direct context
     # (so not the global context associated with loc)
-    cvars = union(keys(c.vars), keys(c.vars_aliases))
+    cvars = union(keys(lc.vars), keys(lc.vars_aliases))
     saved_vars = [
-        v => getlvar(v)
+        v => getvar(lc, v)
         for v in vars if v in cvars
     ]
 
@@ -61,17 +61,17 @@ function resolve_henv_for(
     # value for the variable(s)
     for vals in iter
         for (name, value) in zip(vars, vals)
-            setvar!(c, name, value)
+            setvar!(lc, name, value)
         end
-        write(io, html2(scope, c))
+        write(io, html2(scope, lc))
     end
 
     # reinstate or destroy bindings
     for (name, value) in saved_vars
         if value === nothing
-            delete!(c.vars, name)
+            delete!(lc.vars, name)
         else
-            c.vars[name] = value
+            lc.vars[name] = value
         end
     end
     return

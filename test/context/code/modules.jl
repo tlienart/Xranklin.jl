@@ -36,7 +36,7 @@ end
 
 @testset "using utils" begin
     gc = X.DefaultGlobalContext()
-    setvar!(gc, :abc, 1//2)
+    X.setvar!(gc, :abc, 1//2)
     utils = """
         foo() = getgvar(:abc)
         """

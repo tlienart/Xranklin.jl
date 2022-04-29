@@ -4,18 +4,22 @@
 List corresponding to the ambient tag. So for a tag `tag_id` this will
 generate a simple list with all the pages that have that tag.
 """
-function hfun_taglist(; tohtml::Bool=true)::String
+function hfun_taglist(
+            lc::LocalContext;
+            tohtml::Bool=true
+        )::String
+
     tohtml || return
     gc = cur_gc()
     c  = IOBuffer()
     write(c, "<ul>")
-    id     = locvar(:tag_id)
+    id     = getvar(lc, :tag_id, "")
     tag    = gc.tags[id]
     rpaths = collect(tag.locs)
 
     # sort the rpaths by date (either given or take ctime otherwise)
     sorter(rp) = begin
-        pd = getvarfrom(:date, rp)
+        pd = getvar(gc.children_contexts[rp], lc, :date)
         if pd === nothing
             lc = gc.children_contexts[rp]
             ct = lc.vars[:_creation_time]
@@ -27,7 +31,7 @@ function hfun_taglist(; tohtml::Bool=true)::String
 
     # write each item
     for rp in rpaths
-        title = getvarfrom(:title, rp, "")
+        title = getvar(gc.children_contexts[rp], :title, "")
         if isempty(title)
             title = "/$rp/"
         end
@@ -55,15 +59,20 @@ Generates pagination on a page (so that we get `/foo/bar/` and
 
 It is assumed there is at most one such call per page.
 """
-function hfun_paginate(p::VS; tohtml::Bool=true)::String
+function hfun_paginate(
+            lc::LocalContext,
+            p::VS;
+            tohtml::Bool=true
+        )::String
+
     # check parameters
     c = _hfun_check_nargs(:paginate, p; k=2)
     isempty(c) || return c
     tohtml     || return
 
     ps   = Symbol.(p)
-    iter = getlvar(ps[1])
-    npp  = getlvar(ps[2])
+    iter = getvar(lc, ps[1])
+    npp  = getvar(lc, ps[2])
 
     # check parameters
     wm = "{{paginate $(p[1]) $(p[2])}}"
@@ -101,7 +110,7 @@ function hfun_paginate(p::VS; tohtml::Bool=true)::String
 
     # was there already a pagination element on this page?
     # if so, warn and ignore.
-    u = getlvar(:_paginator_name, "")
+    u = getvar(lc, :_paginator_name, "")
     if !isempty(u) && u != p[1]
         @warn """
             $wm
@@ -111,7 +120,6 @@ function hfun_paginate(p::VS; tohtml::Bool=true)::String
     end
 
     # Storing the name
-    lc = cur_lc()
     setvar!(lc, :_paginator_name, p[1])
     setvar!(lc, :_paginator_npp,  npp)
 

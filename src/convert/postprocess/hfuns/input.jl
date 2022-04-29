@@ -13,21 +13,28 @@ INSERT / INCLUDE
 Write the value of variable `x` from either the local context or the context
 of the page at `from`.
 """
-function hfun_fill(p::VS)::String
+function hfun_fill(
+            lc::LocalContext,
+            p::VS;
+            tohtml=true
+        )::String
+
     c = _hfun_check_nargs(:fill, p; kmin=1, kmax=2)
     isempty(c) || return c
 
     np  = length(p)
-    out = (np == 1) ? _hfun_fill_1(p) : _hfun_fill_2(p)
+    out = (np == 1) ? _hfun_fill_1(lc, p) : _hfun_fill_2(lc, p)
     return out
 end
 
-"""
-Helper function for case `{{fill x}}`
-"""
-function _hfun_fill_1(p::VS)::String
+"Helper function for case `{{fill x}}`"
+function _hfun_fill_1(
+            lc::LocalContext,
+            p::VS
+        )::String
+
     vname = Symbol(p[1])
-    if (v = getvar(cur_lc(), vname)) !== nothing
+    if (v = getvar(lc, vname)) !== nothing
         return string(v)
     elseif vname in utils_var_names()
         mdl = cur_gc().nb_code.mdl
@@ -45,7 +52,11 @@ end
 """
 Helper function for case `{{fill x from}}`
 """
-function _hfun_fill_2(p::VS)::String
+function _hfun_fill_2(
+            lc::LocalContext,
+            p::VS
+        )::String
+
     vname = Symbol(p[1])
     rpath = strip(p[2], '/')
     endswith(rpath, ".md") || (rpath *= ".md")
@@ -77,20 +88,32 @@ The inserted element is resolved in the current active context. Usually it
 will be a local context except if the insert is called from within an original
 non-layout '.html' file in which case the context is the global one.
 """
-function hfun_insert(p::VS; tohtml::Bool=true)::String
+function hfun_insert(
+            lc::LocalContext,
+            p::VS;
+            tohtml::Bool=true
+        )::String
+
     c = _hfun_check_nargs(:insert, p; kmin=1, kmax=2)
     isempty(c) || return c
 
     np = length(p)
-    np == 1 && return _hfun_insert(p[1], path(:layout); tohtml)
+    np == 1 && return _hfun_insert(lc, p[1], path(:layout); tohtml)
     bsym = Symbol(p[2])
     base = path(bsym)
-    return _hfun_insert(p[1], base; bsym, tohtml)
+    return _hfun_insert(lc, p[1], base; bsym, tohtml)
 end
 hfun_include(a...; kw...) = hfun_insert(a...; kw...)
 
-function _hfun_insert(p::String, base::String;
-                      bsym::Symbol=:layout, tohtml::Bool=true)
+
+function _hfun_insert(
+            lc::LocalContext,
+            p::String,
+            base::String;
+            bsym::Symbol=:layout,
+            tohtml::Bool=true
+        )
+
     if isempty(base)
         @warn """
             {{insert $p $bsym}}
@@ -98,6 +121,7 @@ function _hfun_insert(p::String, base::String;
             """
         return hfun_failed(["insert", p, string(bsym)])
     end
+
     fpath = base / p
     if !isfile(fpath)
         @warn """
@@ -106,13 +130,15 @@ function _hfun_insert(p::String, base::String;
             """
         return hfun_failed(["insert", p, string(bsym)])
     end
+
     if tohtml && endswith(p, ".html")
         io = IOBuffer()
-        process_html_file_io!(io, cur_ctx(), fpath)
+        process_html_file_io!(io, lc, fpath)
         return String(take!(io))
+
     elseif endswith(p, ".md")
         io = IOBuffer()
-        process_md_file_io!(io, cur_ctx(), fpath; tohtml)
+        process_md_file_io!(io, lc, fpath; tohtml)
         return String(take!(io))
     end
     # for anything else, just dump the file as is
@@ -126,7 +152,11 @@ Insert the converted page content. This is useful in the context of the
 skeleton layout (see also `_process_md_file_html` and `:layout_skeleton`).
 Other than that context, the user should probably not use it.
 """
-function hfun_page_content(; tohtml::Bool=true)::String
-    tohtml && return getlvar(:_generated_html)
-    return getlvar(:_generated_latex)
+function hfun_page_content(
+            lc::LocalContext;
+            tohtml::Bool=true
+        )::String
+
+    tohtml && return getvar(lc, :_generated_html)
+    return getvar(lc, :_generated_latex)
 end

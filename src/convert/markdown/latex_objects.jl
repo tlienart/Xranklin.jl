@@ -21,7 +21,7 @@ function process_latex_objects!(
             blocks::Vector{Block},
             ctx::Context;
             tohtml::Bool=true
-            )::Nothing
+        )::Nothing
 
     index_to_remove = Int[]
     i = 1
@@ -239,7 +239,7 @@ Return a block + the number of additional blocks taken (# of braces taken).
 function try_resolve_lxcom(
             i::Int,
             blocks::Vector{Block},
-            ctx::LocalContext;
+            lc::LocalContext;
             tohtml::Bool=true
         )::Tuple{Block,Int}
 
@@ -258,18 +258,18 @@ function try_resolve_lxcom(
     cand = blocks[i]
     name = lstrip(cand.ss, '\\') |> string
 
-    if !hasdef(ctx, name)
+    if !hasdef(lc, name)
         nsymb = Symbol(name)
-        if is_in_utils(nsymb)
-            return from_utils(nsymb, i, blocks, ctx; tohtml)
-        elseif ctx.is_math[]
+        if is_in_utils(lc.glob, nsymb)
+            return from_utils(nsymb, i, blocks, lc; tohtml)
+        elseif lc.is_math[]
             return Block(:RAW_INLINE, cand.ss), 0
         end
 
         m = "Command '$(cand.ss)' used before it was defined."
         return failed_block(cand, m), 0
     end
-    lxdef = getdef(ctx, name)
+    lxdef = getdef(lc, name)
 
     # runtime check; lxdef should NOT be a LxDef{String=>String} otherwise
     # there's a clash in names with an environment
@@ -299,7 +299,7 @@ function try_resolve_lxcom(
     r = lxdef.def::String
     # in math env, inject whitespace to avoid issues with chains; this can't happen
     # outside of maths envs as we force the use of braces
-    p = ifelse(ctx.is_math[], " ", "")
+    p = ifelse(lc.is_math[], " ", "")
     # find the indicators for replacement (e.g. '#1') and replace
     @inbounds for k in 1:nargs
         c = content(blocks[i+k]) |> dedent |> strip
@@ -326,33 +326,33 @@ function try_resolve_lxcom(
     r = replace(r, "%%HASH%%" => "#")
 
     recursion = ifelse(tohtml, rhtml, rlatex)
-    r2 = recursion(r, ctx; nop=true)
+    r2 = recursion(r, lc; nop=true)
     return Block(:RAW_INLINE, subs(r2)), nargs
 end
 
 """
-    is_in_utils(n; isenv)
+    is_in_utils(gc, n; isenv)
 
 Check if a symbol corresponds to a lx_ or env_ function in Utils.
 """
-function is_in_utils(n::Symbol; isenv=false)
-    isenv && return (n in utils_envfun_names()) || (n in INTERNAL_ENVFUNS)
-    return (n in utils_lxfun_names()) || (n in INTERNAL_LXFUNS)
+function is_in_utils(gc::GlobalContext, n::Symbol; isenv=false)
+    isenv && return (n in utils_envfun_names(gc)) || (n in INTERNAL_ENVFUNS)
+    return (n in utils_lxfun_names(gc)) || (n in INTERNAL_LXFUNS)
 end
 
 """
-    from_utils(n, i, blocks, ctx; isenv, tohtml)
+    from_utils(n, i, blocks, lc; isenv, tohtml)
 
 Recover the lx_ or env_ function corresponding to `n`, find the relevant args,
 resolve and return.
-Note that if we're here we've already been through is_in_utils though either
+Note that if we're here we've already been through `is_in_utils` though either
 the definition is in the utils module or it's internal but it exists.
 """
 function from_utils(
             n::Symbol,
             i::Int,
             blocks::Vector{Block},
-            ctx::LocalContext;
+            lc::LocalContext;
             isenv=false,
             tohtml=true,
             brackets=Block[]
@@ -379,36 +379,32 @@ function from_utils(
         args_brackets = brackets[2:first_non_adjacent-1]
         # resolve args brackets (see next_adjacent_brackets)
         recursion = ifelse(tohtml, rhtml, rlatex)
-        args_str  = [recursion(b, ctx; nop=true) for b in args_brackets]
+        args_str  = [recursion(b, lc; nop=true) for b in args_brackets]
 
         # construct the string form of the brackets to send to the function
         args = [_env_content(blocks[1], length(args_str)), args_str...]
 
     else
-        args     = next_adjacent_brackets(i, blocks, ctx; tohtml)
+        args     = next_adjacent_brackets(i, blocks, lc; tohtml)
         fsymb    = Symbol("lx_$n")
         kind     = :RAW_INLINE
         internal = n in INTERNAL_LXFUNS
 
     end
 
-    mdl = ifelse(internal, @__MODULE__, ctx.glob.nb_code.mdl)
-    Core.eval(mdl, :(cur_lc() = ctx))
-    f   = getproperty(mdl, fsymb)
-    o   = outputof(f, args; tohtml)
-
+    o = outputof(fsymb, args, lc; internal, tohtml)
     return Block(kind, subs(o)), length(args)
 end
 
 """
-    next_adjacent_brackets(i, blocks, ctx)
+    next_adjacent_brackets(i, blocks, lc)
 
 Take blocks `blocks[i+1, ...]` as long as their name is `:CU_BRACKETS`, resolve what's
 inside them, and assemble them into a vector of raw strings that can be passed
 on to a lxfun.
 """
 function next_adjacent_brackets(
-            i::Int, blocks::Vector{Block}, ctx::LocalContext;
+            i::Int, blocks::Vector{Block}, lc::LocalContext;
             tohtml::Bool=true
             )::Vector{String}
 
@@ -419,7 +415,7 @@ function next_adjacent_brackets(
         c += 1
     end
     recursion = ifelse(tohtml, rhtml, rlatex)
-    return [recursion(b, ctx; nop=true) for b in brackets]
+    return [recursion(b, lc; nop=true) for b in brackets]
 end
 
 
@@ -460,7 +456,7 @@ So there's necessarily at least 4 blocks (begin, first brace, end, last brace).
 """
 function try_resolve_lxenv(
             blocks::Vector{Block},
-            ctx::LocalContext;
+            lc::LocalContext;
             tohtml::Bool=true
         )::Block
 
@@ -491,18 +487,18 @@ function try_resolve_lxenv(
     end
 
     # no def for that name
-    if !hasdef(ctx, name)
+    if !hasdef(lc, name)
         nsymb = Symbol(name)
 
-        if is_in_utils(nsymb; isenv=true) && !is_math(ctx)
-            block, _ = from_utils(nsymb, 1, blocks, ctx;
+        if is_in_utils(lc.glob, nsymb; isenv=true) && !is_math(lc)
+            block, _ = from_utils(nsymb, 1, blocks, lc;
                                   isenv=true, tohtml, brackets)
             return block
 
-        elseif is_math(ctx)
+        elseif is_math(lc)
             # resolve the inner part (e.g. if there are commands in it)
             re_s = "\\begin{$name}" *
-                   math(_env_content(blocks[1]), ctx; tohtml) *
+                   math(_env_content(blocks[1]), lc; tohtml) *
                    "\\end{$name}"
             return Block(:RAW_BLOCK, subs(re_s))
         end
@@ -512,7 +508,7 @@ function try_resolve_lxenv(
     end
 
     # recover the def
-    lxdef = getdef(ctx, name)
+    lxdef = getdef(lc, name)
 
     # runtime check; lxdef should NOT be a LxDef{String} otherwise
     # there's a clash in names with a command
@@ -546,7 +542,7 @@ function try_resolve_lxenv(
     end
     recursion = ifelse(tohtml, rhtml, rlatex)
     r  = _env_content(blocks[1], nargs)
-    r2 = recursion(pre * r * post, ctx)
+    r2 = recursion(pre * r * post, lc)
     return Block(:RAW_BLOCK, subs(r2))
 end
 

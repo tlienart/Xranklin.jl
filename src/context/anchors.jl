@@ -24,6 +24,13 @@ Add an anchor with a given id defined on page rpath to the global context.
 If the id is already present, push the source to the anchor's locs.
 Otherwise add a new anchor to the GC.
 
+If several places define an anchor, the ordering is such that the latest
+viewed place will be the first one to be used. So for instance if both
+page A and B define anchor `anchor`, and page B is the last page to be
+built, a hyperref to `anchor` will point to B (of course, it's preferable
+if pages don't redefine the same anchors but this is how it's resolved
+if it happens).
+
 Note: in this page the 'rpath' is that of the page defining the anchor.
 """
 function add_anchor(
@@ -36,8 +43,10 @@ function add_anchor(
 
     # add the id to the local context's anchors
     union!(gc.children_contexts[rpath].anchors, [id])
+
+    # add the id to the gc anchors
     if id in keys(gc.anchors)
-        # generally there'll be one, possibly a couple of
+        # generally there'll be just one, possibly a couple of
         # locs so it's not very expensive to go over the whole vector
         locs = gc.anchors[id].locs
         # do what's needed to get rpath at the end of locs

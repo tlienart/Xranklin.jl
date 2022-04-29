@@ -219,5 +219,9 @@ SimpleLocalContext(gc::GlobalContext; rpath::String="") =
 eqrefs(c::LocalContext)   = getvar(c, :_eqrefs,  Dict{String, Int}())
 bibrefs(c::LocalContext)  = getvar(c, :_bibrefs, Dict{String, String}())
 
-refrefs(c::Context) = c.vars[:_refrefs]::Dict{String, String}
-refrefs()           = merge(refrefs(cur_gc()), refrefs(cur_lc()))
+refrefs(c::GlobalContext) = c.vars[:_refrefs]::Dict{String,String}
+function refrefs(lc::LocalContext, all=false)::Dict{String,String}
+    rlc = c.vars[:_refrefs]::Dict{String,String}
+    all || return rlc
+    return merge(refrefs(cur_gc()), rlc)
+end

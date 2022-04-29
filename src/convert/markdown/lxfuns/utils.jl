@@ -20,7 +20,11 @@ const INTERNAL_LXFUNS = Symbol[
 
 Returns an error message when a LaTeX-like command fails.
 """
-function failed_lxc(p::VS; tohtml::Bool=true)::String
+function failed_lxc(
+            p::VS;
+            tohtml::Bool=true
+        )::String
+
     s = "\\" * p[1] * prod("{$e}" for e in p[2:end])
     tohtml && return html_failed(s)
     return latex_failed(s)

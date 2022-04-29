@@ -213,8 +213,6 @@ function auto_cell_name(
     return cell_name
 end
 
-auto_cell_name() = auto_cell_name(cur_lc())
-
 
 """
     html_code_block(b, c)

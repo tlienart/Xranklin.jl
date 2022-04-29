@@ -3,12 +3,17 @@
 
 Force the content of the command to be treated as a paragraph.
 """
-function lx_par(p::VS; tohtml::Bool=true)::String
+function lx_par(
+            lc::LocalContext,
+            p::VS;
+            tohtml::Bool=true
+        )::String
+
     c = _lx_check_nargs(:par, p, 1)
     isempty(c) || return c
     # -----------------------------
-    tohtml && return rhtml(p[1], cur_lc(); nop=false)
-    return rlatex(p[1], cur_lc(); nop=false)
+    tohtml && return rhtml(p[1], lc; nop=false)
+    return rlatex(p[1], lc; nop=false)
 end
 
 """
@@ -16,14 +21,18 @@ end
 
 Suppress the numbering of that equation.
 """
-function lx_nonumber(p::VS; tohtml::Bool=true)::String
+function lx_nonumber(
+            lc::LocalContext,
+            p::VS;
+            tohtml::Bool=true
+        )::String
+
     c = _lx_check_nargs(:nonumber, p, 1)
     isempty(c) || return c
     # ----------------------------------
     tohtml || return p[1]
-    ctx = cur_lc()
-    eqrefs(ctx)["__cntr__"] -= 2
+    eqrefs(lc)["__cntr__"] -= 2
     return "<div class=\"nonumber\">" *
-            rhtml(p[1], ctx; nop=true) *
+            rhtml(p[1], lc; nop=true) *
            "</div>"
 end

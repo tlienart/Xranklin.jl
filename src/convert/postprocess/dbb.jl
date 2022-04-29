@@ -6,9 +6,7 @@ function resolve_dbb(
             io::IOBuffer,
             parts::Vector{Block},
             idx::Int,
-            c::Context,
-            gc::GlobalContext,
-            lc::Union{Nothing, LocalContext};
+            lc::LocalContext;
             only::Vector{Symbol}=Symbol[]
         )::Int
 
@@ -23,7 +21,7 @@ function resolve_dbb(
         write(io, EMPTY_DBB)
         return idx
     elseif is_estr(cb; allow_short = true)
-        _dbb_fill_estr(io, cb)
+        _dbb_fill_estr(lc, io, cb)
         return idx
     end
 
@@ -58,7 +56,7 @@ function resolve_dbb(
                 """
             write(io, hfun_failed(split_cb))
         else
-            resolve_henv(henv, io, c)
+            resolve_henv(lc, henv, io)
         end
         # move the head after the last seen token from find_henv
         idx = ci
@@ -73,14 +71,13 @@ function resolve_dbb(
         write(io, hfun_failed(split_cb))
 
     # B | utils function or internal function (utils have priority)
-    elseif (u = fname in utils_hfun_names()) || fname in INTERNAL_HFUNS
+    elseif (internal = fname in utils_hfun_names(lc.glob)) || fname in INTERNAL_HFUNS
         # run the function either in the Utils module or internally
-        mdl = ifelse(u, gc.nb_code.mdl, @__MODULE__)
-        _dbb_fun(io, fname, args, mdl, gc, lc)
+        _dbb_fun(lc, io, fname, args, gc, lc; internal)
 
     # C | fill attempt
     else
-        _dbb_fill(io, fname, args, dots, gc, lc)
+        _dbb_fill(lc, io, fname, args, dots, gc, lc)
 
     end
     return idx
@@ -88,11 +85,12 @@ end
 
 
 function _dbb_fill_estr(
+            lc::LocalContext,
             io::IOBuffer,
             cb::SubString
         )::Nothing
 
-    v = eval_str(cb)
+    v = eval_str(lc, cb)
 
     if !isa(v, EvalStrError)
         sv = string(v)
@@ -116,18 +114,15 @@ end
 
 
 function _dbb_fun(
+            lc::LocalContext,
             io::IOBuffer,
             fname::Symbol,
-            args::Vector{String},
-            mdl::Module,
-            gc::GlobalContext,
-            lc::Union{Nothing, LocalContext}
+            args::Vector{String};
+            internal::Bool=true
         )::Nothing
 
     fsymb = Symbol("hfun_$fname")
-    Core.eval(mdl, :(cur_lc() = lc))
-    f     = getproperty(mdl, fsymb)
-    out   = outputof(f, args; tohtml=true)
+    out   = outputof(fsymb, args, lc; tohtml=true)
     if isempty(out)
         write(io, EMPTY_DBB)
     else
@@ -138,28 +133,22 @@ end
 
 
 function _dbb_fill(
+            lc::LocalContext,
             io::IOBuffer,
             fname::Symbol,
             args::Vector{String},
-            dots::String,
-            gc::GlobalContext,
-            lc::Union{Nothing, LocalContext}
+            dots::String
         )::Nothing
 
     res  = ""
     fail = !isempty(args)
 
-    # try fill from LC
-    if !fail && lc !== nothing && ((v = getvar(lc, fname)) !== nothing)
-        res = string(v)
-
-    # try fill from GC
-    elseif !fail && ((v = getvar(gc, fname)) !== nothing)
+    if !fail && (v = getvar(lc, fname) !== nothing)
         res = string(v)
 
     # try fill from Utils
     elseif !fail && (fname in utils_var_names())
-        mdl = gc.nb_code.mdl
+        mdl = lc.glob.nb_code.mdl
         res = string(getproperty(mdl, fname))
 
     else

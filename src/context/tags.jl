@@ -59,8 +59,10 @@ function rm_tag(
 
     # this check should be superfluous
     id in keys(gc.tags) || return
+
     # remove the location from GC
     setdiff!(gc.tags[id].locs, rpath)
+
     # check if there's no locations --> remove the page
     if isempty(gc.tags[id].locs)
         delete!(gc.tags, id)
@@ -148,13 +150,11 @@ end
 
 
 """
-    get_page_tags(lc=cur_lc())
+    get_page_tags(lc)
 
 Return the dictionary of `{id => name}` for the tags on the current page.
 
-## Note
-
-This is exported so that users can leverage it in their Utils module.
+Note: see also `modules_setup` where the default lc is the current one.
 """
 function get_page_tags(lc::LocalContext)::Dict{String,String}
     tags = getvar(lc, :tags, String[])
@@ -162,7 +162,6 @@ function get_page_tags(lc::LocalContext)::Dict{String,String}
 end
 get_page_tags(::Nothing)  = Dict{String,String}()
 get_page_tags(rp::String) = get_page_tags(cur_gc().children_contexts[rp])
-
 
 
 """
@@ -187,11 +186,10 @@ end
 
 Recover the tags associated with the current gc and mark the page as
 requesting it so that it can be retriggered.
+
+Note: see also `modules_setup` which defines `get_all_tags` for users.
 """
-function get_all_tags(gc::GlobalContext)
-    if env(:cur_local_ctx) !== nothing
-        union!(gc.init_trigger, [cur_lc().rpath])
-    end
+function get_all_tags(gc::GlobalContext, lc::Union{Nothing,LocalContext})
+    isnothing(lc) || union!(gc.init_trigger, [lc.rpath])
     return gc.tags
 end
-get_all_tags() = get_all_tags(cur_gc())

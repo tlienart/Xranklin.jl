@@ -1,36 +1,8 @@
-# possible inline blocks
-# * TEXT                    | rules/text    ✓
-# * COMMENT                 | skipped       ✓
-# * RAW_HTML                | rules/text    ✓
-# * EMPH*                   | rules/text    ✓
-# * LINEBREAK               | rules/text    ✓
-# * CODE_INLINE             | rules/code    ✓
-# * MATH_INLINE             | rules/math    ✓
-# * AUTOLINK                | XXX
-# * LINK*                   | rules/link    ✓
-# * CU_BR, LX_COM           | latex_objects
-# * LX_NEW*                 | latex_objects
-# * DBB                     | hfuns/*
-# * RAW_INLINE              | rules/text
-
-# possible blocks (single)
-# * BLOCKQUOTE              |
-# * TABLE
-# * LIST
-# * MD_DEF_BLOCK, MD_DEF    | rules/text
-# * CODE_BLOCK*
-# * MATH_DISPL*
-# * DIV                     | rules/text
-# * H*
-# * HRULE                   | rules/text
-# * LX_ENV
-# * RAW
-
 """
     convert_md(md, c; tohtml, nop, kw...)
 
 Take a markdown string `md` and convert it either to html or latex in a given
-context `c`.
+local context `c`.
 
 ## Kwargs
 
@@ -121,29 +93,31 @@ end
 convert_md(s::String, a...; kw...) = convert_md(subs(s), a...; kw...)
 
 
-function math(md::SS, c::LocalContext; kw...)
-    c.is_recursive[] = c.is_math[] = true
-    r = convert_md(md, c; kw...)
-    c.is_recursive[] = c.is_math[] = false
+function math(md::SS, lc::LocalContext; kw...)
+    lc.is_recursive[] = lc.is_math[] = true
+    r = convert_md(md, lc; kw...)
+    lc.is_recursive[] = lc.is_math[] = false
     return r
 end
 math(md::String, c; kw...) = math(subs(md), c; kw...)
 math(b::Block, c; kw...)   = math(content(b), c; kw...)
 
 
-function html(md::SS, c::Context=DefaultLocalContext(); kw...)
+function html(md::SS, c::Context; kw...)
     r = convert_md(md, c; kw...)
-    is_recursive(c) && return r
+    (is_recursive(c) | is_glob(c)) && return r
     return html2(r, c)
 end
+html(md::SS; kw...)            = html(md, DefaultLocalContext(; rpath="__local__"))
 html(md::String, c...; kw...)  = html(subs(md), c...; kw...)
 
 
-function latex(md::SS, c::Context=DefaultLocalContext(); kw...)
+function latex(md::SS, c::Context; kw...)
     r = convert_md(md, c; tohtml=false, kw...)
-    is_recursive(c) && return r
+    (is_recursive(c) | is_glob(c)) && return r
     return latex2(r, c)
 end
+latex(md::SS; kw...)           = latex(md, DefaultLocalContext(; rpath="__local__"))
 latex(md::String, c...; kw...) = latex(subs(md), c...; kw...)
 
 
@@ -195,28 +169,28 @@ rlatex(b::Block, c; kw...)  = rlatex(content(b), c; tokens=b.inner_tokens, kw...
 
 
 """
-    dmath(b, ctx)
+    dmath(b, lc)
 
 Display math block on a page with HTML output and processing of possible
 label command. If a labelcommand is found, the output is preceded with
 an anchor.
 """
-function dmath(b::Block, ctx::LocalContext)
-    hasmath!(ctx)
+function dmath(b::Block, lc::LocalContext)
+    hasmath!(lc)
     math_str = content(b)
     anchor   = ""
-    cntr     = (eqrefs(ctx)["__cntr__"] += 1)
+    cntr     = (eqrefs(lc)["__cntr__"] += 1)
     # check if there's a \label{...}, if there is, process it
     # then remove it & do the rest of the processing
     if (label_match = match(MATH_LABEL_PAT, math_str)) !== nothing
         id       = string_to_anchor(string(label_match.captures[1]))
-        class    = getvar(ctx, :anchor_class, "anchor") * " " *
-                   getvar(ctx, :anchor_math_class, "anchor-math")
+        class    = getvar(lc, :anchor_class, "anchor") * " " *
+                   getvar(lc, :anchor_math_class, "anchor-math")
         anchor   = html_a(; id, class)
         math_str = replace(math_str, MATH_LABEL_PAT => "") |> subs
         # keep track of the reference + numbering
-        eqrefs(ctx)[id] = cntr
+        eqrefs(lc)[id] = cntr
     end
-    is_recursive(ctx) && return "\\[ $(math(math_str, ctx)) \\]\n"
-    return "$anchor\\[ $(math(math_str, ctx)) \\]\n"
+    is_recursive(lc) && return "\\[ $(math(math_str, lc)) \\]\n"
+    return "$anchor\\[ $(math(math_str, lc)) \\]\n"
 end

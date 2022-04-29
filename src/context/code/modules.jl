@@ -143,22 +143,23 @@ modules_setup(c::Context) = begin
             const __lc = get(__gc.children_contexts, "$rpath", nothing)
 
             getlvar(n::Symbol, d=nothing; default=d) =
-                getvar(__lc, __lc, n, default)
+                $F.getvar(__lc, __lc, n, default)
             getgvar(n::Symbol, d=nothing; default=d) =
-                getvar(__gc, __lc, n, default)
+                $F.getvar(__gc, __lc, n, default)
             getvarfrom(n::Symbol, rpath::String, d=nothing; default=d) =
-                getvar(__gc.children_contexts[rpath], __lc, n, default)
+                $F.getvar(__gc.children_contexts[rpath], __lc, n, default)
 
-            setlvar!(n::Symbol, v) = setvar!(__lc, n, v)
-            setgvar!(n::Symbol, v) = setvar!(__gc, n, v)
+            setlvar!(n::Symbol, v) = $F.setvar!(__lc, n, v)
+            setgvar!(n::Symbol, v) = $F.setvar!(__gc, n, v)
 
             # legacy commands
             locvar(n, d=nothing; default=d)     = getlvar(Symbol(n); default)
             globvar(n, d=nothing; default=d)    = getgvar(Symbol(n); default)
             pagevar(s, n, d=nothing; default=d) = getvarfrom(Symbol(n), s; default)
 
-            get_page_tags() = get_page_tags(__lc)
-            get_rpath()     = isnothing(__lc) ? "" : __lc.rpath
+            get_page_tags() = $F.get_page_tags(__lc)
+            get_all_tags()  = $F.get_all_tags(__gc, __lc)
+            get_rpath()     = $F.get_rpath(__lc)
             """
         )
     end

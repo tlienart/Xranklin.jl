@@ -1,8 +1,10 @@
 is_glob(::GlobalContext) = true
 is_glob(::LocalContext)  = false
 
-get_id(::GlobalContext)::String = "__global__"
-get_id(c::LocalContext)::String = c.rpath
+# available to user via get_rpath (see `modules_setup`)
+get_rpath(::GlobalContext) = "__global__"
+get_rpath(c::LocalContext) = c.rpath
+get_rpath(::Nothing)       = ""
 
 get_glob(c::GlobalContext) = c
 get_glob(c::LocalContext)  = c.glob

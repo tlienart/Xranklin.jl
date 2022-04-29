@@ -21,13 +21,14 @@ end
     include(p/"notebook_code.jl")
     # include(p/"code-show.jl")         # XXX need to unlock html first
 end
-#
-# @testset "LaTeX" begin
-#     p = "convert/"
-#     include(p/"md_latex_newobj.jl")
-#     include(p/"md_latex_obj.jl")
-# end
-#
+
+@testset "LaTeX" begin
+    p = "convert/"
+    include(p/"md_latex_newobj.jl")
+    include(p/"md_latex_obj.jl")
+end
+
+
 # @testset "MD2x" begin
 #     p = "convert/md2x"
 #     # rules

@@ -96,7 +96,7 @@ end
 end
 
 @testset "more dedenting" begin
-    lc = X.DefaultLocalContext()
+    lc = X.DefaultLocalContext(;rpath="__local__")
     s = raw"""
         \newcommand{\coma}[2]{
             ~~~

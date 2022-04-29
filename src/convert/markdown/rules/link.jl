@@ -230,7 +230,7 @@ function _refref(b::Block, c::Context; tohtml=true)
     ref_B = strip(subs(parent_string(ss), next_index(t2), to(ss)))
 
     if first(ref_A) == '^'
-        ref_B = convert_md(ref_B, is_glob(c) ? cur_lc() : c; tohtml, nop=true)
+        ref_B = convert_md(ref_B, c; tohtml, nop=true)
     else
         ref_B = normalize_uri(ref_B)
     end

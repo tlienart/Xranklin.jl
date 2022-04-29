@@ -5,7 +5,7 @@ is_estr(s; allow_short=false) = begin
 end
 
 """
-    eval_str(estr)
+    eval_str(lc, estr)
 
 Take an e-string `e"..."` replace any `\$...` with a locvar getter and evaluate
 the logic in the current utils module.
@@ -17,7 +17,11 @@ occasionally for simple logic; otherwise write a hfun.
 
 See tests for examples.
 """
-function eval_str(estr::SS)::Any
+function eval_str(
+            lc::LocalContext,
+            estr::SS
+        )
+
     estr = replace(strip(estr), "\\\"" => "⁰")
 
     if startswith(estr, "e")
@@ -26,7 +30,8 @@ function eval_str(estr::SS)::Any
         estr = strip(lstrip(estr, '>'))
     end
 
-    code = _eval_str(estr)
+    code = _eval_str(lc, estr)
+
     captured = IOCapture.capture(; rethrow=Union{}) do
         include_string(
             softscope,
@@ -37,7 +42,7 @@ function eval_str(estr::SS)::Any
     captured.error && return EvalStrError()
     return captured.value
 end
-eval_str(es::String) = eval_str(subs(es))
+eval_str(lc, es::String) = eval_str(lc, subs(es))
 
 
 """
@@ -47,6 +52,7 @@ Go over code looking for un-escaped dollar signs and replace those with locvar
 injections.
 """
 function _eval_str(
+            lc::LocalContext,
             code::SS
         )::String
 
@@ -78,7 +84,9 @@ function _eval_str(
                 # might be empty
                 varname = String(take!(tmp_io))
                 if !isempty(varname)
-                    str = "getlvar(:$varname)"
+                    # we use getvarfrom because this will be evaluated in the
+                    # Utils module which doesn't have an LC set.
+                    str = "getvarfrom(:$varname, \"$(lc.rpath)\")"
                     write(main_io, str)
                 end
                 take_char || write(main_io, cur)

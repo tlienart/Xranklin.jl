@@ -99,25 +99,25 @@ end
 
 
 """
-    resolve_henv(henv, io, c)
+    resolve_henv(lc, henv, io)
 
 Take a `henv` (vector of key double brace blocks) resolve it and write to `io`
-within the context `c`.
+within the context `lc`.
 """
 function resolve_henv(
+            lc::LocalContext,
             henv::Vector{HEnvPart},
-            io::IOBuffer,
-            c::Context
+            io::IOBuffer
         )::Nothing
 
     env_name = first(henv).name
     crumbs(@fname, env_name)
 
     if env_name in INTERNAL_HENV_IF
-        resolve_henv_if(io, henv, c)
+        resolve_henv_if(lc, io, henv)
 
     elseif env_name in INTERNAL_HENV_FOR
-        resolve_henv_for(io, henv, c)
+        resolve_henv_for(lc, io, henv)
     end
     return
 end

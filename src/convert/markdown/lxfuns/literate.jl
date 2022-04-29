@@ -32,7 +32,12 @@ Try to find a literate file, resolve it and return it.
 2. the `rpath` must end with `.jl` and must not start with a `/`
 3. it is recommended to have a dedicated 'literate' folder but not mandatory
 """
-function lx_literate(p::VS; tohtml::Bool=true)::String
+function lx_literate(
+             lc::LocalContext,
+             p::VS;
+             tohtml::Bool=true
+         )::String
+
     c = _lx_check_nargs(:literate, p, 1)
     isempty(c) || return c
     # ----------------------------------
@@ -60,7 +65,7 @@ function lx_literate(p::VS; tohtml::Bool=true)::String
     end
 
     # here fpath is the full path to an existing literate script
-    return _process_literate_file(rpath, fpath)
+    return _process_literate_file(lc, rpath, fpath)
 end
 
 
@@ -81,7 +86,11 @@ const LITERATE_CONFIG = Dict(
 Helper function to process a literate file located at `rpath` (`fpath`).
 We pass `fpath` because it's already been resolved.
 """
-function _process_literate_file(rpath::String, fpath::String)::String
+function _process_literate_file(
+             lc::LocalContext,
+             rpath::String,
+             fpath::String
+         )::String
     # check if Literate.jl is loaded, otherwise interrupt
     if !env(:literate)
         if (:Literate ∉ names(cur_utils_module(), imported=true))
@@ -113,7 +122,6 @@ function _process_literate_file(rpath::String, fpath::String)::String
     end
 
     # add the dependency lc.rpath <=> literate rpath
-    lc = cur_lc()
     attach(lc, rpath)
 
     # Disable the logging
