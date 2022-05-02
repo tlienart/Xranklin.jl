@@ -62,16 +62,21 @@ get_ropath(gc::GlobalContext, fpath::String) =
 
 
 """
-    get_opath(fpair, case)
-    get_opath(fpath)
+    get_opath(gc, fpair, case)
+    get_opath(gc, fpath)
 
 Given a file pair, form the output path (where the derived file will be
 written/copied).
 """
-function get_opath(fpair::Pair{String,String}, case::Symbol)::String
+function get_opath(
+            gc::GlobalContext,
+            fpair::Pair{String,String},
+            case::Symbol
+        )::String
+
     base, file = fpair
     fpath      = joinpath(base, file)
-    outbase    = form_output_base_path(base)
+    outbase    = form_output_base_path(gc, base)
 
     # .md -> .html for md pages:
     case == :md && (file = change_ext(file))
@@ -82,7 +87,7 @@ function get_opath(fpair::Pair{String,String}, case::Symbol)::String
         fname = noext(file)
         skip = fname ∈ ("index", "404") ||
                endswith(fname, "/index") ||
-               keep_path(fpath)
+               keep_path(gc, fpath)
         skip || (file = fname / "index.html")
     end
     outpath = outbase / file
@@ -90,18 +95,22 @@ function get_opath(fpair::Pair{String,String}, case::Symbol)::String
     isdir(outdir) || mkpath(outdir)
     return outpath
 end
-function get_opath(fpath::String)::String
+function get_opath(
+            gc::GlobalContext,
+            fpath::String
+        )::String
+
     d, f = splitdir(fpath)
     ext  = splitext(f)[2]
     case = ext == ".md" ? :md :
            ext == ".html" ? :html :
            :xx
-    return get_opath(d => f, case)
+    return get_opath(gc, d => f, case)
 end
 
 
 """
-    form_output_base_path(base)
+    form_output_base_path(gc, base)
 
 Form the base output path depending on `base` stripping away `_` for special
 folders like `_css` or `_libs`.
@@ -122,26 +131,29 @@ function form_output_base_path(
 end
 
 
-# XXX
-# """
-#     keep_path(fpath)
-#
-# Check a file path against the global variable `:keep_path` to see
-# if either there's an exact match (including extension) or whether
-# it's a dir indicator and fpath starts with it.
-# """
-# function keep_path(fpath::String)
-#     keep = getgvar(:keep_path)::Vector{String}
-#     isempty(keep) && return false
-#     rpath = get_rpath(fpath)
-#     # check if either we have an exact match blog/page.md == blog/page.md
-#     # or if it's a dir and the starts match blog/page.md <> blog/
-#     for k in keep
-#         k == rpath && return true
-#         endswith(k, '/') && startswith(rpath, k) && return true
-#     end
-#     return false
-# end
+"""
+    keep_path(gc, fpath)
+
+Check a file path against the global variable `:keep_path` to see
+if either there's an exact match (including extension) or whether
+it's a dir indicator and fpath starts with it.
+"""
+function keep_path(
+            gc::GlobalContext,
+            fpath::String
+        )::Bool
+
+    keep = getvar(gc, :keep_path, String[])
+    isempty(keep) && return false
+    rpath = get_rpath(gc, fpath)
+    # check if either we have an exact match blog/page.md == blog/page.md
+    # or if it's a dir and the starts match blog/page.md <> blog/
+    for k in keep
+        k == rpath && return true
+        endswith(k, '/') && startswith(rpath, k) && return true
+    end
+    return false
+end
 
 
 """

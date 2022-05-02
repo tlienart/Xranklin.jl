@@ -38,7 +38,7 @@ function build_loop(
                     # remove output files associated with fp
                     # in the case of a slug, this needs to be re-done as there
                     # will be two dependent files (one at opath, one at slug)
-                    opath = get_opath(fpath)
+                    opath = get_opath(gc, fpath)
                     isfile(opath) && rm(opath)
                     if rpath in keys(gc.children_contexts)
                         lc = gc.children_contexts[rpath]

@@ -128,6 +128,9 @@ function parse_code(code::String)
 end
 
 
+const UTILS_UTILS = String[]
+
+
 """
     modules_setup(m)
 
@@ -163,5 +166,12 @@ modules_setup(c::Context) = begin
             """
         )
     end
+    append!(UTILS_UTILS, [
+        "__gc", "__lc",
+        "getlvar", "getgvar", "getvarfrom",
+        "setlvar!", "setgvar!",
+        "locvar", "globvar", "pagevar",
+        "get_page_tags", "get_all_tags", "get_rpath"
+    ])
     return
 end

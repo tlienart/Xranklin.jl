@@ -28,7 +28,7 @@ end
 # -- Nov 29
 
 @testset "newcom+math" begin
-    c = X.DefaultLocalContext()
+    c = X.DefaultLocalContext(; rpath="loc")
     s = raw"""
         \newcommand{\E}[1]{
             \mathbb E\left[#1\right]

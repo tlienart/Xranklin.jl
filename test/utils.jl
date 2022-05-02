@@ -49,7 +49,7 @@ function testdir(; tag=true)
     gc = X.DefaultGlobalContext();
     X.set_paths!(gc, d);
     if !tag
-        setvar!(gc, :content_tag, "")
+        gc.vars[:content_tag] = ""
     end
     d, gc
 end
@@ -57,7 +57,7 @@ end
 function readpg(rpath)
     fpath = X.path(:folder)/rpath
     d, f = splitdir(fpath)
-    opath = X.get_opath(d => f, :md)
+    opath = X.get_opath(cur_gc(), d => f, :md)
     read(opath, String)
 end
 
@@ -65,7 +65,7 @@ estr(s) = Xranklin._eval_str(Xranklin.DefaultLocalContext(;rpath="loc"), Xrankli
 
 function lc_with_utils(utils="")
     gc = X.DefaultGlobalContext()
-    X.process_utils(utils, gc)
+    X.process_utils(gc, utils)
     lc = X.DefaultLocalContext(gc; rpath="loc")
     return lc
 end

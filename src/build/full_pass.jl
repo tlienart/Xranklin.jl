@@ -151,7 +151,7 @@ function full_pass(
         skip_files
     )
     process_all_other_files(
-        merge(watched_files[:other], watched_files[:infra]);
+        gc, merge(watched_files[:other], watched_files[:infra]);
         skip_files
     )
 
@@ -236,8 +236,7 @@ function process_all_md_files(
         setvar!(lc, :_rm_tags, default)
 
         # Tags to add
-        default = Vector{Pair{String}}()
-        for (id, name) in getvar(lc, :_add_tags, default)
+        for (id, name) in getvar(lc, :_add_tags)
             add_tag(gc, id, name, rpath)
         end
         setvar!(lc, :_add_tags, default)
@@ -255,7 +254,7 @@ function process_all_md_files(
 
         @show rpath
 
-        opath = get_opath(fpath)
+        opath = get_opath(gc, fpath)
         lc    = gc.children_contexts[rpath]
         process_md_file_pass_2(lc, opath)
     end
@@ -277,7 +276,7 @@ function process_all_html_files(
         fp in skip_files && continue
 
         fpath = joinpath(fp...)
-        opath = get_opath(fpath)
+        opath = get_opath(gc, fpath)
         rpath = get_rpath(gc, fpath)
 
         process_html_file(gc, fpath, opath)
@@ -288,6 +287,7 @@ end
 
 
 function process_all_other_files(
+            gc,
             watched;
             skip_files
         )::Nothing
@@ -307,7 +307,7 @@ function process_all_other_files(
         end
 
         # copy the file over if it's not there in the current form
-        opath = get_opath(fpath)
+        opath = get_opath(gc, fpath)
         filecmp(fpath, opath) || cp(fpath, opath, force=true)
     end
 

@@ -8,12 +8,11 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     @test X._check("aabc", r"a+bc")
     @test X._check("abc", "abc")
 
-    lc = X.DefaultLocalContext()
-    X.set_current_local_context(lc)
+    lc = X.DefaultLocalContext(; rpath="loc")
     X.set_paths!(lc.glob, pwd())
-    X.setvar!(lc.glob, :ignore, [r"abc/def.*/", r"foo*", "def", "/", r"\/", ""])
+    X.setvar!(lc.glob, :ignore, Xranklin.StringOrRegex[r"abc/def.*/", r"foo*", "def", "/", r"\/", ""])
 
-    f2i, d2i = X.files_and_dirs_to_ignore()
+    f2i, d2i = X.files_and_dirs_to_ignore(lc.glob)
     for c in ("README.md", "def", r"foo*")
         @test c in f2i
     end
@@ -25,15 +24,15 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     @test all(!X._isempty, f2i)
     @test all(!X._isempty, d2i)
 
-    @test X.should_ignore(abspath("README.md"), f2i, d2i)
-    @test !X.should_ignore(abspath("index.md"), f2i, d2i)
-    @test X.should_ignore(abspath("node_modules/"), f2i, d2i)
-    @test X.should_ignore(abspath("abc/defghi/"), f2i, d2i)
-    @test X.should_ignore(abspath("foobar.md"), f2i, d2i)
-    @test X.should_ignore(abspath(".DS_Store"), f2i, d2i)
-    @test !X.should_ignore(abspath("DS_Store"), f2i, d2i)
-    @test !X.should_ignore(abspath("fff/index.md"), f2i, d2i)
-    @test X.should_ignore(abspath("fff/.DS_Store"), f2i, d2i)
+    @test X.should_ignore(lc.glob, abspath("README.md"), f2i, d2i)
+    @test !X.should_ignore(lc.glob, abspath("index.md"), f2i, d2i)
+    @test X.should_ignore(lc.glob, abspath("node_modules/"), f2i, d2i)
+    @test X.should_ignore(lc.glob, abspath("abc/defghi/"), f2i, d2i)
+    @test X.should_ignore(lc.glob, abspath("foobar.md"), f2i, d2i)
+    @test X.should_ignore(lc.glob, abspath(".DS_Store"), f2i, d2i)
+    @test !X.should_ignore(lc.glob, abspath("DS_Store"), f2i, d2i)
+    @test !X.should_ignore(lc.glob, abspath("fff/index.md"), f2i, d2i)
+    @test X.should_ignore(lc.glob, abspath("fff/.DS_Store"), f2i, d2i)
 end
 
 @testset "addnewfile" begin
@@ -68,7 +67,7 @@ end
     gc = X.DefaultGlobalContext()
     X.set_paths!(gc, d)
 
-    wf = X.find_files_to_watch(d)
+    wf = X.find_files_to_watch(gc, d)
     @test (d/"d1" => "a.md")    in keys(wf[:md])
     @test (d/"d1" => "a.html")  in keys(wf[:html])
     @test (d/"d1" => "a.png")   in keys(wf[:other])

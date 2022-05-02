@@ -170,16 +170,16 @@ include("$p/latex2.jl")
 p = "process"
 include("$p/process.jl")
 include("$p/config_utils.jl")
-# include("$p/md.jl")
-# include("$p/md2.jl")
-# include("$p/html.jl")
-# include("$p/tex.jl")
-#
+include("$p/md.jl")
+include("$p/md2.jl")
+include("$p/html.jl")
+include("$p/tex.jl")
+
 p = "build"
 include("$p/paths.jl")
-# include("$p/watch.jl")
-# include("$p/full_pass.jl")
-# include("$p/build_loop.jl")
-# include("$p/serve.jl")
+include("$p/watch.jl")
+include("$p/full_pass.jl")
+include("$p/build_loop.jl")
+include("$p/serve.jl")
 
 end

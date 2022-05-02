@@ -17,7 +17,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
 
     gc = X.DefaultGlobalContext()
     X.set_paths!(gc, d)
-    wf = X.find_files_to_watch(d)
+    wf = X.find_files_to_watch(gc, d)
     X.full_pass(gc, wf)
 
     @test isfile(d/"__site"/"index.html")

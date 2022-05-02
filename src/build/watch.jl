@@ -131,7 +131,7 @@ function add_if_new_file!(
     # if not, track it
     fpath = joinpath(fpair...)
     in_loop && @info """
-        👀 tracking new file $(hl(str_fmt(get_rpath(fpath)), :cyan))
+        👀 tracking new file $(hl(str_fmt(get_rpath(cur_gc(), fpath)), :cyan))
         """
     # save it's modification time, set to zero if it's a new file in a loop
     # to force its processing

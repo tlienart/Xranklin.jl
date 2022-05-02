@@ -35,7 +35,7 @@ function process_md_file_pass_1(
     page_hash       = hash(page_content_md)
     lc.page_hash[]  = page_hash
 
-    opath = get_opath(fpath)
+    opath = get_opath(lc.glob, fpath)
     set_meta_parameters(lc, fpath, opath)
 
     skip = allow_skip && all((
@@ -118,10 +118,10 @@ function process_md_file_pass_2(
                 """
         end
 
-        head_path  = path(:folder) / getvar(lc.glob, :layout_head)::String
+        head_path  = path(:folder) / getvar(lc.glob, :layout_head, "")::String
         full_page  = isfile(head_path) ? read(head_path, String) : ""
         full_page *= body
-        foot_path  = path(:folder) / getgvar(:layout_foot)::String
+        foot_path  = path(:folder) / getvar(lc.glob, :layout_foot, "")::String
         full_page *= isfile(foot_path) ? read(foot_path, String) : ""
 
         # ---------------------------------------------------------------------

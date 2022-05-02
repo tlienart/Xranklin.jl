@@ -21,7 +21,7 @@ function process_md_file(
             kw...
         )
     fpath = path(:folder) / rpath
-    opath = get_opath(fpath)
+    opath = get_opath(gc, fpath)
     process_md_file(gc, fpath, opath; kw...)
 end
 
@@ -90,7 +90,7 @@ function process_md_file(
     # For instance if there's a pagination with effectively 3 pages,
     # then 4 pages will be written (the base page, then pages 1,2,3).
     #
-    paginator_name = getlvar(:_paginator_name)
+    paginator_name = getvar(gc.children_contexts[rpath], :_paginator_name)
     isempty(paginator_name) ?
         _not_paginated(gc, rpath, odir) :
         _paginated(gc, rpath, opath, paginator_name)
@@ -514,14 +514,14 @@ function _assemble_join_html(lc::LocalContext)::String
     #
     full_page_html = ""
     # > HEAD
-    head_path = path(:folder) / getgvar(:layout_head)::String
+    head_path = path(:folder) / getvar(lc.glob, :layout_head)::String
     if !isempty(head_path) && isfile(head_path)
         full_page_html = read(head_path, String)
     end
     # > PAGE
     full_page_html *= body_html
     # > FOOT
-    foot_path = path(:folder) / getgvar(:layout_foot)::String
+    foot_path = path(:folder) / getvar(lc.glob, :layout_foot)::String
     if !isempty(foot_path) && isfile(foot_path)
         full_page_html *= read(foot_path, String)
     end
@@ -547,7 +547,7 @@ function _process_md_file_latex(
     end
 
     full_page_latex = raw"\begin{document}" * "\n\n"
-    head_path = path(:folder) / getgvar(:layout_head_lx)::String
+    head_path = path(:folder) / getvar(lc.glob, :layout_head_lx)::String
     if !isempty(head_path) && isfile(head_path)
         full_page_latex = read(head_path, String)
     end

@@ -17,8 +17,8 @@ configuration can be given explicitly as a string to allow for
 pre-configuration (e.g. a Utils package generating a default config).
 """
 function process_config(
-            config::String,
-            gc::GlobalContext
+            gc::GlobalContext,
+            config::String
         )::Nothing
 
     crumbs(@fname)
@@ -77,7 +77,7 @@ end
 function process_config(gc::GlobalContext)
     config_path = path(:folder) / "config.md"
     if isfile(config_path)
-        process_config(read(config_path, String), gc)
+        process_config(gc, read(config_path, String))
     else
         @warn """
             Process config
@@ -86,9 +86,6 @@ function process_config(gc::GlobalContext)
     end
     return
 end
-
-process_config(config::String; kw...) = process_config(config, cur_gc(); kw...)
-process_config(; kw...) = process_config(cur_gc(); kw...)
 
 
 """
@@ -148,8 +145,8 @@ end
 Process a utils string into a given global context object.
 """
 function process_utils(
-            utils::String,
-            gc::GlobalContext
+            gc::GlobalContext,
+            utils::String
         )::Nothing
 
     crumbs(@fname)
@@ -183,28 +180,27 @@ function process_utils(
         ns
     )
     setvar!(gc, :_utils_hfun_names,
-                Symbol.([n[6:end] for n in ns if startswith(n, "hfun_")]))
+                Symbol.(n[6:end] for n in ns if startswith(n, "hfun_")))
     setvar!(gc, :_utils_lxfun_names,
-                Symbol.([n[4:end] for n in ns if startswith(n, "lx_")]))
+                Symbol.(n[4:end] for n in ns if startswith(n, "lx_")))
     setvar!(gc, :_utils_envfun_names,
-                Symbol.([n[5:end] for n in ns if startswith(n, "env_")]))
+                Symbol.(n[5:end] for n in ns if startswith(n, "env_")))
     setvar!(gc, :_utils_var_names,
-                Symbol.([n for n in ns if !startswith(n, r"lx_|hfun_|env_")]))
+                Symbol.(n for n in ns if
+                    !startswith(n, r"lx_|hfun_|env_") &&
+                    n ∉ UTILS_UTILS ))
     return
 end
 
 function process_utils(gc::GlobalContext)
     utils_path = path(:folder) / "utils.jl"
     if isfile(utils_path)
-        process_utils(read(utils_path, String), gc)
+        process_utils(gc, read(utils_path, String))
     else
         @info "❎ no utils file found."
     end
     return
 end
-
-process_utils(utils::String) = process_utils(utils, cur_gc())
-process_utils() = process_utils(cur_gc())
 
 
 utils_hfun_names(gc)   = getvar(gc, :_utils_hfun_names)::Vector{Symbol}

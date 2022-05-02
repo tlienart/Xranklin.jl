@@ -36,7 +36,7 @@ function _hfun_fill_1(
     vname = Symbol(p[1])
     if (v = getvar(lc, vname)) !== nothing
         return string(v)
-    elseif vname in utils_var_names()
+    elseif vname in utils_var_names(lc.glob)
         mdl = cur_gc().nb_code.mdl
         return repr(getproperty(mdl, vname))
     else

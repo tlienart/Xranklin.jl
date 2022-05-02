@@ -71,9 +71,9 @@ function resolve_dbb(
         write(io, hfun_failed(split_cb))
 
     # B | utils function or internal function (utils have priority)
-    elseif (internal = fname in utils_hfun_names(lc.glob)) || fname in INTERNAL_HFUNS
+    elseif (external = fname in utils_hfun_names(lc.glob)) || fname in INTERNAL_HFUNS
         # run the function either in the Utils module or internally
-        _dbb_fun(lc, io, fname, args; internal)
+        _dbb_fun(lc, io, fname, args; internal=!external)
 
     # C | fill attempt
     else
@@ -122,7 +122,7 @@ function _dbb_fun(
         )::Nothing
 
     fsymb = Symbol("hfun_$fname")
-    out   = outputof(fsymb, args, lc; tohtml=true)
+    out   = outputof(fsymb, args, lc; tohtml=true, internal)
     if isempty(out)
         write(io, EMPTY_DBB)
     else
@@ -147,7 +147,7 @@ function _dbb_fill(
         res = string(v)
 
     # try fill from Utils
-    elseif !fail && (fname in utils_var_names())
+    elseif !fail && (fname in utils_var_names(lc.glob))
         mdl = lc.glob.nb_code.mdl
         res = string(getproperty(mdl, fname))
 

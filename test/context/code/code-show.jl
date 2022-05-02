@@ -99,7 +99,7 @@ end
         html_show(i::Int) = "<span>Int: $i</span>"
         html_show(f::Foo) = "<span>Foo: $(f.x)</span>"
         """
-    X.process_utils(utils, gc)
+    X.process_utils(gc, utils)
 
     s = raw"""
         ```:ex

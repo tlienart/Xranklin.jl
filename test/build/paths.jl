@@ -7,7 +7,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     @test isdir(X.path(:folder))
     @test X.path(:css) == joinpath(X.path(:folder), "_css")
 
-    @test X.get_rpath(X.path(:folder)/"foo"/"bar.md") == "foo"/"bar.md"
+    @test X.get_rpath(gc, X.path(:folder)/"foo"/"bar.md") == "foo"/"bar.md"
 end
 
 @testset "get_opath" begin
@@ -15,28 +15,28 @@ end
     gc = X.DefaultGlobalContext()
     X.set_paths!(gc, d)
     # MD
-    op = X.get_opath(d/"abc" => "def.md", :md)
+    op = X.get_opath(gc, d/"abc" => "def.md", :md)
     @test op == d/"__site"/"abc"/"def"/"index.html"
     # HTML
-    op = X.get_opath(d/"def" => "abc.html", :html)
+    op = X.get_opath(gc, d/"def" => "abc.html", :html)
     @test op == d/"__site"/"def"/"abc"/"index.html"
     # special names
-    op = X.get_opath(d => "index.html", :html)
+    op = X.get_opath(gc, d => "index.html", :html)
     @test op == d/"__site"/"index.html"
-    op = X.get_opath(d => "404.html", :html)
+    op = X.get_opath(gc, d => "404.html", :html)
     @test op == d/"__site"/"404.html"
     # special folders
-    op = X.get_opath(d/"_libs" => "foo.js", :infra)
+    op = X.get_opath(gc, d/"_libs" => "foo.js", :infra)
     @test op == d/"__site"/"libs"/"foo.js"
     # keep path
     gc = X.DefaultGlobalContext()
     X.set_paths!(gc, d)
     X.setvar!(gc, :keep_path, ["foo/bar.html", "foo/baz.md", "blog/"])
     X.set_current_global_context(gc)
-    op = X.get_opath(d/"foo" => "bar.html", :html)
+    op = X.get_opath(gc, d/"foo" => "bar.html", :html)
     @test op == d/"__site"/"foo"/"bar.html"
-    op = X.get_opath(d/"foo" => "baz.md", :md)
+    op = X.get_opath(gc, d/"foo" => "baz.md", :md)
     @test op == d/"__site"/"foo"/"baz.html"
-    op = X.get_opath(d/"blog" => "any.md", :md)
+    op = X.get_opath(gc, d/"blog" => "any.md", :md)
     @test op == d/"__site"/"blog"/"any.html"
 end

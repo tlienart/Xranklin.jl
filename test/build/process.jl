@@ -4,19 +4,21 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     gc = X.DefaultGlobalContext()
     d  = mktempdir()
     X.set_paths!(gc, d)
+    rss_head = tempname()
+    write(rss_head, "foo")
+    rss_item = tempname()
+    write(rss_item, "bar")
     write(d/"config.md", """
         +++
         a = 5
         generate_rss = true
+        rss_layout_head = "$rss_head"
+        rss_layout_item = "$rss_item"
         website_url = "https://foo.com/"
         +++
         """)
     X.process_config(gc)
-    @test getvar(gc, :rss_feed_url, "") == "https://foo.com/feed.xml"
-
-    # reprocessing should be free because the definitions haven't changed and match
-    # the hash and we didn't switch context so that the vars module is still the same
-    X.process_config(gc)
+    @test X.getvar(gc, :rss_feed_url, "") == "https://foo.com/feed.xml"
 
     # setting generate_rss to true BUT not setting rss_website_url
     # --> force-setting to false (we hide the warning)
@@ -29,11 +31,12 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         """)
     gc = X.DefaultGlobalContext()
     X.set_paths!(gc, d)
-    @test getvar(gc, :rss_website_url, "") == ""
+    @test X.getvar(gc, :rss_website_url, "") == ""
     X.process_config(gc)
-    @test getvar(gc, :generate_rss, true) == false
+    @test X.getvar(gc, :generate_rss, true) == false
     logall()
 end
+
 
 @testset "Utils" begin
     gc = X.DefaultGlobalContext()
@@ -44,12 +47,12 @@ end
         lx_foo() = "baz"
         lx_bar() = "baz"
         """
-    X.process_utils(utils, gc)
-    @test Set(X.getgvar(:_utils_hfun_names))  == Set([:foo, :bar])
-    @test Set(X.getgvar(:_utils_lxfun_names)) == Set([:foo, :bar])
-    @test X.getgvar(:_utils_var_names) == [:a,]
+    X.process_utils(gc, utils)
+    @test Set(X.getvar(gc, :_utils_hfun_names))  == Set([:foo, :bar])
+    @test Set(X.getvar(gc, :_utils_lxfun_names)) == Set([:foo, :bar])
+    @test X.getvar(gc, :_utils_var_names) == [:a,]
 
-    lc = X.DefaultLocalContext(gc)
+    lc = X.DefaultLocalContext(gc; rpath="loc")
     s = "utils: {{a}}, lc:{{lang}}, gc:{{rss_file}}"
     h = html(s, lc)
     @test h // "<p>utils: 5, lc:julia, gc:feed</p>"
@@ -64,7 +67,7 @@ end
     d, gc = testdir()
     fpair = d => "foo.md"
     fpath = joinpath(fpair...)
-    opath = X.get_opath(fpair, :md)
+    opath = X.get_opath(gc, fpair, :md)
     write(fpath, """
         abc `def` **ghi**
         """)
@@ -182,5 +185,5 @@ end
         """)
     X.process_md_file(gc, "pg1.md")
     @test readpg("pg1.md") // "<p>r: 7</p>"
-    @test X.cur_lc().to_trigger == Set(["pg2.md"])
+    @test_broken cur_gc().children_contexts["pg1.md"].to_trigger == Set(["pg2.md"])
 end
