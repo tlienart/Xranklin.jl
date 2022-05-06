@@ -88,7 +88,7 @@ end
     include("bugs/latex.jl")
 end
 
-spurious_assets = dirname(dirname(pathof(Xranklin))) / "assets"
+spurious_assets = dirname(dirname(pathof(Xranklin))) / "xxx"
 rm(spurious_assets, recursive=true, force=true)
 
 end
