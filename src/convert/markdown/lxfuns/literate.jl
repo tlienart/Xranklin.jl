@@ -93,7 +93,7 @@ function _process_literate_file(
          )::String
     # check if Literate.jl is loaded, otherwise interrupt
     if !env(:literate)
-        if (:Literate ∉ names(cur_utils_module(), imported=true))
+        if (:Literate ∉ names(utils_module(lc), imported=true))
             @warn """
                 \\literate{...}
                 It looks like you have not imported Literate in your Utils.
@@ -104,7 +104,7 @@ function _process_literate_file(
             setenv!(:literate, true)
         end
     end
-    L = cur_utils_module().Literate
+    L = utils_module(lc).Literate
 
     # check the version, we want a version after 2.9 as that's the one that
     # introduced the 4-backticks fence (as opposed to 3 earlier).

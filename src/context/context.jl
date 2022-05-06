@@ -176,7 +176,7 @@ function LocalContext(glob, vars, defs, headings, rpath, alias=Alias())
     mdl = submodule(
             modulename("$(rpath)_vars", true);
             wipe=true,
-            utils=true,
+            # utils=true,
             rpath
     )
     nb_vars  = VarsNotebook(mdl)
@@ -185,7 +185,7 @@ function LocalContext(glob, vars, defs, headings, rpath, alias=Alias())
     mdl = submodule(
             modulename("$(rpath)_code", true);
             wipe=true,
-            utils=true,
+            # utils=true,
             rpath
     )
     nb_code  = CodeNotebook(mdl)

@@ -27,7 +27,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
 
     # Misc
     @test isempty(gc.children_contexts)
-    @test X.cur_utils_module() === gc.nb_code.mdl
+    @test X.utils_module(gc) === gc.nb_code.mdl.Utils
     @test X.get_rpath(nothing) === ""
 end
 

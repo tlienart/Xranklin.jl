@@ -60,10 +60,11 @@ function getvar(
 
     n = get(src.vars_aliases, n, n)
 
-    # getlvar case
-    if isnothing(req) || (src.rpath == req.rpath)
+    # either req==lc or req is nothing
+    if get_rpath(req) ∈ ("", get_rpath(src))
         lc = src
-        # clash resolution gc/lc
+        # clash resolution gc/lc if the variable is available both
+        # in lc and gc, we figure out which definition is the most relevant
         if hasvar(lc.glob, n)
             # if the lc also has the var, check that the var is not defined
             # before the current counter or has not been set via setvar
@@ -72,12 +73,12 @@ function getvar(
                 nb   = lc.nb_vars
                 cntr = counter(nb)
                 # not defined in a cell preceding current one
-                f1   = !any(
+                cond = !any(
                     i ≤ cntr && any(n == v.var for v in cp.vars)
                     for (i, cp) in enumerate(nb.code_pairs)
                 )
                 # and not set
-                f1 && n ∉ get(lc.vars, :_setvar, Set{Symbol}())
+                cond && n ∉ get(lc.vars, :_setvar, Set{Symbol}())
             end
             if use_global
                 union!(lc.req_vars["__global__"], [n])
@@ -88,11 +89,12 @@ function getvar(
     # getvarfrom case, add the variable as requested
     else
         if n in keys(src.vars)
-            req.req_vars[src.rpath] = union!(
+            req.req_vars[src.rpath] = union(
                 get(req.req_vars, src.rpath, Set{Symbol}()),
                 [n]
             )
         end
+
     end
     return getvar(src.vars, n, d)
 end
@@ -149,8 +151,6 @@ end
 
 # helper functions to retrieve current local/global context
 cur_gc() = env(:cur_global_ctx)::GlobalContext
-
-cur_utils_module() = cur_gc().nb_code.mdl
 
 
 # ---------------- #

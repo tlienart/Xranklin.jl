@@ -40,10 +40,13 @@ end
     utils = """
         foo() = getgvar(:abc)
         """
-    X.eval_code_cell!(gc, strip(utils), "utils")
-    @test X.cur_utils_module().foo() == 1//2
+    X.process_utils(gc, utils)
+    @test X.utils_module(gc).foo() == 1//2
 
-    m = X.newmodule(:test)
-    X.using_utils!(m)
-    @test m.Utils.foo() == 1//2
+    lc = X.DefaultLocalContext(gc; rpath="loc")
+    @test lc.nb_vars.mdl.Utils.foo() == 1//2
+
+    U = X.utils_module(lc)
+    @test U.foo() == 1//2
+    @test U.get_rpath() == X.get_rpath(lc) == "loc"
 end

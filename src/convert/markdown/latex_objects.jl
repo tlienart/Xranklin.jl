@@ -335,9 +335,15 @@ end
 
 Check if a symbol corresponds to a lx_ or env_ function in Utils.
 """
-function is_in_utils(gc::GlobalContext, n::Symbol; isenv=false)
-    isenv && return (n in utils_envfun_names(gc)) || (n in INTERNAL_ENVFUNS)
-    return (n in utils_lxfun_names(gc)) || (n in INTERNAL_LXFUNS)
+function is_in_utils(
+            gc::GlobalContext,
+            n::Symbol;
+            isenv=false
+        )::Bool
+
+    return isenv ?
+        (n in utils_envfun_names(gc)) || (n in INTERNAL_ENVFUNS) :
+        (n in utils_lxfun_names(gc))  || (n in INTERNAL_LXFUNS)
 end
 
 """

@@ -18,7 +18,7 @@ function outputof(
                 f(lc; tohtml) :
                 f(lc, args; tohtml)
     else
-        f = getproperty(lc.glob.nb_code.mdl, fsymb)
+        f = getproperty(utils_module(lc), fsymb)
         res = hasmethod(f, Tuple{Vector{String}}, (:tohtml,)) ?
                    ( # there is a method with a ;tohtml
                      isempty(args) ?

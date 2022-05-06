@@ -76,7 +76,6 @@ parent module or create a new one and return it.
 function submodule(
             n::Symbol;
             wipe::Bool=false,
-            utils::Bool=false,
             rpath::String=""
         )::Module
 
@@ -86,27 +85,7 @@ function submodule(
     else
         m = newmodule(n, p)
     end
-    utils && using_utils!(m)
     return m
-end
-
-
-"""
-    using_utils!(m)
-
-Import (Using) the current utils module in `m`. See `LocalContext` instantiation
-with each of its notebooks bringing utils in.
-"""
-function using_utils!(m::Module)
-    gc = env(:cur_global_ctx)
-    isnothing(gc) && return
-    utils_mdl = gc.nb_code.mdl
-    s = replace(
-        "import $(parent_module()).$(utils_mdl) as Utils",
-        ".Main." => "."
-    )
-    include_string(softscope, m, s)
-    return
 end
 
 
@@ -128,8 +107,48 @@ function parse_code(code::String)
 end
 
 
-const UTILS_UTILS = String[]
+"""
+    UTILS_UTILS
 
+Names of core functionalities imported in all nb_vars and nb_code
+modules. These are specific to the environment, so for instance the
+`__lc` is associated with the page to which the notebooks are
+attached.
+"""
+const UTILS_UTILS = [
+    "__gc", "__lc",
+    "getlvar", "getgvar", "getvarfrom",
+    "setlvar!", "setgvar!",
+    "locvar", "globvar", "pagevar",
+    "get_page_tags", "get_all_tags", "get_rpath"
+]
+
+"""
+    utils_code(gc, m; crop)
+
+Utils module within the default code imported in all nb_vars and nb_code
+modules.
+The code in the Utils module is that of `gc.vars[:_utils_code]` which is
+set by `process_utils` via reading the `utils.jl` file.
+
+The important bit here is to note that if a function in `utils.jl` calls
+something like `getvarfrom`, it is the `getvarfrom` of the specific
+module (with a specific `__lc`) that will be called in that function so
+that the page requesting the variable can be adequately tracked.
+"""
+function utils_code(gc::GlobalContext, m::Module; crop=false)
+    funs = join((u for u in UTILS_UTILS if u ∉ ("__gc", "__lc")), ",")
+    body = """
+        using ..$(nameof(m)): $funs
+        $(get(gc.vars, :_utils_code, ""))
+        """
+    crop && return body
+    return """
+    module Utils
+        $body
+    end
+    """
+end
 
 """
     modules_setup(m)
@@ -137,11 +156,15 @@ const UTILS_UTILS = String[]
 Setup the module with getvar etc.
 """
 modules_setup(c::Context) = begin
-    F = env(:module_name)
-    rpath = c isa GlobalContext ? "__global__" : c.rpath
+    F     = env(:module_name)
+    rpath = get_rpath(c)
+    gc    = get_glob(c)
+    glob  = (c === gc)
+
     for m in (c.nb_vars.mdl, c.nb_code.mdl)
-        include_string(m, """
+        base_code = """
             using $F
+
             const __gc = cur_gc()
             const __lc = get(__gc.children_contexts, "$rpath", nothing)
 
@@ -149,8 +172,9 @@ modules_setup(c::Context) = begin
                 $F.getvar(__lc, __lc, n, default)
             getgvar(n::Symbol, d=nothing; default=d) =
                 $F.getvar(__gc, __lc, n, default)
-            getvarfrom(n::Symbol, rpath::String, d=nothing; default=d) =
+            getvarfrom(n::Symbol, rpath::String, d=nothing; default=d) = begin
                 $F.getvar(__gc.children_contexts[rpath], __lc, n, default)
+            end
 
             setlvar!(n::Symbol, v) = $F.setvar!(__lc, n, v)
             setgvar!(n::Symbol, v) = $F.setvar!(__gc, n, v)
@@ -164,14 +188,15 @@ modules_setup(c::Context) = begin
             get_all_tags()  = $F.get_all_tags(__gc, __lc)
             get_rpath()     = $F.get_rpath(__lc)
             """
-        )
+
+        # Utils module
+        if glob
+            include_string(m, base_code * "\nmodule Utils; end\n")
+        else
+            include_string(m, base_code * utils_code(gc, m))
+        end
     end
-    append!(UTILS_UTILS, [
-        "__gc", "__lc",
-        "getlvar", "getgvar", "getvarfrom",
-        "setlvar!", "setgvar!",
-        "locvar", "globvar", "pagevar",
-        "get_page_tags", "get_all_tags", "get_rpath"
-    ])
     return
 end
+
+utils_module(c::Context) = c.nb_code.mdl.Utils

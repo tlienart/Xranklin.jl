@@ -16,7 +16,9 @@ Evaluate the content of a cell we know runs some code.
 
 """
 function eval_code_cell!(
-            ctx::Context, cell_code::SS, cell_name::String;
+            ctx::Context,
+            cell_code::SS,
+            cell_name::String;
             imgdir_html::String=tempdir(),
             imgdir_latex::String=tempdir(),
             force::Bool=false,
@@ -110,7 +112,7 @@ function eval_code_cell!(
           ifelse(indep, " 🌴 ...", "...")
 
     code_outp = _eval_code_cell(nb.mdl, cell_code, cell_name)
-    code_repr = _form_code_repr(code_outp, fig_html, fig_latex, skiplatex)
+    code_repr = _form_code_repr(ctx, code_outp, fig_html, fig_latex, skiplatex)
     code_pair = CodeCodePair((cell_code, code_repr))
 
     if indep
@@ -269,6 +271,7 @@ representation and add a class "fig-stdout" which can more readily be
 suppressed or enabled by the user via CSS (and will be suppressed by default).
 """
 function _form_code_repr(
+            ctx::Context,
             output::Tuple{String,String,<:Any},
             fig_html::NT,
             fig_latex::NT,
@@ -311,8 +314,8 @@ function _form_code_repr(
                 Base.@invokelatest Base.repr(result)
         )
         # Check if there's a dedicated show or a custom show available
-        figshow = append_result_html!(io_html, result, fig_html)
-        skiplatex || append_result_latex!(io_latex, result, fig_latex)
+        figshow = append_result_html!(ctx, io_html, result, fig_html)
+        skiplatex || append_result_latex!(ctx, io_latex, result, fig_latex)
     end
 
     hrepr, lrepr, rrepr = String.(take!.((io_html, io_latex, io_raw)))
@@ -339,9 +342,16 @@ as they might want to add a specific class or alt).
 Users can also overwrite this default saving of files by overloading the
 HTML mime show or writing their own code in the cell.
 """
-function append_result_html!(io::IOBuffer, result::R, fig::NamedTuple) where R
+function append_result_html!(
+            ctx::Context,
+            io::IOBuffer,
+            result::R,
+            fig::NamedTuple
+        ) where R
+
     figshow = false
-    Utils   = cur_utils_module()
+    Utils   = ctx.nb_code.mdl.Utils
+
     if isdefined(Utils, :html_show) && hasmethod(Utils.html_show, (R,))
         write(io, Utils.html_show(result))
 
@@ -382,9 +392,15 @@ Same as the one for HTML but for LaTeX.
 
 Note: SVG support in LaTeX is not straightforward (depends on other tools).
 """
-function append_result_latex!(io::IOBuffer, result::R, fig::NamedTuple) where R
+function append_result_latex!(
+            ctx::Context,
+            io::IOBuffer,
+            result::R,
+            fig::NamedTuple
+        ) where R
 
-    Utils = cur_utils_module()
+    Utils = ctx.nb_code.mdl.Utils
+
     if isdefined(Utils, :latex_show) && hasmethod(Utils.latex_show, (R,))
         write(io, Utils.latex_show(result))
 
@@ -414,8 +430,8 @@ function append_result_latex!(io::IOBuffer, result::R, fig::NamedTuple) where R
 end
 
 # shortcuts
-append_result_html!(::IOBuffer,  ::Nothing, ::NamedTuple) = nothing
-append_result_latex!(::IOBuffer, ::Nothing, ::NamedTuple) = nothing
+append_result_html!(::Context, ::IOBuffer,  ::Nothing, ::NamedTuple) = nothing
+append_result_latex!(::Context, ::IOBuffer, ::Nothing, ::NamedTuple) = nothing
 
 function _write_img(result::R, fp::String, mime::MIME) where R
     open(fp, "w") do img

@@ -2,6 +2,8 @@ include("utils.jl")
 
 # include("integration_convert.jl")  # itest function
 
+@testset "Test suite" begin
+
 @testset "Misc" begin
     include("misc.jl")
 end
@@ -88,3 +90,5 @@ end
 
 spurious_assets = dirname(dirname(pathof(Xranklin))) / "assets"
 rm(spurious_assets, recursive=true, force=true)
+
+end

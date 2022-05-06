@@ -3,7 +3,11 @@
 
 Evaluate the content of a cell we know assigns a bunch of page variables.
 """
-function eval_vars_cell!(ctx::Context, cell_code::SS)::Nothing
+function eval_vars_cell!(
+            ctx::Context,
+            cell_code::SS
+        )::Nothing
+
     isempty(cell_code) && return
 
     nb   = ctx.nb_vars
@@ -18,44 +22,75 @@ function eval_vars_cell!(ctx::Context, cell_code::SS)::Nothing
     end
 
     if is_stale(nb)
-        # reeval all previous cells, we don't need to
-        # keep track of their vars or whatever as they haven't changed
+        # Reeval all previous cells. We don't need to keep track
+        # of their vars or whatever as they haven't changed
         tempc = 1
         while tempc < cntr
-            _eval_vars_cell(nb.mdl, nb.code_pairs[tempc].code, ctx)
+            _eval_vars_cell(
+                nb.mdl,
+                nb.code_pairs[tempc].code,
+                ctx
+            )
             tempc += 1
         end
         fresh_notebook!(nb)
     end
 
-    # eval cell and recover the names of the variables assigned
-    vpairs = _eval_vars_cell(nb.mdl, code, ctx)
-    vnames = [vp.var for vp in vpairs]
+    # Here we're about to evaluate a cell which is either new or
+    # has changed since last eval.
+    # Since that cell (or following ones) may have dropped some
+    # variable assignments, we reset all variable assignments:
+    # either we remove them, or we assign them to their default
+    # value if they have one. Then we remove all code pairs after
+    # the current counter.
+    existing_assignments = Symbol[]
+    for i in cntr:lnb
+        cp = nb.code_pairs[i]
+        append!(existing_assignments, [vp.var for vp in cp.vars])
+    end
 
-    # if some variables change and other pages are dependent upon them
-    # then these pages must eventually be re-triggered.
-    if cntr ≤ lnb
-        pruned_vars  = prune_vars_bindings(ctx)
-        updated_vars = union!(pruned_vars, vnames)
-        if !isempty(updated_vars)
-            gc = get_glob(ctx)
-            id = get_rpath(ctx)
-            for (rpath, sctx) in gc.children_contexts
-                id == rpath && continue
-                trigger = id in keys(sctx.req_vars) &&
-                            anymatch(sctx.req_vars[id], updated_vars)
-                if trigger
-                    union!(ctx.to_trigger, [rpath])
-                end
+    if !isempty(existing_assignments)
+        unique!(existing_assignments)
+        defaults      = ifelse(is_glob(ctx), DefaultGlobalVars, DefaultLocalVars)
+        keys_defaults = keys(defaults)
+        for a in existing_assignments
+            if a in keys_defaults
+                ctx.vars[a] = defaults[a]
+            else
+                delete!(ctx.vars, a)
             end
+        end
+        deleteat!(nb.code_pairs, cntr:lnb)
+    end
+
+    # eval cell and recover the names of the variables assigned
+    vpairs   = _eval_vars_cell(nb.mdl, code, ctx)
+    vnames   = [vp.var for vp in vpairs]
+    # list of all variables that either have just been assigned
+    # or were removed/reset through the existing_assignments phase
+    all_vars = union!(existing_assignments, vnames)
+
+    # check if another page calls one of those variables
+    # in all_vars and if so, mark for retrigger
+    gc = get_glob(ctx)
+    id = get_rpath(ctx)
+
+    for (rpath, lc) in gc.children_contexts
+        id == rpath && continue
+        trigger = id in keys(lc.req_vars) &&
+                  anymatch(lc.req_vars[id], all_vars)
+
+        if trigger
+            union!(ctx.to_trigger, [rpath])
         end
     end
 
-    # assign the variables
+    # assign the variables to the context
     for vp in vpairs
         setvar!(ctx, vp.var, vp.value)
     end
 
+    # finalise
     return finish_cell_eval!(nb, VarsCodePair((code, vpairs)))
 end
 
@@ -100,37 +135,4 @@ function _eval_vars_cell(mdl::Module, code::String, ctx::Context)::Vector{VarPai
     end
     filter!(v -> v isa Symbol, vnames)
     return [VarPair((vn, getproperty(mdl, vn))) for vn in vnames]
-end
-
-
-"""
-    prune_vars_bindings(ctx)
-
-Let's say that on pass one, there was a block defining `a=5; b=7` but then
-on pass two, that the block only defines `a=5`, the binding to `b` should be
-removed from the relevant context.
-"""
-function prune_vars_bindings(ctx::Context)::Vector{Symbol}
-    pruned_bindings = Symbol[]
-
-    nb   = ctx.nb_vars
-    cntr = counter(nb)
-    for i in cntr:length(nb)
-        cp = nb.code_pairs[i]
-        append!(pruned_bindings, [vp.var for vp in cp.vars])
-    end
-    unique!(pruned_bindings)
-
-    # Remove all bindings apart from the ones that have a default value in
-    # which case, use that default.
-    defaults = ifelse(is_glob(ctx), DefaultGlobalVars, DefaultLocalVars)
-    keys_defaults = keys(defaults)
-    bindings_with_default = [b for b in pruned_bindings if b in keys_defaults]
-    for b in pruned_bindings
-        delete!(ctx.vars, b)
-        if b in keys_defaults
-            ctx.vars[b] = defaults[b]
-        end
-    end
-    return pruned_bindings
 end

@@ -48,7 +48,6 @@ function process_config(
 
     html(config, gc)
 
-
     δt = time() - start; @info """
         ... [config.md] ✔ $(hl(time_fmt(δt)))
         """
@@ -155,24 +154,16 @@ function process_utils(
     set_current_global_context(gc)
     # set the notebooks at the top
     reset_notebook_counters!(gc)
-    # keep track of utils (see `using_utils!`)
+    # keep track of utils code
     setvar!(gc, :_utils_code, utils)
-
-    # -----------------------------------------------------
-    start = time(); @info """
-        ⌛ processing utils.jl
-        """
-
-    eval_code_cell!(gc, strip(utils), "utils")
-
-    @info """
-        ... [utils.jl] ✔ $(hl(time_fmt(time()-start)))
-        """
-    # -----------------------------------------------------
+    # update the gc modules to use the utils
+    for m in (gc.nb_vars.mdl, gc.nb_code.mdl)
+        include_string(m.Utils, utils_code(gc, m, crop=true))
+    end
 
     # check names of hfun, lx and vars; since we wiped the module before the
     # include_string, all the proper names recuperated here are 'fresh'.
-    mdl = gc.nb_code.mdl
+    mdl = utils_module(gc)
     ns  = String.(names(mdl, all=true))
     filter!(
         n -> n[1] != '#' &&

@@ -35,7 +35,7 @@ function eval_str(
     captured = IOCapture.capture(; rethrow=Union{}) do
         include_string(
             softscope,
-            cur_utils_module(),
+            utils_module(lc),
             replace(code, "⁰" => "\"")
         )
     end

@@ -150,6 +150,7 @@ end
         ```
         \show{ex}
         """
+    gc = X.DefaultGlobalContext()
     h = html(s, X.DefaultLocalContext(gc; rpath="loc"), nop=true)
     @test isapproxstr(h, """
         <pre><code class="julia">5</code></pre>

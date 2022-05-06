@@ -101,7 +101,7 @@ function full_pass(
         gc = DefaultGlobalContext()
         set_paths!(gc, path(:folder))
 
-        process_utils(gc)
+        process_utils(gc)  # this reset all the :_utils* in GC
         process_config(gc)
 
         # reinstate independent code from backup
@@ -110,6 +110,17 @@ function full_pass(
             merge!(lc.nb_code.indep_code, bk_indep_code[rp])
             gc.children_contexts[rp] = lc
         end
+
+        # NOTE: the local contexts which had independent code are re-constituted
+        # with the loop above, the call to DefaultLocalContext means that the
+        # submodules (vars and code) are re-instantiated and therefore re-include
+        # the utils string (the new one this time).
+        #
+        # For all other pages, the corresponding local context is lost and re-created
+        # so the same comment applies.
+        #
+        # In short: all pages will now have a resetted code and vars module with the
+        # latest utils.
 
     elseif config_changed
         process_config(gc)
@@ -208,9 +219,6 @@ function process_all_md_files(
 
         fpath = joinpath(fp...)
         rpath = get_rpath(gc, fpath)
-
-        @show rpath
-
         lc    = gc.children_contexts[rpath]
 
         # convert from MD to iHTML, if the page should be skipped because
@@ -251,9 +259,6 @@ function process_all_md_files(
 
         fpath = joinpath(fp...)
         rpath = get_rpath(gc, fpath)
-
-        @show rpath
-
         opath = get_opath(gc, fpath)
         lc    = gc.children_contexts[rpath]
         process_md_file_pass_2(lc, opath)

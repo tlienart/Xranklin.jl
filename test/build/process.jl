@@ -136,7 +136,7 @@ end
     </div>
     """)
 
-    # Modify var of config
+    # Modify var of configaf
     write(d/"config.md", raw"""
         +++
         a = 7
@@ -185,5 +185,5 @@ end
         """)
     X.process_md_file(gc, "pg1.md")
     @test readpg("pg1.md") // "<p>r: 7</p>"
-    @test_broken cur_gc().children_contexts["pg1.md"].to_trigger == Set(["pg2.md"])
+    @test cur_gc().children_contexts["pg1.md"].to_trigger == Set(["pg2.md"])
 end
