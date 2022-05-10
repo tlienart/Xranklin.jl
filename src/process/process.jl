@@ -30,7 +30,7 @@ function process_file(
             initial_pass::Bool=false,
             final::Bool=false,
             reproc::Bool=false,
-            allow_full_skip::Bool=false
+            allow_skip::Bool=false
         )::Nothing
 
     crumbs(@fname, "$(fpair.first) => $(fpair.second)")
@@ -59,48 +59,53 @@ function process_file(
     off = ifelse(reproc, "... ", "")
     if case in (:md, :html)
         rpath = get_rpath(gc, fpath)
+        lc    = get(gc.children_contexts, rpath, DefaultLocalContext(gc; rpath))
 
         if case == :md
             # process the file and write the result at 'opath'
-            process_md_file(
-                gc, fpath, opath;
-                initial_pass, allow_full_skip
-            )
-
-            # recover the context associated with that page and check if the
-            # output path needs to be corrected to take a 'slug' into account
-            # and *copy* that file over to an additional location matching
-            # the slug. The original output path is kept (a few things rely
-            # on this such as the possibility to skip files early).
-            lc    = gc.children_contexts[rpath]
-            opath = check_slug(lc, opath)
-            # adjust the meta parameters associated with that context so
-            # that if, for instance, a hfun requests the relative URL,
-            # it points to the appropriate new one.
-            set_meta_parameters(lc, fpath, opath)
+# XXX            process_md_file(
+#                gc, fpath, opath;
+#                initial_pass, allow_skip
+#            )
+            process_md_file(lc, fpath, opath, skip_files, allow_skip, final)
 
             #
-            # If we're not in the initial pass, we need to reprocess all pages
-            # that depend upon definitions from this page which may have
-            # changed now that we just re-processed it.
+            # # recover the context associated with that page and check if the
+            # # output path needs to be corrected to take a 'slug' into account
+            # # and *copy* that file over to an additional location matching
+            # # the slug. The original output path is kept (a few things rely
+            # # on this such as the possibility to skip files early).
+            # lc    = gc.children_contexts[rpath]
+            # opath = check_slug(lc, opath)
+            # # adjust the meta parameters associated with that context so
+            # # that if, for instance, a hfun requests the relative URL,
+            # # it points to the appropriate new one.
+            # set_meta_parameters(lc, fpath, opath)
             #
-            if !initial_pass
-                for pg in lc.to_trigger
-                    reprocess(pg, gc; skip_files, msg="(depends on updated vars)")
-                end
-            end
-
-            adjust_base_url(gc, rpath, opath; final)
-
-            if !isempty(getvar(lc, :_paginator_name, ""))
-                # copy the `odir/1/index.html` (which must exist) to odir/index.html
-                odir = dirname(opath)
-                cp(odir / "1" / "index.html", odir / "index.html", force=true)
-            end
+            # #
+            # # If we're not in the initial pass, we need to reprocess all pages
+            # # that depend upon definitions from this page which may have
+            # # changed now that we just re-processed it.
+            # #
+            # if !initial_pass
+            #     for pg in lc.to_trigger
+            #         reprocess(pg, gc; skip_files, msg="(depends on updated vars)")
+            #     end
+            # end
+            #
+            # adjust_base_url(gc, rpath, opath; final)
+            #
+            # if !isempty(getvar(lc, :_paginator_name, ""))
+            #     # copy the `odir/1/index.html` (which must exist) to odir/index.html
+            #     odir = dirname(opath)
+            #     cp(odir / "1" / "index.html", odir / "index.html", force=true)
+            # end
 
         elseif case == :html
-            process_html_file(gc, fpath, opath)
-            adjust_base_url(gc, rpath, opath; final)
+            process_html_file(lc, fpath, opath, final)
+            # process_html_file(gc, fpath, opath)
+            # adjust_base_url(gc, rpath, opath; final)
+
         end
 
     else
@@ -171,53 +176,3 @@ end
 # --------------- #
 # ADJUST BASE URL #
 # --------------- #
-
-"""
-    adjust_base_url(gc, rpath, opath)
-
-For a HTML file written at 'opath', replace all relative links to take the
-base URL prefix (prepath) into account if it's not empty.
-
-In such cases, erase the hash of the page as the page will need to be
-re-processed in a subsequent 'serve'.
-"""
-function adjust_base_url(lc::LocalContext, opath::String;
-                         final::Bool=false)
-    #
-    # If we're in the final pass, we potentially need to fix all
-    # relative links to take the base_url_prefix (prepath) into
-    # account.
-    #
-    pp = ifelse(final, sstrip(getvar(lc.glob, :base_url_prefix, ""), '/'), "")
-    ap = getvar(lc, :_applied_base_url_prefix, "")
-    pp == ap && return
-
-    # ap will be empty if the page has not been skipped
-    @info """
-        ... ✏ setting $(hl("base_url_prefix", :yellow)) to $(hl(pp, :yellow))...
-        """
-    # replace things that look like href="/..." with href="/$prepath/..."
-    old = read(opath, String)
-    ss  = ifelse(isempty(pp),
-        SubstitutionString("\\1=\\2/"),
-        SubstitutionString("\\1=\\2/$(pp)/")
-    )
-    if isempty(ap)
-        open(opath, "w") do outf
-            write(outf, replace(old, PREPATH_FIX_PAT => ss))
-        end
-    elseif pp != ap
-        # page has been skipped, we need to adjust the adjustment
-        pat = Regex(PREPATH_FIX_PAT.pattern * "$(ap)/")
-        open(opath, "w") do outf
-            write(outf, replace(old, pat => ss))
-        end
-    end
-    setvar!(lc, :_applied_base_url_prefix, pp)
-    return
-end
-function adjust_base_url(gc::GlobalContext, rpath::String, opath::String;
-                         final::Bool=false)
-    lc = gc.children_contexts[rpath]
-    adjust_base_url(lc, opath; final)
-end

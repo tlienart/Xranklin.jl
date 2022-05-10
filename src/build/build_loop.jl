@@ -59,7 +59,10 @@ function build_loop(
             end
         end
         # scan the directory and add the new files to the watched_files
-        _, newpg = update_files_to_watch!(watched_files, path(:folder); in_loop=true)
+        _, newpg = update_files_to_watch!(
+                        watched_files, gc, path(:folder);
+                        in_loop=true
+                    )
         # if files were deleted from the children contexts, we must
         # retrigger a full pass so that things like page lists etc are
         # properly updated; utils need to be re-evaluated to take this

@@ -1,7 +1,7 @@
 """
-    process_md_file_pass_1(lc; allow_skip)
+    process_md_file_pass_1(...)
 
-[THREAD] Source MD to iHTML. Ignore layout and DBB.
+[threaded] Source MD to iHTML. Ignore layout and DBB.
 
 * input     : read .md file
 * output    : ihtml stored in lc var
@@ -17,7 +17,9 @@ and so is not thread safe).
 Return true/false if the file was skipped.
 """
 function process_md_file_pass_1(
-            lc::LocalContext, fpath::String;
+            lc::LocalContext,
+            fpath::String;
+            # kwargs
             allow_skip::Bool = false
         )::Bool
 
@@ -74,64 +76,74 @@ function process_md_file_pass_1(
         setvar!(lc, :_rm_tags,  tags_remove)
         setvar!(lc, :_add_tags, tags_add)
     end
+
     return skip
 end
 
 
 """
-    process_md_file_pass_2
+    reset_page_context!(lc; reset_notebook)
 
-[THREAD] iHTML to HTML. Resolve layout, DBB, pagination.
+Set the current page context and reset its variables such as the headers,
+equation counters etc.
+The kwarg `reset_notebook` is passed in the context of `ignore_cache`.
+
+## Return
+
+The set of anchors from `lc` before they were reset. This will allow us to
+establish whether any anchor has changed on the page and, if so, to
+re-trigger pages that may depend upon those.
 """
-function process_md_file_pass_2(
+function reset_page_context!(
+            lc::LocalContext;
+            reset_notebook=false
+        )::NamedTuple
+
+    state = (
+        anchors   = copy(lc.anchors),
+        headings  = copy(lc.headings),
+        eq_cntr   = eqrefs(lc)["__cntr__"],
+        cell_cntr = getvar(lc, :_auto_cell_counter, 0),
+        paginator = getvar(lc, :_paginator_name, ""),
+        hasmath   = getvar(lc, :_hasmath),
+        hascode   = getvar(lc, :_hascode),
+    )
+
+    # Reset page counters and variables (headers etc)
+    empty!(lc.anchors)
+    empty!(lc.headings)
+    eqrefs(lc)["__cntr__"] = 0
+    setvar!(lc, :_auto_cell_counter, 0)
+    setvar!(lc, :_paginator_name, "")
+    setvar!(lc, :_hasmath, false)
+    setvar!(lc, :_hascode, false)
+
+    # in the context of "ignore_cache", reset the notebook
+    reset_notebook && reset_code_notebook!(lc)
+
+    return state
+end
+
+
+"""
+    restore_page_context!(lc, state)
+
+In the "skip" case (where a page hasn't changed), we need to undo the effect
+of `reset_page_context!` so that the inclusion of layout files has
+access to the proper environment (which has otherwise been scrubbed).
+The `state` comes from `reset_page_context!`.
+"""
+function restore_page_context!(
             lc::LocalContext,
-            opath::String
+            state::NamedTuple
         )::Nothing
 
-        ihtml = getvar(lc, :_generated_ihtml, "")
-        odir  = dirname(opath)
-        _cleanup_paginated(odir)
-
-        # XXX TODO XXX
-        # skeleton_path = path(:folder) / getvar(lc, :layout_skeleton, "")
-        # if isfile(skeleton_path)
-        # end
-
-        # ---------------------------------------------------------------------
-
-        pgfoot_path = path(:folder) / getvar(lc, :layout_page_foot, "")
-        page_foot   = isfile(pgfoot_path) ? read(pgfoot_path, String) : ""
-
-        c_tag   = getvar(lc, :content_tag,   "")
-        c_class = getvar(lc, :content_class, "")
-        c_id    = getvar(lc, :content_id,    "")
-        body    = ""
-        if !isempty(c_tag)
-            body = """
-                <$(c_tag) $(attr(:class, c_class)) $(attr(:id, c_id))>
-                  $ihtml
-                  $page_foot
-                </$(c_tag)>
-                """
-        else
-            body = """
-                $ihtml
-                $page_foot
-                """
-        end
-
-        head_path  = path(:folder) / getvar(lc.glob, :layout_head, "")::String
-        full_page  = isfile(head_path) ? read(head_path, String) : ""
-        full_page *= body
-        foot_path  = path(:folder) / getvar(lc.glob, :layout_foot, "")::String
-        full_page *= isfile(foot_path) ? read(foot_path, String) : ""
-
-        # ---------------------------------------------------------------------
-
-        converted_html = html2(full_page, lc)
-
-        open(opath, "w") do outf
-            write(outf, converted_html)
-        end
+    union!(lc.anchors,  state.anchors)
+    merge!(lc.headings, state.headings)
+    eqrefs(lc)["__cntr__"] = state.eq_cntr
+    setvar!(lc, :_auto_cell_counter, state.cell_cntr)
+    setvar!(lc, :_paginator_name, state.paginator)
+    setvar!(lc, :_hascode, state.hascode)
+    setvar!(lc, :_hasmath, state.hasmath)
     return
 end

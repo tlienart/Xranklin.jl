@@ -97,10 +97,10 @@ function serve(d::String = "";
 
     # if there is a utils.jl that was cached, check if it has changed,
     # if it has, we clear even if clear is false
-    cached_config  = path(:cache)  / "config.md"
-    current_config = path(:folder) / "config.md"
-    cached_utils   = path(:cache)  / "utils.jl"
-    current_utils  = path(:folder) / "utils.jl"
+    cached_config  = path(gc, :cache)  / "config.md"
+    current_config = path(gc, :folder) / "config.md"
+    cached_utils   = path(gc, :cache)  / "utils.jl"
+    current_utils  = path(gc, :folder) / "utils.jl"
 
     config_unchanged = !any(isfile, (cached_config, current_config)) ||
                         filecmp(cached_config, current_config)
@@ -109,7 +109,7 @@ function serve(d::String = "";
 
     # if clear, destroy output directories if any
     if clear || !utils_unchanged
-        for odir in (path(:site), path(:pdf), path(:cache))
+        for odir in (path(gc, :site), path(gc, :pdf), path(gc, :cache))
             rm(odir; force=true, recursive=true)
         end
     else
@@ -133,7 +133,7 @@ function serve(d::String = "";
     wf = find_files_to_watch(gc, folder)
 
     # activate the folder environment
-    pf = path(:folder)
+    pf = path(gc, :folder)
     if isfile(pf / "Project.toml")
         Pkg.activate(pf)
         Pkg.instantiate()
@@ -144,9 +144,9 @@ function serve(d::String = "";
 
     full_pass(
         gc, wf;
-        initial_pass=true,
-        config_changed=!config_unchanged,
-        utils_changed=!utils_unchanged,
+        initial_pass    = true,
+        config_changed  = !config_unchanged,
+        utils_changed   = !utils_unchanged,
         final,
     )
 
@@ -159,7 +159,7 @@ function serve(d::String = "";
         LiveServer.serve(
             port           = port,
             coreloopfun    = loop,
-            dir            = path(:site),
+            dir            = path(gc, :site),
             host           = host,
             launch_browser = launch
         )
@@ -211,14 +211,14 @@ function serialize_contexts(gc::GlobalContext)::Nothing
     start = time()
 
     # Create cache folder & serialise gc + all serialisable lc
-    mkpath(path(:cache))
+    mkpath(path(gc, :cache))
     serialize_gc(gc)
 
     for fn in ("config.md", "utils.jl")
-        futils = path(:folder) / fn
+        futils = path(gc, :folder) / fn
         if isfile(futils)
             @info "📓 keep copy of $(hl(fn, :cyan))..."
-            cp(futils, path(:cache) / fn, force=true)
+            cp(futils, path(gc, :cache) / fn, force=true)
         end
     end
 

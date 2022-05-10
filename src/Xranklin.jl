@@ -57,6 +57,7 @@ const FRANKLIN_ENV = Dict{Symbol, Any}(
     :literate          => false,          # whether literate is loaded in utils
     :nocode            => false,          # whether to evaluate code cells
     :use_threads       => false,          # whether to use multithreading
+    :lock              => ReentrantLock(),
 )
 env(s::Symbol)        = FRANKLIN_ENV[s]
 setenv!(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
@@ -169,12 +170,17 @@ include("$p/latex2.jl")
 # ------------------------------------------------------------------------
 
 p = "process"
+include("$p/utils.jl")
 include("$p/process.jl")
 include("$p/config_utils.jl")
-include("$p/md.jl")
-include("$p/md2.jl")
 include("$p/html.jl")
 include("$p/tex.jl")
+
+include("$p/md/pass_1.jl")
+include("$p/md/pass_i.jl")
+include("$p/md/pass_2.jl")
+include("$p/md/process.jl")
+
 
 p = "build"
 include("$p/paths.jl")

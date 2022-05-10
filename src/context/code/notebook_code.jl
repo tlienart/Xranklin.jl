@@ -162,10 +162,17 @@ function _eval_code_cell(
     end
     code = String(take!(io))
 
+    # NOTE: IOCapture will capture stdout for all thread so we need to lock
+    # in order to do this in sequence. This means that pages with code are
+    # effectively processed sequentially (it's not the case with vars code
+    # as the output of that is not captured)
+    # same as well with the _min_enabled_level thing actually...
+    # ------------------------------------------------------------------------
+    lock(env(:lock))
+
     # avoid Precompilation info and warning showing up in stdout
     pre_log_level = Base.CoreLogging._min_enabled_level[] # yeah.. I know
     Logging.disable_logging(Logging.Warn)
-
     try
         captured = IOCapture.capture() do
             include_string(softscope, mdl, code)
@@ -202,7 +209,12 @@ function _eval_code_cell(
         env(:strict_parsing)::Bool && throw(msg)
 
         return (std_out, std_err, result)
+
+    finally
+        unlock(env(:lock))
+
     end
+    # ------------------------------------------------------------------------
 
     δt = time() - start; @debug """
             ... [code cell] ✔ $(hl(time_fmt(δt)))

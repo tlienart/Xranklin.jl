@@ -48,6 +48,9 @@ function str_fmt(s::AbstractString, l=65)
 end
 
 
+info_thread(n::Int) = @info "🧵 loop (n=$(Threads.nthreads())) over $n items"
+
+
 """
     change_ext(fname, new_extension)
 

@@ -156,11 +156,13 @@ function full_pass(
     full_pass_markdown(gc,
         watched_files[:md];
         skip_files,
-        allow_skip
+        allow_skip,
+        final
     )
     full_pass_html(gc,
         watched_files[:html];
-        skip_files
+        skip_files,
+        final
     )
     full_pass_other(gc,
         merge(watched_files[:other], watched_files[:infra]);
@@ -274,25 +276,8 @@ end
 and adjust the gc anchors accordingly. Not threaded as writes to gc.
 """
 function _md_loop_i(gc)
-    for (rpath, lc) in gc.children_contexts
-        # Anchors to remove
-        default = Set{String}()
-        for id in getvar(lc, :_rm_anchors, default)
-            rm_anchor(gc, id, rpath)
-        end
-        setvar!(lc, :_rm_anchors, default)
-
-        # Tags to remove
-        for id in getvar(lc, :_rm_tags, default)
-            rm_tag(gc, id, rpath)
-        end
-        setvar!(lc, :_rm_tags, default)
-
-        # Tags to add
-        for (id, name) in getvar(lc, :_add_tags)
-            add_tag(gc, id, name, rpath)
-        end
-        setvar!(lc, :_add_tags, default)
+    for (_, lc) in gc.children_contexts
+        process_md_file_pass_i(lc)
     end
     return
 end
@@ -300,9 +285,9 @@ end
 """
     _md_loop_2(gc, fp, skip_dict)
 
-[internal,threads] go from iHTML to HTML.
+[internal,threads] go from iHTML to HTML and correct prepath.
 """
-function _md_loop_2(gc, fp, skip_dict)
+function _md_loop_2(gc, fp, skip_dict, final)
     skip_dict[fp] && return
 
     fpath = joinpath(fp...)
@@ -310,7 +295,8 @@ function _md_loop_2(gc, fp, skip_dict)
     opath = get_opath(gc, fpath)
     lc    = gc.children_contexts[rpath]
 
-    process_md_file_pass_2(lc, opath)
+    process_md_file_pass_2(lc, opath, final)
+    adjust_base_url(gc, rpath, opath; final)
     return
 end
 
@@ -318,8 +304,9 @@ end
 function full_pass_markdown(
             gc,
             watched;
-            skip_files,
-            allow_skip
+            skip_files = Pair{String, String}[],
+            allow_skip = false,
+            final      = false
         )::Nothing
 
     n_watched   = length(watched)
@@ -339,7 +326,7 @@ function full_pass_markdown(
     @info "> Full Pass [MD/1]"
     if use_threads
         entries  = dic2vec(watched)
-        @info "<THREADED ($entries, $(Threads.nthreads()))>"
+        info_thread(length(entries))
         Threads.@threads for (fp, _) in entries
             _md_loop_1(gc, fp, skip_dict, allow_skip)
         end
@@ -359,13 +346,13 @@ function full_pass_markdown(
     # without ambiguities. Assemble layout and iHTML, call html2 and write
     if use_threads
         entries  = dic2vec(watched)
-        @info "<THREADED ($entries, $(Threads.nthreads()))>"
+        info_thread(length(entries))
         Threads.@threads for (fp, _) in entries
-            _md_loop_2(gc, fp, skip_dict)
+            _md_loop_2(gc, fp, skip_dict, final)
         end
     else
         for (fp, _) in watched
-            _md_loop_2(gc, fp, skip_dict)
+            _md_loop_2(gc, fp, skip_dict, final)
         end
     end
     return
@@ -378,29 +365,23 @@ end
 #
 # ====================
 
-function _html_loop(gc, fp, skip_files)
+function _html_loop(gc, fp, skip_files, final)
     fp in skip_files && return
 
     fpath = joinpath(fp...)
     opath = get_opath(gc, fpath)
     rpath = get_rpath(gc, fpath)
+    lc    = gc.children_contexts[rpath]
 
-    lc = gc.children_contexts[rpath]
-    set_meta_parameters(lc, fpath, opath)
-
-    open(opath, "w") do outf
-        process_html_file_io!(outf, lc, fpath)
-    end
-    setvar!(lc, :_applied_base_url_prefix, "")
-    adjust_base_url(gc, rpath, opath; final)
-
+    process_html_file(lc, fpath, opath, final)
     return
 end
 
 
 function full_pass_html(
             gc, watched;
-            skip_files
+            skip_files = Pair{String, String}[],
+            final      = false
             )::Nothing
 
     n_watched   = length(watched)
@@ -411,13 +392,13 @@ function full_pass_html(
     @info "> Full Pass [HTML]"
     if use_threads
         entries = dic2vec(watched)
-        @info "<THREADED ($entries, $(Threads.nthreads()))>"
+        info_thread(length(entries))
         Threads.@threads for (fp, _) in entries
-            _html_loop(gc, fp, skip_files)
+            _html_loop(gc, fp, skip_files, final)
         end
     else
         for (fp, _) in watched
-            _html_loop(gc, fp, skip_files)
+            _html_loop(gc, fp, skip_files, final)
         end
     end
     return
@@ -425,15 +406,16 @@ end
 
 
 function full_pass_other(
-            gc,
-            watched;
-            skip_files
+            gc, watched;
+            skip_files = Pair{String, String}[]
         )::Nothing
 
     n_watched = length(watched)
     iszero(n_watched) && return
 
     @info "Full Pass (other files, threaded)"
+    entries = dic2vec(watched)
+    info_thread(length(entries))
     Threads.@threads for (fp, _) in dic2vec(watched)
         fpath = joinpath(fp...)
         if fp in skip_files ||
