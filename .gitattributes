@@ -5,5 +5,7 @@ test/abc/* linguist-vendored
 test/abc/_layout/* linguist-vendored
 test/abc_min/* linguist-vendored
 test/abc_min/_layout/* linguist-vendored
+test/abc_utils/* linguist-vendored
+test/abc_utils/_layout/* linguist-vendored
 docs/* linguist-vendored
 docs/_layout/* linguist-vendored

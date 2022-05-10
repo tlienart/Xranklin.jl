@@ -171,15 +171,14 @@ function process_utils(
         ns
     )
     setvar!(gc, :_utils_hfun_names,
-                Symbol.(n[6:end] for n in ns if startswith(n, "hfun_")))
+        Symbol.(n[6:end] for n in ns if startswith(n, "hfun_")))
     setvar!(gc, :_utils_lxfun_names,
-                Symbol.(n[4:end] for n in ns if startswith(n, "lx_")))
+        Symbol.(n[4:end] for n in ns if startswith(n, "lx_")))
     setvar!(gc, :_utils_envfun_names,
-                Symbol.(n[5:end] for n in ns if startswith(n, "env_")))
+        Symbol.(n[5:end] for n in ns if startswith(n, "env_")))
     setvar!(gc, :_utils_var_names,
-                Symbol.(n for n in ns if
-                    !startswith(n, r"lx_|hfun_|env_") &&
-                    n ∉ UTILS_UTILS ))
+        Symbol.(n for n in ns if
+            !(startswith(n, r"lx_|hfun_|env_") | (n ∈ UTILS_UTILS))))
     return
 end
 

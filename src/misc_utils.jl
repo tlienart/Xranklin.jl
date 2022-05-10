@@ -163,3 +163,12 @@ function filecmp(path1::AbstractString, path2::AbstractString)
         end
     end
 end
+
+
+"""
+    dic2vec(d)
+
+Return a vector of (k, v) pairs. Allows the dict to be iterated over
+in a threaded loop.
+"""
+dic2vec(d::Dict) = [(k, v) for (k, v) in d]

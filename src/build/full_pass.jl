@@ -30,8 +30,8 @@ NOTE on assumptions
 """
     full_pass(watched_files; kw...)
 
-Perform a full pass over a set of watched files: each of these is then
-processed in the `gc` context.
+[internal] perform a full pass over a set of watched files: each of these is
+then processed in the `gc` context.
 
 This can happen in the following situations (see `build_loop`)
 
@@ -51,8 +51,12 @@ which ones do.
     skip_files       : list of file pairs to ignore in the pass
     initial_pass     : whether the call is from the initial build
     layout_changed   : whether this was triggered by a layout change
-    config_changed   : whether this was triggered by a config change
-    utils_changed    : whether this was triggered by a utils change
+    config_changed   : whether this was triggered by a config change (or during
+                        the initial pass, if the config is different than
+                        a potential cached config file)
+    utils_changed    : whether this was triggered by a utils change (or during
+                        the initial pass, if the utils is different than
+                        a potential cached utils file)
     final            : whether this is the last pass, in which case prepath
                         should be applied
 """
@@ -68,11 +72,12 @@ function full_pass(
             final::Bool          = false
             )::Nothing
 
-    final && setvar!(gc, :_final, true)
+    setvar!(gc, :_final, final)
 
-    # when config and utils haven't changed and we're on the first pass,
-    # allow skipping a file if the source markdown hasn't changed and the output
-    # file is available
+    # when config and utils haven't changed, and we're on the first pass,
+    # allow skipping a file if the source markdown hasn't changed, and
+    # the output file is available (as it would be identical).
+    # This boolean is passed further down.
     allow_skip = initial_pass & !(config_changed | utils_changed)
 
     if initial_pass
@@ -87,9 +92,8 @@ function full_pass(
     end
 
     if utils_changed
-        # save independent code to allow to avoid reloading those cells
-        # which are explicitly marked as independent from utils (as well
-        # as from anything else).
+        # save code blocks marked as independent from context to avoid having
+        # to reload them.
         bk_indep_code = Dict{String, Dict{String, CodeRepr}}()
         for (rp, c) in gc.children_contexts
             if !isempty(c.nb_code.indep_code)
@@ -98,10 +102,13 @@ function full_pass(
         end
 
         # create new GC so that all modules can be reloaded with fresh utils
-        gc = DefaultGlobalContext()
-        set_paths!(gc, path(:folder))
+        # note that this re-creates the gc.children_contexts so effectively it
+        # refreshes all contexts.
+        folder = path(gc, :folder)
+        gc     = DefaultGlobalContext()
 
-        process_utils(gc)  # this reset all the :_utils* in GC
+        set_paths!(gc, folder)
+        process_utils(gc)
         process_config(gc)
 
         # reinstate independent code from backup
@@ -111,22 +118,15 @@ function full_pass(
             gc.children_contexts[rp] = lc
         end
 
-        # NOTE: the local contexts which had independent code are re-constituted
-        # with the loop above, the call to DefaultLocalContext means that the
-        # submodules (vars and code) are re-instantiated and therefore re-include
-        # the utils string (the new one this time).
-        #
-        # For all other pages, the corresponding local context is lost and re-created
-        # so the same comment applies.
-        #
-        # In short: all pages will now have a resetted code and vars module with the
-        # latest utils.
+        # *all* pages will now be built from a reseted code and
+        # vars module with the latest utils.
 
     elseif config_changed
         process_config(gc)
+
     end
 
-    # now we can skip utils/config (will happen in process_all_other_files)
+    # now we can skip utils/config (will happen in full_pass_other)
     append!(skip_files, [
         path(:folder) => "config.md",
         path(:folder) => "utils.jl"
@@ -153,16 +153,17 @@ function full_pass(
     println("")
     # ---------------------------------------------
 
-    process_all_md_files(
-        gc, watched_files[:md];
-        skip_files, allow_skip
+    full_pass_markdown(gc,
+        watched_files[:md];
+        skip_files,
+        allow_skip
     )
-    process_all_html_files(
-        gc, watched_files[:html];
+    full_pass_html(gc,
+        watched_files[:html];
         skip_files
     )
-    process_all_other_files(
-        gc, merge(watched_files[:other], watched_files[:infra]);
+    full_pass_other(gc,
+        merge(watched_files[:other], watched_files[:infra]);
         skip_files
     )
 
@@ -183,21 +184,51 @@ full_pass(watched_files::Dict{Symbol, TrackedFiles}; kw...) =
     full_pass(cur_gc(), watched_files, kw...)
 
 
-# =================================
-# MD FILES
-#   pass 1: md    -> ihtml
-#   pass 2: ihtml -> html
-# =================================
-function process_all_md_files(
-            gc, watched;
-            skip_files,
-            allow_skip
-        )::Nothing
+#= ====================================================================
+Full Pass operations
+--------------------
 
-    n_watched = length(watched)
+MARKDOWN (full_pass_markdown)
 
-    # assign all entries in gc.children_contexts so that each thread
-    # touches an already-assigned object
+    1. [🔏] ensure all children_contexts are allocated
+    2. [🧵] convert MD to iHTML ("pass 1")
+              - check hash
+              - call to convert_md
+              - check anchors/tags that have changed
+    3. [🔏] adjust tags, anchors in GC
+    4. [🧵] convert iHTML to HTML ("pass 2")
+              - resolve dbb
+              - resolve pagination (XXX)
+              - resolve tags       (XXX)
+              - apply prefix       (XXX)
+              - write to file
+
+HTML (full_pass_html)
+
+    1. [🔏] ensure all children_contexts are allocated
+    2. [🧵] convert (i)HTML to HTML
+              - resolve dbb
+              - resolve pagination (XXX) (???)
+              - apply prefix       (XXX)
+              - write to file
+
+OTHER (full_pass_markdown)
+
+    1. [🧵] copy files
+
+NOTE: threaded operations happen only if env(:use_threads)
+
+==================================================================== =#
+
+"""
+    allocate_children_contexts(gc, watched)
+
+[internal] for a set of watched files (either markdown or html files), check
+if there's a matching context attached to GC, otherwise create one.
+This is done in one batch that happens before threaded operations that would
+each read/write a specific child context.
+"""
+function allocate_children_contexts(gc, watched)
     for (fp, _) in watched
         fpath = joinpath(fp...)
         rpath = get_rpath(gc, fpath)
@@ -206,31 +237,45 @@ function process_all_md_files(
             DefaultLocalContext(gc; rpath)
         end
     end
+    return
+end
 
-    # keep track of files to skip (either because marked as such
-    # or because their hash hasn't changed) so that they can also
-    # be skipped in pass 2.
-    skip_dict = Dict(fp => fp in skip_files for fp in keys(watched))
 
-    @info "> Full Pass (md files pass 1, threaded)"
-    # XXX Threads.@threads for (fp, _) in watched
-    for (fp, _) in watched
-        skip_dict[fp] && continue
+# =======================
+#
+#       MARKDOWN
+#
+# =======================
 
-        fpath = joinpath(fp...)
-        rpath = get_rpath(gc, fpath)
-        lc    = gc.children_contexts[rpath]
+"""
+    _md_loop_1(gc, fp, skip_dict, allow_skip)
 
-        # convert from MD to iHTML, if the page should be skipped because
-        # nothing changed, keep track of that in skip_dict
-        skip_dict[fp] = process_md_file_pass_1(lc, fpath; allow_skip)
-    end
+[internal,threads] go from MD to iHTML. The main function call returns a flag
+indicating whether the file was skipped (in a context where this is allowed).
+This happens if the hash of the file hasn't changed nor the context.
+This flag is stored in skip_dict so that any skippable file can be directly
+skipped in pass 2 as well.
+"""
+function _md_loop_1(gc, fp, skip_dict, allow_skip)
+    skip_dict[fp] && return
 
-    @info "> Full pass (intermediate step, unthreaded)"
-    # Go over all local contexts, check the modified anchors and adjust the
-    # gc anchors accordingly. Not threaded as everything accesses gc.anchor.
+    fpath = joinpath(fp...)
+    rpath = get_rpath(gc, fpath)
+    lc    = gc.children_contexts[rpath]
+
+    skip_dict[fp] = process_md_file_pass_1(lc, fpath; allow_skip)
+    return
+end
+
+"""
+    _md_loop_i(gc)
+
+[internal] go over all local contexts, check the modified anchors and tags
+and adjust the gc anchors accordingly. Not threaded as writes to gc.
+"""
+function _md_loop_i(gc)
     for (rpath, lc) in gc.children_contexts
-        # Anchors
+        # Anchors to remove
         default = Set{String}()
         for id in getvar(lc, :_rm_anchors, default)
             rm_anchor(gc, id, rpath)
@@ -249,49 +294,137 @@ function process_all_md_files(
         end
         setvar!(lc, :_add_tags, default)
     end
+    return
+end
 
-    @info "> Full Pass (md files pass 2, threaded)"
+"""
+    _md_loop_2(gc, fp, skip_dict)
+
+[internal,threads] go from iHTML to HTML.
+"""
+function _md_loop_2(gc, fp, skip_dict)
+    skip_dict[fp] && return
+
+    fpath = joinpath(fp...)
+    rpath = get_rpath(gc, fpath)
+    opath = get_opath(gc, fpath)
+    lc    = gc.children_contexts[rpath]
+
+    process_md_file_pass_2(lc, opath)
+    return
+end
+
+
+function full_pass_markdown(
+            gc,
+            watched;
+            skip_files,
+            allow_skip
+        )::Nothing
+
+    n_watched   = length(watched)
+    use_threads = env(:use_threads)
+    iszero(n_watched) && return
+    allocate_children_contexts(gc, watched)
+
+    # keep track of files to skip (either because marked as such
+    # or because their hash hasn't changed) so that they can also
+    # be skipped in pass 2.
+    skip_dict = Dict(
+        fp => (fp in skip_files)
+        for fp in keys(watched)
+    )
+
+    # ----------------------------------------------------------------------
+    @info "> Full Pass [MD/1]"
+    if use_threads
+        entries  = dic2vec(watched)
+        @info "<THREADED ($entries, $(Threads.nthreads()))>"
+        Threads.@threads for (fp, _) in entries
+            _md_loop_1(gc, fp, skip_dict, allow_skip)
+        end
+    else
+        for (fp, _) in watched
+            _md_loop_1(gc, fp, skip_dict, allow_skip)
+        end
+    end
+
+    # ----------------------------------------------------------------------
+    @info "> Full Pass [MD/I]"
+    _md_loop_i(gc)
+
+    # ----------------------------------------------------------------------
+    @info "> Full Pass [MD/2]"
     # now all page variables are uncovered and hfuns can be resolved
     # without ambiguities. Assemble layout and iHTML, call html2 and write
-    # XXX Threads.@threads for (fp, _) in watched
-    for (fp, _) in watched
-        skip_dict[fp] && continue
-
-        fpath = joinpath(fp...)
-        rpath = get_rpath(gc, fpath)
-        opath = get_opath(gc, fpath)
-        lc    = gc.children_contexts[rpath]
-        process_md_file_pass_2(lc, opath)
+    if use_threads
+        entries  = dic2vec(watched)
+        @info "<THREADED ($entries, $(Threads.nthreads()))>"
+        Threads.@threads for (fp, _) in entries
+            _md_loop_2(gc, fp, skip_dict)
+        end
+    else
+        for (fp, _) in watched
+            _md_loop_2(gc, fp, skip_dict)
+        end
     end
     return
 end
 
 
-function process_all_html_files(
+# ====================
+#
+#       HTML
+#
+# ====================
+
+function _html_loop(gc, fp, skip_files)
+    fp in skip_files && return
+
+    fpath = joinpath(fp...)
+    opath = get_opath(gc, fpath)
+    rpath = get_rpath(gc, fpath)
+
+    lc = gc.children_contexts[rpath]
+    set_meta_parameters(lc, fpath, opath)
+
+    open(opath, "w") do outf
+        process_html_file_io!(outf, lc, fpath)
+    end
+    setvar!(lc, :_applied_base_url_prefix, "")
+    adjust_base_url(gc, rpath, opath; final)
+
+    return
+end
+
+
+function full_pass_html(
             gc, watched;
             skip_files
             )::Nothing
 
-    n_watched = length(watched)
+    n_watched   = length(watched)
+    use_threads = env(:use_threads)
     iszero(n_watched) && return
+    allocate_children_contexts(gc, watched)
 
-    @info "Full Pass (html files)"
-    # XXX Threads.@threads for (fp, _) in watched
-    for (fp, _) in watched
-        fp in skip_files && continue
-
-        fpath = joinpath(fp...)
-        opath = get_opath(gc, fpath)
-        rpath = get_rpath(gc, fpath)
-
-        process_html_file(gc, fpath, opath)
-        adjust_base_url(gc, rpath, opath; final)
+    @info "> Full Pass [HTML]"
+    if use_threads
+        entries = dic2vec(watched)
+        @info "<THREADED ($entries, $(Threads.nthreads()))>"
+        Threads.@threads for (fp, _) in entries
+            _html_loop(gc, fp, skip_files)
+        end
+    else
+        for (fp, _) in watched
+            _html_loop(gc, fp, skip_files)
+        end
     end
     return
 end
 
 
-function process_all_other_files(
+function full_pass_other(
             gc,
             watched;
             skip_files
@@ -300,9 +433,8 @@ function process_all_other_files(
     n_watched = length(watched)
     iszero(n_watched) && return
 
-    @info "Full Pass (other files)"
-    # XXX Threads.@threads for (fp, _) in watched
-    for (fp, _) in watched
+    @info "Full Pass (other files, threaded)"
+    Threads.@threads for (fp, _) in dic2vec(watched)
         fpath = joinpath(fp...)
         if fp in skip_files ||
              startswith(fpath, path(:layout)) ||
@@ -315,6 +447,5 @@ function process_all_other_files(
         opath = get_opath(gc, fpath)
         filecmp(fpath, opath) || cp(fpath, opath, force=true)
     end
-
     return
 end

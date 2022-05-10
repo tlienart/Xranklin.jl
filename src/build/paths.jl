@@ -1,21 +1,22 @@
 """
-    paths()
+    paths(gc)
 
 Retrieve the dictionary of paths.
 """
-paths() = (cur_gc().vars[:_paths])::Dict{Symbol, String}
+paths(gc::GlobalContext) = gc.vars[:_paths]::Dict{Symbol, String}
 
 """
-    path(s)
+    path(gc, s)
 
 Return the path corresponding to `s` e.g. `path(:folder)`.
 """
-path(s::Symbol)::String = get(paths(), s, "xxx")
+path(gc::GlobalContext, s::Symbol)::String = get(paths(gc), s, "")
+path(s::Symbol) = path(cur_gc(), s)
 
 
 function set_paths!(gc::GlobalContext, folder::String)
     @assert isdir(folder) "$folder is not a valid path"
-    P = paths()
+    P = paths(gc)
     f = P[:folder] = normpath(folder)
     P[:assets]     = f / "_assets"
     P[:css]        = f / "_css"

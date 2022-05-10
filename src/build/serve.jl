@@ -5,48 +5,61 @@ Runs Franklin in the current directory.
 
 ## Keyword Arguments
 
-    folder (String): website folder, this is the folder which is expected to
-                     contain the config.md as well as the index.(md|html).
-    clear (Bool): whether to clear everything and start from scratch, this
-                  will clear the `__site`, `__cache` and `__pdf` directories.
-                  This can be used when something got corrupted e.g. by
-                  having inadvertently modified files in one of those folders
-                  or if somehow a lot of stale files accumulated in one of
-                  these folders.
-    final (Bool): whether it's the build (e.g. for CI or publication), in this
-                  case all links are adjusted to reflect the 'prepath'.
-    single (Bool): do a single build pass and stop.
-    eval (Bool): if set to false, ignore all code evaluations.
+    folder (String)     : website folder, this is the folder which is expected
+                           to contain the config.md as well as the
+                           index.(md|html).
+    dir (String)        : same as `folder`.
+    clear (Bool)        : whether to clear everything and start from scratch,
+                           this will clear the `__*` directories.
+                           This can be used when something got corrupted e.g.
+                           by having inadvertently modified files in one of
+                           those folders or if somehow a lot of stale files
+                           accumulated in one of these folders.
+    final (Bool)        : whether it's the build (e.g. for CI or publication),
+                           in this case all links are adjusted to reflect the
+                           'prepath'.
+    single (Bool)       : do a single build pass and stop.
+    eval (Bool)         : if set to false, ignore all code evaluations.
+    nocode (Bool)       : opposite of eval.
+    use_threads (Bool)  : [EXPERIMENTAL] if set to true, use multi-threading
+                           in the full pass. You can only use this if there
+                           is a single, site-wide environment (single Project
+                           and Manifest files). Also not recommended if one
+                           or several of your pages make use of multithreading
+                           themselves.
 
-    prepath/prefix/base_url_prefix: override the base url prefix (e.g. from
-                                    the deploy.yml.
+    base_url_prefix (String)  : override the base url prefix and force it to a
+                                 given value.
+    prepath (String)          : same as `base_url_prefix` (takes precedence).
+    prefix (String)           : same as `base_url_prefix`.
+
 
 ### Debugging options
 
-    debug (Bool): whether to display debugging messages.
-    cleanup (Bool): whether to destroy the context objects, when debugging this
-                    can be useful to explore local and global variables.
+    debug (Bool)    : whether to display debugging messages.
+    cleanup (Bool)  : whether to destroy the context objects, when debugging
+                       this can be useful to explore local & global variables.
 
 ### LiveServer arguments
 
-    port (Int): port to use for the local server.
-    host (String): host to use for the local server.
-    launch (Bool): whether to launch the browser once the site is built and
-                   ready to be viewed. A user who has interrupted a previous
-                   `serve` might prefer to set this to `false` as they might
-                   already have a browser tab pointing to a page of interest.
-
+    port (Int)    : port to use for the local server.
+    host (String) : host to use for the local server.
+    launch (Bool) : whether to launch the browser once the site is built and
+                     ready to be viewed. A user who has interrupted a previous
+                     `serve` might prefer to set this to `false` as they might
+                     have a browser tab pointing to a page of interest.
 """
 function serve(d::String = "";
 
             # Main kwargs
-            dir::String    = d,
-            folder::String = dir,
-            clear::Bool    = false,
-            final::Bool    = false,
-            single::Bool   = final,
-            eval::Bool     = true,
-            nocode::Bool   = !eval,
+            dir::String       = d,
+            folder::String    = dir,
+            clear::Bool       = false,
+            final::Bool       = false,
+            single::Bool      = final,
+            eval::Bool        = true,
+            nocode::Bool      = !eval,
+            use_threads::Bool = false,
 
             # Base url prefix / prepath optional override
             prepath::String = "",
@@ -64,8 +77,6 @@ function serve(d::String = "";
             launch::Bool = true,
             )
 
-
-
     if debug
         Logging.disable_logging(Logging.Debug - 100)
         ENV["JULIA_DEBUG"] = "all"
@@ -73,7 +84,8 @@ function serve(d::String = "";
         ENV["JULIA_DEBUG"] = ""
     end
 
-    setenv!(:nocode, nocode)
+    setenv!(:nocode,      nocode)
+    setenv!(:use_threads, use_threads & (Threads.nthreads() > 1))
 
     # Instantiate the global context, this also creates a global vars and code
     # notebooks which each have their module. The first creation of a module
@@ -129,6 +141,7 @@ function serve(d::String = "";
 
     # do the initial build
     process_utils(gc)
+
     full_pass(
         gc, wf;
         initial_pass=true,

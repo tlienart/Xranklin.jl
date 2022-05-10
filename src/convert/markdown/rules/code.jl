@@ -123,8 +123,13 @@ The different cases are:
 * lang               - non-executed, un-named, explicit language
 * !       | :        - executed, auto-named, implicit language
 * !ex     | :ex      - executed, named, implicit language
-* lang!   | lang:    - executed, auto-named, explicit language
-* lang!ex | lang:ex  - executed, named, explicit language (with colon is for legacy)
+* lang!   | lang:    - executed, auto-named, explicit language (†)
+* lang!ex | lang:ex  - executed, named, explicit language (with colon is for
+                        legacy) (†)
+
+(†) a whitespace can be inserted after the language and before the execution
+symbol to allow for syntax highlighting in markdown to work properly (this
+is required in VSCode for instance).
 
 Return a CodeInfo.
 
@@ -134,11 +139,11 @@ cell but should otherwise not be used.
 """
 function _code_info(
             b::Block,
-            ctx::LocalContext
+            lc::LocalContext
         )::CodeInfo
 
     info = match(CODE_INFO_PAT, b.ss).captures[1]
-    lang = getvar(ctx, :lang, "")
+    lang = getvar(lc, :lang, "")
     info === nothing && return CodeInfo(; lang, code=_strip(content(b)))
 
     info = string(info)
@@ -174,7 +179,7 @@ function _code_info(
                 code = replace(code, AUTO_NAME_HINT_PAT => "\n")
             end
 
-            name  = auto_cell_name(ctx)
+            name  = auto_cell_name(lc)
             name *= ifelse(isempty(name_hint), "", " ($name_hint)")
             auto  = true
         end
@@ -197,18 +202,18 @@ end
 
 
 """
-    auto_cell_name(ctx)
+    auto_cell_name(lc)
 
 Assign a name to a code cell based on the notebook counter (and increment
 the notebook counter).
 """
 function auto_cell_name(
-            ctx::LocalContext
+            lc::LocalContext
         )::String
 
-    cntr  = getvar(ctx, :_auto_cell_counter, 0)
+    cntr  = getvar(lc, :_auto_cell_counter, 0)
     cntr += 1
-    setvar!(ctx, :_auto_cell_counter, cntr)
+    setvar!(lc, :_auto_cell_counter, cntr)
     cell_name = "auto_cell_$cntr"
     return cell_name
 end
@@ -217,30 +222,30 @@ end
 """
     html_code_block(b, c)
 
-Represent a code block `b` as HTML in the local context `c`.
+Represent a code block `b` as HTML in the local context `lc`.
 """
 function html_code_block(
             b::Block,
-            c::LocalContext
+            lc::LocalContext
         )::String
 
-    hascode!(c)
-    ci   = _code_info(b, c)
+    hascode!(lc)
+    ci   = _code_info(b, lc)
     # placeholder for output string if has to be added directly after code
     # might remain empty if result is nothing or if it's not an auto-cell
     post = ""
     if ci.exec
         if ci.lang == "julia"
-            imgdir_base  = mkpath(path(:site) / "assets" / noext(c.rpath))
+            imgdir_base  = mkpath(path(:site) / "assets" / noext(lc.rpath))
             imgdir_html  = mkpath(imgdir_base / "figs-html")
             imgdir_latex = mkpath(imgdir_base / "figs-latex")
             eval_code_cell!(
-                c, ci.code, ci.name;
+                lc, ci.code, ci.name;
                 imgdir_html, imgdir_latex, force=ci.force, indep=ci.indep
             )
         end
         if ci.auto
-            post = lx_show([ci.name]; lc=c)
+            post = lx_show(lc, [ci.name])
         end
         code = ci.code |> _hide_lines |> _hescape
     else
@@ -253,22 +258,22 @@ end
 
 
 """
-    latex_code_block(b, c)
+    latex_code_block(b, lc)
 
-Represent a code block `b` as LaTeX in the local context `c`.
+Represent a code block `b` as LaTeX in the local context `lc`.
 """
 function latex_code_block(
             b::Block,
-            c::LocalContext
+            lc::LocalContext
         )::String
 
-    ci = _code_info(b, c)
+    ci = _code_info(b, lc)
     if ci.exec
         if ci.lang == "julia"
-            eval_code_cell!(c, ci.code, ci.name; force=ci.force)
+            eval_code_cell!(lc, ci.code, ci.name; force=ci.force)
         end
         if ci.auto
-            post = lx_show([ci.name]; tohtml=false, lc=c)
+            post = lx_show(lc, [ci.name]; tohtml=false)
         end
         code = ci.code |> _hide_lines |> _hescape
     else

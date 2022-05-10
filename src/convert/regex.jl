@@ -13,10 +13,10 @@ const MATH_LABEL_PAT = r"\\label{(.*?)}"
 # --------------- #
 
 "Opening element of code block see `_code_info`"
-const CODE_INFO_PAT = r"^\`+(\S+)?"
+const CODE_INFO_PAT = r"^\`+([^\n]+)?"
 
-"Language getter"
-const CODE_LANG_PAT = r"([^\!\:]+)?([\!\:]{1,2})?(\S+)?"
+"Language getter (allow space after language for highlighting in VSCode)"
+const CODE_LANG_PAT = r"([^\!\:\s]+)?\s*([\!\:]{1,2})?(\S+)?"
 
 "Check end of code block to see if should be hidden or not.
 This is fragile if people do something silly like `x = 5 # foo ; # bar`"

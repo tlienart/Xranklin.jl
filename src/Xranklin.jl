@@ -56,6 +56,7 @@ const FRANKLIN_ENV = Dict{Symbol, Any}(
     :skipped_files     => Set{String}(),
     :literate          => false,          # whether literate is loaded in utils
     :nocode            => false,          # whether to evaluate code cells
+    :use_threads       => false,          # whether to use multithreading
 )
 env(s::Symbol)        = FRANKLIN_ENV[s]
 setenv!(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)

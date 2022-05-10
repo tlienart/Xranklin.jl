@@ -134,8 +134,11 @@ function hfun_reflink(
     # should not really need to check but anyway
     c = _hfun_check_nargs(:reflink, p; k=1)
     isempty(c) || return c
+
     target = get_anchor(lc.glob, p[1], lc.rpath)
-    return target
+    # if the target is on the landing page, it will start with /index/
+    # which we don't want, so we apply a quick replacement
+    return replace(target, r"^\/index\/" => "/")
 end
 
 

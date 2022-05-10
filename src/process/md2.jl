@@ -66,11 +66,13 @@ function process_md_file_pass_1(
 
         # Check if any tag was removed / added so it can be adjusted in
         # the gc later on
-        tags_dict = get_page_tags(lc)
-        old_keys  = keys(bk_tags_dict)
-        new_keys  = keys(tags_dict)
-        setvar!(lc, :_rm_tags,  setdiff(old_keys, new_keys))
-        setvar!(lc, :_add_tags, [id => tags_dict[id] for id in setdiff(new_keys, old_keys)])
+        tags_dict   = get_page_tags(lc)
+        old_keys    = keys(bk_tags_dict)
+        new_keys    = keys(tags_dict)
+        tags_remove = setdiff(old_keys, new_keys)
+        tags_add    = [id => tags_dict[id] for id in setdiff(new_keys, old_keys)]
+        setvar!(lc, :_rm_tags,  tags_remove)
+        setvar!(lc, :_add_tags, tags_add)
     end
     return skip
 end
