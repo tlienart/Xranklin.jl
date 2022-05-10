@@ -2,9 +2,9 @@ function process_md_file(
             lc::LocalContext,
             fpath::String,
             opath::String,
-            skip_files::Vector{Pair{String, String}},
-            allow_skip::Bool,
-            final::Bool
+            skip_files::Vector{Pair{String, String}}=Pair{String,String}[],
+            allow_skip::Bool=false,
+            final::Bool=false
         )::Nothing
 
     skip = process_md_file_pass_1(lc, fpath; allow_skip)
@@ -29,10 +29,20 @@ function process_md_file(
     # reprocess all pages that depend upon definitions from this page which
     # may have changed now that we just processed it
     for pg in lc.to_trigger
-        reprocess(pg, gc; skip_files, msg="(depends on updated vars)")
+        reprocess(pg, lc.glob; skip_files, msg="(depends on updated vars)")
     end
 
     return
+end
+
+process_md_file(gc, rpath) = begin
+    fpath = path(gc, :folder) / rpath
+    opath = get_opath(gc, fpath)
+    process_md_file(
+        get(gc.children_contexts, rpath, DefaultLocalContext(gc; rpath)),
+        fpath,
+        opath
+    )
 end
 
 

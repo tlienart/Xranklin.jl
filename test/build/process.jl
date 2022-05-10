@@ -74,7 +74,10 @@ end
     gc = X.DefaultGlobalContext()
     X.set_paths!(gc, d)
     X.set_current_global_context(gc)
-    X.process_md_file(gc, fpath, opath)
+
+    rpath = X.get_rpath(gc, fpath)
+    lc = X.DefaultLocalContext(gc; rpath)
+    X.process_md_file(lc, fpath, opath)
     @test isfile(opath)
     # there's no layout files so everything is empty, we just get the content
     s = read(opath, String)
@@ -94,7 +97,9 @@ end
     write(d/"_layout"/"foot.html", """
         FOOT
         """)
-    X.process_md_file(gc, fpath, opath)
+    X.set_paths!(gc, d)
+    X.process_md_file(lc, fpath, opath)
+    lc = X.DefaultLocalContext(gc; rpath)
     s = read(opath, String)
     @test isapproxstr(s, """
         HEAD
