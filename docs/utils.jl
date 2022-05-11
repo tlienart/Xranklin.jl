@@ -10,6 +10,7 @@ function hfun_rm_headings(ps::Vector{String})
             delete!(c.headings, h)
         end
     end
+
     return ""
 end
 

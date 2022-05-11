@@ -7,7 +7,7 @@ function resolve_dbb(
             parts::Vector{Block},
             idx::Int,
             lc::LocalContext;
-            only::Vector{Symbol}=Symbol[]
+            only_external::Bool=false
         )::Int
 
     crumbs(@fname)
@@ -37,13 +37,8 @@ function resolve_dbb(
     args     = split_cb[2:end] # may be empty
     dots     = ifelse(isempty(args), "", " ...")
 
-    if !isempty(only) && fname ∉ only
-        write(io, parts[idx].ss)
-        return idx
-    end
-
     # A | if and variations
-    if fname in INTERNAL_HENVS
+    if (fname in INTERNAL_HENVS) & !only_external
         # find the full environment with branches etc
         henv, ci = find_henv(parts, idx, fname, args)
         # if an empty env is returned, it means the opening token
@@ -62,7 +57,7 @@ function resolve_dbb(
         idx = ci
 
     # A' | dangling {{elseif}}, {{else}} or {{end}}
-    elseif fname in INTERNAL_HORPHAN
+    elseif (fname in INTERNAL_HORPHAN) & !only_external
         @warn """
             {{ ... }}
             ---------
@@ -71,15 +66,23 @@ function resolve_dbb(
         write(io, hfun_failed(split_cb))
 
     # B | utils function or internal function (utils have priority)
-    elseif (external = fname in utils_hfun_names(lc.glob)) || fname in INTERNAL_HFUNS
+    elseif (external = fname in utils_hfun_names(lc.glob)) ||
+           ((fname in INTERNAL_HFUNS) & !only_external)
+
         # run the function either in the Utils module or internally
         _dbb_fun(lc, io, fname, args; internal=!external)
 
     # C | fill attempt
-    else
+    elseif !only_external
         _dbb_fill(lc, io, fname, args, dots)
 
+    else
+        # this is if only_external / we just re-write the command
+        # for later processing
+        write(io, parts[idx].ss)
+
     end
+
     return idx
 end
 
