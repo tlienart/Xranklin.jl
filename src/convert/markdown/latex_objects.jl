@@ -420,8 +420,8 @@ function next_adjacent_brackets(
         push!(brackets, blocks[c])
         c += 1
     end
-    recursion = ifelse(tohtml, rhtml, rlatex)
-    return [recursion(b, lc; nop=true) for b in brackets]
+
+    return [string(content(b)) for b in brackets]
 end
 
 

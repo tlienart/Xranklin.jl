@@ -2,4 +2,4 @@
 header = "literate"
 +++
 
-\literate{_literate/test.jl}
+\literate{_literate/test_foo.jl}

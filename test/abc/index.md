@@ -4,6 +4,8 @@ header = "foo"
 
 ## Hello
 
+* [literate](/literate/)
+
 <!-- ```!
 using UnicodePlots
 plt = lineplot([-1, 2, 3, 7], [-1, 2, 9, 4],

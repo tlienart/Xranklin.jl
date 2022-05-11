@@ -41,6 +41,9 @@ function lx_literate(
     c = _lx_check_nargs(:literate, p, 1)
     isempty(c) || return c
     # ----------------------------------
+
+    @show p[1]
+
     rpath = unixify(strip(p[1]))
     if !endswith(rpath, ".jl")
         @warn """

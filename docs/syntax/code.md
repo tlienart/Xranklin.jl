@@ -73,8 +73,20 @@ that a fenced code block should be executed:
 * \triplebt`:name` &mdash; the language is implicit, the name of the block is explicit,
 * \triplebt`:` &mdash; the language and the name are implicit.
 
-For all these you can also swap the colon ('`:`') with an exclamation mark ('`!`') with
-the same effect (see examples below).
+For all these you can swap the colon (`:`) for an exclamation mark (`!`) with the same
+effect (see examples below).
+
+\note{
+  When specifying the language, you can add a whitespace before the execution symbol
+  to help editors such as VSCode to highlight the code block properly.
+  For instance:
+  ````
+  ```julia !ex
+  ...
+  ```
+  ````
+}
+
 
 When the language is implicit, it is taken from the page variable `lang` (with default
  `"julia"`).

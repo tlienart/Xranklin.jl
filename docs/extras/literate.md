@@ -1,7 +1,7 @@
 +++
 showtoc = true
 header = "Using Literate with Franklin"
-menu_title = "Literate.jl"
+menu_title = "Literate"
 +++
 
 ## Overview
@@ -12,4 +12,4 @@ Everything below the horizontal line comes from the conversion of a Literate scr
 
 ---
 
-\literate{_assets/literate/example.jl}
+\literate{_assets/literate/literate_example.jl}
