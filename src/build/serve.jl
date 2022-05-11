@@ -59,7 +59,8 @@ function serve(d::String = "";
             single::Bool      = final,
             eval::Bool        = true,
             nocode::Bool      = !eval,
-            use_threads::Bool = false,
+            threads::Bool     = false,
+            use_threads::Bool = threads,
 
             # Base url prefix / prepath optional override
             prepath::String = "",

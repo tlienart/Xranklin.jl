@@ -21,7 +21,7 @@ Type stable: when an explicit default is given, the value returned is
 Type unstable: when no explicit default is given (or is nothing), the value
          returned is unconstrained.
 """
-getvar(v::Vars, name::Symbol, default::T) where T = get(v, name, default)::T
+getvar(v::Vars, name::Symbol, default::T) where T = T(get(v, name, default))
 getvar(v::Vars, name::Symbol, d::Nothing=nothing) = get(v, name, nothing)
 
 

@@ -8,7 +8,7 @@ function process_html_file(
             lc::LocalContext,
             fpath::String,
             opath::String,
-            final::Bool
+            final::Bool = false
         )::Nothing
 
     crumbs(@fname, fpath)
