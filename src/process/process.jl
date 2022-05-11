@@ -59,7 +59,12 @@ function process_file(
     off = ifelse(reproc, "... ", "")
     if case in (:md, :html)
         rpath = get_rpath(gc, fpath)
-        lc    = get(gc.children_contexts, rpath, DefaultLocalContext(gc; rpath))
+        lc    = rpath in keys(gc.children_contexts) ?
+                    gc.children_contexts[rpath]     :
+                    DefaultLocalContext(gc; rpath)
+
+        # to check nesting of re-processing
+        lc.is_recursive[] = reproc
 
         if case == :md
             process_md_file(lc, fpath, opath, skip_files, allow_skip, final)

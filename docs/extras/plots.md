@@ -410,7 +410,6 @@ The overall structure is
 
 It doesn't require anything specific in your GA. Make sure the Javascript library is in your `/libs/` though, along with the PlotlyJS package in the site environment.
 
-
 ## Gaston
 
 
@@ -433,6 +432,8 @@ Note that, by default, PNG images will be generated.
   ```
 }
 
+Note that if you see a warning message _unknown or ambiguous terminal type_ in your REPL, you
+should be able to just ignore it.
 
 ### Gaston with GA
 
@@ -541,4 +542,4 @@ on CI you will also have to indicate the path to the binary explicitly, so in `u
 
 ```
 ENV["GLE"] = "gle-4.3.1-Linux/bin/gle"
-```
+``` -->

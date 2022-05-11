@@ -28,21 +28,25 @@ function process_md_file(
 
     # reprocess all pages that depend upon definitions from this page which
     # may have changed now that we just processed it
-    for pg in lc.to_trigger
-        reprocess(pg, lc.glob; skip_files, msg="(depends on updated vars)")
+    if !is_recursive(lc)
+        for pg in lc.to_trigger
+            reprocess(
+                pg, lc.glob; skip_files,
+                msg="(depends on updated vars from $(lc.rpath))"
+            )
+        end
     end
-
     return
 end
 
 process_md_file(gc, rpath) = begin
     fpath = path(gc, :folder) / rpath
     opath = get_opath(gc, fpath)
-    process_md_file(
-        get(gc.children_contexts, rpath, DefaultLocalContext(gc; rpath)),
-        fpath,
-        opath
-    )
+    lc    = rpath in keys(gc.children_contexts) ?
+                gc.children_contexts[rpath]     :
+                DefaultLocalContext(gc; rpath)
+
+    process_md_file(lc, fpath, opath)
 end
 
 

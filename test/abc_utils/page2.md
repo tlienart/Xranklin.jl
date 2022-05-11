@@ -11,11 +11,6 @@ item_list = [
 * [Landing page](## landing page)
 
 
-```!
-println(Threads.threadid())
-```
-
-
 ## Pagination
 
 {{paginate item_list 5}}

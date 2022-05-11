@@ -124,6 +124,8 @@ end
     {{reflink id}}
 
 Global reference to an id that might be on any page (see anchor).
+This should not be used directly by a user. It should only be used
+via a `##` link in markdown such as `[a link](## some id)`.
 """
 function hfun_reflink(
             lc::LocalContext,

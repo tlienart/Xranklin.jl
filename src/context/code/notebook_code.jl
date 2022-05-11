@@ -119,6 +119,9 @@ function eval_code_cell!(
         nb.indep_code[cell_code] = code_repr
     end
 
+    @show cell_index
+    @show length(nb.code_names)
+
     return finish_cell_eval!(nb, code_pair, indep)
 end
 
