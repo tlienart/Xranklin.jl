@@ -34,6 +34,7 @@ function resolve_henv_if(
         )::Nothing
 
     env_name = first(henv).name
+
     scope = subs("")
     # evaluates conditions with `_check_henv_cond`
     # the first one that is validated has its scope

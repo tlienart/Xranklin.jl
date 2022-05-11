@@ -14,7 +14,7 @@ double brace blocks).
 function html2(
             parts::Vector{Block},
             lc::LocalContext;
-            only::Vector{Symbol}=Symbol[]
+            only_external::Bool=false
         )::String
 
     crumbs(@fname)
@@ -53,7 +53,7 @@ function html2(
 
         # DBB blocks
         else
-            idx = resolve_dbb(io, parts, idx, lc; only)
+            idx = resolve_dbb(io, parts, idx, lc; only_external)
 
         end
     end # end while
@@ -66,10 +66,10 @@ end
 function html2(
             s::String,
             lc::LocalContext;
-            only=Symbol[],
+            only_external::Bool=false,
             kw...           # kw for the partitioning
         )
 
     parts = FP.html_partition(s; kw...)
-    return html2(parts, lc; only)
+    return html2(parts, lc; only_external)
 end

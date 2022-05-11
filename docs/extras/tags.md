@@ -82,4 +82,4 @@ item_list = [
 ]
 ```
 
-on the current page, only the first five items of the list are shown; on {{ispage extras/tags}}[the next one](/extras/tags/2/){{else}}[the previous one](/extras/tags/){{end}} you'll see that it's the exact same page except with the other 5 items.
+on the current page, only the first five items of the list are shown; on {{ispage /extras/tags}}[the next one](/extras/tags/2/){{else}}[the previous one](/extras/tags/){{end}} you'll see that it's the exact same page except with the other 5 items.

@@ -27,16 +27,22 @@ function process_md_file_pass_2(
         c_class = getvar(lc, :content_class, "")
         c_id    = getvar(lc, :content_id,    "")
         body    = ""
+
+        # NOTE: we pre-resolve the html so that we resolve any command present
+        # in the markdown that would control the layout further. E.g. the
+        # hfun_rm_headings in the docs.
+        body_html = html2(ihtml, lc; only_external=true)
+
         if !isempty(c_tag)
             body = """
                 <$(c_tag) $(attr(:class, c_class)) $(attr(:id, c_id))>
-                  $ihtml
+                  $body_html
                   $page_foot
                 </$(c_tag)>
                 """
         else
             body = """
-                $ihtml
+                $body_html
                 $page_foot
                 """
         end
@@ -133,7 +139,7 @@ goes on to write the other pages as needed.
 """
 function process_paginated(
             lc::LocalContext,
-            full_page::String,
+            ctt::String,
             opath::String,
             paginator_name::String,
             final::Bool
@@ -146,8 +152,6 @@ function process_paginated(
     # how many pages?
     niter = length(iter)
     npg   = ceil(Int, niter / npp)
-
-    ctt = html2(full_page, lc; only=[:paginate])
 
     # repeatedly write the content replacing the PAGINATOR_TOKEN
     for pgi = 1:npg
@@ -165,14 +169,14 @@ function process_paginated(
 
         # adjust lc, reset applied prefix (this is ok since we
         # did cleanup_paginated before so, in any case, we will rewrite the file)
-        setvar!(lc, :_relative_url, get_rurl(get_ropath(lc.glob, dst)))
+        rurl = get_rurl(get_ropath(lc.glob, dst))
+
+        setvar!(lc, :_relative_url, rurl)
         setvar!(lc, :_applied_base_url_prefix, "")
 
         # process it in the local context
         ins_i = html(ins_i, set_recursive!(lc))
-
-        # form the page with inserted content and convert it
-        ctt_i = html2(replace(ctt, PAGINATOR_TOKEN => ins_i), lc)
+        ctt_i = replace(html2(ctt, lc), PAGINATOR_TOKEN => ins_i)
 
         # write the file
         open(dst, "w") do f
