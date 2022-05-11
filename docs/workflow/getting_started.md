@@ -10,7 +10,7 @@ menu_title = header
 
 ## Generate a site from a template
 
-To get started with Franklin, you use the `FranklinTemplates.newsite` function
+To get started with Franklin, you can use the `FranklinTemplates.newsite` function
 in a Julia REPL.
 That function will generate a _website folder_ on your computer that's ready
 to be built by Franklin, and that you can modify at will:
@@ -35,7 +35,7 @@ In particular, if you just want a super basic template to experiment with, the
 `"sandbox"` template should prove useful.
 
 \note{
-  Most of these templates are adapted, simplified, versions of common standard
+  Most of these templates are adapted, and simplified versions of common standard
   static site templates.
   They are not meant to be fully polished but should be easy to adjust to your liking
   once you're familiar with how Franklin operates.\\
@@ -56,7 +56,8 @@ serve()  # or serve("path/to/TestWebsite")
   (use CTRL+C to shut down)
 ```
 
-You can now visit your site at `http://localhost:8000` (the page should have been opened automatically in your browser).
+You can now visit your site at `http://localhost:8000` (the page should have been
+  opened automatically in your browser).
 
 At a high level, the `serve` function does the following:
 
@@ -73,7 +74,7 @@ in your REPL to get the relevant docstring.
 Once the server is running, you can edit the file `index.md` and see the effect it
 has in your browser.
 If you're familiar with Markdown, this step should hopefully be fairly intuitive.
-If you're not, you might want to check out the [Markdown basics](/syntax/basics/).
+Otherwise, you might want to check out the [Markdown basics](/syntax/basics/).
 The `index.md` file also  has a few indications for how to do things which you might
 find useful.
 
@@ -170,7 +171,7 @@ For instance it could look like
 </html>
 ```
 
-and so instead of separating the head, content and foot, it's a single file where you just indicate where the content goes.
+and so, instead of separating the head, content and foot, it's a single file where you just indicate where the content goes.
 
 If you do have a skeleton file in your `_layout` folder, and also have a head and foot files, only the skeleton will be considered.
 
