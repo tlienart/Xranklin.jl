@@ -255,135 +255,135 @@
 #         """
 #     return
 # end
+#
+#
+# """
+#     _process_md_file_html(lc, page_content_md; skip)
+#
+# Form the full HTML of a page. This can take two main routes:
+#
+# 1. HEAD * CONTENT * PAGE_FOOT * FOOT
+# 2. SKELETON(CONTENT)
+#
+# In the first case, things are assembled one after the other and sequentially
+# joined. Elements (such as PAGE_FOOT) may be empty.
+#
+# In the second case, if there is a skeleton, all other files are ignored
+# unless they're explicitly included in the skeleton. The skeleton indicates the
+# structure of the full page and indicates with {{page_content}} where the
+# converted content should be included.
+# """
+# function _process_md_file_html(
+#             lc::LocalContext,
+#             page_content_md::String;
+#             skip=false
+#          )::String
+#
+#     # Conversion of the content + wrap into tags if required
+#     page_content_html = getvar(lc, :_generated_html, "")
+#     if !skip || isempty(page_content_html)
+#         # the set_recursive means the conversion is not complete
+#         # it leaves all DBB to be converted later
+#         page_content_html = html(page_content_md, set_recursive!(lc))
+#         setvar!(lc, :_generated_html, page_content_html)
+#     end
+#
+#     # Path 1 & 2, we start with the second one
+#     # > path 2 / skeleton
+#     skeleton_path = path(:folder) / getvar(lc, :layout_skeleton, "")
+#     if !isempty(skeleton_path) && isfile(skeleton_path)
+#         # inject the partially processed page content
+#         ct = html2(read(skeleton_path, String), lc; only=[:page_content])
+#         # finish the processing
+#         return html2(ct, lc)
+#     end
+#
+#     # > path 1 / head * page *foot
+#     return _assemble_join_html(lc)
+# end
 
 
-"""
-    _process_md_file_html(lc, page_content_md; skip)
-
-Form the full HTML of a page. This can take two main routes:
-
-1. HEAD * CONTENT * PAGE_FOOT * FOOT
-2. SKELETON(CONTENT)
-
-In the first case, things are assembled one after the other and sequentially
-joined. Elements (such as PAGE_FOOT) may be empty.
-
-In the second case, if there is a skeleton, all other files are ignored
-unless they're explicitly included in the skeleton. The skeleton indicates the
-structure of the full page and indicates with {{page_content}} where the
-converted content should be included.
-"""
-function _process_md_file_html(
-            lc::LocalContext,
-            page_content_md::String;
-            skip=false
-         )::String
-
-    # Conversion of the content + wrap into tags if required
-    page_content_html = getvar(lc, :_generated_html, "")
-    if !skip || isempty(page_content_html)
-        # the set_recursive means the conversion is not complete
-        # it leaves all DBB to be converted later
-        page_content_html = html(page_content_md, set_recursive!(lc))
-        setvar!(lc, :_generated_html, page_content_html)
-    end
-
-    # Path 1 & 2, we start with the second one
-    # > path 2 / skeleton
-    skeleton_path = path(:folder) / getvar(lc, :layout_skeleton, "")
-    if !isempty(skeleton_path) && isfile(skeleton_path)
-        # inject the partially processed page content
-        ct = html2(read(skeleton_path, String), lc; only=[:page_content])
-        # finish the processing
-        return html2(ct, lc)
-    end
-
-    # > path 1 / head * page *foot
-    return _assemble_join_html(lc)
-end
-
-
-"""
-    _assemble_join_html
-
-HEAD * PAGE * FOOT (see `_process_md_file_html`).
-"""
-function _assemble_join_html(lc::LocalContext)::String
-    #
-    # PAGE FOOT
-    #
-    page_foot_path = path(:folder) / getvar(lc, :layout_page_foot, "")
-    page_foot_html = ""
-    if !isempty(page_foot_path) && isfile(page_foot_path)
-        page_foot_html = read(page_foot_path, String)
-    end
-
-    #
-    # PAGE (with PAGE FOOT)
-    #
-    c_tag     = getvar(lc, :content_tag,   "")
-    c_class   = getvar(lc, :content_class, "")
-    c_id      = getvar(lc, :content_id,    "")
-    c_html    = getvar(lc, :_generated_html, "")
-    body_html = ""
-    if !isempty(c_tag)
-        body_html = """
-            <$(c_tag) $(attr(:class, c_class)) $(attr(:id, c_id))>
-              $c_html
-              $page_foot_html
-            </$(c_tag)>
-            """
-    else
-        body_html = """
-            $c_html
-            $page_foot_html
-            """
-    end
-
-    #
-    # HEAD * PAGE * FOOT
-    #
-    full_page_html = ""
-    # > HEAD
-    head_path = path(:folder) / getvar(lc.glob, :layout_head)::String
-    if !isempty(head_path) && isfile(head_path)
-        full_page_html = read(head_path, String)
-    end
-    # > PAGE
-    full_page_html *= body_html
-    # > FOOT
-    foot_path = path(:folder) / getvar(lc.glob, :layout_foot)::String
-    if !isempty(foot_path) && isfile(foot_path)
-        full_page_html *= read(foot_path, String)
-    end
-
-    return html2(full_page_html, lc)
-end
+# """
+#     _assemble_join_html
+#
+# HEAD * PAGE * FOOT (see `_process_md_file_html`).
+# """
+# function _assemble_join_html(lc::LocalContext)::String
+#     #
+#     # PAGE FOOT
+#     #
+#     page_foot_path = path(:folder) / getvar(lc, :layout_page_foot, "")
+#     page_foot_html = ""
+#     if !isempty(page_foot_path) && isfile(page_foot_path)
+#         page_foot_html = read(page_foot_path, String)
+#     end
+#
+#     #
+#     # PAGE (with PAGE FOOT)
+#     #
+#     c_tag     = getvar(lc, :content_tag,   "")
+#     c_class   = getvar(lc, :content_class, "")
+#     c_id      = getvar(lc, :content_id,    "")
+#     c_html    = getvar(lc, :_generated_html, "")
+#     body_html = ""
+#     if !isempty(c_tag)
+#         body_html = """
+#             <$(c_tag) $(attr(:class, c_class)) $(attr(:id, c_id))>
+#               $c_html
+#               $page_foot_html
+#             </$(c_tag)>
+#             """
+#     else
+#         body_html = """
+#             $c_html
+#             $page_foot_html
+#             """
+#     end
+#
+#     #
+#     # HEAD * PAGE * FOOT
+#     #
+#     full_page_html = ""
+#     # > HEAD
+#     head_path = path(:folder) / getvar(lc.glob, :layout_head)::String
+#     if !isempty(head_path) && isfile(head_path)
+#         full_page_html = read(head_path, String)
+#     end
+#     # > PAGE
+#     full_page_html *= body_html
+#     # > FOOT
+#     foot_path = path(:folder) / getvar(lc.glob, :layout_foot)::String
+#     if !isempty(foot_path) && isfile(foot_path)
+#         full_page_html *= read(foot_path, String)
+#     end
+#
+#     return html2(full_page_html, lc)
+# end
 
 
-"""
-    _process_md_file_latex
-
-"""
-function _process_md_file_latex(
-            lc::LocalContext,
-            page_content_md::String;
-            skip=false
-        )
-
-    page_content_latex = getvar(lc, :_generated_latex, "")
-    if !skip || isempty(page_content_latex)
-        page_content_latex = latex(page_content_md, lc)
-        setvar!(lc, :_generated_latex, page_content_latex)
-    end
-
-    full_page_latex = raw"\begin{document}" * "\n\n"
-    head_path = path(:folder) / getvar(lc.glob, :layout_head_lx)::String
-    if !isempty(head_path) && isfile(head_path)
-        full_page_latex = read(head_path, String)
-    end
-    full_page_latex *= page_content_latex
-    full_page_latex *= "\n\n" * raw"\end{document}"
-
-    return full_page_latex
-end
+# """
+#     _process_md_file_latex
+#
+# """
+# function _process_md_file_latex(
+#             lc::LocalContext,
+#             page_content_md::String;
+#             skip=false
+#         )
+#
+#     page_content_latex = getvar(lc, :_generated_latex, "")
+#     if !skip || isempty(page_content_latex)
+#         page_content_latex = latex(page_content_md, lc)
+#         setvar!(lc, :_generated_latex, page_content_latex)
+#     end
+#
+#     full_page_latex = raw"\begin{document}" * "\n\n"
+#     head_path = path(:folder) / getvar(lc.glob, :layout_head_lx)::String
+#     if !isempty(head_path) && isfile(head_path)
+#         full_page_latex = read(head_path, String)
+#     end
+#     full_page_latex *= page_content_latex
+#     full_page_latex *= "\n\n" * raw"\end{document}"
+#
+#     return full_page_latex
+# end

@@ -33,7 +33,7 @@ uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
 [[deps.FranklinParser]]
 deps = ["REPL"]
-path = "/Users/tlienart/.julia/dev/FranklinParser"
+git-tree-sha1 = "34eab60f8bb982f55f40558a121ec5e50d5d254e"
 uuid = "796511e7-1510-466f-ad0c-1823c64bcafa"
 version = "0.6.0"
 
