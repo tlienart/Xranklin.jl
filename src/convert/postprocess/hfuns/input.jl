@@ -132,14 +132,14 @@ function _hfun_insert(
     end
 
     if tohtml && endswith(p, ".html")
-        io = IOBuffer()
-        process_html_file_io!(io, lc, fpath)
-        return String(take!(io))
+        return html2(read(fpath, String), lc)
 
     elseif endswith(p, ".md")
-        io = IOBuffer()
-        process_md_file_io!(io, lc, fpath; tohtml)
-        return String(take!(io))
+        @warn """
+            {{insert $p $bsym}}
+            Insertion of a markdown file is not yet supported.
+            """
+        return hfun_failed(["insert", p, string(bsym)])
     end
     # for anything else, just dump the file as is
     # (and it's on the user to check that's fine)
