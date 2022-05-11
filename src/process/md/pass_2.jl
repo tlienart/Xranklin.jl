@@ -163,8 +163,10 @@ function process_paginated(
         # file destination
         dst = mkpath(odir / string(pgi)) / "index.html"
 
-        # adjust lc
+        # adjust lc, reset applied prefix (this is ok since we
+        # did cleanup_paginated before so, in any case, we will rewrite the file)
         setvar!(lc, :_relative_url, get_rurl(get_ropath(lc.glob, dst)))
+        setvar!(lc, :_applied_base_url_prefix, "")
 
         # process it in the local context
         ins_i = html(ins_i, set_recursive!(lc))
@@ -176,7 +178,8 @@ function process_paginated(
         open(dst, "w") do f
             write(f, ctt_i)
         end
-        adjust_base_url(lc.glob, lc.rpath, opath; final)
+
+        adjust_base_url(lc.glob, lc.rpath, dst; final)
     end
 
     # Copy /1/ which must exists to a base (overwrite it so it has the proper inclusion)
