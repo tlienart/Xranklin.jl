@@ -48,12 +48,9 @@ function process_md_file_pass_2(
         full_page *= isfile(foot_path) ? read(foot_path, String) : ""
 
         # ---------------------------------------------------------------------
-
+        # process at least once, if there's a pagination token here
+        # the page will be re-processed (see process_paginated)
         converted_html = html2(full_page, lc)
-
-        open(opath, "w") do outf
-            write(outf, converted_html)
-        end
 
         #
         # PAGINATION
@@ -64,10 +61,16 @@ function process_md_file_pass_2(
         # then 4 pages will be written (the base page, then pages 1,2,3).
         #
         paginator_name = getvar(lc, :_paginator_name)
+
         if isempty(paginator_name)
+            open(opath, "w") do outf
+                write(outf, converted_html)
+            end
             process_not_paginated(lc.glob, lc.rpath, odir, final)
+
         else
-            process_paginated(lc, opath, paginator_name, final)
+            process_paginated(lc, full_page, opath, paginator_name, final)
+
         end
 
     return
@@ -130,6 +133,7 @@ goes on to write the other pages as needed.
 """
 function process_paginated(
             lc::LocalContext,
+            full_page::String,
             opath::String,
             paginator_name::String,
             final::Bool
@@ -143,9 +147,7 @@ function process_paginated(
     niter = length(iter)
     npg   = ceil(Int, niter / npp)
 
-    # base content (contains the PAGINATOR_TOKEN)
-    ctt = read(opath, String)
-    ctt = html2(ctt, lc; only=[:paginate])
+    ctt = html2(full_page, lc; only=[:paginate])
 
     # repeatedly write the content replacing the PAGINATOR_TOKEN
     for pgi = 1:npg
@@ -161,20 +163,20 @@ function process_paginated(
         # file destination
         dst = mkpath(odir / string(pgi)) / "index.html"
 
+        # adjust lc
+        setvar!(lc, :_relative_url, get_rurl(get_ropath(lc.glob, dst)))
+
         # process it in the local context
         ins_i = html(ins_i, set_recursive!(lc))
 
-        # adjust lc
-        setvar!(lc, :_relative_url, get_rurl(get_ropath(gc, dst)))
-
-        # form the page with inserted content
-        ctt_i = replace(ctt, PAGINATOR_TOKEN => ins_i)
+        # form the page with inserted content and convert it
+        ctt_i = html2(replace(ctt, PAGINATOR_TOKEN => ins_i), lc)
 
         # write the file
         open(dst, "w") do f
             write(f, ctt_i)
         end
-        adjust_base_url(gc, rpath, opath; final)
+        adjust_base_url(lc.glob, lc.rpath, opath; final)
     end
 
     # Copy /1/ which must exists to a base (overwrite it so it has the proper inclusion)

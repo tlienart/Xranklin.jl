@@ -1,3 +1,15 @@
+function set_meta_parameters(lc::LocalContext, fpath::String, opath::String)
+    rpath  = get_rpath(lc.glob, fpath)
+    ropath = get_ropath(lc.glob, opath)
+    s = stat(fpath)
+    setvar!(lc, :_output_path, opath)
+    setvar!(lc, :_relative_path, rpath)
+    setvar!(lc, :_relative_url, unixify(ropath))
+    setvar!(lc, :_creation_time, s.ctime)
+    setvar!(lc, :_modification_time, s.mtime)
+end
+
+
 """
     adjust_base_url(gc, rpath, opath)
 

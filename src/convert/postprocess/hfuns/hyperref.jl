@@ -90,7 +90,7 @@ function hfun_eqref(
 
     # no check needed as generated
     id      = p[1]
-    eqrefs_ = eqrefs()
+    eqrefs_ = eqrefs(lc)
     id ∈ keys(eqrefs_) || return "<b>??</b>"
     text  = eqrefs_[id] |> string
     class = getvar(lc.glob, :eqref_class, "eqref")

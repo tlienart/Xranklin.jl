@@ -4,6 +4,7 @@ import UnicodePlots
 
 function hfun_rm_headings(ps::Vector{String})
     c = cur_lc()
+    c === nothing && return ""
     for h in ps
         if h in keys(c.headings)
             delete!(c.headings, h)

@@ -7,9 +7,13 @@
 <body>
 <div class="franklin-content" >
   <h1 id="landing_page" ><a href="#landing_page"> Landing page</a></h1><h2 id="links" ><a href="#links"> Links</a></h2><ul>
-<li><a href="/page1/#page_1">Page 1</a></li>
-<li><a href="/page2/#page_2">Page 2</a></li>
+<li><a href="/page1/#page_1">Page 1</a> (code, anchors)</li>
+<li><a href="/page2/#page_2">Page 2</a> (pagination, tags)</li>
 <li><a href="/page3/">Page 3</a> (from raw html)</li>
+</ul>
+<ul>
+<li><a href="/tags/tag_1/">Tag 1</a></li>
+<li><a href="/tags/tag_2/">Tag 2</a></li>
 </ul>
 <h2 id="access_to_global_variables" ><a href="#access_to_global_variables"> Access to global variables</a></h2><ul>
 <li>expect 5: < 5 ></li>
@@ -21,6 +25,9 @@
 <li>expect 7: < 7 ></li>
 <li>expect septimia: < septimia ></li>
 <li>expect 1/3: < 1//3 ></li>
+</ul>
+<h2 id="access_to_local_variable_from_elsewhere" ><a href="#access_to_local_variable_from_elsewhere"> Access to local variable from elsewhere</a></h2><ul>
+<li>expect hello from pg 1: < hello from page 1! ></li>
 </ul>
 <h2 id="e_strings_on_global_and_local_variable" ><a href="#e_strings_on_global_and_local_variable"> E-strings on global and local variable</a></h2><ul>
 <li><code>glob_a^2</code> expect 25: 25 25</li>

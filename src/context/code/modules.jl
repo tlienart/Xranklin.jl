@@ -117,6 +117,7 @@ attached.
 """
 const UTILS_UTILS = [
     "__gc", "__lc",
+    "cur_gc", "cur_lc",
     "getlvar", "getgvar", "getvarfrom",
     "setlvar!", "setgvar!",
     "locvar", "globvar", "pagevar",
@@ -167,6 +168,8 @@ modules_setup(c::Context) = begin
 
             const __gc = cur_gc()
             const __lc = get(__gc.children_contexts, "$rpath", nothing)
+
+            cur_lc() = __lc
 
             getlvar(n::Symbol, d=nothing; default=d) =
                 $F.getvar(__lc, __lc, n, default)

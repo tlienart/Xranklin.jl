@@ -130,9 +130,9 @@ function _process_literate_file(
 
     # output the markdown (this is a reasonably safe operation which
     # shouldn't fail, it's just writing a file with some modifiers.
-    ofile = L.markdown(
+    ofile = Base.@invokelatest L.markdown(
         fpath, mktempdir();
-        flavor      = L.FranklinFlavor(),
+        flavor      = (Base.@invokelatest L.FranklinFlavor()),
         mdstrings   = getvar(lc, :literate_mdstrings, false),
         config      = LITERATE_CONFIG,
         preprocess  = s -> replace(s, r"#hide\s*?\n" => "# hide\n"),

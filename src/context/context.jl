@@ -240,6 +240,7 @@ Base.show(io::IO, gc::GlobalContext) = println(io, """
         -------------
         - $(length(gc.vars)) variables
         - $(length(gc.lxdefs)) lx definitions
+        - $(length(gc.children_contexts)) children contexts
         """)
 
 Base.show(io::IO, lc::LocalContext) = println(io, """

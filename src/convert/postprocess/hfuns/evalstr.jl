@@ -32,6 +32,7 @@ function eval_str(
 
     code = _eval_str(lc, estr)
 
+    lock(env(:lock))
     captured = IOCapture.capture(; rethrow=Union{}) do
         include_string(
             softscope,
@@ -39,6 +40,8 @@ function eval_str(
             replace(code, "⁰" => "\"")
         )
     end
+    unlock(env(:lock))
+
     captured.error && return EvalStrError()
     return captured.value
 end

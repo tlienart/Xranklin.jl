@@ -31,8 +31,8 @@ function hfun_taglist(
 
     # write each item
     for rp in rpaths
-        title = getvar(gc.children_contexts[rp], :title, "")
-        if isempty(title)
+        title = getvar(gc.children_contexts[rp], :title, nothing)
+        if _isemptyvar(title)
             title = "/$rp/"
         end
         url = unixify(rp)

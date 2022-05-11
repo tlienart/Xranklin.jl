@@ -8,9 +8,12 @@ loc_c = 1//3
 
 ## Links
 
-* [Page 1](## page 1)
-* [Page 2](## page 2)
+* [Page 1](## page 1) (code, anchors)
+* [Page 2](## page 2) (pagination, tags)
 * [Page 3](/page3/) (from raw html)
+
+* [Tag 1](/tags/tag_1/)
+* [Tag 2](/tags/tag_2/)
 
 ## Access to global variables
 
@@ -26,6 +29,10 @@ Note: `<{{...}}>` doesn't work but this might be due to something else
 * expect 7: < {{loc_a}} >
 * expect septimia: < {{loc_b}} >
 * expect 1/3: < {{loc_c}} >
+
+## Access to local variable from elsewhere
+
+* expect hello from pg 1: < {{> getvarfrom(:var_1, "page1.md")}} >
 
 ## E-strings on global and local variable
 

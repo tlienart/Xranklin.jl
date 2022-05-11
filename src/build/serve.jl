@@ -95,6 +95,13 @@ function serve(d::String = "";
     folder = ifelse(isempty(folder), pwd(), dir)
     set_paths!(gc, folder)
 
+    # activate the folder environment
+    pf = path(gc, :folder)
+    if isfile(pf / "Project.toml")
+        Pkg.activate(pf)
+        Pkg.instantiate()
+    end
+
     # if there is a utils.jl that was cached, check if it has changed,
     # if it has, we clear even if clear is false
     cached_config  = path(gc, :cache)  / "config.md"
@@ -112,35 +119,27 @@ function serve(d::String = "";
         for odir in (path(gc, :site), path(gc, :pdf), path(gc, :cache))
             rm(odir; force=true, recursive=true)
         end
+
+        process_config(gc)
+        process_utils(gc)
+
     else
         start = time()
-        # try to load previously-serialised contexts if any
+        # try to load previously-serialised contexts if any, the process config
+        # and process_utils happen within the deserialise so that children
+        # contexts are attached to an up-to-date gc.
         isfile(gc_cache_path()) && deserialize_gc(gc)
         δt = time() - start; @info """
             💡 $(hl("de-serialization done", :yellow)) $(hl(time_fmt(δt), :red))
             """
     end
 
-    # check if there's a config file and process it, this must happen
-    # prior to everything as it defines 'ignore' for instance which is
-    # needed in the watched_files step
-    process_config(gc)
     isempty(base_url_prefix) || setvar!(gc, :base_url_prefix, base_url_prefix)
 
     # scrape the folder to collect all files that should be watched for
     # changes; this set will be updated in the loop if new files get
     # added that should be watched
     wf = find_files_to_watch(gc, folder)
-
-    # activate the folder environment
-    pf = path(gc, :folder)
-    if isfile(pf / "Project.toml")
-        Pkg.activate(pf)
-        Pkg.instantiate()
-    end
-
-    # do the initial build
-    process_utils(gc)
 
     full_pass(
         gc, wf;

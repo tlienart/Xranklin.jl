@@ -413,7 +413,7 @@ function full_pass_other(
     n_watched = length(watched)
     iszero(n_watched) && return
 
-    @info "Full Pass (other files, threaded)"
+    @info "> Full Pass [O]"
     entries = dic2vec(watched)
     info_thread(length(entries))
     Threads.@threads for (fp, _) in dic2vec(watched)

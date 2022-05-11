@@ -148,6 +148,9 @@ function deserialize_gc(gc::GlobalContext)
     union!(gc.paginated, nt.paginated)
     merge!(gc.deps_map,  nt.deps_map)
 
+    process_config(gc)
+    process_utils(gc)
+
     # recover the children if the cache exists
     nc = length(nt.children)
     @info "📓 de-serializing $(hl("$nc local contexts", :cyan))..."
