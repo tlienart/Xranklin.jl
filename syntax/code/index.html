@@ -121,7 +121,7 @@
 </li>
 <li class="pure-menu-item">
     <a href="/Xranklin.jl/extras/literate/" class="pure-menu-link">
-        Literate.jl
+        Literate
     </a>
 </li>
 </ul><div class="submenu-title">
@@ -175,7 +175,7 @@
         <div id="margin-toc">
           
             <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
-            <div class="toc"><ol><li><a href="#overview"> Overview</a></li><li><a href="#syntax_for_executable_code_blocks"> Syntax for executable code blocks</a><ol><li><a href="#hiding_lines_of_code"> Hiding lines of code</a></li><li><a href="#mock_lines"> Mock lines</a></li><li><a href="#providing_name_hints"> Providing name hints</a></li><li><a href="#marking_a_cell_as_independent"> Marking a cell as independent</a></li></ol></li><li><a href="#understanding_how_things_work"> Understanding how things work</a><ol><li><a href="#what_to_do_when_things_go_wrong"> What to do when things go wrong</a></li></ol></li><li><a href="#output_of_executable_code_blocks"> Output of executable code blocks</a><ol><li><a href="#nothing_to_show"> Nothing to show</a></li><li><a href="#default_show"> Default show</a></li><li><a href="#showable_as_svg_or_png"> Showable as SVG or PNG</a></li><li><a href="#html_show"> HTML show</a></li><li><a href="#custom_show"> Custom show</a></li><li><a href="#showing_the_output_as_markdown/html"> Showing the output as Markdown/HTML</a></li><li><a href="#what_if_the_code_errors?"> What if the code errors?</a></li><li><a href="#in_what_path_does_the_code_run?"> In what path does the code run?</a></li></ol></li></ol></div>
+            <div class="toc"><ol><li><ol><li><a href="#showing_the_output_as_markdown/html"> Showing the output as Markdown/HTML</a></li><li><a href="#in_what_path_does_the_code_run?"> In what path does the code run?</a></li></ol></li><li><a href="#syntax_for_executable_code_blocks"> Syntax for executable code blocks</a><ol><li><a href="#default_show"> Default show</a></li></ol></li><li><a href="#overview"> Overview</a><ol><li><a href="#what_to_do_when_things_go_wrong"> What to do when things go wrong</a></li></ol></li><li><a href="#understanding_how_things_work"> Understanding how things work</a></li><li><a href="#output_of_executable_code_blocks"> Output of executable code blocks</a><ol><li><a href="#nothing_to_show"> Nothing to show</a></li><li><a href="#html_show"> HTML show</a></li><li><a href="#providing_name_hints"> Providing name hints</a></li><li><a href="#marking_a_cell_as_independent"> Marking a cell as independent</a></li><li><a href="#what_if_the_code_errors?"> What if the code errors?</a></li><li><a href="#mock_lines"> Mock lines</a></li><li><a href="#custom_show"> Custom show</a></li><li><a href="#hiding_lines_of_code"> Hiding lines of code</a></li><li><a href="#showable_as_svg_or_png"> Showable as SVG or PNG</a></li></ol></li></ol></div>
           
       </div>
     </div>
@@ -249,9 +249,16 @@ that a fenced code block should be executed:</p>
 <li><code>&#96;&#96;&#96;</code><code>:name</code> &mdash; the language is implicit, the name of the block is explicit,</li>
 <li><code>&#96;&#96;&#96;</code><code>:</code> &mdash; the language and the name are implicit.</li>
 </ul>
-<p>For all these you can also swap the colon ('<code>:</code>') with an exclamation mark ('<code>!</code>') with
-the same effect (see examples below).</p>
-<p>When the language is implicit, it is taken from the page variable <code>lang</code> (with default
+<p>For all these you can swap the colon (<code>:</code>) for an exclamation mark (<code>!</code>) with the same
+effect (see examples below).</p>
+<fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+
+When specifying the language, you can add a whitespace before the execution symbol
+to help editors such as VSCode to highlight the code block properly.
+For instance:<pre><code class="julia">```julia !ex
+...
+```</code></pre>
+</fieldset><p>When the language is implicit, it is taken from the page variable <code>lang</code> (with default
  <code>&quot;julia&quot;</code>).
 When the name is implicit, a name is automatically generated and the output is placed
 directly below the code.</p>
@@ -335,7 +342,7 @@ randstring(5)
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">randstring(5)</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">"bgYDO"</code></pre></div></fieldset>
+<div class="code-output"><pre><code class="code-result language-plaintext">"jrSBD"</code></pre></div></fieldset>
 
 </div><div class="trim">
 
@@ -856,13 +863,13 @@ sqrt(-1)
 <div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: DomainError with -1.0:
 sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).
 Stacktrace:
-   [1] throw_complex_domainerror(f::Symbol, x::Float64)
-     @ Base.Math ./math.jl:33
-   [2] sqrt
-     @ ./math.jl:567 [inlined]
-   [3] sqrt(x::Int64)
-     @ Base.Math ./math.jl:1221
- </code></pre></div></fieldset>
+  [1] throw_complex_domainerror(f::Symbol, x::Float64)
+    @ Base.Math ./math.jl:33
+  [2] sqrt
+    @ ./math.jl:567 [inlined]
+  [3] sqrt(x::Int64)
+    @ Base.Math ./math.jl:1221
+</code></pre></div></fieldset>
 
 </div>
 <div style="height:1em;"></div><h3 id="in_what_path_does_the_code_run?" ><a href="#in_what_path_does_the_code_run?"> In what path does the code run?</a></h3><p>In the same path as where <code>serve</code> was called.

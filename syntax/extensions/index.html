@@ -123,7 +123,7 @@
 </li>
 <li class="pure-menu-item">
     <a href="/Xranklin.jl/extras/literate/" class="pure-menu-link">
-        Literate.jl
+        Literate
     </a>
 </li>
 </ul><div class="submenu-title">
@@ -177,7 +177,7 @@
         <div id="margin-toc">
           
             <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
-            <div class="toc"><ol><li><a href="#overview"> Overview</a></li><li><a href="#injecting_html"> Injecting HTML</a></li><li><a href="#equations"> Equations</a><ol><li><a href="#environments"> Environments</a></li><li><a href="#styling"> Styling</a></li></ol></li><li><a href="#tables"> Tables</a><ol><li><a href="#styling__2"> Styling</a></li></ol></li><li><a href="#footnotes"> Footnotes</a></li><li><a href="#div_blocks"> Div blocks</a></li><li><a href="#latex_like_commands"> LaTeX-like commands</a><ol><li><a href="#whitespaces"> Whitespaces</a></li><li><a href="#defining_commands_with_julia"> Defining commands with Julia</a></li></ol></li><li><a href="#latex_like_environments"> LaTeX-like environments</a><ol><li><a href="#defining_environments_with_julia"> Defining environments with Julia</a></li></ol></li><li><a href="#raw_content"> Raw content</a></li></ol></div>
+            <div class="toc"><ol><li><ol><li><a href="#defining_environments_with_julia"> Defining environments with Julia</a></li><li><a href="#whitespaces"> Whitespaces</a></li><li><a href="#defining_commands_with_julia"> Defining commands with Julia</a></li></ol></li><li><a href="#tables"> Tables</a></li><li><a href="#equations"> Equations</a></li><li><a href="#overview"> Overview</a></li><li><a href="#footnotes"> Footnotes</a></li><li><a href="#latex_like_environments"> LaTeX-like environments</a></li><li><a href="#raw_content"> Raw content</a></li><li><a href="#div_blocks"> Div blocks</a><ol><li><a href="#styling__2"> Styling</a></li></ol></li><li><a href="#injecting_html"> Injecting HTML</a></li><li><a href="#latex_like_commands"> LaTeX-like commands</a><ol><li><a href="#environments"> Environments</a></li><li><a href="#styling"> Styling</a></li></ol></li></ol></div>
           
       </div>
     </div>
@@ -275,7 +275,7 @@ For instance:</p>
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="nonumber">  \[   x = 0   \]
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="nonumber">  \[  x = 0  \]
 </div></fieldset>
 
 </div><p>You can add labels to display-math blocks using <code>\label&lbrace;label name&rbrace;</code> and refer to them
@@ -298,7 +298,7 @@ And refer to it as \eqref&lbrace;some equation&rbrace;.</code></pre>
   <fieldset class="md-result"><legend class="md-result-legend">result</legend>\[ 
   x + \underbrace{y + z}_{w} = u 
  \]
-And refer to it as (<a href="#some_equation" class="eqref">2</a>).</fieldset>
+And refer to it as (<b>??</b>).</fieldset>
 
 </div><p>Equations can span multiple lines and use multi-line environments</p>
 <div class="trim">
@@ -382,11 +382,11 @@ and their "starred" version (which suppresses the number):</p>
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="nonumber">\[  
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="nonumber">\[ 
 \begin{array}{rcl}\mathcal F[g](\omega)
         &=& \langle g, \exp(i\omega \cdot) \rangle \\
         &=& \displaystyle{\int_{\mathbb R} g(x)\exp(i\omega x)\mathrm{d}x}\end{array}
-  \]
+ \]
 </div></fieldset>
 
 </div><fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
