@@ -175,7 +175,7 @@
         <div id="margin-toc">
           
             <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
-            <div class="toc"><ol><li><a href="#generate_a_site_from_a_template"> Generate a site from a template</a></li><li><a href="#next_steps"> Next steps</a></li><li><a href="#page_structure"> Page structure</a><ol><li><a href="#head/foot_structure"> Head/Foot structure</a></li><li><a href="#skeleton_structure"> Skeleton structure</a></li></ol></li><li><a href="#building_and_editing_the_website"> Building and editing the website</a><ol><li><a href="#modifying_files"> Modifying files</a></li><li><a href="#interrupting_and_restarting_the_server"> Interrupting and restarting the server</a></li></ol></li></ol></div>
+            <div class="toc"><ol><li><a href="#generate_a_site_from_a_template"> Generate a site from a template</a></li><li><a href="#building_and_editing_the_website"> Building and editing the website</a><ol><li><a href="#modifying_files"> Modifying files</a></li><li><a href="#interrupting_and_restarting_the_server"> Interrupting and restarting the server</a></li></ol></li><li><a href="#page_structure"> Page structure</a><ol><li><a href="#head/foot_structure"> Head/Foot structure</a></li><li><a href="#skeleton_structure"> Skeleton structure</a></li></ol></li><li><a href="#next_steps"> Next steps</a></li></ol></div>
           
       </div>
     </div>
@@ -183,7 +183,7 @@
     
     <div id="main-left-content">
       
-<h2 id="generate_a_site_from_a_template" ><a href="#generate_a_site_from_a_template"> Generate a site from a template</a></h2><p>To get started with Franklin, you use the <code>FranklinTemplates.newsite</code> function
+<h2 id="generate_a_site_from_a_template" ><a href="#generate_a_site_from_a_template"> Generate a site from a template</a></h2><p>To get started with Franklin, you can use the <code>FranklinTemplates.newsite</code> function
 in a Julia REPL.
 That function will generate a <em>website folder</em> on your computer that's ready
 to be built by Franklin, and that you can modify at will:</p>
@@ -202,7 +202,7 @@ In particular, if you just want a super basic template to experiment with, the
 <code>&quot;sandbox&quot;</code> template should prove useful.</p>
 <fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
 
-Most of these templates are adapted, simplified, versions of common standard
+Most of these templates are adapted, and simplified versions of common standard
 static site templates.
 They are not meant to be fully polished but should be easy to adjust to your liking
 once you're familiar with how Franklin operates.
@@ -218,7 +218,8 @@ server from within it:</p>
 
 ✓ LiveServer listening on http://localhost:8000/ ...
   (use CTRL+C to shut down)</code></pre>
-<p>You can now visit your site at <code>http://localhost:8000</code> (the page should have been opened automatically in your browser).</p>
+<p>You can now visit your site at <code>http://localhost:8000</code> (the page should have been
+  opened automatically in your browser).</p>
 <p>At a high level, the <code>serve</code> function does the following:</p>
 <ol>
 <li>goes through all your pages in a first initial pass and (re)builds them if necessary,</li>
@@ -233,7 +234,7 @@ in your REPL to get the relevant docstring.</p>
 <h3 id="modifying_files" ><a href="#modifying_files"> Modifying files</a></h3><p>Once the server is running, you can edit the file <code>index.md</code> and see the effect it
 has in your browser.
 If you're familiar with Markdown, this step should hopefully be fairly intuitive.
-If you're not, you might want to check out the <a href="/Xranklin.jl/syntax/basics/">Markdown basics</a>.
+Otherwise, you might want to check out the <a href="/Xranklin.jl/syntax/basics/">Markdown basics</a>.
 The <code>index.md</code> file also  has a few indications for how to do things which you might
 find useful.</p>
 <p>Once you have a feel for things, you might want to check out the
@@ -298,7 +299,7 @@ For instance it could look like</p>
   &lbrace;&lbrace;page_content&rbrace;&rbrace;  &lt;!-- this inserts the partially converted Markdown --&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-<p>and so instead of separating the head, content and foot, it's a single file where you just indicate where the content goes.</p>
+<p>and so, instead of separating the head, content and foot, it's a single file where you just indicate where the content goes.</p>
 <p>If you do have a skeleton file in your <code>_layout</code> folder, and also have a head and foot files, only the skeleton will be considered.</p>
 <h2 id="next_steps" ><a href="#next_steps"> Next steps</a></h2><p>Now that you have a working website that you can render locally and experiment with,
 you should try to further modify the <code>.md</code> file(s) in the folder, and the <code>.html</code> files in the
