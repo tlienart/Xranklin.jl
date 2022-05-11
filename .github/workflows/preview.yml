@@ -3,7 +3,7 @@ name: Preview
 on:
   push:
     branches:
-      - docs
+      - dev
 
 jobs:
   docs-preview:
@@ -20,7 +20,7 @@ jobs:
 
           # PREVIEW MODE
           PREVIEW: "preview"    # > will go to BASE_URL_PREFIX/PREVIEW
-          BRANCH: "docs"        # > version of the code to use for the preview
+          BRANCH:  "dev"        # > version of the code to use for the preview
 
           # ===================================================================
           # FLAGS FOR DEPENDENCIES INSTALLATION, ADJUST AS REQUIRED
