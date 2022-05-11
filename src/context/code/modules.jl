@@ -116,8 +116,11 @@ modules. These are specific to the environment, so for instance the
 attached.
 """
 const UTILS_UTILS = [
+    # from module
+    "cur_gc", "html", "latex",
+    # others
     "__gc", "__lc",
-    "cur_gc", "cur_lc", "path",
+    "cur_lc", "path",
     "getlvar", "getgvar", "getvarfrom",
     "setlvar!", "setgvar!",
     "locvar", "globvar", "pagevar",

@@ -11,7 +11,8 @@ end
 
 
 """
-    adjust_base_url(gc, rpath, opath)
+    adjust_base_url(lc, opath; final)
+    adjust_base_url(gc, rpath, opath; final)
 
 For a HTML file written at 'opath', replace all relative links to take the
 base URL prefix (prepath) into account if it's not empty.
@@ -29,6 +30,7 @@ function adjust_base_url(
     # relative links to take the base_url_prefix (prepath) into
     # account.
     #
+
     pp = ifelse(final, sstrip(getvar(lc.glob, :base_url_prefix, ""), '/'), "")
     ap = getvar(lc, :_applied_base_url_prefix, "")
     pp == ap && return
