@@ -33,7 +33,7 @@ uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
 [[deps.FranklinParser]]
 deps = ["REPL"]
-path = "/Users/tlienart/.julia/dev/FranklinParser"
+git-tree-sha1 = "34eab60f8bb982f55f40558a121ec5e50d5d254e"
 uuid = "796511e7-1510-466f-ad0c-1823c64bcafa"
 version = "0.6.0"
 
@@ -110,6 +110,11 @@ uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
+
+[[deps.OrderedCollections]]
+git-tree-sha1 = "85f8e6578bf1f9ee0d11e7bb1b1456435479d47c"
+uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
+version = "1.4.1"
 
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
