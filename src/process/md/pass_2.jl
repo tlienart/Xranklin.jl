@@ -13,45 +13,50 @@ function process_md_file_pass_2(
         odir  = dirname(opath)
         cleanup_paginated(odir)
 
-        # XXX TODO XXX
-        # skeleton_path = path(:folder) / getvar(lc, :layout_skeleton, "")
-        # if isfile(skeleton_path)
-        # end
-
-        # ---------------------------------------------------------------------
-
-        pgfoot_path = path(:folder) / getvar(lc, :layout_page_foot, "")
-        page_foot   = isfile(pgfoot_path) ? read(pgfoot_path, String) : ""
-
-        c_tag   = getvar(lc, :content_tag,   "")
-        c_class = getvar(lc, :content_class, "")
-        c_id    = getvar(lc, :content_id,    "")
-        body    = ""
-
-        # NOTE: we pre-resolve the html so that we resolve any command present
-        # in the markdown that would control the layout further. E.g. the
-        # hfun_rm_headings in the docs.
+        # NOTE: we pre-resolve the html so that we resolve any *external*
+        # command present in the markdown that might control the layout
+        # further. E.g. the hfun_rm_headings in the docs which removes
+        # some headings of the lc
         body_html = html2(ihtml, lc; only_external=true)
 
-        if !isempty(c_tag)
-            body = """
-                <$(c_tag) $(attr(:class, c_class)) $(attr(:id, c_id))>
-                  $body_html
-                  $page_foot
-                </$(c_tag)>
-                """
-        else
-            body = """
-                $body_html
-                $page_foot
-                """
-        end
 
-        head_path  = path(:folder) / getvar(lc.glob, :layout_head, "")::String
-        full_page  = isfile(head_path) ? read(head_path, String) : ""
-        full_page *= body
-        foot_path  = path(:folder) / getvar(lc.glob, :layout_foot, "")::String
-        full_page *= isfile(foot_path) ? read(foot_path, String) : ""
+        skeleton_path = path(:folder) / getvar(lc, :layout_skeleton, "")
+        if isfile(skeleton_path) # --------------------------------------------
+
+            skeleton  = read(skeleton_path, String)
+            full_page = replace(skeleton, PAGE_CONTENT_PAT => body_html)
+
+        else # ----------------------------------------------------------------
+
+            pgfoot_path = path(:folder) / getvar(lc, :layout_page_foot, "")
+            page_foot   = isfile(pgfoot_path) ? read(pgfoot_path, String) : ""
+
+            c_tag   = getvar(lc, :content_tag,   "")
+            c_class = getvar(lc, :content_class, "")
+            c_id    = getvar(lc, :content_id,    "")
+            body    = ""
+
+            if !isempty(c_tag)
+                body = """
+                    <$(c_tag) $(attr(:class, c_class)) $(attr(:id, c_id))>
+                      $body_html
+                      $page_foot
+                    </$(c_tag)>
+                    """
+            else
+                body = """
+                    $body_html
+                    $page_foot
+                    """
+            end
+
+            head_path  = path(:folder) / getvar(lc.glob, :layout_head, "")::String
+            full_page  = isfile(head_path) ? read(head_path, String) : ""
+            full_page *= body
+            foot_path  = path(:folder) / getvar(lc.glob, :layout_foot, "")::String
+            full_page *= isfile(foot_path) ? read(foot_path, String) : ""
+
+        end
 
         # ---------------------------------------------------------------------
         # process at least once, if there's a pagination token here

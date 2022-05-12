@@ -145,18 +145,3 @@ function _hfun_insert(
     # (and it's on the user to check that's fine)
     return read(fpath, String)
 end
-
-"""
-    hfun_page_content()
-Insert the converted page content. This is useful in the context of the
-skeleton layout (see also `_process_md_file_html` and `:layout_skeleton`).
-Other than that context, the user should probably not use it.
-"""
-function hfun_page_content(
-            lc::LocalContext;
-            tohtml::Bool=true
-        )::String
-
-    tohtml && return getvar(lc, :_generated_html)
-    return getvar(lc, :_generated_latex)
-end

@@ -112,9 +112,9 @@ const DefaultLocalVars = Vars(
     :date         => Date(1),
     :lang         => "julia",
     :tags         => String[],
-    # :prerender    => true,
     :slug         => "",
     :ignore_cache => false,
+    :project      => "",
     # toc
     :mintoclevel => 1,
     :maxtoclevel => 6,

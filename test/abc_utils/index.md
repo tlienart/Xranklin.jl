@@ -15,6 +15,9 @@ loc_c = 1//3
 * [Tag 1](/tags/tag_1/)
 * [Tag 2](/tags/tag_2/)
 
+* [Proj 1](/proj1/)
+* [Proj 2](/proj2/)
+
 ## Access to global variables
 
 * expect 5: < {{glob_a}} >

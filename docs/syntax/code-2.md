@@ -46,14 +46,18 @@ Alternatively, you can (same as when you encounter errors):
 the page variable `ignore_cache` to `true` and restart the server,
 * clear the entire site cache.
 
-### Separate environments
+## Environments
 
-In some cases you might want different pages to correspond to different environments.
-A way to do this is to have different `Project.toml` files and activate them with `Pkg` at
-the top of each page.
-Note that if you do that, you'll have to do it on all pages to guarantee that each page has the correct environment.
+It can be convenient to activate a specific environment for the code to be executed on a page.
+The `\activate{some/path/}` command allows you to specify a (unix-style) relative path to the website folder where a specific `Project.toml` file resides.
+Effectvely this will have the same effect as calling `Pkg.activate(...)` inside a code-cell.
 
-For instance let's say that you want to have two pages `/A/` and `/B/` each with their environment, you could structure your folder as:
+If you leave the path empty or just use a single `.` (`\activate{}` or `\activate{.}`), Franklin will try to activate the directory that contains the page being currently built.
+
+All evaluated code cells following the `activate` command will be executed in the relevant environment.
+Whenever a page build is finished, the "parent" environment is re-activated (this would correspond to the website folder environment if there's a `Project.toml` file there, or just the Main environment otherwise).
+
+For instance in the following scenario:
 
 ```
 website
@@ -69,18 +73,9 @@ website
 └── index.md
 ```
 
-on both `A/index.md` and `B/index.md` (and possibly `/index.md` if you have code there too),
-you could do
+you might have both `website/A/index.md` and `website/B/index.md` the command `\activate{.}`, which will activate respectively `website/A/Project.toml` and `website/B/Project.toml`.
+Once either `A` or `B` has finished building, the main environment at `website/Project.toml` will be re-activated.
 
-````markdown
-```!
-#hideall
-using Pkg
-Pkg.activate(joinpath(Utils.path(:site), Utils.get_rdir()))
-```
-````
-
-The function `Utils.path(:site)` returns the full system path to the website folder and `Utils.get_rdir()` returns the relative path of the directory containing the current page so that, together, it's the full path to the folder containing the relevant `Project.toml` file.
 
 ## More examples
 

@@ -101,6 +101,7 @@ function serve(d::String = "";
     if isfile(pf / "Project.toml")
         Pkg.activate(pf)
         Pkg.instantiate()
+        setvar!(gc, :project, pf)
     end
 
     # if there is a utils.jl that was cached, check if it has changed,
