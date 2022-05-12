@@ -75,6 +75,14 @@ function process_md_file_pass_1(
         tags_add    = [id => tags_dict[id] for id in setdiff(new_keys, old_keys)]
         setvar!(lc, :_rm_tags,  tags_remove)
         setvar!(lc, :_add_tags, tags_add)
+
+        # Check if the page activated an environment, and if so
+        # re-activate the "main" environment. It shouldn't be
+        # necessary to instantiate it.
+        bkpf = getvar(lc.glob, :project, "")
+        if Pkg.project().path != bkpf
+            Pkg.activate(bkpf)
+        end
     end
 
     return skip
