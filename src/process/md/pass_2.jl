@@ -18,13 +18,12 @@ function process_md_file_pass_2(
         # further. E.g. the hfun_rm_headings in the docs which removes
         # some headings of the lc
         body_html = html2(ihtml, lc; only_external=true)
-
+        setvar!(lc, :_generated_body, body_html)
 
         skeleton_path = path(:folder) / getvar(lc, :layout_skeleton, "")
         if isfile(skeleton_path) # --------------------------------------------
 
-            skeleton  = read(skeleton_path, String)
-            full_page = replace(skeleton, PAGE_CONTENT_PAT => body_html)
+            full_page = read(skeleton_path, String)
 
         else # ----------------------------------------------------------------
 

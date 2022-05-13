@@ -158,7 +158,10 @@ function process_utils(
     setvar!(gc, :_utils_code, utils)
     # update the gc modules to use the utils
     for m in (gc.nb_vars.mdl, gc.nb_code.mdl)
-        include_string(m.Utils, utils_code(gc, m, crop=true))
+        include_string(
+            m.Utils,
+            utils_code(gc, m, crop=true)
+        )
     end
 
     # check names of hfun, lx and vars; since we wiped the module before the

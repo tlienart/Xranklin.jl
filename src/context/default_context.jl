@@ -30,9 +30,9 @@ const DefaultGlobalVars = Vars(
     :date_shortmonths => String[],
     # File management
     :ignore_base      => StringOrRegex[
-                               r"(?:.*?)\.DS_Store$", ".gitignore", "node_modules/",
-                               "LICENSE.md", "README.md"
-                               ],
+                           r"(?:.*?)\.DS_Store$", ".gitignore", "node_modules/",
+                           "LICENSE.md", "README.md"
+                         ],
     :ignore           => StringOrRegex[],
     :keep_path        => String[],
     :robots_disallow  => String[],
@@ -168,6 +168,7 @@ const DefaultLocalVars = Vars(
     :_applied_base_url_prefix => "",
     # Generated HTML (when skipping, allows to recover previously generated)
     :_generated_ihtml  => "",
+    :_generated_body   => "",
     :_rm_anchors       => Set{String}(),
     :_rm_tags          => Set{String}(),
     :_add_tags         => Vector{Pair{String}}(),

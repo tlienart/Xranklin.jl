@@ -191,10 +191,10 @@ modules_setup(c::Context) = begin
             globvar(n, d=nothing; default=d)    = getgvar(Symbol(n); default)
             pagevar(s, n, d=nothing; default=d) = getvarfrom(Symbol(n), s; default)
 
-            get_page_tags()  = $F.get_page_tags(__lc)
-            get_page_tags(a) = $F.get_page_tags(a)
-            get_all_tags()   = $F.get_all_tags(__gc, __lc)
-            get_rpath()      = $F.get_rpath(__lc)
+            get_page_tags()   = $F.get_page_tags(__lc)
+            get_page_tags(rp) = $F.get_page_tags(rp)
+            get_all_tags()    = $F.get_all_tags(__gc, __lc)
+            get_rpath()       = $F.get_rpath(__lc)
             """
 
         # Utils module

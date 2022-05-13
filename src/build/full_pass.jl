@@ -108,6 +108,16 @@ function full_pass(
         gc     = DefaultGlobalContext()
 
         set_paths!(gc, folder)
+
+        activate = isfile(folder / "Project.toml") &&
+                   (Pkg.project().path != getvar(gc, :project, ""))
+
+        if activate
+            Pkg.activate(folder)
+            Pkg.instantiate()
+            setvar!(gc, :project, Pkg.project().path)
+        end
+
         process_utils(gc)
         process_config(gc)
 
