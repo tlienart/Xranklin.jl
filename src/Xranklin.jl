@@ -38,7 +38,7 @@ normalize_uri(s) = URIs.escapeuri(s, issafe)
 
 # ------------------------------------------------------------------------
 # Main functions
-export serve, build, html, latex
+export serve, build, html, html2, latex
 export cur_gc
 
 # XXX attach?

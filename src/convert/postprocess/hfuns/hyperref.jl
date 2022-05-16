@@ -39,6 +39,8 @@ function hfun_toc(
         for (id, (_, level, text)) in headings
         if min ≤ level ≤ max
     ]
+    isempty(headings) && return ""
+    
     base_level = minimum(h.level for h in headings) - 1
     cur_level  = base_level
 

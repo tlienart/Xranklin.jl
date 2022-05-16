@@ -117,7 +117,7 @@ attached.
 """
 const UTILS_UTILS = [
     # from module
-    "cur_gc", "html", "latex",
+    "cur_gc", "html", "latex", "html2",
     # others
     "__gc", "__lc",
     "cur_lc", "path",

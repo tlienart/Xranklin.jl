@@ -168,6 +168,7 @@ function process_utils(
     # include_string, all the proper names recuperated here are 'fresh'.
     mdl = utils_module(gc)
     ns  = String.(names(mdl, all=true))
+
     filter!(
         n -> n[1] != '#' &&
              n ∉ ("eval", "include", string(nameof(mdl))),
