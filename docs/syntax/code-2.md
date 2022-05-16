@@ -76,6 +76,15 @@ website
 you might have both `website/A/index.md` and `website/B/index.md` the command `\activate{.}`, which will activate respectively `website/A/Project.toml` and `website/B/Project.toml`.
 Once either `A` or `B` has finished building, the main environment at `website/Project.toml` will be re-activated.
 
+\note{
+  There are Julia-based limitations to switching environments within a single session, and which version of the packages will be used.
+
+  Generally, assume that it is not possible to switch environment with different version compatibility requirements in terms of a given package.
+  So for instance if you hope to use `MyPkg@0.5` on page `A.md` and `MyPkg@0.6` on page `B.md`, things might not work as you hope.
+
+  To keep things easy, ensure that your website environment and page environments don't have version clashes.
+}
+
 
 ## More examples
 

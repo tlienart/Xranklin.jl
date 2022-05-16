@@ -145,3 +145,12 @@ function _hfun_insert(
     # (and it's on the user to check that's fine)
     return read(fpath, String)
 end
+
+
+function hfun_page_content(
+            lc::LocalContext;
+            tohtml::Bool=true
+        )::String
+
+    return html2(getvar(lc, :_generated_body), lc)
+end

@@ -39,6 +39,8 @@ Runs Franklin in the current directory.
     debug (Bool)    : whether to display debugging messages.
     cleanup (Bool)  : whether to destroy the context objects, when debugging
                        this can be useful to explore local & global variables.
+    skip (String[]) : list of rpath to ignore at serve time, this can be useful
+                       if one or more page(s) are buggy or long to execute.
 
 ### LiveServer arguments
 
@@ -69,8 +71,9 @@ function serve(d::String = "";
                                              prefix, prepath),
 
             # Debugging options
-            debug::Bool   = false,
-            cleanup::Bool = true,
+            debug::Bool          = false,
+            cleanup::Bool        = true,
+            skip::Vector{String} = String[],
 
             # LiveServer options
             port::Int    = 8000,
@@ -100,9 +103,13 @@ function serve(d::String = "";
     pf = path(gc, :folder)
     if isfile(pf / "Project.toml")
         Pkg.activate(pf)
+        Pkg.activate(pf)
         Pkg.instantiate()
-        setvar!(gc, :project, pf)
+        setvar!(gc, :project, Pkg.project().path)
     end
+
+    # in case the user explicitly specifies stuff to ignore
+    append!(gc.vars[:ignore], skip)
 
     # if there is a utils.jl that was cached, check if it has changed,
     # if it has, we clear even if clear is false
