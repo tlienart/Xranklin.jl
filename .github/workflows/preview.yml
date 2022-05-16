@@ -8,9 +8,10 @@ on:
 jobs:
   docs-preview:
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - uses: actions/checkout@v2
-      - uses: tlienart/xranklin-build-action@v1.7
+      - uses: tlienart/xranklin-build-action@v3.1
         with:
           # ADJUST THE FOLLOWING
           # where is the site folder, use "" if the repo root is
