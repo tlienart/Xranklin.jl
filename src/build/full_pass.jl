@@ -100,6 +100,7 @@ function full_pass(
                 bk_indep_code[rp] = deepcopy(c.nb_code.indep_code)
             end
         end
+        bk_vars = deepcopy(gc.vars)
 
         # create new GC so that all modules can be reloaded with fresh utils
         # note that this re-creates the gc.children_contexts so effectively it
@@ -108,6 +109,7 @@ function full_pass(
         gc     = DefaultGlobalContext()
 
         set_paths!(gc, folder)
+        merge!(gc.vars, bk_vars)
 
         activate = isfile(folder / "Project.toml") &&
                    (Pkg.project().path != getvar(gc, :project, ""))
@@ -306,11 +308,6 @@ function _md_loop_2(gc, fp, skip_dict, final)
     lc    = gc.children_contexts[rpath]
 
     process_md_file_pass_2(lc, opath, final)
-
-    @show "call in md_loop_2"
-    @show rpath
-    @show opath
-
     adjust_base_url(gc, rpath, opath; final)
     return
 end

@@ -26,8 +26,6 @@ function adjust_base_url(
             final::Bool=false
         )::Nothing
 
-    @show "call to adjust $opath"
-
     #
     # If we're in the final pass, we potentially need to fix all
     # relative links to take the base_url_prefix (prepath) into
@@ -36,11 +34,6 @@ function adjust_base_url(
 
     pp = ifelse(final, sstrip(getvar(lc.glob, :base_url_prefix, ""), '/'), "")
     ap = getvar(lc, :_applied_base_url_prefix, "")
-
-    @show final
-    @show getvar(lc.glob, :base_url_prefix, "")
-    @show pp
-    @show ap
 
     pp == ap && return
 
