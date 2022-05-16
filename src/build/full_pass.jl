@@ -306,6 +306,11 @@ function _md_loop_2(gc, fp, skip_dict, final)
     lc    = gc.children_contexts[rpath]
 
     process_md_file_pass_2(lc, opath, final)
+
+    @show "call in md_loop_2"
+    @show rpath
+    @show opath
+
     adjust_base_url(gc, rpath, opath; final)
     return
 end
