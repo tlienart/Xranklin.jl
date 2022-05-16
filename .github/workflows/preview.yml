@@ -15,7 +15,7 @@ jobs:
         with:
           # ADJUST THE FOLLOWING
           # where is the site folder, use "" if the repo root is
-          SITE_FOLDER: "docs"
+          SITE_FOLDER: "docs/"
           # if it's a personal site, use "" otherwise use the name of the repo
           BASE_URL_PREFIX: "Xranklin.jl"
 
