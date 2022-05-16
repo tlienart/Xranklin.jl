@@ -69,8 +69,10 @@ function hfun_toc(
         write(io, "</li></ol>")
     end
 
+    toc = html2(String(take!(io)), lc)
+
     return html_div(
-            String(take!(io));
+            toc;
             class=getvar(lc, :toc_class, "toc")
         )
 end
