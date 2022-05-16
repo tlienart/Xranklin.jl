@@ -37,6 +37,8 @@ function adjust_base_url(
     pp = ifelse(final, sstrip(getvar(lc.glob, :base_url_prefix, ""), '/'), "")
     ap = getvar(lc, :_applied_base_url_prefix, "")
 
+    @show final
+    @show getvar(lc.glob, :base_url_prefix, "")
     @show pp
     @show ap
 
