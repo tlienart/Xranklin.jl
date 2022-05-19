@@ -111,6 +111,7 @@ function reset_page_context!(
         anchors   = copy(lc.anchors),
         headings  = copy(lc.headings),
         eq_cntr   = eqrefs(lc)["__cntr__"],
+        fn_cntr   = fnrefs(lc)["__cntr__"],
         cell_cntr = getvar(lc, :_auto_cell_counter, 0),
         paginator = getvar(lc, :_paginator_name, ""),
         hasmath   = getvar(lc, :_hasmath),
@@ -121,6 +122,7 @@ function reset_page_context!(
     empty!(lc.anchors)
     empty!(lc.headings)
     eqrefs(lc)["__cntr__"] = 0
+    fnrefs(lc)["__cntr__"] = 0
     setvar!(lc, :_auto_cell_counter, 0)
     setvar!(lc, :_paginator_name, "")
     setvar!(lc, :_hasmath, false)
@@ -149,6 +151,7 @@ function restore_page_context!(
     union!(lc.anchors,  state.anchors)
     merge!(lc.headings, state.headings)
     eqrefs(lc)["__cntr__"] = state.eq_cntr
+    fnrefs(lc)["__cntr__"] = state.fn_cntr
     setvar!(lc, :_auto_cell_counter, state.cell_cntr)
     setvar!(lc, :_paginator_name, state.paginator)
     setvar!(lc, :_hascode, state.hascode)

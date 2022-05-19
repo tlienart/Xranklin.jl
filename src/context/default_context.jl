@@ -223,4 +223,5 @@ SimpleLocalContext(gc::GlobalContext; rpath::String="") =
 
 eqrefs(c::LocalContext)  = c.vars[:_eqrefs]::Dict{String, Int}
 bibrefs(c::LocalContext) = c.vars[:_bibrefs]::Dict{String, String}
+fnrefs(c::LocalContext)  = c.vars[:_fnrefs]::Dict{String, Int}
 refrefs(c::Context)      = c.vars[:_refrefs]::Dict{String,String}

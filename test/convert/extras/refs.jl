@@ -1,5 +1,20 @@
 include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
+@testset "fnrefs" begin
+    lc = X.DefaultLocalContext(; rpath="__local__")
+    s = raw"""
+        A[^a note]
+
+        [^a note]: hello
+        """
+    # counter should be reset
+    for i in 1:5
+        X.reset_page_context!(lc)
+        h = html(s, lc)
+        has(h, """<sup><a href="#fn_a_note">[1]</a></sup>""")
+    end
+end
+
 @testset "eqref counters + nonumber" begin
     h = html(raw"""
         $$ x = 1 \label{label 1}$$

@@ -180,7 +180,6 @@ function dmath(b::Block, lc::LocalContext)
     math_str = content(b)
     anchor   = ""
     cntr     = (eqrefs(lc)["__cntr__"] += 1)
-    @show cntr
     # check if there's a \label{...}, if there is, process it
     # then remove it & do the rest of the processing
     if (label_match = match(MATH_LABEL_PAT, math_str)) !== nothing
@@ -190,7 +189,6 @@ function dmath(b::Block, lc::LocalContext)
         anchor   = html_a(; id, class)
         math_str = replace(math_str, MATH_LABEL_PAT => "") |> subs
         # keep track of the reference + numbering
-        @show (id, cntr)
         eqrefs(lc)[id] = cntr
     end
     # is_recursive(lc) && return "\\[ $(math(math_str, lc)) \\]\n"

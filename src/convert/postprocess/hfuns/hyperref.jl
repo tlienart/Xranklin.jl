@@ -167,7 +167,7 @@ function hfun_link_a(
 
     # footnote case
     if first(ref) == '^'
-        i       = get(getvar(lc, :_fnrefs, Dict{String, Int}()), ref, 0)
+        i       = get(fnrefs(lc), ref, 0)
         id      = chop(ref, head=1, tail=0)
         id_to   = "#fn_$id"
         id_from = "fnref_$id"

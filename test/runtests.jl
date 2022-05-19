@@ -61,7 +61,7 @@ end
 # bug fixes etc
 @testset "Extras" begin
     p = "convert/extras"
-    include(p/"commands.jl")
+    include(p/"refs.jl")
 end
 
 
