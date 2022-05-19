@@ -40,7 +40,7 @@ function hfun_toc(
         if min ≤ level ≤ max
     ]
     isempty(headings) && return ""
-    
+
     base_level = minimum(h.level for h in headings) - 1
     cur_level  = base_level
 

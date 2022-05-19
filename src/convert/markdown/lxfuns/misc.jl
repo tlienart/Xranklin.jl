@@ -31,7 +31,7 @@ function lx_nonumber(
     isempty(c) || return c
     # ----------------------------------
     tohtml || return p[1]
-    eqrefs(lc)["__cntr__"] -= 2
+    eqrefs(lc)["__cntr__"] -= 1
     return "<div class=\"nonumber\">" *
             rhtml(p[1], lc; nop=true) *
            "</div>"

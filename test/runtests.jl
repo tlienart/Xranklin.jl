@@ -58,6 +58,13 @@ end
     p = "convert/lxfuns"
 end
 
+# bug fixes etc
+@testset "Extras" begin
+    p = "convert/extras"
+    include(p/"commands.jl")
+end
+
+
 @testset "build" begin
     p = "build"
     include(p/"paths.jl")

@@ -217,8 +217,10 @@ SimpleLocalContext(gc::GlobalContext; rpath::String="") =
 ##############################################################################
 # These will fail for contexts that haven't been constructed out of Default
 # NOTE: anchors is GC so that anchors can be used across pages.
+# NOTE: we don't use getvar here because we want the actual object (pointer) for
+# in place operations, we don't want a copy! and they're guaranteed to exist if
+# LocalContext comes from DefaultLocalContext.
 
-eqrefs(c::LocalContext)   = getvar(c, :_eqrefs,  Dict{String, Int}())
-bibrefs(c::LocalContext)  = getvar(c, :_bibrefs, Dict{String, String}())
-
-refrefs(c::Context) = c.vars[:_refrefs]::Dict{String,String}
+eqrefs(c::LocalContext)  = c.vars[:_eqrefs]::Dict{String, Int}
+bibrefs(c::LocalContext) = c.vars[:_bibrefs]::Dict{String, String}
+refrefs(c::Context)      = c.vars[:_refrefs]::Dict{String,String}
