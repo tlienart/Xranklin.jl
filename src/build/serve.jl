@@ -103,7 +103,6 @@ function serve(d::String = "";
     pf = path(gc, :folder)
     if isfile(pf / "Project.toml")
         Pkg.activate(pf)
-        Pkg.activate(pf)
         Pkg.instantiate()
         setvar!(gc, :project, Pkg.project().path)
     end

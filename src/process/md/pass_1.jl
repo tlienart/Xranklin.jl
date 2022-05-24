@@ -23,6 +23,8 @@ function process_md_file_pass_1(
             allow_skip::Bool = false
         )::Bool
 
+    crumbs(@fname)
+
     prev_hash     = lc.page_hash[]
     from_cache    = !iszero(prev_hash)
     ignore_cache  = from_cache & getvar(lc, :ignore_cache, false)
@@ -76,8 +78,8 @@ function process_md_file_pass_1(
         setvar!(lc, :_rm_tags,  tags_remove)
         setvar!(lc, :_add_tags, tags_add)
 
-        # Check if the page activated an environment, and if so
-        # re-activate the "main" environment. It shouldn't be
+        # Check if the page activated an environment (see lx_activate), and if
+        # so re-activate the "main" environment. It shouldn't be
         # necessary to instantiate it.
         bkpf = getvar(lc.glob, :project, "")
         if Pkg.project().path != bkpf

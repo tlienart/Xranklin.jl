@@ -17,7 +17,7 @@ function html2(
             only_external::Bool=false
         )::String
 
-    crumbs(@fname)
+    crumbs(@fname, ifelse(only_external, "only external dbb", "everything"))
 
     gc     = lc.glob
     io     = IOBuffer()

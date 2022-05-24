@@ -7,6 +7,8 @@ function process_md_file(
             final::Bool=false
         )::Nothing
 
+    crumbs(@fname)
+
     skip = process_md_file_pass_1(lc, fpath; allow_skip)
     skip && return
 

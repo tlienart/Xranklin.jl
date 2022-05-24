@@ -10,7 +10,7 @@ function resolve_dbb(
             only_external::Bool=false
         )::Int
 
-    crumbs(@fname)
+    crumbs(@fname, (parts[idx].ss |> strip) * ifelse(only_external, " (only ext)", " (all)"))
 
     cb = strip(content(parts[idx]))
 

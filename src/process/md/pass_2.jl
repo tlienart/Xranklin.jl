@@ -9,6 +9,8 @@ function process_md_file_pass_2(
             final::Bool
         )::Nothing
 
+        crumbs(@fname)
+
         ihtml = getvar(lc, :_generated_ihtml, "")
         odir  = dirname(opath)
         cleanup_paginated(odir)

@@ -35,7 +35,7 @@ function _hfun_fill_1(
 
     vname = Symbol(p[1])
     if (v = getvar(lc, vname)) !== nothing
-        return string(v)
+        return repr(v)
     elseif vname in utils_var_names(lc.glob)
         mdl = cur_gc().nb_code.mdl
         return repr(getproperty(mdl, vname))
@@ -64,7 +64,12 @@ function _hfun_fill_2(
     has_var = rpath in keys(gc.children_contexts) &&
               vname in keys(gc.children_contexts[rpath].vars)
     if has_var
-        return repr(gc.children_contexts[rpath].vars[vname])
+        v = getvar(
+                gc.children_contexts[rpath],
+                lc,
+                vname
+            )
+        return repr(v)
     else
         @warn """
             {{fill $vname $rpath}}
