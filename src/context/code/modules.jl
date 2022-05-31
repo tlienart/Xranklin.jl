@@ -179,8 +179,13 @@ modules_setup(c::Context) = begin
                 $F.getvar(__lc, __lc, n, default)
             getgvar(n::Symbol, d=nothing; default=d) =
                 $F.getvar(__gc, __lc, n, default)
-            getvarfrom(n::Symbol, rpath::String, d=nothing; default=d) = begin
-                $F.getvar(__gc.children_contexts[rpath], __lc, n, default)
+            getvarfrom(n::Symbol, rpath::AbstractString, d=nothing; default=d) = begin
+                rp = string(rpath)
+                ks = keys(__gc.children_contexts)
+                if (rp ∉ ks) && (rp * ".md" in ks)
+                    rp *= ".md"
+                end
+                return $F.getvar(__gc.children_contexts[rp], __lc, n, default)
             end
 
             setlvar!(n::Symbol, v) = $F.setvar!(__lc, n, v)

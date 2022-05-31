@@ -100,6 +100,7 @@ function cleanup_paginated(
             odir::String
         )::Nothing
 
+    isdir(odir) || return
     # remove all pagination folders from odir
     # we're looking for folders that look like '/1/', '/2/' etc.
     # so their name is all numeric, does not start with 0 and
