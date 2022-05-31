@@ -24,7 +24,7 @@ function generate_rss(
 
     io   = IOBuffer()
     head = getvar(gc, :rss_layout_head, "")
-    head = html2(read(head, String), gc)
+    head = html2(read(head, String), DefaultLocalContext(gc; rpath="__rss__"))
     head = replace(head, EMPTY_LINE_PAT => "\n")
     write(io, head)
 
