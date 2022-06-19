@@ -175,7 +175,7 @@
         <div id="margin-toc">
           
             <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
-            <div class="toc"><ol><li><a href="#using_packages"> Using packages</a><ol><li><a href="#cache_and_packages"> Cache and packages</a></li><li><a href="#separate_environments"> Separate environments</a></li></ol></li><li><a href="#more_examples"> More examples</a><ol><li><a href="#generating_a_table"> Generating a table</a></li><li><a href="#generating_svg"> Generating SVG</a></li><li><a href="#team_cards"> Team cards</a></li><li><a href="#executing_python_code"> Executing Python code</a></li></ol></li></ol></div>
+            <div class="toc"><ol><li><a href="#using_packages"> Using packages</a><ol><li><a href="#cache_and_packages"> Cache and packages</a></li></ol></li><li><a href="#environments"> Environments</a></li><li><a href="#more_examples"> More examples</a><ol><li><a href="#generating_a_table"> Generating a table</a></li><li><a href="#generating_svg"> Generating SVG</a></li><li><a href="#team_cards"> Team cards</a></li><li><a href="#executing_python_code"> Executing Python code</a></li></ol></li></ol></div>
           
       </div>
     </div>
@@ -205,11 +205,13 @@ new cell (possibly with a <code># hide</code> if you don't want to show it multi
 the page variable <code>ignore_cache</code> to <code>true</code> and restart the server,</li>
 <li>clear the entire site cache.</li>
 </ul>
-<h3 id="separate_environments" ><a href="#separate_environments"> Separate environments</a></h3><p>In some cases you might want different pages to correspond to different environments.
-A way to do this is to have different <code>Project.toml</code> files and activate them with <code>Pkg</code> at
-the top of each page.
-Note that if you do that, you'll have to do it on all pages to guarantee that each page has the correct environment.</p>
-<p>For instance let's say that you want to have two pages <code>/A/</code> and <code>/B/</code> each with their environment, you could structure your folder as:</p>
+<h2 id="environments" ><a href="#environments"> Environments</a></h2><p>It can be convenient to activate a specific environment for the code to be executed on a page.
+The <code>\activate&lbrace;some/path/&rbrace;</code> command allows you to specify a (unix-style) relative path to the website folder where a specific <code>Project.toml</code> file resides.
+Effectvely this will have the same effect as calling <code>Pkg.activate(...)</code> inside a code-cell.</p>
+<p>If you leave the path empty or just use a single <code>.</code> (<code>\activate&lbrace;&rbrace;</code> or <code>\activate&lbrace;.&rbrace;</code>), Franklin will try to activate the directory that contains the page being currently built.</p>
+<p>All evaluated code cells following the <code>activate</code> command will be executed in the relevant environment.
+Whenever a page build is finished, the "parent" environment is re-activated (this would correspond to the website folder environment if there's a <code>Project.toml</code> file there, or just the Main environment otherwise).</p>
+<p>For instance in the following scenario:</p>
 <pre><code class="julia">website
 ├── A
 │   ├── Project.toml
@@ -221,15 +223,14 @@ Note that if you do that, you'll have to do it on all pages to guarantee that ea
 ├── _layout
 ├── ...
 └── index.md</code></pre>
-<p>on both <code>A/index.md</code> and <code>B/index.md</code> (and possibly <code>/index.md</code> if you have code there too),
-you could do</p>
-<pre><code class="markdown">```!
-#hideall
-using Pkg
-Pkg.activate(joinpath(Utils.path(:site), Utils.get_rdir()))
-```</code></pre>
-<p>The function <code>Utils.path(:site)</code> returns the full system path to the website folder and <code>Utils.get_rdir()</code> returns the relative path of the directory containing the current page so that, together, it's the full path to the folder containing the relevant <code>Project.toml</code> file.</p>
-<h2 id="more_examples" ><a href="#more_examples"> More examples</a></h2><p>You'll find here a few toy examples of what can be done with executed
+<p>you might have both <code>website/A/index.md</code> and <code>website/B/index.md</code> the command <code>\activate&lbrace;.&rbrace;</code>, which will activate respectively <code>website/A/Project.toml</code> and <code>website/B/Project.toml</code>.
+Once either <code>A</code> or <code>B</code> has finished building, the main environment at <code>website/Project.toml</code> will be re-activated.</p>
+<fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+
+There are Julia-based limitations to switching environments within a single session, and which version of the packages will be used.Generally, assume that it is not possible to switch environment with different version compatibility requirements in terms of a given package.
+So for instance if you hope to use <code>MyPkg@0.5</code> on page <code>A.md</code> and <code>MyPkg@0.6</code> on page <code>B.md</code>, things might not work as you hope.To keep things easy, ensure that your website environment and page environments don't have version clashes.
+
+</fieldset><h2 id="more_examples" ><a href="#more_examples"> More examples</a></h2><p>You'll find here a few toy examples of what can be done with executed
 code cells, hopefully it will give you some inspiration for what you might do with
 them yourself!</p>
 <h3 id="generating_a_table" ><a href="#generating_a_table"> Generating a table</a></h3><p>In this example we use code to generate the Markdown representation of a table and use
