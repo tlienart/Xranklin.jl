@@ -5,6 +5,8 @@ function process_md_file_pass_i(
             lc::LocalContext
         )::Nothing
 
+    crumbs(@fname)
+
     gc    = lc.glob
     rpath = lc.rpath
 

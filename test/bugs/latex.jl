@@ -23,6 +23,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         \end{align}
         """
     h = html(s)
+    @test true
 end
 
 # -- Nov 29

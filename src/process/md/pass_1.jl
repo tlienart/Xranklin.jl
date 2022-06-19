@@ -23,6 +23,8 @@ function process_md_file_pass_1(
             allow_skip::Bool = false
         )::Bool
 
+    crumbs(@fname)
+
     prev_hash     = lc.page_hash[]
     from_cache    = !iszero(prev_hash)
     ignore_cache  = from_cache & getvar(lc, :ignore_cache, false)
@@ -75,6 +77,14 @@ function process_md_file_pass_1(
         tags_add    = [id => tags_dict[id] for id in setdiff(new_keys, old_keys)]
         setvar!(lc, :_rm_tags,  tags_remove)
         setvar!(lc, :_add_tags, tags_add)
+
+        # Check if the page activated an environment (see lx_activate), and if
+        # so re-activate the "main" environment. It shouldn't be
+        # necessary to instantiate it.
+        bkpf = getvar(lc.glob, :project, "")
+        if Pkg.project().path != bkpf
+            Pkg.activate(bkpf)
+        end
     end
 
     return skip
@@ -103,6 +113,7 @@ function reset_page_context!(
         anchors   = copy(lc.anchors),
         headings  = copy(lc.headings),
         eq_cntr   = eqrefs(lc)["__cntr__"],
+        fn_cntr   = fnrefs(lc)["__cntr__"],
         cell_cntr = getvar(lc, :_auto_cell_counter, 0),
         paginator = getvar(lc, :_paginator_name, ""),
         hasmath   = getvar(lc, :_hasmath),
@@ -113,6 +124,7 @@ function reset_page_context!(
     empty!(lc.anchors)
     empty!(lc.headings)
     eqrefs(lc)["__cntr__"] = 0
+    fnrefs(lc)["__cntr__"] = 0
     setvar!(lc, :_auto_cell_counter, 0)
     setvar!(lc, :_paginator_name, "")
     setvar!(lc, :_hasmath, false)
@@ -141,6 +153,7 @@ function restore_page_context!(
     union!(lc.anchors,  state.anchors)
     merge!(lc.headings, state.headings)
     eqrefs(lc)["__cntr__"] = state.eq_cntr
+    fnrefs(lc)["__cntr__"] = state.fn_cntr
     setvar!(lc, :_auto_cell_counter, state.cell_cntr)
     setvar!(lc, :_paginator_name, state.paginator)
     setvar!(lc, :_hascode, state.hascode)

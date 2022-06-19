@@ -158,13 +158,17 @@ function process_utils(
     setvar!(gc, :_utils_code, utils)
     # update the gc modules to use the utils
     for m in (gc.nb_vars.mdl, gc.nb_code.mdl)
-        include_string(m.Utils, utils_code(gc, m, crop=true))
+        include_string(
+            m.Utils,
+            utils_code(gc, m, crop=true)
+        )
     end
 
     # check names of hfun, lx and vars; since we wiped the module before the
     # include_string, all the proper names recuperated here are 'fresh'.
     mdl = utils_module(gc)
     ns  = String.(names(mdl, all=true))
+
     filter!(
         n -> n[1] != '#' &&
              n ∉ ("eval", "include", string(nameof(mdl))),

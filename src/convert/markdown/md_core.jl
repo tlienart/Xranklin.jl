@@ -191,6 +191,6 @@ function dmath(b::Block, lc::LocalContext)
         # keep track of the reference + numbering
         eqrefs(lc)[id] = cntr
     end
-    is_recursive(lc) && return "\\[ $(math(math_str, lc)) \\]\n"
+    # is_recursive(lc) && return "\\[ $(math(math_str, lc)) \\]\n"
     return "$anchor\\[ $(math(math_str, lc)) \\]\n"
 end

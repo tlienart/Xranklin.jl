@@ -9,29 +9,33 @@ function process_md_file_pass_2(
             final::Bool
         )::Nothing
 
-        ihtml = getvar(lc, :_generated_ihtml, "")
-        odir  = dirname(opath)
-        cleanup_paginated(odir)
+    crumbs(@fname)
 
-        # XXX TODO XXX
-        # skeleton_path = path(:folder) / getvar(lc, :layout_skeleton, "")
-        # if isfile(skeleton_path)
-        # end
+    ihtml = getvar(lc, :_generated_ihtml, "")
+    odir = dirname(opath)
+    cleanup_paginated(odir)
 
-        # ---------------------------------------------------------------------
+    # NOTE: we pre-resolve the html so that we resolve any *external*
+    # command present in the markdown that might control the layout
+    # further. E.g. the hfun_rm_headings in the docs which removes
+    # some headings of the lc
+    body_html = html2(ihtml, lc; only_external=true)
+    setvar!(lc, :_generated_body, body_html)
+
+    skeleton_path = path(:folder) / getvar(lc, :layout_skeleton, "")
+    if isfile(skeleton_path) # --------------------------------------------
+
+        full_page = read(skeleton_path, String)
+
+    else # ----------------------------------------------------------------
 
         pgfoot_path = path(:folder) / getvar(lc, :layout_page_foot, "")
-        page_foot   = isfile(pgfoot_path) ? read(pgfoot_path, String) : ""
+        page_foot = isfile(pgfoot_path) ? read(pgfoot_path, String) : ""
 
-        c_tag   = getvar(lc, :content_tag,   "")
+        c_tag = getvar(lc, :content_tag, "")
         c_class = getvar(lc, :content_class, "")
-        c_id    = getvar(lc, :content_id,    "")
-        body    = ""
-
-        # NOTE: we pre-resolve the html so that we resolve any command present
-        # in the markdown that would control the layout further. E.g. the
-        # hfun_rm_headings in the docs.
-        body_html = html2(ihtml, lc; only_external=true)
+        c_id = getvar(lc, :content_id, "")
+        body = ""
 
         if !isempty(c_tag)
             body = """
@@ -53,35 +57,54 @@ function process_md_file_pass_2(
         foot_path  = path(:folder) / getvar(lc.glob, :layout_foot, "")::String
         full_page *= isfile(foot_path) ? read(foot_path, String) : ""
 
-        # ---------------------------------------------------------------------
-        # process at least once, if there's a pagination token here
-        # the page will be re-processed (see process_paginated)
-        converted_html = html2(full_page, lc)
+    end
 
-        #
-        # PAGINATION
-        # > if there is pagination, we take the file at `opath` and
-        # rewrite it (to resolve PAGINATOR_TOKEN) n+1 time where n is
-        # the number of pages.
-        # For instance if there's a pagination with effectively 3 pages,
-        # then 4 pages will be written (the base page, then pages 1,2,3).
-        #
-        paginator_name = getvar(lc, :_paginator_name)
+    # ---------------------------------------------------------------------
+    # process at least once, if there's a pagination token here
+    # the page will be re-processed (see process_paginated)
+    converted_html = html2(full_page, lc)
 
-        if isempty(paginator_name)
-            open(opath, "w") do outf
-                write(outf, converted_html)
-            end
-            process_not_paginated(lc.glob, lc.rpath, odir, final)
+    #
+    # PAGINATION
+    # > if there is pagination, we take the file at `opath` and
+    # rewrite it (to resolve PAGINATOR_TOKEN) n+1 time where n is
+    # the number of pages.
+    # For instance if there's a pagination with effectively 3 pages,
+    # then 4 pages will be written (the base page, then pages 1,2,3).
+    #
+    paginator_name = getvar(lc, :_paginator_name)
 
-        else
-            process_paginated(lc, full_page, opath, paginator_name, final)
-
+    if isempty(paginator_name)
+        open(opath, "w") do outf
+            write(outf, converted_html)
         end
+        process_not_paginated(lc.glob, lc.rpath, opath, final)
+
+    else
+        process_paginated(lc, full_page, opath, paginator_name, final)
+
+    end
 
     return
 end
 
+
+"""
+    from_paginated(dp)
+
+Check if a dir can be considered as potentially coming from pagination.
+To do this we check that no current local context leads to that dir.
+"""
+function from_paginated(dp)
+    gc = cur_gc()
+    for (rp, lc) in gc.children_contexts
+        op = get_opath(gc, path(gc, :folder) / rp)
+        if occursin(dp, dirname(op))
+            return false
+        end
+    end
+    return true
+end
 
 
 """
@@ -89,19 +112,26 @@ end
 
 Remove all `odir/k/` dirs to avoid ever having spurious such dirs.
 Re-creating these dirs and the file in it takes negligible time.
+
+Note: before removing an `odir/k/` we must verify that it does not
+itself correspond to a separate LC otherwise we may be erasing work
+with a directory that is all numeric (for instance `news/2022/...`).
 """
 function cleanup_paginated(
             odir::String
         )::Nothing
 
+    isdir(odir) || return
     # remove all pagination folders from odir
     # we're looking for folders that look like '/1/', '/2/' etc.
     # so their name is all numeric, does not start with 0 and
-    # it's a directory --> remove
+    # it's a directory and does not correspond to a context --> remove
     for e in readdir(odir)
         if all(isnumeric, e) && first(e) != '0'
             dp = odir / e
-            isdir(dp) && rm(dp, recursive=true)
+            if isdir(dp) && from_paginated(dp)
+                rm(dp, recursive=true)
+            end
         end
     end
     return
@@ -118,7 +148,7 @@ it's not paginated anymore.
 function process_not_paginated(
             gc::GlobalContext,
             rpath::String,
-            odir::String,
+            opath::String,
             final::Bool
         )::Nothing
 
@@ -146,12 +176,12 @@ function process_paginated(
         )::Nothing
 
     iter = getvar(lc, Symbol(paginator_name)) |> collect
-    npp  = getvar(lc, :_paginator_npp, 10)
+    npp = getvar(lc, :_paginator_npp, 10)
     odir = dirname(opath)
 
     # how many pages?
     niter = length(iter)
-    npg   = ceil(Int, niter / npp)
+    npg = ceil(Int, niter / npp)
 
     # repeatedly write the content replacing the PAGINATOR_TOKEN
     for pgi = 1:npg

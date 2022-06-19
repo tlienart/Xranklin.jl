@@ -39,6 +39,8 @@ function hfun_toc(
         for (id, (_, level, text)) in headings
         if min ≤ level ≤ max
     ]
+    isempty(headings) && return ""
+
     base_level = minimum(h.level for h in headings) - 1
     cur_level  = base_level
 
@@ -69,8 +71,10 @@ function hfun_toc(
         write(io, "</li></ol>")
     end
 
+    toc = html2(String(take!(io)), lc)
+
     return html_div(
-            String(take!(io));
+            toc;
             class=getvar(lc, :toc_class, "toc")
         )
 end
@@ -163,7 +167,7 @@ function hfun_link_a(
 
     # footnote case
     if first(ref) == '^'
-        i       = get(getvar(lc, :_fnrefs, Dict{String, Int}()), ref, 0)
+        i       = get(fnrefs(lc), ref, 0)
         id      = chop(ref, head=1, tail=0)
         id_to   = "#fn_$id"
         id_from = "fnref_$id"

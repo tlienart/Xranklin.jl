@@ -12,6 +12,7 @@ const INTERNAL_LXFUNS = Symbol[
     # /misc.jl
     :par,
     :nonumber,
+    :activate,
 ]
 
 

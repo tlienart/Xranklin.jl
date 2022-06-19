@@ -25,12 +25,13 @@ function process_file(
             gc::GlobalContext,
             fpair::Pair{String,String},
             case::Symbol,
-            t::Float64=0.0;             # compare modif time
-            skip_files::Vector{Pair{String, String}}=Pair{String, String}[],
-            initial_pass::Bool=false,
-            final::Bool=false,
-            reproc::Bool=false,
-            allow_skip::Bool=false
+            t::Float64    = 0.0;   # to compare modif time
+            # kwargs
+            skip_files::Vector{Pair{String, String}} = Pair{String, String}[],
+            initial_pass::Bool = false,
+            final::Bool        = false,
+            reproc::Bool       = false,
+            allow_skip::Bool   = false
         )::Nothing
 
     crumbs(@fname, "$(fpair.first) => $(fpair.second)")

@@ -35,7 +35,7 @@ function _hfun_fill_1(
 
     vname = Symbol(p[1])
     if (v = getvar(lc, vname)) !== nothing
-        return string(v)
+        return repr(v)
     elseif vname in utils_var_names(lc.glob)
         mdl = cur_gc().nb_code.mdl
         return repr(getproperty(mdl, vname))
@@ -64,7 +64,12 @@ function _hfun_fill_2(
     has_var = rpath in keys(gc.children_contexts) &&
               vname in keys(gc.children_contexts[rpath].vars)
     if has_var
-        return repr(gc.children_contexts[rpath].vars[vname])
+        v = getvar(
+                gc.children_contexts[rpath],
+                lc,
+                vname
+            )
+        return repr(v)
     else
         @warn """
             {{fill $vname $rpath}}
@@ -146,17 +151,11 @@ function _hfun_insert(
     return read(fpath, String)
 end
 
-"""
-    hfun_page_content()
-Insert the converted page content. This is useful in the context of the
-skeleton layout (see also `_process_md_file_html` and `:layout_skeleton`).
-Other than that context, the user should probably not use it.
-"""
+
 function hfun_page_content(
             lc::LocalContext;
             tohtml::Bool=true
         )::String
 
-    tohtml && return getvar(lc, :_generated_html)
-    return getvar(lc, :_generated_latex)
+    return html2(getvar(lc, :_generated_body), lc)
 end

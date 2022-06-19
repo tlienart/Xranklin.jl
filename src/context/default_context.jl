@@ -30,9 +30,9 @@ const DefaultGlobalVars = Vars(
     :date_shortmonths => String[],
     # File management
     :ignore_base      => StringOrRegex[
-                               r"(?:.*?)\.DS_Store$", ".gitignore", "node_modules/",
-                               "LICENSE.md", "README.md"
-                               ],
+                           r"(?:.*?)\.DS_Store$", ".gitignore", "node_modules/",
+                           "LICENSE.md", "README.md"
+                         ],
     :ignore           => StringOrRegex[],
     :keep_path        => String[],
     :robots_disallow  => String[],
@@ -112,9 +112,9 @@ const DefaultLocalVars = Vars(
     :date         => Date(1),
     :lang         => "julia",
     :tags         => String[],
-    # :prerender    => true,
     :slug         => "",
     :ignore_cache => false,
+    :project      => "",
     # toc
     :mintoclevel => 1,
     :maxtoclevel => 6,
@@ -168,6 +168,7 @@ const DefaultLocalVars = Vars(
     :_applied_base_url_prefix => "",
     # Generated HTML (when skipping, allows to recover previously generated)
     :_generated_ihtml  => "",
+    :_generated_body   => "",
     :_rm_anchors       => Set{String}(),
     :_rm_tags          => Set{String}(),
     :_add_tags         => Vector{Pair{String}}(),
@@ -193,6 +194,7 @@ function DefaultGlobalContext()
             LxDefs(),
             alias=copy(DefaultGlobalVarsAlias)
          )
+    setvar!(gc, :project, Pkg.project().path)
     set_current_global_context(gc)
 end
 
@@ -216,8 +218,11 @@ SimpleLocalContext(gc::GlobalContext; rpath::String="") =
 ##############################################################################
 # These will fail for contexts that haven't been constructed out of Default
 # NOTE: anchors is GC so that anchors can be used across pages.
+# NOTE: we don't use getvar here because we want the actual object (pointer) for
+# in place operations, we don't want a copy! and they're guaranteed to exist if
+# LocalContext comes from DefaultLocalContext.
 
-eqrefs(c::LocalContext)   = getvar(c, :_eqrefs,  Dict{String, Int}())
-bibrefs(c::LocalContext)  = getvar(c, :_bibrefs, Dict{String, String}())
-
-refrefs(c::Context) = c.vars[:_refrefs]::Dict{String,String}
+eqrefs(c::LocalContext)  = c.vars[:_eqrefs]::Dict{String, Int}
+bibrefs(c::LocalContext) = c.vars[:_bibrefs]::Dict{String, String}
+fnrefs(c::LocalContext)  = c.vars[:_fnrefs]::Dict{String, Int}
+refrefs(c::Context)      = c.vars[:_refrefs]::Dict{String,String}

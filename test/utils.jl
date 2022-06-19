@@ -69,3 +69,5 @@ function lc_with_utils(utils="")
     lc = X.DefaultLocalContext(gc; rpath="loc")
     return lc
 end
+
+has(h, p) = @test occursin(p, h)

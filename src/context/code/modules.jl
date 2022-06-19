@@ -117,7 +117,7 @@ attached.
 """
 const UTILS_UTILS = [
     # from module
-    "cur_gc", "html", "latex",
+    "cur_gc", "html", "latex", "html2",
     # others
     "__gc", "__lc",
     "cur_lc", "path",
@@ -179,8 +179,13 @@ modules_setup(c::Context) = begin
                 $F.getvar(__lc, __lc, n, default)
             getgvar(n::Symbol, d=nothing; default=d) =
                 $F.getvar(__gc, __lc, n, default)
-            getvarfrom(n::Symbol, rpath::String, d=nothing; default=d) = begin
-                $F.getvar(__gc.children_contexts[rpath], __lc, n, default)
+            getvarfrom(n::Symbol, rpath::AbstractString, d=nothing; default=d) = begin
+                rp = string(rpath)
+                ks = keys(__gc.children_contexts)
+                if (rp ∉ ks) && (rp * ".md" in ks)
+                    rp *= ".md"
+                end
+                return $F.getvar(__gc.children_contexts[rp], __lc, n, default)
             end
 
             setlvar!(n::Symbol, v) = $F.setvar!(__lc, n, v)
@@ -191,10 +196,10 @@ modules_setup(c::Context) = begin
             globvar(n, d=nothing; default=d)    = getgvar(Symbol(n); default)
             pagevar(s, n, d=nothing; default=d) = getvarfrom(Symbol(n), s; default)
 
-            get_page_tags()  = $F.get_page_tags(__lc)
-            get_page_tags(a) = $F.get_page_tags(a)
-            get_all_tags()   = $F.get_all_tags(__gc, __lc)
-            get_rpath()      = $F.get_rpath(__lc)
+            get_page_tags()   = $F.get_page_tags(__lc)
+            get_page_tags(rp) = $F.get_page_tags(rp)
+            get_all_tags()    = $F.get_all_tags(__gc, __lc)
+            get_rpath()       = $F.get_rpath(__lc)
             """
 
         # Utils module

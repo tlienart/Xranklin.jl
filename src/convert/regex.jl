@@ -71,6 +71,3 @@ const HTML_COMMENT_PAT = r"<!--(.|\n)*?-->"
 
 "Simple empty line removal (see rss)."
 const EMPTY_LINE_PAT = r"\n[\s\n]*\n"
-
-"Page content marker."
-const PAGE_CONTENT_PAT = r"\{\{\s*page_content\s*\}\}"

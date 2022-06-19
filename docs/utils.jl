@@ -26,6 +26,7 @@ html_show(f::Foo) = "<strong>Foo: $(f.x)</strong>"
 struct Baz
     z::Int
 end
+newbaz(z) = Baz(z)
 
 ####################################
 # Layout
@@ -48,14 +49,17 @@ function hfun_navmenu()
         # subs items
         for s in subs
             loc   = "$name/$s"
-            title = getvarfrom(:menu_title, loc * ".md")
-            write(io, """
-                <li class="pure-menu-item">
-                    <a href="/$loc/" class="pure-menu-link">
-                        $title
-                    </a>
-                </li>
-                """)
+            rloc  = loc * ".md"
+            if rloc in keys(cur_gc().children_contexts)
+                title = getvarfrom(:menu_title, loc * ".md")
+                write(io, """
+                    <li class="pure-menu-item">
+                        <a href="/$loc/" class="pure-menu-link">
+                            $title
+                        </a>
+                    </li>
+                    """)
+            end
         end
 
         # end of list
@@ -110,3 +114,22 @@ function html_show(p::UnicodePlots.Plot)
     end
     return ""
 end
+
+
+####################################
+# Utils examples lxfun/envfun/hfun
+####################################
+function lx_exlx(p::Vector{String})
+    # {hello}{foo}
+    return "<i>$(uppercase(p[1]))</i> <b>$(uppercasefirst(p[2]))</b>"
+end
+function lx_exlx2()
+    return "<s>hello</s>"
+end
+function lx_exlx3()
+    return "<span style='color:blue'>{{header}}</span>"
+end
+
+# function env_exenv(p::Vector{String})
+#
+# end

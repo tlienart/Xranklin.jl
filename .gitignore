@@ -6,3 +6,5 @@ docs/__*
 test/_demo/__*
 test/abc/__*
 test/abc_min/__*
+test/abc_min_skel/__*
+test/abc_utils/__*

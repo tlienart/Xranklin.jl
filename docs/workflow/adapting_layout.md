@@ -51,8 +51,8 @@ and in your `head.html` you might have something like
 ...
 ```
 
-Of course that's a simplistic example but page variables are very handy to
-control the layout of your website.
+Of course that's a simplistic example, but it should hopefully demonstrate that
+page variables can be very handy to control the layout of your website.
 
 
 

@@ -8,13 +8,14 @@ on:
 jobs:
   docs-preview:
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - uses: actions/checkout@v2
-      - uses: tlienart/xranklin-build-action@v1.7
+      - uses: tlienart/xranklin-build-action@v3.2
         with:
           # ADJUST THE FOLLOWING
           # where is the site folder, use "" if the repo root is
-          SITE_FOLDER: "docs"
+          SITE_FOLDER: "docs/"
           # if it's a personal site, use "" otherwise use the name of the repo
           BASE_URL_PREFIX: "Xranklin.jl"
 

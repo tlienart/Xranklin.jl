@@ -62,15 +62,15 @@ which ones do.
 """
 function full_pass(
             gc::GlobalContext,
-            watched_files::Dict{Symbol, TrackedFiles};
+            watched_files::Dict{Symbol,TrackedFiles};
             # kwargs
-            skip_files::Vector{Pair{String, String}}=Pair{String, String}[],
-            initial_pass::Bool   = false,
-            layout_changed::Bool = false,
-            config_changed::Bool = false,
-            utils_changed::Bool  = false,
-            final::Bool          = false
-            )::Nothing
+            skip_files::Vector{Pair{String,String}}=Pair{String,String}[],
+            initial_pass::Bool=false,
+            layout_changed::Bool=false,
+            config_changed::Bool=false,
+            utils_changed::Bool=false,
+            final::Bool=false
+        )::Nothing
 
     setvar!(gc, :_final, final)
 
@@ -94,20 +94,32 @@ function full_pass(
     if utils_changed
         # save code blocks marked as independent from context to avoid having
         # to reload them.
-        bk_indep_code = Dict{String, Dict{String, CodeRepr}}()
+        bk_indep_code = Dict{String,Dict{String,CodeRepr}}()
         for (rp, c) in gc.children_contexts
             if !isempty(c.nb_code.indep_code)
                 bk_indep_code[rp] = deepcopy(c.nb_code.indep_code)
             end
         end
+        bk_vars = deepcopy(gc.vars)
 
         # create new GC so that all modules can be reloaded with fresh utils
         # note that this re-creates the gc.children_contexts so effectively it
         # refreshes all contexts.
         folder = path(gc, :folder)
-        gc     = DefaultGlobalContext()
+        gc = DefaultGlobalContext()
 
         set_paths!(gc, folder)
+        merge!(gc.vars, bk_vars)
+
+        activate = isfile(folder / "Project.toml") &&
+                   (Pkg.project().path != getvar(gc, :project, ""))
+
+        if activate
+            Pkg.activate(folder)
+            Pkg.instantiate()
+            setvar!(gc, :project, Pkg.project().path)
+        end
+
         process_utils(gc)
         process_config(gc)
 
@@ -130,12 +142,12 @@ function full_pass(
     append!(skip_files, [
         path(:folder) => "config.md",
         path(:folder) => "utils.jl"
-        ]
+    ]
     )
 
     # check that there's an index page (this is what the server will
     # expect to point to)
-    hasindex = isfile(path(:folder) / "index.md")   ||
+    hasindex = isfile(path(:folder) / "index.md") ||
                isfile(path(:folder) / "index.html")
     if !hasindex
         @warn """
@@ -147,9 +159,10 @@ function full_pass(
 
     # ---------------------------------------------
     println("")
-    start = time(); @info """
-        💡 $(hl("starting the full pass", :yellow))
-        """
+    start = time()
+    @info """
+💡 $(hl("starting the full pass", :yellow))
+"""
     println("")
     # ---------------------------------------------
 
@@ -174,15 +187,16 @@ function full_pass(
 
     # ---------------------------------------------------------
     println("")
-    δt = time() - start; @info """
-        💡 $(hl("full pass done", :yellow)) $(hl(time_fmt(δt), :light_red))
-        """
+    δt = time() - start
+    @info """
+💡 $(hl("full pass done", :yellow)) $(hl(time_fmt(δt), :light_red))
+"""
     println("")
     # ---------------------------------------------------------
     return
 end
 
-full_pass(watched_files::Dict{Symbol, TrackedFiles}; kw...) =
+full_pass(watched_files::Dict{Symbol,TrackedFiles}; kw...) =
     full_pass(cur_gc(), watched_files, kw...)
 
 
@@ -263,7 +277,7 @@ function _md_loop_1(gc, fp, skip_dict, allow_skip)
 
     fpath = joinpath(fp...)
     rpath = get_rpath(gc, fpath)
-    lc    = gc.children_contexts[rpath]
+    lc = gc.children_contexts[rpath]
 
     skip_dict[fp] = process_md_file_pass_1(lc, fpath; allow_skip)
     return
@@ -293,23 +307,24 @@ function _md_loop_2(gc, fp, skip_dict, final)
     fpath = joinpath(fp...)
     rpath = get_rpath(gc, fpath)
     opath = get_opath(gc, fpath)
-    lc    = gc.children_contexts[rpath]
+    lc = gc.children_contexts[rpath]
 
     process_md_file_pass_2(lc, opath, final)
     adjust_base_url(gc, rpath, opath; final)
+
     return
 end
 
 
 function full_pass_markdown(
-            gc,
-            watched;
-            skip_files = Pair{String, String}[],
-            allow_skip = false,
-            final      = false
-        )::Nothing
+    gc,
+    watched;
+    skip_files=Pair{String,String}[],
+    allow_skip=false,
+    final=false
+    )::Nothing
 
-    n_watched   = length(watched)
+    n_watched = length(watched)
     use_threads = env(:use_threads)
     iszero(n_watched) && return
     allocate_children_contexts(gc, watched)
@@ -325,7 +340,7 @@ function full_pass_markdown(
     # ----------------------------------------------------------------------
     @info "> Full Pass [MD/1]"
     if use_threads
-        entries  = dic2vec(watched)
+        entries = dic2vec(watched)
         info_thread(length(entries))
         Threads.@threads for (fp, _) in entries
             _md_loop_1(gc, fp, skip_dict, allow_skip)
@@ -345,7 +360,7 @@ function full_pass_markdown(
     # now all page variables are uncovered and hfuns can be resolved
     # without ambiguities. Assemble layout and iHTML, call html2 and write
     if use_threads
-        entries  = dic2vec(watched)
+        entries = dic2vec(watched)
         info_thread(length(entries))
         Threads.@threads for (fp, _) in entries
             _md_loop_2(gc, fp, skip_dict, final)
@@ -355,6 +370,7 @@ function full_pass_markdown(
             _md_loop_2(gc, fp, skip_dict, final)
         end
     end
+
     return
 end
 
@@ -371,7 +387,7 @@ function _html_loop(gc, fp, skip_files, final)
     fpath = joinpath(fp...)
     opath = get_opath(gc, fpath)
     rpath = get_rpath(gc, fpath)
-    lc    = gc.children_contexts[rpath]
+    lc = gc.children_contexts[rpath]
 
     process_html_file(lc, fpath, opath, final)
     return
@@ -379,12 +395,12 @@ end
 
 
 function full_pass_html(
-            gc, watched;
-            skip_files = Pair{String, String}[],
-            final      = false
-            )::Nothing
+    gc, watched;
+    skip_files=Pair{String,String}[],
+    final=false
+)::Nothing
 
-    n_watched   = length(watched)
+    n_watched = length(watched)
     use_threads = env(:use_threads)
     iszero(n_watched) && return
     allocate_children_contexts(gc, watched)
@@ -406,9 +422,9 @@ end
 
 
 function full_pass_other(
-            gc, watched;
-            skip_files = Pair{String, String}[]
-        )::Nothing
+    gc, watched;
+    skip_files=Pair{String,String}[]
+)::Nothing
 
     n_watched = length(watched)
     iszero(n_watched) && return
@@ -419,8 +435,8 @@ function full_pass_other(
     Threads.@threads for (fp, _) in dic2vec(watched)
         fpath = joinpath(fp...)
         if fp in skip_files ||
-             startswith(fpath, path(:layout)) ||
-             startswith(fpath, path(:rss))
+           startswith(fpath, path(:layout)) ||
+           startswith(fpath, path(:rss))
 
             continue
         end

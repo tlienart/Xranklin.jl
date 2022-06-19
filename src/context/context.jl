@@ -70,21 +70,22 @@ conversion is happening.
 
 ## Fields
 
-    glob:             the parent context
-    vars:             a dictionary of the local variables
-    lxdefs:           a dictionary of the local lx-definitions
-    headings:         a dictionary of the current page headings
-    rpath:            relative path to the page with this local context
-                       this includes the extension so e.g. foo/bar/baz.md
-    anchors:          set of anchor ids defined on the page
-    is_recursive:     whether we're in a recursive context
-    is_math:          whether we're recursing in a math environment
-    req_vars:         mapping {pg => set of vars requested from pg}
-    req_lxdefs:       set of lxdefs names requested by the page from global
-    vars_aliases:     other accepted names for default variables
-    nb_vars:          notebook associated with markdown defs
-    nb_code:          notebook associated with the page code
-    to_trigger:       set of dependent pages to trigger after updating LC
+    glob          : the parent context
+    vars          : a dictionary of the local variables
+    lxdefs        : a dictionary of the local lx-definitions
+    headings      : a dictionary of the current page headings
+    rpath         : relative path to the page with this local context
+                     this includes the extension so e.g. foo/bar/baz.md.
+                     It is system dependent (so not necessarily unix).
+    anchors       : set of anchor ids defined on the page
+    is_recursive  : whether we're in a recursive context
+    is_math       : whether we're recursing in a math environment
+    req_vars      : mapping {pg => set of vars requested from pg}
+    req_lxdefs    : set of lxdefs names requested by the page from global
+    vars_aliases  : other accepted names for default variables
+    nb_vars       : notebook associated with markdown defs
+    nb_code       : notebook associated with the page code
+    to_trigger    : set of dependent pages to trigger after updating LC
 
 """
 struct LocalContext <: Context

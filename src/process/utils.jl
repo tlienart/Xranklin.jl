@@ -25,6 +25,7 @@ function adjust_base_url(
             opath::String;
             final::Bool=false
         )::Nothing
+
     #
     # If we're in the final pass, we potentially need to fix all
     # relative links to take the base_url_prefix (prepath) into
@@ -33,6 +34,7 @@ function adjust_base_url(
 
     pp = ifelse(final, sstrip(getvar(lc.glob, :base_url_prefix, ""), '/'), "")
     ap = getvar(lc, :_applied_base_url_prefix, "")
+
     pp == ap && return
 
     # ap will be empty if the page has not been skipped
