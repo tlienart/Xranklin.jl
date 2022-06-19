@@ -194,6 +194,7 @@ function DefaultGlobalContext()
             LxDefs(),
             alias=copy(DefaultGlobalVarsAlias)
          )
+    setvar!(gc, :project, Pkg.project().path)
     set_current_global_context(gc)
 end
 
