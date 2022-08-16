@@ -189,8 +189,8 @@ function full_pass(
     println("")
     δt = time() - start
     @info """
-💡 $(hl("full pass done", :yellow)) $(hl(time_fmt(δt), :light_red))
-"""
+        💡 $(hl("full pass done", :yellow)) $(hl(time_fmt(δt), :light_red))
+        """
     println("")
     # ---------------------------------------------------------
     return
