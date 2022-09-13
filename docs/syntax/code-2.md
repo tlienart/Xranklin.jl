@@ -73,7 +73,7 @@ website
 └── index.md
 ```
 
-you might have both `website/A/index.md` and `website/B/index.md` the command `\activate{.}`, which will activate respectively `website/A/Project.toml` and `website/B/Project.toml`.
+you might have both `website/A/index.md` and `website/B/index.md` with the command `\activate{.}`, which will activate respectively `website/A/Project.toml` and `website/B/Project.toml`.
 Once either `A` or `B` has finished building, the main environment at `website/Project.toml` will be re-activated.
 
 \note{
