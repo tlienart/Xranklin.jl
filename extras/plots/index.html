@@ -516,7 +516,8 @@ PGFPlots.Axis(
   xlabel = L&quot;x&quot;,
   ylabel = L&quot;f(x) = \sin(\exp(x))\mathrm&lbrace;sinc&rbrace;(x)&quot;
 )</code></pre>
-<div class="code-output"><img class="code-figure" src="/Xranklin.jl/assets/extras/plots/figs-html/__autofig_10160799455027762769.svg">
+<div class="code-output"><pre class="fig-stdout"><code class="code-stdout language-plaintext">WARNING: could not import TikzPictures.@L_mstr into PGFPlots
+</code></pre><img class="code-figure" src="/Xranklin.jl/assets/extras/plots/figs-html/__autofig_10160799455027762769.svg">
 </div></fieldset>
 
 </div><h3 id="pgfplots_with_ga" ><a href="#pgfplots_with_ga"> PGFPlots with GA</a></h3><p>In order to use this package on GA you need a minimal texlive installation.
@@ -664,7 +665,7 @@ p=PlotlyJS.plot(
 )
 opath = mkpath(joinpath(Utils.path(:site), &quot;assets&quot;, &quot;plotlyfigs&quot;))
 PlotlyJS.savejson(p, joinpath(opath, &quot;ex.json&quot;));</code></pre>
-<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: Failed to precompile PlotlyJS [f0f68f2c-4968-5e81-91da-67840de0976a] to /home/runner/.julia/compiled/v1.7/PlotlyJS/jl_Jqv69i.
+<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: Failed to precompile PlotlyJS [f0f68f2c-4968-5e81-91da-67840de0976a] to /home/runner/.julia/compiled/v1.7/PlotlyJS/jl_DdwgxD.
 Stacktrace:
   [1] error(s::String)
     @ Base ./error.jl:33
@@ -685,7 +686,7 @@ Stacktrace:
   [9] include_string
     @ ./loading.jl:1180 [inlined]
  [10] #61
-    @ ~/.julia/packages/Xranklin/yOWnN/src/context/code/notebook_code.jl:178 [inlined]
+    @ ~/.julia/packages/Xranklin/aymG1/src/context/code/notebook_code.jl:178 [inlined]
  [11] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#61#62"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, Base.PipeEndpoint, Base.PipeEndpoint})()
     @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:118
  [12] with_logstate(f::Function, logstate::Any)
@@ -697,11 +698,11 @@ Stacktrace:
  [15] capture
     @ ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:75 [inlined]
  [16] _eval_code_cell(mdl::Module, code::String, cell_name::String)
-    @ Xranklin ~/.julia/packages/Xranklin/yOWnN/src/context/code/notebook_code.jl:177
+    @ Xranklin ~/.julia/packages/Xranklin/aymG1/src/context/code/notebook_code.jl:177
  [17] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/yOWnN/src/context/code/notebook_code.jl:114
+    @ Xranklin ~/.julia/packages/Xranklin/aymG1/src/context/code/notebook_code.jl:114
  [18] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
-    @ Xranklin ~/.julia/packages/Xranklin/yOWnN/src/convert/markdown/rules/code.jl:242</code></pre></div><div id="foobar"></div>
+    @ Xranklin ~/.julia/packages/Xranklin/aymG1/src/convert/markdown/rules/code.jl:242</code></pre></div><div id="foobar"></div>
 
 <script>
 graphDiv = document.getElementById("foobar");
