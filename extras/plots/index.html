@@ -665,44 +665,48 @@ p=PlotlyJS.plot(
 )
 opath = mkpath(joinpath(Utils.path(:site), &quot;assets&quot;, &quot;plotlyfigs&quot;))
 PlotlyJS.savejson(p, joinpath(opath, &quot;ex.json&quot;));</code></pre>
-<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: Failed to precompile PlotlyJS [f0f68f2c-4968-5e81-91da-67840de0976a] to /home/runner/.julia/compiled/v1.7/PlotlyJS/jl_DdwgxD.
+<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: Failed to precompile PlotlyJS [f0f68f2c-4968-5e81-91da-67840de0976a] to /home/runner/.julia/compiled/v1.8/PlotlyJS/jl_txXIFY.
 Stacktrace:
   [1] error(s::String)
-    @ Base ./error.jl:33
-  [2] compilecache(pkg::Base.PkgId, path::String, internal_stderr::IO, internal_stdout::IO, ignore_loaded_modules::Bool)
-    @ Base ./loading.jl:1466
-  [3] compilecache(pkg::Base.PkgId, path::String)
-    @ Base ./loading.jl:1410
+    @ Base ./error.jl:35
+  [2] compilecache(pkg::Base.PkgId, path::String, internal_stderr::IO, internal_stdout::IO, keep_loaded_modules::Bool)
+    @ Base ./loading.jl:1707
+  [3] compilecache
+    @ ./loading.jl:1651 [inlined]
   [4] _require(pkg::Base.PkgId)
-    @ Base ./loading.jl:1120
-  [5] require(uuidkey::Base.PkgId)
-    @ Base ./loading.jl:1013
-  [6] require(into::Module, mod::Symbol)
-    @ Base ./loading.jl:997
-  [7] eval
-    @ ./boot.jl:373 [inlined]
-  [8] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
-    @ Base ./loading.jl:1196
-  [9] include_string
+    @ Base ./loading.jl:1337
+  [5] _require_prelocked(uuidkey::Base.PkgId)
+    @ Base ./loading.jl:1200
+  [6] macro expansion
     @ ./loading.jl:1180 [inlined]
- [10] #61
-    @ ~/.julia/packages/Xranklin/aymG1/src/context/code/notebook_code.jl:178 [inlined]
- [11] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#61#62"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, Base.PipeEndpoint, Base.PipeEndpoint})()
+  [7] macro expansion
+    @ ./lock.jl:223 [inlined]
+  [8] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1144
+  [9] eval
+    @ ./boot.jl:368 [inlined]
+ [10] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
+    @ Base ./loading.jl:1428
+ [11] include_string
+    @ ./loading.jl:1412 [inlined]
+ [12] #61
+    @ ~/.julia/packages/Xranklin/qkqx0/src/context/code/notebook_code.jl:178 [inlined]
+ [13] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#61#62"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, Base.PipeEndpoint, Base.PipeEndpoint})()
     @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:118
- [12] with_logstate(f::Function, logstate::Any)
+ [14] with_logstate(f::Function, logstate::Any)
     @ Base.CoreLogging ./logging.jl:511
- [13] with_logger
+ [15] with_logger
     @ ./logging.jl:623 [inlined]
- [14] capture(f::Xranklin.var"#61#62"{Module, String}; rethrow::Type, color::Bool)
+ [16] capture(f::Xranklin.var"#61#62"{Module, String}; rethrow::Type, color::Bool)
     @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:116
- [15] capture
-    @ ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:75 [inlined]
- [16] _eval_code_cell(mdl::Module, code::String, cell_name::String)
-    @ Xranklin ~/.julia/packages/Xranklin/aymG1/src/context/code/notebook_code.jl:177
- [17] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/aymG1/src/context/code/notebook_code.jl:114
- [18] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
-    @ Xranklin ~/.julia/packages/Xranklin/aymG1/src/convert/markdown/rules/code.jl:242</code></pre></div><div id="foobar"></div>
+ [17] capture
+    @ ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:72 [inlined]
+ [18] _eval_code_cell(mdl::Module, code::String, cell_name::String)
+    @ Xranklin ~/.julia/packages/Xranklin/qkqx0/src/context/code/notebook_code.jl:177
+ [19] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/qkqx0/src/context/code/notebook_code.jl:114
+ [20] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
+    @ Xranklin ~/.julia/packages/Xranklin/qkqx0/src/convert/markdown/rules/code.jl:242</code></pre></div><div id="foobar"></div>
 
 <script>
 graphDiv = document.getElementById("foobar");
