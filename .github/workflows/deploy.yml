@@ -14,7 +14,7 @@ jobs:
       - uses: tlienart/xranklin-build-action@v3.3
         with:
           # ADJUST THE FOLLOWING
-          # where is the site folder, use "" if the repo root is
+          # where is the site folder, use "" if the root repo is.
           SITE_FOLDER: "docs/"
           # if it's a personal site, use "" otherwise use the name of the repo
           BASE_URL_PREFIX: "Xranklin.jl"
