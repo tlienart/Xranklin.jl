@@ -665,7 +665,7 @@ p=PlotlyJS.plot(
 )
 opath = mkpath(joinpath(Utils.path(:site), &quot;assets&quot;, &quot;plotlyfigs&quot;))
 PlotlyJS.savejson(p, joinpath(opath, &quot;ex.json&quot;));</code></pre>
-<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: Failed to precompile PlotlyJS [f0f68f2c-4968-5e81-91da-67840de0976a] to /home/runner/.julia/compiled/v1.8/PlotlyJS/jl_txXIFY.
+<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: Failed to precompile PlotlyJS [f0f68f2c-4968-5e81-91da-67840de0976a] to /home/runner/.julia/compiled/v1.8/PlotlyJS/jl_4uI288.
 Stacktrace:
   [1] error(s::String)
     @ Base ./error.jl:35
@@ -690,7 +690,7 @@ Stacktrace:
  [11] include_string
     @ ./loading.jl:1412 [inlined]
  [12] #61
-    @ ~/.julia/packages/Xranklin/qkqx0/src/context/code/notebook_code.jl:178 [inlined]
+    @ ~/.julia/packages/Xranklin/xl7Sn/src/context/code/notebook_code.jl:178 [inlined]
  [13] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#61#62"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, Base.PipeEndpoint, Base.PipeEndpoint})()
     @ IOCapture ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:118
  [14] with_logstate(f::Function, logstate::Any)
@@ -702,15 +702,15 @@ Stacktrace:
  [17] capture
     @ ~/.julia/packages/IOCapture/sXY71/src/IOCapture.jl:72 [inlined]
  [18] _eval_code_cell(mdl::Module, code::String, cell_name::String)
-    @ Xranklin ~/.julia/packages/Xranklin/qkqx0/src/context/code/notebook_code.jl:177
+    @ Xranklin ~/.julia/packages/Xranklin/xl7Sn/src/context/code/notebook_code.jl:177
  [19] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/qkqx0/src/context/code/notebook_code.jl:114
+    @ Xranklin ~/.julia/packages/Xranklin/xl7Sn/src/context/code/notebook_code.jl:114
  [20] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
-    @ Xranklin ~/.julia/packages/Xranklin/qkqx0/src/convert/markdown/rules/code.jl:242</code></pre></div><div id="foobar"></div>
+    @ Xranklin ~/.julia/packages/Xranklin/xl7Sn/src/convert/markdown/rules/code.jl:242</code></pre></div><div id="foobar"></div>
 
 <script>
 graphDiv = document.getElementById("foobar");
-plotlyPromise = PlotlyJS_json(graphDiv, "/Xranklin.jlassets/plotlyfigs/ex.json")
+plotlyPromise = PlotlyJS_json(graphDiv, "/Xranklin.jl/assets/plotlyfigs/ex.json")
 </script></fieldset>
 
 </div><h3 id="plotlyjs_with_ga" ><a href="#plotlyjs_with_ga"> PlotlyJS with GA</a></h3><p>It doesn't require anything specific in your GA. Make sure the Javascript library is in your <code>/libs/</code> though, along with the PlotlyJS package in the site environment.</p>
