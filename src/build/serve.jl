@@ -1,7 +1,7 @@
 """
-    serve(; kw...)
+    serve(d; kw...)
 
-Runs Franklin in the current directory.
+Runs Franklin in the directory `d` (current directory if unspecified).
 
 ## Keyword Arguments
 
@@ -100,9 +100,10 @@ function serve(d::String = "";
     set_paths!(gc, folder)
 
     # activate the folder environment
-    pf = path(gc, :folder)
-    if isfile(pf / "Project.toml")
-        Pkg.activate(pf)
+    old_project    = Pkg.project().path
+    current_folder = path(gc, :folder)
+    if isfile(current_folder / "Project.toml")
+        Pkg.activate(current_folder)
         Pkg.instantiate()
         setvar!(gc, :project, Pkg.project().path)
     end
@@ -184,7 +185,7 @@ function serve(d::String = "";
     # > unlink global and local context so that the gc can destroy them.
     if cleanup
         start = time()
-        @info "🗑️ cleaning up all objects"
+        @info "🗑️ cleaning up all objects..."
         parent_module(wipe=true)
         setenv!(:cur_global_ctx, nothing)
         setenv!(:cur_local_ctx,  nothing)
@@ -193,8 +194,11 @@ function serve(d::String = "";
             """
         println("")
     end
-    # > deactivate env
-    Pkg.activate()
+    # > deactivate env if changed
+    if Pkg.project().path != old_project
+        @info "♻️ reactivating your previous environment..."
+        Pkg.activate(old_project)
+    end
     ENV["JULIA_DEBUG"] = ""
     return
 end

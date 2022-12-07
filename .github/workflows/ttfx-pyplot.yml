@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # =======================================================================
       # -- deps --
@@ -69,7 +69,7 @@ jobs:
       - name: Install Julia
         uses: julia-actions/setup-julia@v1
         with:
-          version: 1.7
+          version: 1.8
 
       - name: Building website 🚧
         run: ${{ env.BUILD }} julia -e '

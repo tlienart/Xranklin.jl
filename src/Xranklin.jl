@@ -41,6 +41,8 @@ normalize_uri(s) = URIs.escapeuri(s, issafe)
 export serve, build, html, html2, latex
 export cur_gc
 
+export toy_example
+
 # XXX attach?
 # export attach
 # export auto_cell_name
@@ -189,5 +191,6 @@ include("$p/watch.jl")
 include("$p/full_pass.jl")
 include("$p/build_loop.jl")
 include("$p/serve.jl")
+include("$p/toy.jl")
 
 end

@@ -8,3 +8,4 @@ test/abc/__*
 test/abc_min/__*
 test/abc_min_skel/__*
 test/abc_utils/__*
+toy_example/
