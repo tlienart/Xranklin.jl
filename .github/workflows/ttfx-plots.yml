@@ -24,9 +24,7 @@ jobs:
       # =======================================================================
       # -- deps --
       - name: Install QT 💻
-        run: |
-             sudo apt-get update -qq
-             sudo apt-get install -y qt5-default
+        uses: jurplel/install-qt-action@v3
 
       # -- modify index --
       - name: Set index.md 📖
