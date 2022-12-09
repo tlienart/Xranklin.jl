@@ -1,5 +1,7 @@
 *DS_St*
-./Manifest.toml
+Manifest.toml
+docs/Manifest.toml
+
 test/_output
 basic.log
 docs/__*
