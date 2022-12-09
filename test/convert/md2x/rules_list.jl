@@ -276,3 +276,21 @@ end
           </li>
         </ol>""")
 end
+
+@testset "i#172" begin
+    # this was an issue with FranklinParser
+    s = """
+       * abc
+       * def
+       ghi [klm](mno.com).
+
+       """
+    h = s |> html
+    @test isapproxstr(h, """
+        <ul>
+          <li>abc</li>
+          <li>def
+          ghi <a href="mno.com">klm</a>.</li>
+        </ul>
+        """)
+end

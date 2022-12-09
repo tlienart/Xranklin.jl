@@ -50,6 +50,9 @@ menu = [
   ],
 ]
 
+ignore = [
+  "extras/plots.md",
+]
 
 +++
 

@@ -22,8 +22,14 @@ to `io`.
         If a line skip (empty line) is present; the new item will be in a new
         list.
 """
-function convert_list(io::IOBuffer, g::Group, ctx::LocalContext;
-                      tohtml=true, kw...)::Nothing
+function convert_list(
+            io::IOBuffer,
+            g::Group,
+            ctx::LocalContext;
+            # kwargs
+            tohtml::Bool=true,
+            kw...
+            )::Nothing
     # DEV NOTES
     # ---------
     # g is just a wrapper around a block of text (g.ss)
@@ -131,7 +137,7 @@ function process_item!(
         item_str::SS,
         cur_marker::RegexMatch,
         tohtml::Bool
-    )
+    )::Nothing
 
     if tohtml
         open_ol    = "<ol>\n"
@@ -152,6 +158,7 @@ function process_item!(
     conv_str = convert_md(item_str, ctx; tohtml, nop=true)
     item_ind = cur_marker.captures[1]
     item_mrk = cur_marker.captures[2]
+
     # --------------------------------------------------------
     # check type
     is_ol = first(item_mrk) |> isdigit
@@ -217,4 +224,5 @@ function process_item!(
         end
     end
     write(io, open_item, conv_str)
+    return
 end

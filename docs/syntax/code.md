@@ -468,6 +468,7 @@ Here's another example with PyPlot (and you could use any other plotting library
 you can also check out the [page dedicated to plots with Franklin](/extras/plots/))
 
 ```!
+# name: pyplot
 # indep
 using PyPlot
 x = range(0, pi, length=500)
@@ -571,6 +572,7 @@ capture a trimmed stacktrace of the problem which will be displayed:
 
 \showmd{
   ```!
+  # name: error
   # indep
   sqrt(-1)
   ```

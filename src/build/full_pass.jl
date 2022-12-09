@@ -142,7 +142,7 @@ function full_pass(
     append!(skip_files, [
         path(:folder) => "config.md",
         path(:folder) => "utils.jl"
-    ]
+        ]
     )
 
     # check that there's an index page (this is what the server will
@@ -161,8 +161,8 @@ function full_pass(
     println("")
     start = time()
     @info """
-💡 $(hl("starting the full pass", :yellow))
-"""
+        💡 $(hl("starting the full pass", :yellow))
+        """
     println("")
     # ---------------------------------------------
 
@@ -258,9 +258,13 @@ end
 
 
 # =======================
-#
-#       MARKDOWN
-#
+#                       #
+#       MARKDOWN        #
+#                       #
+#   * _md_loop_1 (cf process/md/pass_1)
+#   * _md_loop_i (cf process/md/pass_i)
+#   * _md_loop_2 (cf process/md/pass_2)
+#   * full_pass_markdown (wrapper)
 # =======================
 
 """
@@ -315,16 +319,18 @@ function _md_loop_2(gc, fp, skip_dict, final)
     return
 end
 
-
+"""
+    full_pass_markdown(gc, watched; kw...)
+"""
 function full_pass_markdown(
-    gc,
-    watched;
-    skip_files=Pair{String,String}[],
-    allow_skip=false,
-    final=false
-    )::Nothing
+            gc,
+            watched;
+            skip_files=Pair{String,String}[],
+            allow_skip=false,
+            final=false
+            )::Nothing
 
-    n_watched = length(watched)
+    n_watched   = length(watched)
     use_threads = env(:use_threads)
     iszero(n_watched) && return
     allocate_children_contexts(gc, watched)
@@ -339,14 +345,17 @@ function full_pass_markdown(
 
     # ----------------------------------------------------------------------
     @info "> Full Pass [MD/1]"
+    msg(fp, n="1️⃣") = " $n ⟨$(hl(str_fmt(get_rpath(gc, joinpath(fp...)))))⟩"
     if use_threads
         entries = dic2vec(watched)
         info_thread(length(entries))
         Threads.@threads for (fp, _) in entries
+            @info msg(fp)
             _md_loop_1(gc, fp, skip_dict, allow_skip)
         end
     else
         for (fp, _) in watched
+            @info msg(fp)
             _md_loop_1(gc, fp, skip_dict, allow_skip)
         end
     end
@@ -363,10 +372,12 @@ function full_pass_markdown(
         entries = dic2vec(watched)
         info_thread(length(entries))
         Threads.@threads for (fp, _) in entries
+            @info msg(fp, "2️⃣")
             _md_loop_2(gc, fp, skip_dict, final)
         end
     else
         for (fp, _) in watched
+            @info msg(fp, "2️⃣")
             _md_loop_2(gc, fp, skip_dict, final)
         end
     end
@@ -376,12 +387,15 @@ end
 
 
 # ====================
-#
-#       HTML
-#
+#                    #
+#       HTML         #
+#                    #
 # ====================
 
-function _html_loop(gc, fp, skip_files, final)
+function _html_loop(
+            gc, fp, skip_files, final
+            )::Nothing
+
     fp in skip_files && return
 
     fpath = joinpath(fp...)
@@ -395,10 +409,11 @@ end
 
 
 function full_pass_html(
-    gc, watched;
-    skip_files=Pair{String,String}[],
-    final=false
-)::Nothing
+                gc, watched;
+                # kwargs
+                skip_files=Pair{String,String}[],
+                final=false
+            )::Nothing
 
     n_watched = length(watched)
     use_threads = env(:use_threads)
@@ -422,9 +437,10 @@ end
 
 
 function full_pass_other(
-    gc, watched;
-    skip_files=Pair{String,String}[]
-)::Nothing
+                gc, watched;
+                # kwargs
+                skip_files=Pair{String,String}[]
+            )::Nothing
 
     n_watched = length(watched)
     iszero(n_watched) && return

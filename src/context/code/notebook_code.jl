@@ -118,7 +118,7 @@ function eval_code_cell!(
     if indep
         nb.indep_code[cell_code] = code_repr
     end
-    
+
     return finish_cell_eval!(nb, code_pair, indep)
 end
 
@@ -188,11 +188,13 @@ function _eval_code_cell(
         # if we're in 'strict_parsing' mode then this will throw
         # and interrupt the server
         err = typeof(e)
+
         if VERSION >= v"1.7.0-"
             exc, bt = last(Base.current_exceptions())
         else
             exc, bt = last(Base.catch_stack())
         end
+
         # retrieve the stacktrace string so it can be shown in repl
         stacktrace = sprint(showerror, exc, bt) |> trim_stacktrace
         std_err    = stacktrace

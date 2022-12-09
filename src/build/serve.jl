@@ -51,7 +51,8 @@ Runs Franklin in the directory `d` (current directory if unspecified).
                      `serve` might prefer to set this to `false` as they might
                      have a browser tab pointing to a page of interest.
 """
-function serve(d::String = "";
+function serve(
+            d::String = "";
 
             # Main kwargs
             dir::String       = d,
@@ -79,7 +80,7 @@ function serve(d::String = "";
             port::Int    = 8000,
             host::String = "127.0.0.1",
             launch::Bool = true,
-            )
+        )::Nothing
 
     if debug
         Logging.disable_logging(Logging.Debug - 100)
@@ -123,24 +124,32 @@ function serve(d::String = "";
     utils_unchanged  = !any(isfile, (cached_utils, current_utils)) ||
                         filecmp(cached_utils, current_utils)
 
-    # if clear, destroy output directories if any
+    if !clear && isfile(gc_cache_path())
+        start = time()
+        # try to load previously-serialised contexts if any, the process config
+        # and process_utils happen within the deserialise so that children
+        # contexts are attached to an up-to-date gc.
+        try
+            deserialize_gc(gc)
+            δt = time() - start; @info """
+                💡 $(hl("de-serialization done", :yellow)) $(hl(time_fmt(δt), :red))
+                """
+        catch
+            @info """
+                ❌ failed to deserialize cache, maybe the previous session crashed.
+                """
+            clear = true
+        end
+    end
+
     if clear || !utils_unchanged
+        # if clear, destroy output directories if any
         for odir in (path(gc, :site), path(gc, :pdf), path(gc, :cache))
             rm(odir; force=true, recursive=true)
         end
 
         process_config(gc)
         process_utils(gc)
-
-    else
-        start = time()
-        # try to load previously-serialised contexts if any, the process config
-        # and process_utils happen within the deserialise so that children
-        # contexts are attached to an up-to-date gc.
-        isfile(gc_cache_path()) && deserialize_gc(gc)
-        δt = time() - start; @info """
-            💡 $(hl("de-serialization done", :yellow)) $(hl(time_fmt(δt), :red))
-            """
     end
 
     isempty(base_url_prefix) || setvar!(gc, :base_url_prefix, base_url_prefix)
@@ -196,7 +205,7 @@ function serve(d::String = "";
     end
     # > deactivate env if changed
     if Pkg.project().path != old_project
-        @info "♻️ reactivating your previous environment..."
+        @info "🔄 reactivating your previous environment..."
         Pkg.activate(old_project)
     end
     ENV["JULIA_DEBUG"] = ""

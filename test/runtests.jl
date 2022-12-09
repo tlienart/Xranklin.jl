@@ -95,6 +95,7 @@ end
     p = "bugs"
     include(p / "latex.jl")
     include(p / "triggers.jl")
+    include(p / "parsing.jl")
 end
 
 spurious_assets = dirname(dirname(pathof(Xranklin))) / "assets"
