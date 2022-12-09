@@ -116,7 +116,7 @@
 </li>
 <li class="pure-menu-item">
     <a href="/Xranklin.jl/extras/plots/" class="pure-menu-link">
-        Plots
+        nothing
     </a>
 </li>
 <li class="pure-menu-item">
@@ -194,7 +194,7 @@ to build and deploy the website as that CI will need a correct <code>Project.tom
 to load the packages needed to properly build the website.</p>
 <pre><code class="julia">using DataFrames
 df = DataFrame(A=1:4, B=[&quot;M&quot;, &quot;F&quot;, &quot;F&quot;, &quot;M&quot;])</code></pre>
-<div class="code-output"><div class="data-frame"><p>4 rows × 2 columns</p><table class="data-frame"><thead><tr><th></th><th>A</th><th>B</th></tr><tr><th></th><th title="Int64">Int64</th><th title="String">String</th></tr></thead><tbody><tr><th>1</th><td>1</td><td>M</td></tr><tr><th>2</th><td>2</td><td>F</td></tr><tr><th>3</th><td>3</td><td>F</td></tr><tr><th>4</th><td>4</td><td>M</td></tr></tbody></table></div></div><div style="height:1em;"></div><h3 id="cache_and_packages" ><a href="#cache_and_packages"> Cache and packages</a></h3><p>If you start a new Julia session and have a page where some code uses a package
+<div class="code-output"><div><div style = "float: left;"><span>4×2 DataFrame</span></div><div style = "clear: both;"></div></div><div class = "data-frame" style = "overflow-x: scroll;"><table class = "data-frame" style = "margin-bottom: 6px;"><thead><tr class = "header"><th class = "rowNumber" style = "font-weight: bold; text-align: right;">Row</th><th style = "text-align: left;">A</th><th style = "text-align: left;">B</th></tr><tr class = "subheader headerLastRow"><th class = "rowNumber" style = "font-weight: bold; text-align: right;"></th><th title = "Int64" style = "text-align: left;">Int64</th><th title = "String" style = "text-align: left;">String</th></tr></thead><tbody><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">1</td><td style = "text-align: right;">1</td><td style = "text-align: left;">M</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">2</td><td style = "text-align: right;">2</td><td style = "text-align: left;">F</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">3</td><td style = "text-align: right;">3</td><td style = "text-align: left;">F</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">4</td><td style = "text-align: right;">4</td><td style = "text-align: left;">M</td></tr></tbody></table></div></div><div style="height:1em;"></div><h3 id="cache_and_packages" ><a href="#cache_and_packages"> Cache and packages</a></h3><p>If you start a new Julia session and have a page where some code uses a package
 (say <code>DataFrames</code>) and you add a new code block at the end of the page, only that
 code will be executed and, therefore, won't have access to <code>DataFrames</code> unless
 you re-evaluate the whole page <strong>or</strong> you explicitly add <code>using DataFrames</code> in that
