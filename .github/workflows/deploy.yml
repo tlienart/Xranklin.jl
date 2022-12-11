@@ -11,7 +11,7 @@ jobs:
     permissions: write-all
     steps:
       - uses: actions/checkout@v3
-      - uses: tlienart/xranklin-build-action@v3.8
+      - uses: tlienart/xranklin-build-action@main
         with:
           # ADJUST THE FOLLOWING
           # where is the site folder, use "" if the root repo is.
