@@ -3,6 +3,10 @@ Manifest.toml
 docs/Manifest.toml
 test/Manifest.toml
 
+package-lock.json
+package.json
+node_modules/
+
 test/_output
 basic.log
 docs/__*
