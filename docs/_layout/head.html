@@ -1,16 +1,17 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="{{meta_description}}">
 
   {{if hasmath}}
-    <link rel="stylesheet" href="/libs/katex/katex.min.css">
+  <link rel="stylesheet" href="/libs/katex/katex.min.css">
   {{end}}
 
   {{if hascode}}
-    <link rel="stylesheet" href="/libs/highlight/github.min.css">
+  <link rel="stylesheet" href="/libs/highlight/github.min.css">
   {{end}}
 
 
@@ -22,69 +23,79 @@
 
   <!-- see extras/plots -->
   <style>
-  .code-output { max-width: 600px; }
-  .fig-stdout { visibility: hidden; height: 0; margin: 0; }
+    .code-output {
+      max-width: 600px;
+    }
+
+    .fig-stdout {
+      visibility: hidden;
+      height: 0;
+      margin: 0;
+    }
   </style>
 
+  <title>{{header}}</title>
+
 </head>
+
 <body>
 
-<a id="menu-burger" href="#menu"></a>
+  <a id="menu-burger" href="#menu"></a>
 
-<div id="top-bar">
+  <div id="top-bar">
 
-  <div id="top-bar-nav">
-    <a href="/">
-      <img src="/assets/icons/franklin.svg" alt="franklin">
-    </a>
-    <form id="lunrSearchForm" name="lunrSearchForm">
-      <input class="search-input" name="q" placeholder="Search the docs..." type="text">
-      <input type="submit" value="🔍" formaction="/search/index.html">
-    </form>
-  </div>
-</div>
-
-<div id="layout">
-
-  <!-- LAYOUT | LEFT MENU -->
-  <div id="layout-left-menu">
-    <div id="menu-content">
-      {{navmenu}}
-
-      <div id="menu-logos">
-        <a href="/">{{insert ../_assets/icons/home.svg}}</a> &nbsp;
-        <a href="#">{{insert ../_assets/icons/arrowup.svg}}</a> &nbsp;
-        <a href="{{github}}">{{insert ../_assets/icons/github.svg}}</a>
-      </div>
-
+    <div id="top-bar-nav">
+      <a href="/">
+        <img src="/assets/icons/franklin.svg" alt="franklin">
+      </a>
+      <form id="lunrSearchForm" name="lunrSearchForm">
+        <input class="search-input" name="q" placeholder="Search the docs..." type="text">
+        <input type="submit" value="🔍" formaction="/search/index.html">
+      </form>
     </div>
   </div>
 
-  <!-- LAYOUT | (RIGHT) MAIN -->
-  <div id="layout-main">
+  <div id="layout">
 
-    <!-- MAIN | TOP HEADER -->
-    <div id="main-top-header">
-      <div id="main-top-header-content">
-        {{isdef header}}
+    <!-- LAYOUT | LEFT MENU -->
+    <div id="layout-left-menu">
+      <div id="menu-content">
+        {{navmenu}}
+
+        <div id="menu-logos">
+          <a href="/">{{insert ../_assets/icons/home.svg}}</a> &nbsp;
+          <a href="#">{{insert ../_assets/icons/arrowup.svg}}</a> &nbsp;
+          <a href="{{github}}">{{insert ../_assets/icons/github.svg}}</a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- LAYOUT | (RIGHT) MAIN -->
+    <div id="layout-main">
+
+      <!-- MAIN | TOP HEADER -->
+      <div id="main-top-header">
+        <div id="main-top-header-content">
+          {{isdef header}}
           <h1>{{header}}</h1>
-        {{end}}
+          {{end}}
+        </div>
       </div>
-    </div>
 
-    <!-- MAIN | RIGHT MARGIN (TOC) -->
-    <div id="main-right-margin">
+      <!-- MAIN | RIGHT MARGIN (TOC) -->
+      <div id="main-right-margin">
         <div id="margin-toc">
           {{if showtoc}}
-            <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
-            {{toc 2 3}}
+          <div id="margin-toc-legend"><a href="#top-bar">Contents</a></div>
+          {{toc 2 3}}
           {{end}}
+        </div>
       </div>
-    </div>
 
-    <!-- MAIN | LEFT CONTENT (PAGE) -->
-    <div id="main-left-content">
-      <!--
+      <!-- MAIN | LEFT CONTENT (PAGE) -->
+      <div id="main-left-content">
+        <!--
           Here is where the content resulting from the conversion of
           Markdown to HTML is placed.
        -->
