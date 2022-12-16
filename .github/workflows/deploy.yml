@@ -26,15 +26,6 @@ jobs:
           # --> If you use PyPlot you'll need matlotlib here
           # --> If use UnicodePlots, you'll need ansi2html
           PYTHON_LIBS: "matplotlib pandas ansi2html"
-          #
-          # If use Plots.jl indicate "xvfb-run" otherwise ""
-          PLOTS: "xvfb-run"
-          #
-          # If use PGFPlotsX or Tikz or anything requiring latex is used
-          LATEX: true
-          #
-          # If use Gaston or Gnuplot.jl
-          GNUPLOT: true
 
           # ===================================================================
           # DON'T CHANGE THE FOLLOWING UNLESS YOU HAVE GOOD REASONS TO
