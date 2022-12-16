@@ -16,5 +16,6 @@ jobs:
           SITE_FOLDER: "docs/"
           BASE_URL_PREFIX: "Xranklin.jl"
           PYTHON_LIBS: "matplotlib pandas ansi2html"
+          LUNR: true
           CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
           CACHE_KEY: "franklin-cache"
