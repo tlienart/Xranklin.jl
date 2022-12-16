@@ -13,24 +13,8 @@ jobs:
       - uses: actions/checkout@v3
       - uses: tlienart/xranklin-build-action@main
         with:
-          # ADJUST THE FOLLOWING
-          # where is the site folder, use "" if the root repo is.
           SITE_FOLDER: "docs/"
-          # if it's a personal site, use "" otherwise use the name of the repo
           BASE_URL_PREFIX: "Xranklin.jl"
-
-          # ===================================================================
-          # FLAGS FOR DEPENDENCIES INSTALLATION, ADJUST AS REQUIRED
-          #
-          # If use PyCall or PyPlot indicate libs here otherwise set to ""
-          # --> If you use PyPlot you'll need matlotlib here
-          # --> If use UnicodePlots, you'll need ansi2html
           PYTHON_LIBS: "matplotlib pandas ansi2html"
-
-          # ===================================================================
-          # DON'T CHANGE THE FOLLOWING UNLESS YOU HAVE GOOD REASONS TO
-          # >> amounts to build(clear=true) when commit message contains [clear]
           CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
-          # >> change the digit at the end if, for some reason, you believe
-          # that the cache used by the github action has an issue
           CACHE_KEY: "franklin-cache"
