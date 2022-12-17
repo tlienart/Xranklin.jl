@@ -96,9 +96,6 @@ function readHtml(root, file, fileId) {
     if (typeof body == 'undefined') body = "";
     // discard math which will be between \\[...\\]
     body = body.replace(/\\\[[\s\S]*?\\\]/g, '')
-    if (filename == '__site/syntax/extensions/index.html') {
-        console.log(body)
-    }
 
     var data = {
         "id": fileId,
