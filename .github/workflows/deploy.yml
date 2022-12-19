@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    types: [opened, synchronize]
 
 jobs:
   docs:
@@ -11,11 +13,30 @@ jobs:
     permissions: write-all
     steps:
       - uses: actions/checkout@v3
-      - uses: tlienart/xranklin-build-action@main
+      ########################################
+      - name: SET PREVIEW PATH IF PULL REQUEST
+        run: |
+          if [[ ${{ github.event_name == 'pull_request' }} ]]
+          then
+            echo "preview=previews/PR${{ github.event.number}}" >> $GITHUB_ENV
+          else
+            echo "preview=''" >> $GITHUB_ENV
+          fi
+        shell: bash
+      ########################################
+      - name: BUILD AND DEPLOY
+        uses: tlienart/xranklin-build-action@main
         with:
           SITE_FOLDER: "docs/"
           BASE_URL_PREFIX: "Xranklin.jl"
+          PREVIEW: ${{ env.preview }}
           PYTHON_LIBS: "matplotlib pandas ansi2html"
           LUNR: true
           CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
           CACHE_KEY: "franklin-cache"
+      - name: URL INDICATION
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            Preview should be up in a couple of mins at https://tlienart.github.io/Xranklin.jl/${{env.preview}}
+        if: github.event_name == 'pull_request'
