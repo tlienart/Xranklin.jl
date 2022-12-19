@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    types: [opened]
 
 jobs:
   docs:
@@ -11,11 +13,19 @@ jobs:
     permissions: write-all
     steps:
       - uses: actions/checkout@v3
+      - run: |
+          echo "preview=''" >> $GITHUB_ENV
+      - run: |
+          echo "preview=PR${{ github.event.number}}" >> $GITHUB_ENV
+        if: github.event_name == 'pull_request'
       - uses: tlienart/xranklin-build-action@main
         with:
           SITE_FOLDER: "docs/"
           BASE_URL_PREFIX: "Xranklin.jl"
+          PREVIEW: ${{ env.preview }}
           PYTHON_LIBS: "matplotlib pandas ansi2html"
           LUNR: true
           CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
           CACHE_KEY: "franklin-cache"
+      - if: github.event_name == 'push'
+        
