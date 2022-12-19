@@ -27,5 +27,4 @@ jobs:
           LUNR: true
           CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
           CACHE_KEY: "franklin-cache"
-      - if: github.event_name == 'push'
         
