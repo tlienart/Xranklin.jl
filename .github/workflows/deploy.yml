@@ -38,5 +38,5 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            Preview should be up in a couple of mins at https://tlienart.github.io/Xranklin.jl/${{env.preview}}
+            Preview should be up in a couple of mins at https://tlienart.github.io/Xranklin.jl/${{env.preview}} (if you get a 404, wait 30s then refresh).
         if: github.event_name == 'pull_request'
