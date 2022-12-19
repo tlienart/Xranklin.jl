@@ -18,7 +18,7 @@ jobs:
         run: |
           if [[ ${{ github.event_name == 'pull_request' }} ]]
           then
-            echo "preview=prev/PR${{ github.event.number}}" >> $GITHUB_ENV
+            echo "preview=previews/PR${{ github.event.number}}" >> $GITHUB_ENV
           else
             echo "preview=''" >> $GITHUB_ENV
           fi
@@ -38,5 +38,5 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            Deployment should be https://tlienart.github.io/Xranklin.jl/${{env.preview}}
+            Preview should be up in a couple of mins at https://tlienart.github.io/Xranklin.jl/${{env.preview}}
         if: github.event_name == 'pull_request'
