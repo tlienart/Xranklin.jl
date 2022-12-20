@@ -8,8 +8,6 @@
     <link rel="stylesheet" href="/Xranklin.jl/previews/PR176/css/pure.min.css">
 
     
-        <link rel="stylesheet" href="/Xranklin.jl/previews/PR176/libs/katex/katex.min.css">
-    
     
         <link rel="stylesheet" href="/Xranklin.jl/previews/PR176/libs/highlight/github.min.css">
     
@@ -990,12 +988,12 @@ body { counter-reset: eqnum; }
     </a>
 </li>
 <li class="pure-menu-item">
-    <a href="/Xranklin.jl/previews/PR176/syntax/extensions/" class="pure-menu-link selected">
+    <a href="/Xranklin.jl/previews/PR176/syntax/extensions/" class="pure-menu-link ">
         Extensions
     </a>
 </li>
 <li class="pure-menu-item">
-    <a href="/Xranklin.jl/previews/PR176/syntax/code_1/" class="pure-menu-link ">
+    <a href="/Xranklin.jl/previews/PR176/syntax/code_1/" class="pure-menu-link selected">
         Code Blocks (1)
     </a>
 </li>
@@ -1132,18 +1130,21 @@ body { counter-reset: eqnum; }
 
         <div class="content">
             
-              <h1><a href="#">Markdown extensions</a></h1>
+              <h1><a href="#">Code blocks</a></h1>
             
 
-            <h2 id="overview" ><a href="#overview"> Overview</a></h2><p>Franklin adds a number of extension to the Markdown-like syntax in order to
-facilitate some operations such as adding <a href="#equations">equations</a>, <a href="#tables">tables</a>,
-<a href="#footnotes">footnotes</a>, <a href="#latex_like_commands">commands</a> and more.</p>
-<h2 id="injecting_html" ><a href="#injecting_html"> Injecting HTML</a></h2><p>You can always insert arbitrary HTML on a page in a block fenced with '<code>~~~</code>'.
-HTML inserted in this way is considered "inline" (it won't break an existing paragraph).
-Here's an example where we apply some local styling inside a paragraph:</p>
+            <style>
+img.code-figure {
+  max-width: 50%;
+}
+</style><h2 id="overview" ><a href="#overview"> Overview</a></h2><p>Franklin supports executing Julia code blocks and using or showing their output.
+Here is a basic example:</p>
 <div class="trim">
 
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">ABC ~~~&lt;span style=&quot;color:blue;&quot;&gt;~~~ **DEF** ~~~&lt;/span&gt;~~~ GHI.</code></pre>
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```julia:example
+# a very simple code 'cell'
+a = 1
+```</code></pre>
 </fieldset>
 
 </div>
@@ -1152,16 +1153,16 @@ Here's an example where we apply some local styling inside a paragraph:</p>
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>ABC <span style="color:blue;"> <strong>DEF</strong> </span> GHI.</fieldset>
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia"># a very simple code 'cell'
+a = 1</code></pre>
+</fieldset>
 
-</div><p>Here's another example where we insert a <code>&lt;fieldset&gt;</code>:</p>
+</div><p>At a high level, this both shows the code on the webpage (as illustrated above)
+and also uses the running Julia session to execute the code so that the output
+can be shown somewhere else via the <code>\show</code> command:</p>
 <div class="trim">
 
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">~~~
-&lt;fieldset&gt;&lt;legend&gt;Foo&lt;/legend&gt;
-Some Content
-&lt;/fieldset&gt;
-~~~</code></pre>
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\show&lbrace;example&rbrace;</code></pre>
 </fieldset>
 
 </div>
@@ -1170,18 +1171,53 @@ Some Content
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><fieldset><legend>Foo</legend>
-Some Content
-</fieldset></fieldset>
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="code-output"><pre><code class="code-result language-plaintext">1</code></pre></div></fieldset>
 
-</div><p>Since you can  wrap this in a <a href="#latex_like_commands">LaTeX-like command</a>, you can define commands
-that apply whatever custom HTML you see  fit, or use this to insert buttons etc.</p>
-<h2 id="equations" ><a href="#equations"> Equations</a></h2><p>In Franklin, math is handled by <a href="https://katex.org/">KaTeX</a> (though you could set things
-up so that it's handled by <a href="https://www.mathjax.org/">MathJax</a> instead).
-For <em>inline</em> math, use a single '<code>$</code>' like in LaTeX (here's a <a href="http://tug.ctan.org/info/undergradmath/undergradmath.pdf">cheatsheet</a> for LaTeX math if you're unfamiliar with the syntax):</p>
+</div><p>The orange box helps indicate what corresponds to the output of an executed code cell.
+This is just the styling we use on the present site though, you can of course control this
+yourself by styling the class <code>.code-output</code> or one of the more specific sub-classes
+(see <a href="#output_of_executable_code_blocks">the section on code output</a>).</p>
+<p>The syntax</p>
+<pre><code class="markdown">```julia:name
+...
+```</code></pre>
+<p>identifies a fenced code block as "executable" and assigns a name '<code>name</code>' which
+allows to refer specifically to the output of that code block.</p>
+<p>The command <code>\show&lbrace;name&rbrace;</code> then displays <code>stdout</code>, <code>stderr</code> and the result of
+the code block if it's not <code>nothing</code>.</p>
+<fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+
+At the moment, only Julia code can be executed, though of course you can use
+<a href="https://github.com/JuliaPy/PyCall.jl">PyCall</a> or <a href="https://github.com/JuliaInterop/RCall.jl">RCall</a> to execute Python or R code.
+This is <a href="#executing_python_code">illustrated in the examples</a>.
+
+</fieldset>
+<div class="lskip"> </div><h2 id="syntax_for_executable_code_blocks" ><a href="#syntax_for_executable_code_blocks"> Syntax for executable code blocks</a></h2><p>Beyond the syntax introduced briefly above, there are several other ways of indicating
+that a fenced code block should be executed:</p>
+<ul>
+<li><code>&#96;&#96;&#96;</code><code>julia:name</code> &mdash; the language and the name of the block are explicit,</li>
+<li><code>&#96;&#96;&#96;</code><code>:name</code> &mdash; the language is implicit, the name of the block is explicit,</li>
+<li><code>&#96;&#96;&#96;</code><code>:</code> &mdash; the language and the name are implicit.</li>
+</ul>
+<p>For all these you can swap the colon (<code>:</code>) for an exclamation mark (<code>!</code>) with the same
+effect (see examples below).</p>
+<fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+
+When specifying the language, you can add a whitespace before the execution symbol
+to help editors such as VSCode to highlight the code block properly.
+For instance:<pre><code class="julia">```julia !ex
+...
+```</code></pre>
+</fieldset><p>When the language is implicit, it is taken from the page variable <code>lang</code> (with default
+ <code>&quot;julia&quot;</code>).
+When the name is implicit, a name is automatically generated and the output is placed
+directly below the code.</p>
+<p>Here's an example with implicit language and explicit name:</p>
 <div class="trim">
 
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">The variables $x, y \in \mathbb R$ are  such that $x^2+y^2 = 1$.</code></pre>
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```:abc
+println(&quot;hello&quot;)
+```</code></pre>
 </fieldset>
 
 </div>
@@ -1190,14 +1226,12 @@ For <em>inline</em> math, use a single '<code>$</code>' like in LaTeX (here's a 
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>The variables \(x, y \in \mathbb R\) are  such that \(x^2+y^2 = 1\).</fieldset>
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">println(&quot;hello&quot;)</code></pre>
+</fieldset>
 
-</div><p>For <em>display</em> math, use double '<code>$$</code>':</p>
-<div class="trim">
+</div><div class="trim">
 
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">Here's a nice equation:
-
-$$ \exp(i\pi) + 1 = 0 $$</code></pre>
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\show&lbrace;abc&rbrace;</code></pre>
 </fieldset>
 
 </div>
@@ -1206,37 +1240,16 @@ $$ \exp(i\pi) + 1 = 0 $$</code></pre>
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Here's a nice equation:\[  \exp(i\pi) + 1 = 0  \]
-</fieldset>
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="code-output"><pre><code class="code-stdout language-plaintext">hello
+</code></pre></div></fieldset>
 
-</div><p>"Display math" blocks get automatically numbered.
-You can suppress this using <code>\nonumber&lbrace;$$...$$&rbrace;</code>.
-For instance:</p>
+</div><p>And here's an example with implicit language and implicit name (the output is shown
+  automatically below the code):</p>
 <div class="trim">
 
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\nonumber&lbrace;
-  $$ x = 0 $$
-&rbrace;</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="nonumber">  \[  x = 0  \]
-</div></fieldset>
-
-</div><p>You can add labels to display-math blocks using <code>\label&lbrace;label name&rbrace;</code> and refer to them
-later with <code>\eqref&lbrace;label name&rbrace;</code>:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">$$
-  x + \underbrace&lbrace;y + z&rbrace;_&lbrace;w&rbrace; = u \label&lbrace;some equation&rbrace;
-$$
-
-And refer to it as \eqref&lbrace;some equation&rbrace;.</code></pre>
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+1//2^2
+```</code></pre>
 </fieldset>
 
 </div>
@@ -1245,24 +1258,31 @@ And refer to it as \eqref&lbrace;some equation&rbrace;.</code></pre>
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><a id="some_equation" class="anchor anchor-math"></a>\[ 
-  x + \underbrace{y + z}_{w} = u 
- \]
-And refer to it as (<a href="#some_equation" class="eqref">2</a>).</fieldset>
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">1//2^2</code></pre>
+<div class="code-output"><pre><code class="code-result language-plaintext">1//4</code></pre></div></fieldset>
 
-</div><p>Equations can span multiple lines and use multi-line environments</p>
+</div><p>Unless you intend to show the code output somewhere else than below the code block,
+or use a custom method to show the code output, this last syntax (where everything is implicit)
+is likely the one you will want to use most often.</p>
+<fieldset class="tip"><legend class="tip-legend">🚀 Tip</legend>
+
+When debugging, you might like to double the execution marker (<code>!!</code> or <code>::</code>) which will force
+the cell to be re-evaluated; this can be useful for debugging but should be removed as soon as
+you fixed the problem as it otherwise incurs unnecessary cost when building the site.
+See also <a href="#what_to_do_when_things_go_wrong">what to do when things go wrong</a> below.
+
+</fieldset><h3 id="hiding_lines_of_code" ><a href="#hiding_lines_of_code"> Hiding lines of code</a></h3><p>In some cases an executable code cell might need some lines of code to work which you don't
+want to show.
+You can indicate that a line should be hidden by adding <code>#hide</code> to it (letter case and whitespace
+  don't matter).
+If you want to hide an entire code cell (e.g. you're just interested in the output)
+you can put <code>#hideall</code> in the code.</p>
 <div class="trim">
 
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">Here's an optimisation problem
-
-$$
-  \text&lbrace;arg&rbrace;\,\min_&lbrace;x\in[0,1]&rbrace; \,\, f(x)
-    \quad\text&lbrace;s.t.&rbrace;\quad f(x) =
-  \begin&lbrace;cases&rbrace;
-    x\sin(x^2) \,\,\text&lbrace;if&rbrace;\,\, x \in [0, \pi]\\
-    x\cos(x^2) \,\, \text&lbrace;elswhere&rbrace;
-  \end&lbrace;cases&rbrace;
-$$</code></pre>
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+using Random #hide
+randstring(5)
+```</code></pre>
 </fieldset>
 
 </div>
@@ -1271,21 +1291,18 @@ $$</code></pre>
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Here's an optimisation problem\[ 
-  \text{arg}\,\min_{x\in[0,1]} \,\, f(x)
-    \quad\text{s.t.}\quad f(x) =
-  \begin{cases}x\sin(x^2) \,\,\text{if}\,\, x \in [0, \pi]\\
-x\cos(x^2) \,\, \text{elswhere}\end{cases}
- \]
-</fieldset>
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">randstring(5)</code></pre>
+<div class="code-output"><pre><code class="code-result language-plaintext">"8vol5"</code></pre></div></fieldset>
 
-</div><p>Like in LaTeX, you can define <a href="#latex_commands">commands</a> and use them in a math
-environment too:</p>
-<div class="trim">
+</div><div class="trim">
 
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\E&rbrace;[1]&lbrace;\mathbb E\left\&lbrace;#1\right\&rbrace;&rbrace;
-
-$$ \E&lbrace;\sum_&lbrace;i=1&rbrace;^n X^2_i&rbrace; = \lambda\exp(\sigma) $$</code></pre>
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+#hideall
+a = 5
+b = 7
+println(a+b)
+true
+```</code></pre>
 </fieldset>
 
 </div>
@@ -1294,36 +1311,103 @@ $$ \E&lbrace;\sum_&lbrace;i=1&rbrace;^n X^2_i&rbrace; = \lambda\exp(\sigma) $$</
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>\[  \mathbb E\left\{ \sum_{i=1}^n X^2_i\right\} = \lambda\exp(\sigma)  \]
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="code-output"><pre><code class="code-stdout language-plaintext">12
+</code></pre><pre><code class="code-result language-plaintext">true</code></pre></div></fieldset>
+
+</div><div class="lskip"> </div><h3 id="mock_lines" ><a href="#mock_lines"> Mock lines</a></h3><p>In some cases you might want to show a line of code without it being run.
+The example below should make this clearer:</p>
+<pre><code class="julia">data = fetch(&quot;./tests/data.txt&quot;) # &lt;-- depends on your setup
+data = fetch(&quot;/user/$name/api&quot;)  # &lt;-- what the user should do
+
+plot(data)</code></pre>
+<p>In this example, you'd want to <em>run but hide</em> the first line and <em>not run but show</em> the second
+line.
+You already know <code>#hide</code>, the other one is <code>#mock</code> (also allowed: <code>#fake</code>, <code>#noexec</code>, <code>#norun</code>).</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+println(&quot;hello&quot;)   # hide  &lt;-- executed, not shown
+println(&quot;not run&quot;) # mock  &lt;-- shown, not executed
+```</code></pre>
 </fieldset>
 
-</div><fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+</div>
 
-Double-braces (which can be used to call <a href="/Xranklin.jl/previews/PR176/syntax/vars+funs/">hfuns</a> or insert page variables)
-are disabled in math environments.
-This is to avoid ambiguities since in LaTeX-like math syntax,
-double braces can happen. So, for instance, <code>$&lbrace;&lbrace;x&rbrace;&rbrace;$</code> will just show \(x\) even if you do have
-a page variable <code>x</code> on the page.
 
-</fieldset><fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
 
-Franklin uses its <strong>own counter</strong> to keep track of equation numbering.
-There is no communication between Franklin and any KaTeX or CSS counters.
-This means that you cannot effectively use KaTeX-specific commands that suppress numbering
-as this would cause issues with subsequent equation references done with <code>\eqref</code>.
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">println(&quot;not run&quot;)  &lt;-- shown, not executed</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">hello
+</code></pre></div></fieldset>
+
+</div><h3 id="providing_name_hints" ><a href="#providing_name_hints"> Providing name hints</a></h3><p>For auto-named code blocks (which you likely will want to use most of the time), you can provide
+a name hint which will help identify what is being evaluated in the REPL output when you
+build your site.</p>
+<p>So for instance if you just write</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+println(&quot;hello&quot;)
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">println(&quot;hello&quot;)</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">hello
+</code></pre></div></fieldset>
+
+</div><p>when the page gets built, something like</p>
+<pre><code class="julia">evaluating cell auto_cell_5...</code></pre>
+<p>will be shown in the REPL.
+But it can sometimes be useful to know precisely which block is being run and you can do
+this by adding a "<code># name: name hint</code>" line in your code:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+# name: printing example
+println(&quot;hello!&quot;)
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">println(&quot;hello!&quot;)</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">hello!
+</code></pre></div></fieldset>
+
+</div><p>then, when the page gets built, something like</p>
+<pre><code class="julia">evaluating cell auto_cell_5 (printing example)...</code></pre>
+<p>will be shown in the REPL.</p>
+<h3 id="marking_a_cell_as_independent" ><a href="#marking_a_cell_as_independent"> Marking a cell as independent</a></h3><p>If a code block is fully independent of any other code blocks on the page, <strong>and</strong> of the <code>Utils</code> module, you can mark it as <em>independent</em> (with <code># indep</code>), this will allow Franklin to skip re-evaluating this block when other code blocks around it change.</p>
+<p>To clarify this, imagine you have a page with two blocks <em>A</em> and <em>B</em>.
+By default if <em>A</em> is modified, <em>B</em> will be re-evaluated because Franklin considers that <em>B</em> might
+depend on some things that <em>A</em> defines.
 <br>
 
-Long story short: if you want to suppress numbering, use <code>\nonumber</code>.
-
-</fieldset><h3 id="environments" ><a href="#environments"> Environments</a></h3><p>Franklin also supports common math environments: <code>equation</code>, <code>align</code>, <code>aligned</code>, <code>eqnarray</code>,
-and their "starred" version (which suppresses the number):</p>
+However, if you know that <em>B</em> is fully independent code, you can mark it as such and then when <em>A</em> changes, <em>B</em> will <strong>not</strong> get re-evaluated.</p>
+<p>When marking a block as independent, the user guarantees to Franklin that:</p>
+<ol>
+<li>the code does not depend on any other code block on the page,</li>
+<li>no other code block on the page depends on that code block.</li>
+</ol>
+<p>The marker for independence should be placed at the top of your code:</p>
 <div class="trim">
 
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\begin&lbrace;eqnarray*&rbrace;
-  \mathcal F[g](\omega)
-          &amp;=&amp; \langle g, \exp(i\omega \cdot) \rangle \\
-          &amp;=&amp; \displaystyle&lbrace;\int_&lbrace;\mathbb R&rbrace; g(x)\exp(i\omega x)\mathrm&lbrace;d&rbrace;x&rbrace;
-\end&lbrace;eqnarray*&rbrace;</code></pre>
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+# indep
+x = 5
+println(x^2)
+```</code></pre>
 </fieldset>
 
 </div>
@@ -1332,455 +1416,35 @@ and their "starred" version (which suppresses the number):</p>
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="nonumber">\[ 
-\begin{array}{rcl}\mathcal F[g](\omega)
-        &=& \langle g, \exp(i\omega \cdot) \rangle \\
-        &=& \displaystyle{\int_{\mathbb R} g(x)\exp(i\omega x)\mathrm{d}x}\end{array}
- \]
-</div></fieldset>
-
-</div><fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
-
-In "proper" LaTeX, the use of <code>\eqnarray</code> is discouraged due to possible interference
-with array column spacing.
-In Franklin/KaTeX this does not happen and so the only practical difference is that
-<code>\eqnarray</code> will give you a bit more horizontal spacing around the <code>=</code> signs than
-the <code>align</code> environme
-nt.
-
-</fieldset><h3 id="styling" ><a href="#styling"> Styling</a></h3><p>The standard styling for KaTeX with Franklin will be something like</p>
-<pre><code class="css">body &lbrace; counter-reset: eqnum; &rbrace;
-
-.katex &lbrace; font-size: 1.1em !important; &rbrace;
-
-.katex-display .katex &lbrace;
-    display: inline-block;
-&rbrace;
-
-.katex-display::after &lbrace;
-    counter-increment: eqnum;
-    content: &quot;(&quot; counter(eqnum) &quot;)&quot;;
-    position: relative;
-    float: right;
-    padding-right: 5px; &rbrace;
-
-.nonumber .katex-display::after &lbrace;
-  counter-increment: nothing;
-  content: &quot;&quot;;
-&rbrace;</code></pre>
-<p>Increase the <code>1.1em</code> to e.g. <code>1.2em</code> if you want larger font or decrease to e.g. <code>1.0em</code> for smaller font.
-The class <code>.katex-display</code> is for block math, <code>eqnum</code> is the CSS counter used for numbering equations.
-The <code>.nonumber</code> class is used for equations with suppressed numbering.</p>
-<h2 id="tables" ><a href="#tables"> Tables</a></h2><p>Franklin supports inserting tables with the following syntax:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">| item | count | price |
-| ---- | ----- | ----- |
-| apple | 5 | 3 |
-| pear | 10 | 5 |</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><table class="pure-table">
-<thead>
-<th > item </th>
-<th > count </th>
-<th > price </th>
-</thead>
-<tbody>
-<tr>
-<td > apple </td>
-<td > 5 </td>
-<td > 3 </td>
-</tr>
-<tr>
-<td > pear </td>
-<td > 10 </td>
-<td > 5 </td>
-</tr>
-</tbody>
-</table>
-</fieldset>
-
-</div><p>Table rows <strong>must</strong> start <strong>and</strong> end with a '<code>|</code>' symbol and <strong>must</strong> be entirely defined
-on a single line (this is a bit stricter than what most Markdown flavour that support table
-  require).
-Observe that alignment of the '<code>|</code>' is not necessary (though it often helps readability!)
-and spaces around '<code>|</code>' are insignificant.
-If a row is found to have too many or too few cells, the table will be padded accordingly:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">| A | B | C |
-| - | - | - |
-| 1 |
-| 1 | 2 |
-| 1 | 2 | 3 |
-| 1 | 2 | 3 | 4 |</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><table class="pure-table">
-<thead>
-<th > A </th>
-<th > B </th>
-<th > C </th>
-<th ></th>
-</thead>
-<tbody>
-<tr>
-<td > 1 </td>
-<td ></td>
-<td ></td>
-<td ></td>
-</tr>
-<tr>
-<td > 1 </td>
-<td > 2 </td>
-<td ></td>
-<td ></td>
-</tr>
-<tr>
-<td > 1 </td>
-<td > 2 </td>
-<td > 3 </td>
-<td ></td>
-</tr>
-<tr>
-<td > 1 </td>
-<td > 2 </td>
-<td > 3 </td>
-<td > 4 </td>
-</tr>
-</tbody>
-</table>
-</fieldset>
-
-</div><p>Any <strong>inline</strong> element is allowed within table cells and header cells:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">| A | B |
-| - | - |
-| `x|y` | $x \in \mathbb R$ |</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><table class="pure-table">
-<thead>
-<th > A </th>
-<th > B </th>
-</thead>
-<tbody>
-<tr>
-<td > <code>x|y</code> </td>
-<td > \(x \in \mathbb R\) </td>
-</tr>
-</tbody>
-</table>
-</fieldset>
-
-</div><p>Images are also inline blocks and so can be inserted in cells as well:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">| Language | Logo |
-| -------- | ---- |
-| Julia | ![](/assets/icons/julia_icon_small.png) |
-| Python | ![](/assets/icons/python_icon_small.png) |</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><table class="pure-table">
-<thead>
-<th > Language </th>
-<th > Logo </th>
-</thead>
-<tbody>
-<tr>
-<td > Julia </td>
-<td > <img src="/Xranklin.jl/previews/PR176/assets/icons/julia_icon_small.png"> </td>
-</tr>
-<tr>
-<td > Python </td>
-<td > <img src="/Xranklin.jl/previews/PR176/assets/icons/python_icon_small.png"> </td>
-</tr>
-</tbody>
-</table>
-</fieldset>
-
-</div><p>By default content is left-aligned in columns.
-You can change this by using <code>:-</code> (left) or <code>:--:</code> (center) or <code>-:</code> (right)
-under the relevant column header:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">| Left (implicit) | Left (explicit) | Center | Right |
-| --------------- | :-------------- | :----: | ----: |
-| ABC | ABC | ABC | ABC |
-| DEF | DEF | DEF | DEF |
-| GHI | GHI | GHI | GHI |</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><table class="pure-table">
-<thead>
-<th > Left (implicit) </th>
-<th style="text-align:left;"> Left (explicit) </th>
-<th style="text-align:center;"> Center </th>
-<th style="text-align:right;"> Right </th>
-</thead>
-<tbody>
-<tr>
-<td > ABC </td>
-<td style="text-align:left;"> ABC </td>
-<td style="text-align:center;"> ABC </td>
-<td style="text-align:right;"> ABC </td>
-</tr>
-<tr>
-<td > DEF </td>
-<td style="text-align:left;"> DEF </td>
-<td style="text-align:center;"> DEF </td>
-<td style="text-align:right;"> DEF </td>
-</tr>
-<tr>
-<td > GHI </td>
-<td style="text-align:left;"> GHI </td>
-<td style="text-align:center;"> GHI </td>
-<td style="text-align:right;"> GHI </td>
-</tr>
-</tbody>
-</table>
-</fieldset>
-
-</div><h3 id="styling__2" ><a href="#styling__2"> Styling</a></h3><p>A generated table will have the following HTML structure:</p>
-<pre><code class="html">&lt;table class=&quot;&lbrace;&lbrace;table_class&rbrace;&rbrace;&quot;&gt;
-  &lt;thead&gt;
-    &lt;th&gt; Header column 1 &lt;/th&gt;
-    &lt;th&gt; Header column 2 &lt;/th&gt;
-    ...
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;                  &lt;!-- first row --&gt;
-      &lt;td&gt; content &lt;/td&gt;  &lt;!-- first column --&gt;
-      &lt;td&gt; ... &lt;/td&gt;
-      ...
-    &lt;/tr&gt;
-    ...
-  &lt;/tbody&gt;
-&lt;/table&gt;</code></pre>
-<p>The <code>table_class</code> is a <a href="/Xranklin.jl/previews/PR176/syntax/vars+funs/">page variable</a> that you can specify,
-and which is empty by default.
-This can be useful if you're using a CSS framework like <a href="https://purecss.io/">Pure</a> which has specific
-classes for tables with good defaults (here, for instance, we're using
-<a href="https://purecss.io/tables/"><code>pure-table</code></a> as the class).</p>
-<p>If you're not using a framework, you will want to style the elements <code>table</code>, <code>thead</code>, <code>th</code>,
-<code>tbody</code>, <code>tr</code> and <code>td</code> as desired.
-CSS tricks has a <a href="https://css-tricks.com/complete-guide-table-element/">nice article</a> on
-styling tables.</p>
-<h2 id="footnotes" ><a href="#footnotes"> Footnotes</a></h2><p>You can add footnotes like you would a <a href="/Xranklin.jl/previews/PR176/syntax/basics/#links">reference link</a> except
-that the reference must start with a caret '<code>^</code>' so for instance <code>[^1]</code> or
-<code>[^note about x]</code>.
-Footnotes get automatically numbered by order of appearance on the page.
-The "definition" of the footnote can be placed wherever is convenient in the Markdown.
-On the page however, they will be placed at the end of the page in the order in which
-they appeared.</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">Some point we want to add a note to.[^a note]
-
-[^a note]: did you know about this?</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Some point we want to add a note to.<sup><a href="#fn_a_note">[1]</a></sup>
-<a id="fnref_a_note"></a>
-</fieldset>
-
-</div><p>The numbering is automatic, irrelevant of whether the footnote id has a number in it or not:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">Some other point worth adding a footnote to.[^1]
-
-[^1]: how about this? This one is a very long note
-so that you can see how that works, it also has
-some $x$ math and `foo() = 5` code.</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Some other point worth adding a footnote to.<sup><a href="#fn_1">[2]</a></sup>
-<a id="fnref_1"></a>
-</fieldset>
-
-</div><p>Click on  one  of the footnote  link or check the <a href="#fn-defs">bottom of this page</a>
-to see the footnotes.</p>
-<p>The list of footnotes will be placed wherever you put a <code>&lbrace;&lbrace;footnotes&rbrace;&rbrace;</code>.
-Typically (like here), this is part of the layout in <code>_layout/foot.html</code>,
-but you could choose to place it manually.</p>
-<h2 id="div_blocks" ><a href="#div_blocks"> Div blocks</a></h2><p>It can sometimes be nice to use a specific CSS styling for a part of a page.
-For instance you might want to have some text that's in a different font, or a different colour,
-or that is centred.
-You can of course always achieve this by injecting <a href="#injecting_html">raw HTML</a> directly,
-another way is to use <code>@@c1,c2 ... @@</code> to indicate a <strong>div block</strong> with class <code>c1</code> and <code>c2</code>.</p>
-<p>This is particularly useful when you're working with a class-heavy framework such as <a href="https://getbootstrap.com/">Bootstrap</a>.
-Here's an example with a class <code>yellow-bg</code> and a class <code>red-text</code> with the following CSS:</p>
-<pre><code class="css">.yellow-bg  &lbrace;background-color: yellow; width: 50%; padding-left: 2em;&rbrace;
-.red-text &lbrace;color: red;&rbrace;</code></pre>
- 
- <style>
- .yellow-bg  {background-color: yellow; width: 50%; padding-left: 2em;}
- .red-text {color: red;}
- </style>
- <div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">@@yellow-bg
-  this will be in a box with yellow background
-@@
-
-@@yellow-bg,red-text
-  in a box with yellow background and red text
-@@</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="yellow-bg"><p>  this will be in a box with yellow background</p>
-</div><div class="yellow-bg red-text"><p>  in a box with yellow background and red text</p>
-</div></fieldset>
-
-</div><h2 id="latex_like_commands" ><a href="#latex_like_commands"> LaTeX-like commands</a></h2><p>When writing blog posts or lecture notes for instance, you might end up having to repeatedly
-use some styling, or some sequence of commands, or some sentence.
-To help you with this, Franklin supports defining LaTeX-like commands in much the same way
-as in LaTeX with the syntax</p>
-<pre><code class="plaintext">\newcommand&lbrace;\command&rbrace;[nargs]&lbrace;definition&rbrace;</code></pre>
-<p>where <code>nargs</code> is the number of arguments of the command and the definition is any valid Franklin markdown with <code>#1</code>, <code>#2</code>, ... indicating where arguments must be placed.
-Examples will make all this much clearer.</p>
-<p>First, the case without arguments:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\command_a&rbrace;&lbrace;_a sentence that would be repeated many times_&rbrace;
-
-And here: \command_a</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>And here: <em>a sentence that would be repeated many times</em></fieldset>
-
-</div><p>Then a case with a single argument:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\warning&rbrace;[1]&lbrace;@@yellow-bg,red-text #1 @@&rbrace;
-
-And here: \warning&lbrace;some important text&rbrace;</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>And here: <div class="yellow-bg red-text"><p> some important text </p>
-</div></fieldset>
-
-</div><p>Finally a case with two arguments (there can be more, of course, though beyond 2 they become
-  harder to read and maintain):</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\theorem&rbrace;[2]&lbrace;**Theorem (#1)**. #2&rbrace;
-
-\theorem&lbrace;Schwarz&rbrace;&lbrace;
-  $$ (\mathbb E(XY))^2 \le \mathbb E(X^2) \mathbb E(Y^2). $$
-&rbrace;</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><strong>Theorem (Schwarz)</strong>. \[  (\mathbb E(XY))^2 \le \mathbb E(X^2) \mathbb E(Y^2).  \]</fieldset>
-
-</div><p>Since command can wrap around raw HTML injection as well, you can for instance define a
-command that applies custom local-styling to some text:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\style&rbrace;[2]&lbrace;~~~&lt;span style=&quot;#1&quot;&gt;~~~#2~~~&lt;/span&gt;~~~&rbrace;
-
-Here is \style&lbrace;color:blue&rbrace;&lbrace;some text in blue&rbrace; and
-\style&lbrace;font-weight:750;font-family:serif;&rbrace;&lbrace;some bolder serif text&rbrace;.</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Here is <span style="color:blue">some text in blue</span> and
-<span style="font-weight:750;font-family:serif;">some bolder serif text</span>.</fieldset>
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">x = 5
+println(x^2)</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">25
+</code></pre></div></fieldset>
 
 </div><fieldset class="tip"><legend class="tip-legend">🚀 Tip</legend>
 
-Command names cannot contain a space or end with either '<code>*</code>' or '<code>_</code>'.
-But they can end with one or more digits.
-For instance, <code>\com1b</code>, <code>\com1</code> or  <code>\com_a</code> are allowed but not <code>\com*</code> or <code>\com_</code>,
-to avoid ambiguities with emphasised text.
+If all your code blocks are fast-running, you can ignore the <code>indep</code> trick.
+However if a block takes time to run, and you know that it is independent
+in the sense mentioned above, marking it explicitly will help make page reloads faster.
 
-</fieldset><h3 id="whitespaces" ><a href="#whitespaces"> Whitespaces</a></h3><p>In math environments, to  avoid issues with chaining Franklin-defined commands
-(which require braces for arguments) and KaTeX commands (which don't always require braces),
-Franklin forces the insertion of whitespaces left of injected arguments.
-This will usually not have a visible effect on the result but you may still
-want to switch this off.
-In this case, use '<code>!#</code>' in defining the command instead of just '<code>#</code>' when referring to an
-argument in a definition.
-This is best seen with an example:</p>
+</fieldset><h2 id="understanding_how_things_work" ><a href="#understanding_how_things_work"> Understanding how things work</a></h2><p>Each page can be seen as one "notebook".
+All executed code blocks on the page are executed in one sandbox module
+attached to that page and <strong>share the same scope</strong>.
+That sandbox module also loads the content of <code>utils.jl</code> as a <code>Utils</code> module
+and so all objects defined there can be accessed in any code block via
+<code>Utils.$name</code> (see also <a href="/Xranklin.jl/previews/PR176/syntax/utils/">the page on Utils</a>).</p>
+<p>To illustrate the scoping, consider these two consecutive cells:</p>
 <div class="trim">
 
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\E&rbrace;[1]&lbrace;\mathbb E\left[#1\right]&rbrace;
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+#hideall
+x = 3;
+```
 
-Zero expected-value: $\E&lbrace;X&rbrace;=0$.</code></pre>
+```!
+y = x
+@show y
+```</code></pre>
 </fieldset>
 
 </div>
@@ -1789,110 +1453,426 @@ Zero expected-value: $\E&lbrace;X&rbrace;=0$.</code></pre>
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Zero expected-value: \(\mathbb E\left[ X\right]=0\).</fieldset>
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">y = x
+@show y</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">y = 3
+</code></pre></div></fieldset>
 
-</div><p>The HTML generated by the above expression is:</p>
-<pre><code class="html">Zero expected-value: \(\mathbb E\left[ X\right]=0\).</code></pre>
-<p>Note  how there's a whitespace between the inserted '<code>X</code>' and the '<code>[</code>'.
-If you had instead used '<code>!#1</code>' in the definition of the command, that
-whitespace would not be there:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\E&rbrace;[1]&lbrace;\mathbb E\left[!#1\right]&rbrace;
-
-Zero expected-value: $\E&lbrace;X&rbrace;=0$.</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Zero expected-value: \(\mathbb E\left[X\right]=0\).</fieldset>
-
-</div><p>Observe that there's no visible difference in the result except that the HTML now is:</p>
-<pre><code class="html">Zero expected-value: \(\mathbb E\left[X\right]=0\).</code></pre>
-<p>without whitespace on the left of the '<code>X</code>'.</p>
-<fieldset class="tip"><legend class="tip-legend">🚀 Tip</legend>
-
-Generally you should not have to bother with this and can just ignore the <code>!#</code> case (in fact KaTeX does some processing of its own to avoid issues with whitespaces).
-
-</fieldset><h3 id="defining_commands_with_julia" ><a href="#defining_commands_with_julia"> Defining commands with Julia</a></h3><p>You can also define the behaviour of a LaTeX-like command with Julia code.
-This can be useful for more advanced processing and is
-covered on <a href="/Xranklin.jl/previews/PR176/syntax/utils/">a dedicated page</a>.</p>
-<h2 id="latex_like_environments" ><a href="#latex_like_environments"> LaTeX-like environments</a></h2><p>To accompany LaTeX-like commands, you can also define LaTeX-like environments in
-Franklin which allow defining a custom behaviour for a block of text.
-The general syntax is</p>
-<pre><code class="plaintext">\newenvironment&lbrace;name&rbrace;[nargs]&lbrace;pre&rbrace;&lbrace;post&rbrace;</code></pre>
-<p>where <code>pre</code> and <code>post</code> are inserted before and after the content and can have
-one or more <code>#...</code> to refer to the arguments.</p>
-<p>Here's an example styling a block and using <a href="#injecting_html">raw HTML</a>.</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\html&rbrace;[1]&lbrace;~~~#1~~~&rbrace;
-\newenvironment&lbrace;blockstyle&rbrace;[1]&lbrace;
-  \html&lbrace;&lt;div style=&quot;#1&quot;&gt;&rbrace;
-&rbrace;&lbrace;
-  \html&lbrace;&lt;/div&gt;&rbrace;
-&rbrace;
-
-\begin&lbrace;blockstyle&rbrace;&lbrace;font-weight: 600; color: blue&rbrace;
-  Here some text
-\end&lbrace;blockstyle&rbrace;</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><p><div style="font-weight: 600; color: blue">Here some text</div></p>
-</fieldset>
-
-</div><h3 id="defining_environments_with_julia" ><a href="#defining_environments_with_julia"> Defining environments with Julia</a></h3><p>As with commands, you can also define the behaviour of a LaTeX-like environment
-with Julia code, this is covered <a href="/Xranklin.jl/previews/PR176/syntax/utils/">on a dedicated page</a>.</p>
-<h2 id="raw_content" ><a href="#raw_content"> Raw content</a></h2><p>For both HTML and LaTeX output, raw content allows to pass some content completely untouched to the final  stage of the processing (either the web-browser or the  LaTeX compiler) without Franklin  interfering.
-For those,  use <code>??? ... ???</code>:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">1. ABC **DEF** GHI (converted  by Franklin)
-1. ??? ABC **DEF** GHI ??? (untouched by Franklin)</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><ol>
-<li>ABC <strong>DEF</strong> GHI (converted  by Franklin)</li>
-<li> ABC **DEF** GHI  (untouched by Franklin)</li>
+</div><p>When a code block is executed, the code string as well as the output strings are
+cached.
+This allows for code blocks to not be systematically re-executed if they don't need to be.
+The cached representation can however be considered <em>stale</em> in which case the code block
+will be re-evaluated as soon as the page changes.
+This can be mitigated with the use of <code># indep</code> as <a href="/Xranklin.jl/previews/PR176/syntax/code_1/#marking_a_cell_as_independent">mentioned above</a>.
+When adding or modifying a code block, every code block below that one are considered stale,
+and so will be re-executed.</p>
+<p>Since <code>Utils</code> is loaded into the sandbox module attached to a page, if <code>utils.jl</code> changes,
+the entirety of each page's "notebook" will be marked as stale and will be re-run to guarantee
+that it uses the latest definitions from <code>Utils</code> (even if it doesn't use <code>Utils</code> at all).
+In that sense changing <code>utils.jl</code> amounts to clearing the entire cache and re-building
+the website (see also <a href="/Xranklin.jl/previews/PR176/syntax/utils/">the page discussing Utils</a>).</p>
+<h3 id="what_to_do_when_things_go_wrong" ><a href="#what_to_do_when_things_go_wrong"> What to do when things go wrong</a></h3><p>While hopefully this shouldn't happen too often, two things can go wrong:</p>
+<ol>
+<li>some code fails in an un-expected way (e.g.: it calls objects which it should have
+  access to but doesn't seem to),</li>
+<li>the output of an auto-cell is incorrect (either wasn't refreshed or some other random
+output that you didn't expect).</li>
 </ol>
+<p>In both cases, you can first try to force re-execute the cell and, if that fails, you can
+try clearing the cache:</p>
+<ol>
+<li>to force re-execute a cell, just double the execution marker (e.g. <code>!!</code> or <code>::</code>),</li>
+<li>to clear the page cache, interrupt the server, add the <a href="/Xranklin.jl/previews/PR176/syntax/vars+funs/">page variable</a>
+  <code>ignore_cache = true</code> and re-start the server,</li>
+<li>to clear the entire site cache, interrupt the server and restart it passing the
+argument <code>clear = true</code> to <code>serve(...)</code> .</li>
+</ol>
+<p>In the first case, that cell along with all subsequent cells will be re-evaluated.
+In the second case, only the cache associated with the current page will be ignored and only
+that page will be (completely) re-evaluated.
+In the last case, the whole site is re-built from scratch.</p>
+<p>In any case, if you can reproduce what led to the problem, and you think it could be addressed
+on the Franklin side,  kindly open an issue on GitHub.</p>
+<h2 id="output_of_executable_code_blocks" ><a href="#output_of_executable_code_blocks"> Output of executable code blocks</a></h2><p>When evaluating a code block, Franklin captures <code>stdout</code>, <code>stderr</code> and, if the code
+doesn't fail, the result of the execution.
+When using the command <code>\show</code> (or automatically if you use implicit naming), the output
+is placed in the following HTML:</p>
+<pre><code class="html">&lt;div class=&quot;code-output&quot;&gt;
+
+  &lt;!-- If stdout is not empty --&gt;
+  &lt;pre&gt;&lt;code clas=&quot;code-stdout language-plaintext&quot;&gt;
+    ...captured stdout...
+  &lt;/code&gt;&lt;/pre&gt;
+
+  &lt;!-- if stderr is not empty --&gt;
+  &lt;pre&gt;&lt;code class=&quot;code-stderr language-plaintext&quot;&gt;
+    ...captured stderr...
+  &lt;/code&gt;&lt;/pre&gt;
+
+  &lt;!-- if result is not nothing --&gt;
+   ...appropriate representation of the result...
+&lt;/div&gt;</code></pre>
+<p>If the code block didn't fail, the <em>appropriate representation of the result</em> is obtained by considering the following cases in order:</p>
+<ol>
+<li>the result is <code>nothing</code>, nothing gets shown (no string),</li>
+<li>there is a custom <code>html_show</code> function for <code>typeof(result)</code> that is defined
+in your <code>Utils</code>, the string returned by the call to that function is then added,</li>
+<li>the object has a <code>Base.show</code> method for <code>MIME&quot;image/svg+xml&quot;</code> or <code>MIME&quot;image/png&quot;</code>,
+the image is automatically saved to an appropriate location and shown (with priority to SVG output),</li>
+<li>the object has a <code>Base.show</code> method for <code>MIME&quot;text/html&quot;</code>, it gets called and the HTML gets shown,</li>
+<li>the object has a <code>Base.show</code> method for <code>MIME&quot;text/plain&quot;</code>, it gets called and shown in a <code>&lt;pre&gt;&lt;code class=&quot;code-result language-plaintext&quot;&gt;...&lt;/code&gt;&lt;/pre&gt;</code> block,</li>
+<li>otherwise, the fallback <code>Base.show</code> is called and shown as in the previous point in a <code>&lt;pre&gt;&lt;code...</code> block.</li>
+</ol>
+<p>Note that you can always suppress the display of a code block result by
+adding a final '<code>;</code>' to the code.
+These different cases are illustrated further below.</p>
+<fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+
+When capturing <code>stdout</code> during a code-cell evaluation, the logging level is
+such that <code>@info</code> and <code>@warn</code> won't show up.
+This is to prevent getting spurious information being shown on your website from
+packages precompiling upon CI deployment. 
+<br>
+
+Long story short: avoid using these macros in your code cells.
+
+</fieldset><p>You can also overwrite the <code>\show</code> command by defining a custom
+<code>lx_show</code> function in your utils (see <a href="/Xranklin.jl/previews/PR176/syntax/utils/">how to define latex commands</a>) if you
+want to handle the output in your own way (or define your own alternative command that does it).</p>
+<h3 id="nothing_to_show" ><a href="#nothing_to_show"> Nothing to show</a></h3><p>Nothing will be shown beyond <code>stdout</code> if</p>
+<ul>
+<li>the last command in the code block is a <code>@show</code> or returns <code>nothing</code></li>
+<li>the last command in the code block is followed by '<code>;</code>'</li>
+</ul>
+<p>A few examples follow:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+a = 1//2
+@show a   # ==&gt; last command is a show
+```</code></pre>
 </fieldset>
 
 </div>
 
-            <div id="fn-defs">
-<a id="fn-defs"></a>
-<div class="fn-title">Notes</div>
-<ol><li>
-  <a id="fn_a_note"></a>
-  <a href="#fnref_a_note" class="fn-hook-btn">&ldca;</a>
-  did you know about this?
-</li>
-<li>
-  <a id="fn_1"></a>
-  <a href="#fnref_1" class="fn-hook-btn">&ldca;</a>
-  how about this? This one is a very long note
-so that you can see how that works, it also has
-some \(x\) math and <code>foo() = 5</code> code.
-</li>
-  </ol>
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">a = 1//2
+@show a   # ==&gt; last command is a show</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">a = 1//2
+</code></pre></div></fieldset>
+
+</div><div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+println(&quot;hello&quot;)
+1;       # ==&gt;  ';' suppresses the output
+```</code></pre>
+</fieldset>
+
 </div>
 
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">println(&quot;hello&quot;)
+1;       # ==&gt;  ';' suppresses the output</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">hello
+</code></pre></div></fieldset>
+
+</div><div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+function foo()::Nothing
+    println(&quot;bar&quot;)
+    return
+end
+foo()    # ==&gt; returns nothing
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">function foo()::Nothing
+    println(&quot;bar&quot;)
+    return
+end
+foo()    # ==&gt; returns nothing</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">bar
+</code></pre></div></fieldset>
+
+</div><h3 id="default_show" ><a href="#default_show"> Default show</a></h3><p>For a result that does not have a custom show, is not showable as an image, or HTML,
+<code>Base.show</code> will be applied with a result similar to what you would get in the Julia REPL:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+true
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">true</code></pre>
+<div class="code-output"><pre><code class="code-result language-plaintext">true</code></pre></div></fieldset>
+
+</div><div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+[1, 2, 3]
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">[1, 2, 3]</code></pre>
+<div class="code-output"><pre><code class="code-result language-plaintext">3-element Vector{Int64}:
+ 1
+ 2
+ 3</code></pre></div></fieldset>
+
+</div><p>One exception to this is if the result has a dedicated show method for <code>MIME&quot;text/plain&quot;</code> in which
+case that is what will be called and shown.</p>
+<h3 id="showable_as_svg_or_png" ><a href="#showable_as_svg_or_png"> Showable as SVG or PNG</a></h3><p>If the result is showable as SVG or PNG then a relevant file (<code>.svg</code> or <code>.png</code>) is
+generated and the image is inserted with</p>
+<pre><code class="html">&lt;img class=&quot;code-figure&quot; src=&quot;...generated_path_to_img...&quot;&gt;</code></pre>
+<p>For instance:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+# indep
+using Luxor
+@drawsvg juliacircles()
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">using Luxor
+@drawsvg juliacircles()</code></pre>
+<div class="code-output"><pre class="fig-stdout"><code class="code-stdout language-plaintext">[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mSnoopPrecompile is analyzing Luxor.jl code...
+</code></pre><img class="code-figure" src="/Xranklin.jl/previews/PR176/assets/syntax/code_1/figs-html/__autofig_10012904553771893789.svg">
+</div></fieldset>
+
+</div><p>If you inspect the HTML, you will see that the image displayed corresponds to a generated path that looks like</p>
+<pre><code class="plaintext">/assets/syntax/code/figs-html/__autofig_10012904553771893789.svg</code></pre>
+<p>The generated path is built as</p>
+<pre><code class="plaintext">/assets/[relative-path]/figs-html/[gen]</code></pre>
+<p>where <code>relative-path</code> is the relative path to the page with the code and
+<code>gen</code> is built out of the hash of the code that generated the image:</p>
+<pre><code class="julia">hash(&quot;&quot;&quot;
+  using Luxor
+  @drawsvg juliacircles()
+  &quot;&quot;&quot; |&gt; strip
+  ) |&gt; string</code></pre>
+<div class="code-output"><pre><code class="code-result language-plaintext">"10012904553771893789"</code></pre></div><p>Here's another example with PyPlot (and you could use any other plotting library such as
+<a href="https://github.com/JuliaPlots/Plots.jl">Plots</a>, <a href="https://github.com/JuliaPlots/PlotlyJS.jl">PlotlyJS</a>, etc.,
+you can also check out the <a href="/Xranklin.jl/previews/PR176/extras/plots/">page dedicated to plots with Franklin</a>)</p>
+<pre><code class="julia">using PyPlot
+x = range(0, pi, length=500)
+y = @. sin(exp(x)) * sinc(x)
+figure(figsize=(6, 4))
+plot(x, y)
+gcf()</code></pre>
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/previews/PR176/assets/syntax/code_1/figs-html/__autofig_1458796918183576839.svg">
+</div><p>Note that it's the figure object that is showable as SVG in PyPlot and so we must do
+<code>gcf()</code> here to have it be the effective result of the cell and have the plot shown.</p>
+<h3 id="html_show" ><a href="#html_show"> HTML show</a></h3><p>Some packages define objects which indicate how to show objects with a <code>MIME&quot;text/html&quot;</code>,
+in that case the corresponding <code>show</code> method is called and the HTML shown.
+This is for instance the case with DataFrame objects:</p>
+<pre><code class="julia">using DataFrames
+df = DataFrame(
+  (
+    names  = [&quot;Vlad&quot;, &quot;Martha&quot;, &quot;Hasan&quot;, &quot;Carl&quot;],
+    age    = [50, 34, 23, 42],
+    gender = [&quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;]
+  )
+)</code></pre>
+<div class="code-output"><div><div style = "float: left;"><span>4×3 DataFrame</span></div><div style = "clear: both;"></div></div><div class = "data-frame" style = "overflow-x: scroll;"><table class = "data-frame" style = "margin-bottom: 6px;"><thead><tr class = "header"><th class = "rowNumber" style = "font-weight: bold; text-align: right;">Row</th><th style = "text-align: left;">names</th><th style = "text-align: left;">age</th><th style = "text-align: left;">gender</th></tr><tr class = "subheader headerLastRow"><th class = "rowNumber" style = "font-weight: bold; text-align: right;"></th><th title = "String" style = "text-align: left;">String</th><th title = "Int64" style = "text-align: left;">Int64</th><th title = "String" style = "text-align: left;">String</th></tr></thead><tbody><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">1</td><td style = "text-align: left;">Vlad</td><td style = "text-align: right;">50</td><td style = "text-align: left;">M</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">2</td><td style = "text-align: left;">Martha</td><td style = "text-align: right;">34</td><td style = "text-align: left;">F</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">3</td><td style = "text-align: left;">Hasan</td><td style = "text-align: right;">23</td><td style = "text-align: left;">M</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">4</td><td style = "text-align: left;">Carl</td><td style = "text-align: right;">42</td><td style = "text-align: left;">M</td></tr></tbody></table></div></div><div class="lskip"> </div><h3 id="custom_show" ><a href="#custom_show"> Custom show</a></h3><p>If you have defined a custom <code>html_show(r)</code> in your <code>Utils</code> that accepts an object of the type
+of the result of a code block and returns a string, then that will be used to represent the
+result on the page.</p>
+<p>For instance in the <code>utils.jl</code> for the present website, we've defined</p>
+<pre><code class="julia">struct Foo
+    x::Int
+end
+html_show(f::Foo) = &quot;&lt;strong&gt;Foo: $(f.x)&lt;/strong&gt;&quot;</code></pre>
+<p>We can use the type <code>Foo</code> by indicating it is defined in <code>Utils</code> and the custom show method will be used:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+Utils.Foo(1)
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">Utils.Foo(1)</code></pre>
+<div class="code-output"><strong>Foo: 1</strong></div></fieldset>
+
+</div><fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+
+Remember that you can refer to any object defined in <code>utils.jl</code> with the syntax <code>Utils.$name_of_object</code>.
+
+</fieldset>
+<div class="lskip"> </div><h3 id="showing_the_output_as_markdown/html" ><a href="#showing_the_output_as_markdown/html"> Showing the output as Markdown/HTML</a></h3><p>In some cases it can be convenient to use a code block to generate some markdown (resp. HTML).
+One way is to define a <a href="/Xranklin.jl/previews/PR176/syntax/utils/">utils function</a> but you can also use the <code>\mdshow</code> (resp. <code>\htmlshow</code>) command
+which interprets the output of <code>stdout</code> and the string representation of the result as Markdown.</p>
+<p>Here's a simple illustration:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">````!ex-mdshow
+#hideall
+println(&quot;```plaintext&quot;)
+for i in 1:5
+  println(&quot;*&quot;^i)
+end
+println(&quot;```&quot;)
+````
+
+\mdshow&lbrace;ex-mdshow&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="plaintext">*
+**
+***
+****
+*****</code></pre></fieldset>
+
+</div><p>Here's another one with <code>\htmlshow</code>:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!ex-htmlshow
+#hideall
+println(&quot;&lt;ul&gt;&quot;)
+for i in 1:5
+  println(&quot;&lt;li&gt;&quot;, &quot;🌴&quot;^i, &quot;&lt;/li&gt;&quot;)
+end
+println(&quot;&lt;/ul&gt;&quot;)
+```
+\htmlshow&lbrace;ex-htmlshow&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><ul>
+<li>🌴</li>
+<li>🌴🌴</li>
+<li>🌴🌴🌴</li>
+<li>🌴🌴🌴🌴</li>
+<li>🌴🌴🌴🌴🌴</li>
+</ul></fieldset>
+
+</div><h3 id="what_if_the_code_errors?" ><a href="#what_if_the_code_errors?"> What if the code errors?</a></h3><p>If there's an error in the code, no result will be shown and <code>stderr</code> will
+capture a trimmed stacktrace of the problem which will be displayed:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
+# name: error
+# indep
+sqrt(-1)
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">sqrt(-1)</code></pre>
+<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: DomainError with -1.0:
+sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).
+Stacktrace:
+  [1] throw_complex_domainerror(f::Symbol, x::Float64)
+    @ Base.Math ./math.jl:33
+  [2] sqrt
+    @ ./math.jl:591 [inlined]
+  [3] sqrt(x::Int64)
+    @ Base.Math ./math.jl:1372
+</code></pre></div></fieldset>
+
+</div>
+<div class="lskip"> </div><h3 id="in_what_path_does_the_code_run?" ><a href="#in_what_path_does_the_code_run?"> In what path does the code run?</a></h3><p>In the same path as where <code>serve</code> was called.
+And since you can call <code>serve()</code> from within the site folder or from elsewhere specifying
+<code>serve(&quot;path/to/folder&quot;)</code>, this path can vary.
+As a consequence, if you want some code to do something with a path (e.g. read or write a file),
+you should use <code>Utils.path(:folder)</code> as the base path pointing to your website folder.
+You can also use <code>Utils.path(:site)</code> as the base path pointing to the website build folder.</p>
+<p>For instance let's say you want to save a DataFrame to a CSV that you can link to
+as an asset on your site:</p>
+<pre><code class="julia">using DataFrames, CSV
+build_dir  = Utils.path(:site)
+target_dir = mkpath(joinpath(build_dir, &quot;assets&quot;, &quot;data&quot;))
+df = DataFrame(A=1:4, B=[&quot;M&quot;, &quot;F&quot;, &quot;F&quot;, &quot;M&quot;])
+CSV.write(joinpath(target_dir, &quot;data1.csv&quot;), df);</code></pre>
+<p>this outputs nothing but it does save <code>data1.csv</code> in the build folder at location
+<code>/assets/data/</code> so that you could then link to it explicitly:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">click on [this link](/assets/data/data1.csv) to download the CSV corresponding
+to the dataframe above.</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>click on <a href="/Xranklin.jl/previews/PR176/assets/data/data1.csv">this link</a> to download the CSV corresponding
+to the dataframe above.</fieldset>
+
+</div><p>Another example is that you might want to write a file in the build dir:</p>
+<pre><code class="julia">build_dir = Utils.path(:site)
+open(joinpath(build_dir, &quot;405.html&quot;), &quot;w&quot;) do f
+  write(f, &quot;&quot;&quot;
+    Dummy page 405, &lt;a href=&quot;/&quot;&gt;return home&lt;/a&gt;
+    &quot;&quot;&quot;
+  )
+end;</code></pre>
+<p>The above code block writes a dummy HTLM page <code>405.html</code> in the build folder.
+You can actually see it <a href="/Xranklin.jl/previews/PR176/405.html">here</a>.</p>
+<fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+
+Do not use absolute paths since those might not exist in a continuous integration
+environment. Do use <code>Utils.path(:folder)</code> or <code>Utils.path(:site)</code>
+as your base path and use <code>joinpath</code> to point to the specific location you care about.
+
+</fieldset><a href="/Xranklin.jl/previews/PR176/syntax/code-2/">Next page</a>
+
+            
 
             <div id="pg-foot">
               Website built with <a href="https://franklinjl.org">Franklin.jl</a>
@@ -1956,7 +1936,7 @@ some \(x\) math and <code>foo() = 5</code> code.
     <div id="marginToc">
         
           <div id="marginTocLegend"><a href="#">Contents</a></div>
-          <div class="toc"><ol><li><a href="#overview"> Overview</a></li><li><a href="#injecting_html"> Injecting HTML</a></li><li><a href="#equations"> Equations</a><ol><li><a href="#environments"> Environments</a></li><li><a href="#styling"> Styling</a></li></ol></li><li><a href="#tables"> Tables</a><ol><li><a href="#styling__2"> Styling</a></li></ol></li><li><a href="#footnotes"> Footnotes</a></li><li><a href="#div_blocks"> Div blocks</a></li><li><a href="#latex_like_commands"> LaTeX-like commands</a><ol><li><a href="#whitespaces"> Whitespaces</a></li><li><a href="#defining_commands_with_julia"> Defining commands with Julia</a></li></ol></li><li><a href="#latex_like_environments"> LaTeX-like environments</a><ol><li><a href="#defining_environments_with_julia"> Defining environments with Julia</a></li></ol></li><li><a href="#raw_content"> Raw content</a></li></ol></div>
+          <div class="toc"><ol><li><a href="#overview"> Overview</a></li><li><a href="#syntax_for_executable_code_blocks"> Syntax for executable code blocks</a><ol><li><a href="#hiding_lines_of_code"> Hiding lines of code</a></li><li><a href="#mock_lines"> Mock lines</a></li><li><a href="#providing_name_hints"> Providing name hints</a></li><li><a href="#marking_a_cell_as_independent"> Marking a cell as independent</a></li></ol></li><li><a href="#understanding_how_things_work"> Understanding how things work</a><ol><li><a href="#what_to_do_when_things_go_wrong"> What to do when things go wrong</a></li></ol></li><li><a href="#output_of_executable_code_blocks"> Output of executable code blocks</a><ol><li><a href="#nothing_to_show"> Nothing to show</a></li><li><a href="#default_show"> Default show</a></li><li><a href="#showable_as_svg_or_png"> Showable as SVG or PNG</a></li><li><a href="#html_show"> HTML show</a></li><li><a href="#custom_show"> Custom show</a></li><li><a href="#showing_the_output_as_markdown/html"> Showing the output as Markdown/HTML</a></li><li><a href="#what_if_the_code_errors?"> What if the code errors?</a></li><li><a href="#in_what_path_does_the_code_run?"> In what path does the code run?</a></li></ol></li></ol></div>
         
     </div>
 </div>
@@ -2025,10 +2005,6 @@ some \(x\) math and <code>foo() = 5</code> code.
 }(this, this.document));
 </script>
 
-
-    <script src="/Xranklin.jl/previews/PR176/libs/katex/katex.min.js"></script>
-    <script src="/Xranklin.jl/previews/PR176/libs/katex/contrib/auto-render.min.js"></script>
-    <script>renderMathInElement(document.body)</script>
 
 
 
