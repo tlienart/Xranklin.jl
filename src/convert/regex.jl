@@ -28,7 +28,7 @@ const STACKTRACE_TRIM_PAT = r"\[\d+\]\stop-level\sscope"
 "Check if a name hint is given"
 const AUTO_NAME_HINT_PAT = r"(?:^|\n)\s*#\s*name\s*\:\s*(.*?)\n"
 
-"Check if a cell is indep of other cells"
+"Check if a cell is indep of all context (other cells + utils)"
 const CODE_INDEP_PAT = r"(?:^|\n)\s*#\s*?indep\s*\n"
 
 "Hide some or all lines of code in an executable block."

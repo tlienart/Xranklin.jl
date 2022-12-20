@@ -22,7 +22,7 @@ function eval_code_cell!(
             imgdir_html::String=tempdir(),
             imgdir_latex::String=tempdir(),
             force::Bool=false,
-            indep::Bool=false,
+            indep::Bool=false
             )::Nothing
 
     # stop early if there's no code to evaluate
@@ -51,10 +51,10 @@ function eval_code_cell!(
     end
 
     # if the cell is explicitly marked as independent, check if we don't
-    # happen to have a mapping for it
+    # happen to already have a mapping for it
     if indep
         if cell_code in keys(nb.indep_code)
-            @info "  ⏩  skipping cell $cell_name (independent 🌴 )"
+            @info "  ⏩  skipping cell $cell_name (independent 🌴)"
             code_pair = CodeCodePair((cell_code, nb.indep_code[cell_code]))
             return finish_cell_eval!(nb, code_pair, indep)
         end

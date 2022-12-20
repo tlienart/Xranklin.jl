@@ -16,7 +16,6 @@ end
 newbaz(z) = Baz(z)
 
 
-
 # ####################################
 # # TTFX
 # ####################################
@@ -97,11 +96,14 @@ end
 Generates the left-menu as a depth-1 list based off the global var `menu` which
 is structured as:
 
-    ("top_path" => "Top Name") => [
-        "sub_path" => "Sub Name",
-        "sub_path" => "Sub Name"
+    {
+        ("top_path" => "Top Name") => [
+            "sub_path" => "Sub Name",
+            "sub_path" => "Sub Name"
+            ...
+        ],
         ...
-    ]
+    }
 """
 function hfun_generate_menu()
     menu = getgvar(:menu)

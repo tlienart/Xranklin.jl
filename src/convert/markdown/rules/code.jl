@@ -150,11 +150,11 @@ function _code_info(
     cb   = content(b)
     code = subs(cb, nextind(cb, lastindex(info)), lastindex(cb)) |> _strip
 
-    name  = ""
-    exec  = false
-    auto  = false
-    force = false
-    indep = false
+    name   = ""
+    exec   = false
+    auto   = false
+    force  = false
+    indep  = false
 
     l, e, n = match(CODE_LANG_PAT, info)
 
@@ -188,7 +188,7 @@ function _code_info(
         if length(e) == 2
             force = true
         end
-        # If there's an '# indep ' on a line, then mark the code
+        # If there's an '# indep' on a line, then mark the code
         # as indep
         m = match(CODE_INDEP_PAT, code)
         if !isnothing(m)
@@ -197,7 +197,15 @@ function _code_info(
         end
     end
 
-    return CodeInfo(; name, lang, code=strip(code, ['\n']), exec, auto, force, indep)
+    return CodeInfo(;
+        name,
+        lang,
+        code=strip(code, ['\n']),
+        exec,
+        auto,
+        force,
+        indep
+    )
 end
 
 
@@ -230,7 +238,7 @@ function html_code_block(
         )::String
 
     hascode!(lc)
-    ci   = _code_info(b, lc)
+    ci = _code_info(b, lc)
     # placeholder for output string if has to be added directly after code
     # might remain empty if result is nothing or if it's not an auto-cell
     post = ""
@@ -241,7 +249,10 @@ function html_code_block(
             imgdir_latex = mkpath(imgdir_base / "figs-latex")
             eval_code_cell!(
                 lc, ci.code, ci.name;
-                imgdir_html, imgdir_latex, force=ci.force, indep=ci.indep
+                imgdir_html, imgdir_latex,
+                # code info
+                force=ci.force,
+                indep=ci.indep
             )
         end
         if ci.auto

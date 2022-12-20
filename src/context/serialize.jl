@@ -61,10 +61,10 @@ function serialize_lc(lc::LocalContext)
         req_vars   = lc.req_vars,   # as
         req_lxdefs = lc.req_lxdefs, # as
         # vars_aliases
-        nb_vars_cp = lc.nb_vars.code_pairs,  # serialisable since lc.vars is
-        nb_code_cp = lc.nb_code.code_pairs,  # as (string only)
-        nb_code_cn = lc.nb_code.code_names,  # as
-        nb_code_ic = lc.nb_code.indep_code,  # as
+        nb_vars_cp  = lc.nb_vars.code_pairs,  # serialisable since lc.vars is
+        nb_code_cp  = lc.nb_code.code_pairs,  # as (string only)
+        nb_code_cn  = lc.nb_code.code_names,  # as
+        nb_code_ic  = lc.nb_code.indep_code,  # as
         # nb_code
         to_trigger = lc.to_trigger,  # as
         page_hash  = lc.page_hash[], # as

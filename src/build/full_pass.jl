@@ -92,9 +92,9 @@ function full_pass(
     end
 
     if utils_changed
-        # save code blocks marked as independent from context to avoid having
-        # to reload them.
-        bk_indep_code = Dict{String,Dict{String,CodeRepr}}()
+        # save code blocks marked as independent from utils to avoid having
+        # to reload them
+        bk_indep_code  = Dict{String,Dict{String,CodeRepr}}()
         for (rp, c) in gc.children_contexts
             if !isempty(c.nb_code.indep_code)
                 bk_indep_code[rp] = deepcopy(c.nb_code.indep_code)
