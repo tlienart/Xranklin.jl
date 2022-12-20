@@ -1,0 +1,110 @@
+<style>
+#mainContainer {
+    padding-top: var(--topbar-height);
+}
+
+.content {
+    margin: 0 auto;
+    padding: 0 2em;
+    padding-top: 4em;
+    max-width: var(--content-max-width);
+    margin-bottom: 50px;
+    line-height: 1.6em;
+}
+
+.content li {
+  padding-top: .3em;
+}
+
+.sub-header {
+  font-size: 1.5em;
+  font-weight: 300;
+  line-height: 1.3em;
+}
+.flist p {
+  display:inline;
+}
+.flist ul {
+  list-style: none;
+  padding-left: 1em;
+}
+.flist a#goto {
+  padding-right: 10px;
+  margin-left: -15px;
+}
+.flist a#goto #arrow{
+  display:none;
+}
+.flist a#goto:hover #check {
+  display: none;
+}
+.flist a#goto:hover #arrow {
+  display: inline;
+}
+
+
+/* -- When layout is active ----------------------------------------------- */
+
+#layout.active #mainContainer {
+	width: 100%;
+}
+
+#layout.active #mainContainer:after {
+	content: " ";
+	z-index: 10;
+	display: block;
+	position: absolute;
+	height: max(100%, 100vh);
+	min-height: 100%;
+	top: 0;
+	left: 0;
+	margin-left: calc(-1 * var(--menu-width));
+	right: 0;
+	background: rgba(0, 0, 0, 0.3);
+}
+
+/* -- Responsive Styles (Media Queries) ----------------------------------- */
+
+@media (min-width: 48em) {
+    .header,
+	.content {
+		padding-left: 2em;
+		padding-right: 2em;
+	}
+}
+
+@media (min-width: 79em) { /* (250 + 1000 + 200)/16
+    /* 1200px min */
+    #mainContainer {
+        width: calc(var(--content-max-width) + var(--menu-width));
+    }
+    #mainContainer1 {
+        width: var(--content-max-width);
+        float: left;
+    }
+}
+
+</style>
+<!-- ===================================================================== -->
+
+<div id="mainContainer">
+    <div id="mainContainer1">
+
+        <div class="content">
+            {{isdef header}}
+              <h1><a href="#">{{header}}</a></h1>
+            {{end}}
+
+            {{page_content}}
+
+            {{footnotes}}
+
+            <div id="pg-foot">
+              Website built with <a href="https://franklinjl.org">Franklin.jl</a>
+              and the <a href="https://julialang.org">Julia programming language</a>.
+            </div>
+
+        </div>
+    </div>
+    {{insert toc.html}}
+</div>

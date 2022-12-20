@@ -1,18 +1,5 @@
 import Literate
 import HTTP
-# import UnicodePlots
-
-function hfun_rm_headings(ps::Vector{String})
-    c = cur_lc()
-    c === nothing && return ""
-    for h in ps
-        if h in keys(c.headings)
-            delete!(c.headings, h)
-        end
-    end
-
-    return ""
-end
 
 # used in syntax/vars+funs #e-strings demonstrating that e-strings are
 # evaluated in the Utils module
@@ -28,75 +15,36 @@ struct Baz
 end
 newbaz(z) = Baz(z)
 
-####################################
-# Layout
-####################################
-
-function hfun_navmenu()
-    io = IOBuffer()
-    for m in getgvar(:menu)
-        name = m.first
-        subs = m.second
-
-        # Submenu title + start of subs
-        write(io, """
-            <div class="submenu-title">
-                $(uppercasefirst(name))
-            </div>
-            <ul class="pure-menu-list">
-            """)
-
-        # subs items
-        for s in subs
-            loc   = "$name/$s"
-            rloc  = loc * ".md"
-            if rloc in keys(cur_gc().children_contexts)
-                title = getvarfrom(:menu_title, loc * ".md")
-                write(io, """
-                    <li class="pure-menu-item">
-                        <a href="/$loc/" class="pure-menu-link">
-                            $title
-                        </a>
-                    </li>
-                    """)
-            end
-        end
-
-        # end of list
-        write(io, "</ul>")
-    end
-    return String(take!(io))
-end
 
 
-####################################
-# TTFX
-####################################
+# ####################################
+# # TTFX
+# ####################################
 
-function hfun_ttfx(p)
-    p  = first(p)
-    r  = ""
-    r2 = ""
+# function hfun_ttfx(p)
+#     p  = first(p)
+#     r  = ""
+#     r2 = ""
 
-    # XXX PERF XXX
-    return ""
+#     # XXX PERF XXX
+#     return ""
 
-    try
-        r = HTTP.request(
-            "GET",
-            "https://raw.githubusercontent.com/tlienart/Xranklin.jl/gh-ttfx/ttfx/$(p)/timer"
-        )
-        r2 = HTTP.request(
-            "GET",
-            "https://raw.githubusercontent.com/tlienart/Xranklin.jl/gh-ttfx/ttfx/$(p)/timer2"
-        )
-    catch e
-        return ""
-    end
-    t  = first(reinterpret(Float64, r.body))
-    t2 = first(reinterpret(Float64, r2.body))
-    return "$(t)min / $(t2)s"
-end
+#     try
+#         r = HTTP.request(
+#             "GET",
+#             "https://raw.githubusercontent.com/tlienart/Xranklin.jl/gh-ttfx/ttfx/$(p)/timer"
+#         )
+#         r2 = HTTP.request(
+#             "GET",
+#             "https://raw.githubusercontent.com/tlienart/Xranklin.jl/gh-ttfx/ttfx/$(p)/timer2"
+#         )
+#     catch e
+#         return ""
+#     end
+#     t  = first(reinterpret(Float64, r.body))
+#     t2 = first(reinterpret(Float64, r2.body))
+#     return "$(t)min / $(t2)s"
+# end
 
 
 ####################################
@@ -127,9 +75,91 @@ function lx_exlx2()
     return "<s>hello</s>"
 end
 function lx_exlx3()
-    return "<span style='color:blue'>{{header}}</span>"
+    return "<span style='color:blue'>{{a_global_variable}}</span>"
 end
 
 # function env_exenv(p::Vector{String})
 #
 # end
+
+
+# =============================================================================
+# =============================================================================
+# =============================================================================
+
+#########
+# Layout
+#########
+
+"""
+    {{generate_menu}}
+
+Generates the left-menu as a depth-1 list based off the global var `menu` which
+is structured as:
+
+    ("top_path" => "Top Name") => [
+        "sub_path" => "Sub Name",
+        "sub_path" => "Sub Name"
+        ...
+    ]
+"""
+function hfun_generate_menu()
+    menu = getgvar(:menu)
+    io = IOBuffer()
+    write(io, """
+         <ul class="pure-menu-list">
+         """)
+    for m in menu
+         # (top-url => top-name) => [ (sub-url => sub-name) ]
+         base = m.first.first    # top path
+         name = m.first.second   # top title text
+         write(io, """
+             <li class="pure-menu-item">
+             """)        
+         write(io, """
+             <a href="/$base/$(first(m.second).first)/" class="pure-menu-link">
+                 $name
+             </a>
+             <ul class="pure-menu-list">
+             """)
+         for e in m.second
+            # Going over submenus            
+            write(io, """
+                <li class="pure-menu-item">
+                    <a href="/$base/$(e.first)/" class="pure-menu-link {{ispage /$base/$(e.first)/}}selected{{end}}">
+                        $(e.second)
+                    </a>
+                </li>
+                """)
+         end
+         write(io, """
+             </ul>
+             </li>
+             """)
+    end
+    write(io, """
+         </ul>
+         """)
+     return html2(String(take!(io)), cur_lc())
+ end
+
+ ###############
+# Actual Utils
+###############
+
+"""
+{{rm_headings ...}}
+
+Remove headings from page TOC. Useful for a page demonstrating headings which
+ends up adding a lot of dummy headings to the toc.
+"""
+function hfun_rm_headings(ps::Vector{String})
+c = cur_lc()
+c === nothing && return ""
+for h in ps
+    if h in keys(c.headings)
+        delete!(c.headings, h)
+    end
+end
+return ""
+end

@@ -1,0 +1,422 @@
+<style>
+/*
+    Z-Index
+
+    #menuLink 500
+    #menu 500
+
+    Breakpoints:
+        48em (768px)  for narrow screens / handheld devices
+        79em (1264px) for large screens
+*/
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 4.5rem;
+}
+
+body {
+    width: 100%;
+    font-family: var(--text-font);
+    color: var(--text-col);
+    background-color: var(--col-cream);
+}
+
+a {
+    color: var(--blue30);
+    text-decoration: none;
+}
+
+:is(h1, h2, h3, h4) a {
+	text-decoration: none;
+	color: var(--col-dark);
+}
+:is(h1, h2, h3, h4) {
+	margin-top: 0;
+	margin-bottom: 0;
+    line-height: normal;
+}
+
+h1 {
+	font-size: var(--text-h1);
+	font-weight: 600;
+    padding-bottom: .25em;
+}
+    h1 a {
+        color: var(--col-xdark);
+    }
+
+h2 {
+	font-size:   var(--text-h2);
+	padding-top: 1em;
+	font-weight: 550;
+}
+
+h3 {
+	font-size:   var(--text-h3);
+	padding-top: 1em;
+	font-weight: 450;
+}
+
+h4 {
+	font-size: var(--text-h4);
+	padding-top: 1em;
+	font-weight: 350;
+}
+
+/*
+PAGE FOOT
+ */
+
+ #pg-foot {
+	width: 65%;
+	margin-top: 3em;
+	padding-top: 1em;
+	margin-bottom: 3em;
+	color: var(--col-gray);
+	font-size: var(--text-sm);
+}
+#pg-foot a {
+	color: inherit;
+}
+#pg-foot a:hover {
+	color: var(--col-lblue);
+}
+
+ol ul { padding-left: 1em; }
+
+ul ul { padding-left: 1em; }
+
+ul ol { padding-left: 1em; }
+
+/*  ====================================================================================
+    CODE AND HLJS 
+ ==================================================================================== */
+
+
+#fn-defs {
+	width: 75%;
+	margin-top: 5em;
+	padding-top: 1em;
+	border-top: 1px solid var(--col-gray);
+	padding-bottom: 3em;
+}
+.fn-title {
+	font-size: var(--text-h2);
+	width: 100%;
+	display: block;
+	margin-bottom: .5em;
+}
+
+a.fn-hook-btn {
+	color: var(--col-light);
+	text-decoration: none;
+}
+a.fn-hook-btn:hover {
+	color: var(--col-dark);
+}
+
+.lskip {
+  display: block;
+  height: 1em;
+}
+
+/*  ====================================================================================
+    CODE AND HLJS 
+ ==================================================================================== */
+
+code {
+	font-family: var(--code-font);
+	font-size:   var(--code-size);
+	color:       var(--code-col);
+	word-wrap:   break-word;
+}
+
+kbd {
+    background-color: #eee;
+    border-radius: 3px;
+    border: 1px solid #b4b4b4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 2px 0 0 rgba(255, 255, 255, .7) inset;
+    color: #333;
+    display: inline-block;
+    font-size: .85em;
+    font-weight: 600;
+    line-height: 1;
+    padding: 2px 4px;
+    white-space: nowrap;
+}
+
+pre {
+  line-height: 1.5;
+}
+
+pre code.hljs {
+	background-color: var(--block-background);
+	border-radius: 7px;
+	padding-left: 1.5em;
+}
+
+.hljs-string {
+    color: var(--green30);
+}
+
+
+/*  ====================================================================================
+    KATEX
+ ==================================================================================== */
+
+body { counter-reset: eqnum; }
+
+.katex { font-size: 1.1em !important; }
+
+.katex-display .katex {
+    display: inline-block;
+}
+
+.katex-display::after {
+    counter-increment: eqnum;
+    content: "(" counter(eqnum) ")";
+    position: relative;
+    float: right;
+    padding-right: 5px;
+}
+
+.nonumber .katex-display::after {
+  counter-increment: nothing;
+  content: "";
+}
+
+/*  ====================================================================================
+    Specific divs 
+ ==================================================================================== */
+
+.header {
+  margin-top: 1em;
+}
+
+/*
+≂̸ CommonMark
+ */
+ .cm-diff {
+    margin-top: 2em;
+    margin-bottom: 2em;
+    background-color: var(--yellow80);
+    border: 0px;
+    border-radius: 7px;
+    font-size: var(--text-sm);
+  }
+  .cm-diff-legend{
+    color: white;
+    background-color: var(--red30);
+    padding-left:  .5em;
+    padding-right: .5em;
+    padding-bottom: .1em;
+    border-radius: 5px;
+  
+    font-variant: small-caps;
+    font-size: var(--text-sm);
+  }
+  
+  /*
+  TIP
+  */
+  .tip {
+    margin-top: 1.25em;
+    margin-bottom: 2em;
+    background-color: var(--green90);
+    border: 0px;
+    border-radius: 7px;
+    font-size: var(--text-sm);
+  }
+  .tip-legend {
+    color: white;
+    background-color: var(--green20);
+    padding-left: .5em;
+    padding-right: .5em;
+    padding-bottom: .1em;
+    border-radius: 5px;
+    font-variant: small-caps;
+    font-size: var(--text-sm);
+  }
+  
+  /*
+  TO DO
+  */
+  .todo {
+    margin-top: 1.25em;
+    margin-bottom: 2em;
+    background-color: var(--red90);
+    border: 0px;
+    border-radius: 7px;
+    font-size: var(--text-sm);
+  }
+  .todo-legend {
+    color: white;
+    background-color: var(--red10);
+    padding-left: .5em;
+    padding-right: .5em;
+    padding-bottom: .1em;
+    border-radius: 5px;
+    font-variant: small-caps;
+    font-size: var(--text-sm);
+  }
+  
+  /*
+  NOTE
+  */
+  .note {
+    margin-top: 1.25em;
+    margin-bottom: 2em;
+    background-color: var(--yellow90);
+    border: 0px;
+    border-radius: 7px;
+    font-size: var(--text-sm);
+  }
+  .note-legend {
+    color: white;
+    background-color: var(--yellow0);
+    padding-left: .5em;
+    padding-right: .5em;
+    padding-bottom: .1em;
+    border-radius: 5px;
+    font-variant: small-caps;
+    font-size: var(--text-sm);
+  }
+  
+  /*
+  SHOW MD
+  */
+  
+  .md-input {
+    border-width: 0;
+    border-radius: 7px;
+    margin-bottom: 1em;
+    background-color: var(--block-background);
+    font-size: var(--text-sm);
+    line-height: 1.2em;
+  }
+  .md-input-legend {
+    background-color: var(--col-cream);
+    font-size: var(--text-sm);
+    font-variant: small-caps;
+    padding-left:  .5em;
+    padding-right: .5em;
+    padding-bottom: .1em;
+    border-radius: 5px;
+  }
+  .md-input .hljs {
+    background-color: transparent;
+  }
+  .md-input pre {
+    margin: 0;
+  }
+  .md-input code {
+    padding: 0;
+    padding-top: 5px;
+  }
+  
+  .md-result {
+    border-radius: 7px;
+    background-color: #e3edf2;
+    border: 1px solid #5bc0de;
+    margin-left: 1.5em;
+    padding-top: 1.25em;
+    padding-bottom: 1.25em;
+    padding-left: 1.5em;
+    font-size: var(--text-sm);
+    margin-bottom: 2em;
+  }
+  .md-result img {
+    width: 40%;
+    padding-left: 1em;
+  }
+  
+  .md-result-legend {
+    background-color: var(--col-cream);
+    border-radius: 5px;
+    padding-left:  .5em;
+    padding-right: .5em;
+    padding-bottom: .1em;
+    font-variant: small-caps;
+    font-size: var(--text-sm);
+    color: navy;
+  }
+  
+  .md-result pre {
+    margin: 0;
+  }
+  
+  .md-result pre {
+    max-width: 100%;
+  }
+  .md-result .code-output pre {
+    max-width: 100%;
+  }
+  
+  
+  .md-result h1 {padding: 0;}
+  .md-result h2 {padding: 0;}
+  .md-result h3 {padding: 0;}
+  .md-result h1 a {color: black;}
+  .md-result h2 a {color: black;}
+  .md-result h3 a {color: black;}
+  
+  .md-result blockquote {
+    background-color: var(--col-xlight);
+    padding: 0.5em 1em;
+    border-left: 5px solid var(--col-xdark);
+  }
+  
+  .md-result ul ul {padding-left: 1.5em;}
+  .md-result ol ul {padding-left: 1.5em;}
+  
+  
+  .center {text-align: center;}
+  .center img {
+    width: 75%;
+    min-width: 300px;}
+  
+
+    
+
+
+  .code-output {
+    margin-top: 1em;
+    margin-left: 1em;
+    border: 1px solid var(--col-coral);
+    background-color: var(--output-background);
+        padding: .5em;
+  }
+  
+  .code-output .code-figure {
+    padding-top: 1em;
+    padding-bottom: .75em;
+  }
+  
+  .code-output table {
+    border-collapse: collapse;
+}
+.code-output td, th {
+    border: 1px solid #999;
+    padding: 0.5rem;
+    }
+
+  .trim {
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-x: auto;
+  }
+  
+  .trim .md-result {
+    margin-bottom: 1.5em;
+  }
+
+
+
+
+
+
+
+
+</style>

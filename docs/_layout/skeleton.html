@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A layout example with a side menu that hides on mobile, just like the Pure website.">
+
+    <link rel="stylesheet" href="/css/pure.min.css">
+
+    {{hasmath}}
+        <link rel="stylesheet" href="/libs/katex/katex.min.css">
+    {{end}}
+    {{hascode}}
+        <link rel="stylesheet" href="/libs/highlight/github.min.css">
+    {{end}}
+
+    {{isdef header}}
+    foo
+    {{end}}
+
+</head>
+<body>
+
+<!-- ===================================================================== -->
+{{insert _vars.html}}
+{{insert _main_style.html}}
+
+<style>
+#topbar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	background-color: var(--col-dark);
+	height: var(--topbar-height);
+	min-width: 100%;
+    color: white;
+    z-index: 100;
+}
+    #topbar-nav {
+        height: var(--topbar-height);
+        padding-left: var(--topbar-ph);
+        padding-right: var(--topbar-ph);
+        width: 100%;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+        #topbar-nav a {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            margin-right: 20px;
+        }
+
+        #topbar-nav img {
+            padding-left: 40px;
+            /* padding-right: 20px; */
+            height: 65%;
+        }
+
+#layout {
+	position: relative;
+	left: 0;
+	padding-left: 0;
+	padding-bottom: 20px;
+}
+
+/* -- Responsive Styles (Media Queries) ----------------------------------- */
+
+@media (min-width: 48em) {
+    #layout {
+		padding-left: var(--menu-width); /* left col width "#menu" */
+		left: 0;
+	}
+
+    #layout.active {
+		position: relative;
+		left: var(--menu-width);
+	}
+}
+
+@media (min-width: 79em) {
+    #layout {
+        padding-left: calc(var(--menu-width) + var(--wide-leftpad));
+    }
+}
+
+</style>
+<!-- ===================================================================== -->
+
+
+<div id="topbar"></div>
+
+<div id="layout">
+    {{insert menu.html}}           <!-- container: #menu          -->
+    {{insert mainContainer.html}}  <!-- container: #mainContainer -->
+</div>
+
+{{insert _toggle.html}}
+
+{{hasmath}}
+    <script src="/libs/katex/katex.min.js"></script>
+    <script src="/libs/katex/contrib/auto-render.min.js"></script>
+    <script>renderMathInElement(document.body)</script>
+{{end}}
+
+{{hascode}}
+    <script src="/libs/highlight/highlight.min.js"></script>
+    <script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+{{end}}
+
+</body>
+</html>

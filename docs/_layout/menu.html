@@ -1,0 +1,285 @@
+<style>
+    /*
+        html > body > #layout > #menu
+    
+        (hamburger)
+        #menu > .menu-link #menuLink
+    
+        (list in sidebar)
+        #menu > .pure-menu >
+            .pure-menu-heading
+            .pure-menu-list
+                .pure-menu-item etc.
+    */
+    
+    /*
+        The #menu <div> is the parent <div> that contains the .pure-menu that
+        appears on the left side of the page.
+    */
+    #menu {
+        margin-left: calc(-1 * var(--menu-width));
+        width: var(--menu-width);
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 500; 			/* so the menu or its navicon stays above all content */
+        background-color: var(--col-cream);
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+        #menu .pure-menu-list {
+            padding-left: .75em;
+        }
+
+        /* All anchors inside the menu should be styled like this. */
+        #menu .pure-menu-list a {
+            color: var(--col-gray);
+            border: none;
+            padding: 0.6em 0 0.6em 0.6em;
+        }
+    
+        /* Remove all background/borders, since we are applying them to #menu. */
+            #menu .pure-menu,
+            #menu .pure-menu ul {
+            border: none;
+            background: transparent;
+        }
+    
+            /* Change color of the anchor links on hover/focus.	*/
+            #menu .pure-menu li a {
+                border-radius: 8px;
+            }
+            #menu .pure-menu li li a {
+                padding-left: .75em;
+            }
+            #menu .pure-menu li li a:hover,
+            #menu .pure-menu li li a:focus {
+                background: var(--col-xlight);
+                max-width: 90%;
+            }
+            #menu .pure-menu li li a.selected {
+                background: var(--col-dark);
+                color: var(--col-cream);
+                max-width: 90%;
+            }
+    
+        /* This styles the menu heading. */
+        #menu-top {
+            color: white;
+            height: var(--topbar-height);
+            background: var(--col-dark);
+            border-right: 1px solid var(--col-light);
+        }
+    
+    /*
+    Dynamic Button For Responsive Menu
+    
+    .menu-link represents the responsive menu toggle that shows/hides on
+    small screens.
+    */
+    #menuLink {
+        position: fixed;
+        top: 0;
+        width: var(--topbar-height);
+        height: var(--topbar-height);
+        display:block;
+        z-index: 500;
+    }
+        .v-spacer-menulink {
+            display:block;
+            height: calc(0.1*var(--topbar-height));
+        }
+    
+        #menuLinkIcon {
+            pointer-events: none;
+            height: calc(0.8*var(--topbar-height));
+            width: calc(0.8*var(--topbar-height));
+            margin-left: auto;
+            margin-right: auto;
+            background: var(--burger) no-repeat;
+            background-size: contain;
+            display: block;
+        }
+    
+    #lunrSearchForm {
+        /* visibility: hidden; */
+        padding-top: calc(0.18*var(--topbar-height));
+        padding-left: calc(0.09 * var(--menu-width));
+    }
+        #lunrSearchForm input {
+            line-height: 1.5em;
+        }
+    
+            #lunrSearchForm input.search-input {
+                width: calc(0.75 * var(--menu-width));
+                padding-left: 10px;
+            }
+    
+            #lunrSearchForm input[type=submit] {
+                visibility: hidden;
+                width: 0;
+                /* cursor: pointer; */
+            }
+    
+    #logo {
+        position: fixed;
+        display: block;
+        height: var(--topbar-height);
+        width: var(--topbar-height);
+        z-index: 500;
+        top: 0;
+        right: 0;
+    }
+        #logoLogo {
+            pointer-events:none;
+            height: calc(0.8*var(--topbar-height));
+            width: calc(0.8*var(--topbar-height));
+            margin-left: auto;
+            margin-right: auto;
+            background: var(--franklin) no-repeat;
+            background-size: contain;
+            display: block;
+        }
+    
+    #menuTopFill {
+        display: none;
+    }
+    
+    /* Add transition to containers so they can push in and out. */
+    #menu,
+    #menuLink {
+        -webkit-transition: all 0.2s ease-out;
+        -moz-transition: all 0.2s ease-out;
+        -ms-transition: all 0.2s ease-out;
+        -o-transition: all 0.2s ease-out;
+        transition: all 0.2s ease-out;
+    }
+    
+    .pure-menu-list .pure-menu-list {
+        padding-left: 1em;
+    }
+    
+    .menu-logos {
+        width: 85%;
+        height: 50px;
+        padding-left: 50px;
+        border-bottom: 1px solid var(--col-xlight);
+        margin-bottom: 1.5em;
+        padding-bottom: 5px;
+    }
+    
+        .menu-logos a {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+        }
+        .menu-logos a svg {
+            color: var(--col-gray);
+        }
+        .menu-logos a:hover svg {
+            color: #005dc5;
+        }
+    
+    .v-spacer-menulist {
+        width: 100%;
+        display: block;
+        height: 25px;
+    }
+    
+    /* -- When layout is active ----------------------------------------------- */
+    
+    #layout.active #menu {
+        left: var(--menu-width);
+        width: var(--menu-width);
+    }
+    
+    #layout.active #menuLink {
+        display: none;
+    }
+    
+    /* -- Responsive Styles (Media Queries) ----------------------------------- */
+    
+    @media (min-width: 48em) {
+        #menu {
+            left: var(--menu-width);
+        }
+        #layout.active .menu-link {
+            left: var(--menu-width);
+        }
+        #menuLink {
+            display: none;
+        }
+    
+        .v-spacer-menulist {
+            height: 75px;
+        }
+        .menu-logos {
+            padding-bottom: 15px;
+        }
+    }
+    
+    @media (min-width: 79em) {
+        #menu {
+            padding-left: var(--wide-leftpad);
+        }
+        #menuTopFill {
+            display: block;
+            background-color: var(--col-dark);
+            z-index: -1;
+            width: 100%;
+            position: absolute;
+            left: 0;
+            height: var(--topbar-height);
+        }
+        #logo {
+            right: calc(var(--wide-leftpad) + 10px);
+        }
+    }
+    
+    </style>
+    <!-- ===================================================================== -->
+    
+    <!-- Menu button -->
+    <a href="#menu" id="menuLink" class="menu-link">
+        <div class="v-spacer-menulink"></div>
+        <div id="menuLinkIcon"></div>
+        <div class="v-spacer-menulink"></div>
+    </a>
+    
+    <a href="/" id="logo">
+        <div class="v-spacer-menulink"></div>
+        <div id="logoLogo"></div>
+        <div class="v-spacer-menulink"></div>
+    </a>
+    
+    <div id="menu">
+    
+        <div id="menuTopFill"></div>
+    
+        <div class="pure-menu">
+            <div id="menu-top">
+                <form id="lunrSearchForm" name="lunrSearchForm">
+                    <input class="search-input" name="q" placeholder="Search the docs..." type="text">
+                    <input type="submit" value="🔍" formaction="/search/index.html">
+                </form>
+            </div>
+    
+            <div class="v-spacer-menulist"></div>
+    
+            <div class="menu-logos">
+                <a href="/" id="tohome">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"/></svg>
+                </a> &nbsp;
+                <a href="#" id="totop">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 10a.5.5 0 0 0 .5-.5V3.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 3.707V9.5a.5.5 0 0 0 .5.5zm-7 2.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5z"/></svg>
+                </a> &nbsp;
+                <a href="{{github}}" id="togithub">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                </a>
+            </div>
+    
+            {{generate_menu}}
+    
+        </div>
+    </div>

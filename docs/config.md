@@ -1,61 +1,44 @@
-<!--
-Notes:
-
-- KaTeX version = 0.15.1 (changed Jan'22)
-- HL version = 11.3.1
- -->
-
 +++
-
 author = "Thibaut Lienart"
 
 # Base URL prefix when live
-base_url_prefix = "Xranklin.jl"
-meta_description = "Franklin"
+meta_description = "Franklin.jl"
 github = "https://github.com/tlienart/Franklin.jl"
 
-# General Layout
-layout_page_foot = ""
 content_tag = ""
-showtoc = false
-skiplatex = true
-
-# Tables
+skiplatex   = true
+showtoc     = true
 table_class = "pure-table"
 
-# Menus + ordering of submenus
 menu = [
-  "workflow" => [
-    "getting_started",
-    "folder_structure",
-    "adapting_layout",
-    "deployment",
-  ],
-  "syntax" => [
-    "basics",
-    "extensions",
-    "code",
-    "code-2",
-    "vars+funs",
-    "utils",
+    ("workflow" => "Workflow") => [
+        "getting_started"  => "Getting Started",
+        "folder_structure" => "Folder Structure",
+        "adapting_layout"  => "Adapting a Layout",
+        "deployment"       => "Deployment"
     ],
-  "extras" => [
-    "tags",
-    "plots",
-    "literate",
+    ("syntax" => "Syntax") => [
+        "basics"     => "Basics",
+        "extensions" => "Extensions",
+        "code_1"     => "Code Blocks (1)",
+        "code_2"     => "Code Blocks (2)",
+        "vars_funs"  => "Page Variables",
+        "utils"      => "Utils" 
     ],
-  "engine" => [
-    "build_passes",
-    "cache",
-  ],
+    ("engine" => "Engine") => [
+        "build_passes" => "Build passes",
+        "cache"        => "Cache"
+    ]
 ]
+
+# Misc
+
+a_global_variable = "hello from a global variable!"
 
 ignore = [
-  "extras/plots.md",
+  r"extras/*"
 ]
-
 +++
-
 
 <!-- GLOBAL REFERENCES -->
 
@@ -81,12 +64,6 @@ ignore = [
 <!-- GLOBAL COMMANDS -->
 
 \newcommand{\emdash}{&#8212;}
-
-\newcommand{\lskip}{
-  ~~~
-  <div style="height:1em;"></div>
-  ~~~
-}
 
 \newcommand{\fieldset}[3]{
   ~~~
@@ -170,3 +147,5 @@ ignore = [
 
 
 \newcommand{\kbd}[1]{ ~~~<kbd>#1</kbd>~~~ }
+
+\newcommand{\lskip}{@@lskip @@}

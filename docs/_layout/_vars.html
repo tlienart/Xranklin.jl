@@ -1,0 +1,158 @@
+<style>
+
+:root {
+    /* GEOMETRY */
+    --topbar-height:     45px;
+    --topbar-ph:         60px;
+    --menu-width:        225px;
+    --content-max-width: 800px;
+    --wide-leftpad:      calc(0.5 * (100% - 2*var(--menu-width) - var(--content-max-width)));
+
+
+    /* BG IMGS */
+    --x-square:      url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="floralWhite"><path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>');
+    --x-square-fill: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="floralWhite"><path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/></svg>');
+    --burger:        url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="floralwhite"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/></svg>');
+    --franklin:      url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 50"><path d="M15.1 2.8c-2.3 1.6-3 1.8-5.2 1.5-3.6-.5-4.9-.1-5.4 1.6-.3 1-.4 3.1-.3 6 0 1.6 0 2.5-.1 2.8-.1.2-.8.9-1.7 1.6-.8.6-1.7 1.3-1.8 1.5-.3.4-.3 1 .1 1 .1 0 7.1-1.3 15.4-2.9 16.5-3.2 15.8-3 15.6-3.8-.1-.4-.9-.9-1.6-.9-.3 0-1 0-1.5-.1-1.8-.1-2.7-.8-3.5-2.5-1.5-3.5-3.1-6.5-4-7.5-.3-.3-.7-.6-1-.7-1-.1-2.1.4-5 2.4z" fill="white"/><path d="M9.3 36.6V26.2c0-2.1-.7-3.2-2.2-3.2-.4 0-.7 0-.8.1-.5.1-.8.2-1.1.2-.4 0-.7-.1-.9-.4-.3-.3-.4-.6-.4-1 0-1 .6-1.5 1.8-1.5h.6l3 .3c1.1.1 2.4.2 3.7.2.7 0 2.3 0 4.8-.1l4.9-.2c.7 0 1.4-.1 2.3-.1.4-.1.8-.1 1.3-.1 1.5 0 2.3.7 2.3 2 0 .5-.1 1.3-.2 2.4-.1 1.1-.2 1.9-.2 2.4s0 1 .1 1.7.1 1.3.1 1.9c0 1.2-.5 1.8-1.5 1.8-1.1 0-1.6-.7-1.6-2 0-.4 0-1 .1-1.8s.1-1.4.1-1.8c0-1.5-.4-2.5-1.3-2.9-.9-.4-2.9-.6-6.1-.6-2.7 0-4.3.2-4.6.7-.3.4-.4 1.7-.4 3.9v3.2c0 .8.1 1.3.3 1.5s.8.3 1.8.3h1.4c1.9 0 2.8-.7 2.8-2.1 0-.3 0-.7-.1-1.3-.3-.7-.3-1.1-.3-1.4 0-1.1.5-1.6 1.5-1.6s1.5.6 1.5 1.9c0 .2 0 .5-.1 1l-.3 2.3c-.1 1-.2 1.8-.2 2.3 0 1.2.2 2.7.4 4.5.1.6.2 1.2.2 1.7 0 1.1-.5 1.7-1.5 1.7s-1.5-.6-1.5-1.8c0-.3 0-.7.1-1.3 0-.6.1-1 .1-1.3 0-.9-.2-1.5-.7-1.7-.3-.2-1-.3-2-.3h-1.3c-1 0-1.6.1-1.8.3-.2.2-.3.8-.3 1.9V43c0 1.3.1 2.2.4 2.7.3.5.9.7 1.7.7H17c1.3 0 2 .5 2 1.5 0 .4-.1.7-.4 1-.3.3-.7.4-1.1.4-.5 0-1.1-.1-2-.2-1.3-.2-2.7-.3-4.3-.3-1 0-2.1.1-3.3.3l-1.5.2h-.6c-1.3 0-1.9-.5-1.9-1.5 0-.9.4-1.4 1.3-1.4.1 0 .5 0 1.1.1.3.1.6.1.9.1.8 0 1.3-.2 1.6-.7.3-.5.5-1.3.5-2.5v-6.8z" fill="white"/></svg>');
+    --arrow-up:      url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 10a.5.5 0 0 0 .5-.5V3.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 3.707V9.5a.5.5 0 0 0 .5.5zm-7 2.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5z"/></svg>');
+    --github:        url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>');
+    --home:          url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"/></svg>');
+
+    /* FONTS etc */
+    --text-sm:     0.95em;
+    --text-lg:     1.2em;
+    --text-xl:     1.4em;
+	--text-h4: 		 1.2em;
+    --text-h3:     1.5em;
+    --text-h2:     2em;
+	--text-h1: 		 3em;
+    --text-col:    hsl(0, 0%, 20%);
+    --text-font:   system-ui,-apple-system,"Segoe UI",Roboto,
+                    "Helvetica Neue",Arial,"Noto Sans",
+                    "Liberation Sans",sans-serif,"Apple Color Emoji",
+                    "Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    --text-line-height:  1.5;
+
+    --code-font:   SFMono-Regular,Menlo,Monaco,Consolas,
+						     "Liberation Mono","Courier New",monospace;
+    --code-size:   .875em;
+	--code-col:    #d63384;
+
+    /* COLORS */
+    --col-cream:        #fffefc;
+    --col-chalk: 	    #c6cbd3;
+    --col-xlight:       #e7eaf6;
+    --col-light:        #a2a8d3;
+    --col-dark:         #38598b;
+    --col-xdark:        #113f67;
+    --col-lblue:        #03a7dd;
+
+    --block-background: hsl(0, 0%, 94%);
+    --output-background: hsl(0, 0%, 98%);
+
+    --col-gray:         gray;
+    --col-black: 	    #000;
+    --col-blue:		    #118cfd;
+    --col-graphite:     #4f5a66;
+    --col-green: 		#12ca93;
+    --col-ivory: 		#f0f0f0;
+    --col-lgray: 		#f8f8f8;
+    --col-purple:	    #8470be;
+    --col-red: 		    #e95f6a;
+    --col-shale: 		#939eae;
+    --col-slate: 	    #384248;
+    --col-yellow: 	    #f7c543;
+    --col-brown: 		#7a461c;
+    --col-coral: 		#ff758c;
+    --col-fuchsia: 	    #cf66c3;
+    --col-gold: 		#9d8714;
+    --col-indigo: 	    #6b7ede;
+    --col-lavender:     #abc3ff;
+    --col-lime: 		#9ace5a;
+    --col-olive: 		#837400;
+    --col-orange: 	    #fe8e4f;
+    --col-pink: 		#e15ca5;
+    --col-teal: 		#00b6e6;
+    --col-tiffany: 	    #00beaa;
+    --col-bluePastel:   #a8edff;
+    --col-greenPastel:  #9bfff6;
+    --col-orangePastel: #f5bc90;
+    --col-purplePastel: #e8d0ff;
+    --col-redPastel: 	#ffc4c9;
+    --col-yellowPastel: #ffffa7;
+
+    --blue0:   #002077;
+    --blue10:  #003290;
+    --blue20:  #0047aa;
+    --blue30:  #005dc5;
+    --blue40:  #0074e1;
+    --blue50:  #118cfd;
+    --blue60:  #619efe;
+    --blue70:  #8ab0ff;
+    --blue80:  #abc3ff;
+    --blue90:  #c8d7ff;
+    --blue100: #e4ebff;
+
+    --green0:   #002e02;
+    --green10:  #00491f;
+    --green20:  #00683a;
+    --green30:  #008756;
+    --green40:  #00a874;
+    --green50:  #12ca93;
+    --green60:  #59d4a4;
+    --green70:  #81ddb6;
+    --green80:  #a3e6c8;
+    --green90:  #c3efda;
+    --green100: #e1f7ec;
+
+    --gray0:   #12181b;
+    --gray10:  #242e34;
+    --gray20:  #384248;
+    --gray30:  #4f5a66;
+    --gray40:  #637288;
+    --gray50:  #7b889b;
+    --gray60:  #939eae;
+    --gray70:  #adb4c1;
+    --gray80:  #c6cbd3;
+    --gray90:  #f0f0f0;
+    --gray100: #f8f8f8;
+
+    --purple0:   #110e4d;
+    --purple10:  #2a1f63;
+    --purple20:  #403278;
+    --purple30:  #56468f;
+    --purple40:  #6d5ba6;
+    --purple50:  #8470be;
+    --purple60:  #9987c9;
+    --purple70:  #ae9ed4;
+    --purple80:  #c2b5df;
+    --purple90:  #d6cdea;
+    --purple100: #ebe6f4;
+
+    --red0:   #570000;
+    --red10:  #730014;
+    --red20:  #900027;
+    --red30:  #ad273c;
+    --red40:  #cb4452;
+    --red50:  #e95f6a;
+    --red60:  #f17c81;
+    --red70:  #f79799;
+    --red80:  #fcb1b2;
+    --red90:  #ffcbcb;
+    --red100: #ffe5e5;
+
+    --yellow0:   #3e1d00;
+    --yellow10:  #5a3c00;
+    --yellow20:  #7d5b00;
+    --yellow30:  #a57d00;
+    --yellow40:  #cda017;
+    --yellow50:  #f7c543;
+    --yellow60:  #fcce66;
+    --yellow70:  #ffd885;
+    --yellow80:  #ffe1a4;
+    --yellow90:  #ffebc2;
+    --yellow100: #fff5e0;
+}
+
+
+</style>
