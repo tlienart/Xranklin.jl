@@ -33,7 +33,6 @@ jobs:
           PYTHON_LIBS: "matplotlib pandas ansi2html"
           LUNR: true
           CLEAR_CACHE: ${{ contains(github.event.head_commit.message, '[clear]') }}
-          CACHE_KEY: "franklin-cache"
       - name: URL INDICATION
         uses: thollander/actions-comment-pull-request@v2
         with:
