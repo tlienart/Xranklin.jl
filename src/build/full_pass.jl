@@ -50,7 +50,6 @@ which ones do.
     gc               : global context in which to do the full pass
     skip_files       : list of file pairs to ignore in the pass
     initial_pass     : whether the call is from the initial build
-    layout_changed   : whether this was triggered by a layout change
     config_changed   : whether this was triggered by a config change (or during
                         the initial pass, if the config is different than
                         a potential cached config file)
@@ -66,7 +65,6 @@ function full_pass(
             # kwargs
             skip_files::Vector{Pair{String,String}}=Pair{String,String}[],
             initial_pass::Bool=false,
-            layout_changed::Bool=false,
             config_changed::Bool=false,
             utils_changed::Bool=false,
             final::Bool=false
