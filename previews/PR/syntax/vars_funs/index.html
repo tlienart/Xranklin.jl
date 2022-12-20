@@ -8,8 +8,6 @@
     <link rel="stylesheet" href="/Xranklin.jl/previews/PR/css/pure.min.css">
 
     
-        <link rel="stylesheet" href="/Xranklin.jl/previews/PR/libs/katex/katex.min.css">
-    
     
         <link rel="stylesheet" href="/Xranklin.jl/previews/PR/libs/highlight/github.min.css">
     
@@ -990,7 +988,7 @@ body { counter-reset: eqnum; }
     </a>
 </li>
 <li class="pure-menu-item">
-    <a href="/Xranklin.jl/previews/PR/syntax/extensions/" class="pure-menu-link selected">
+    <a href="/Xranklin.jl/previews/PR/syntax/extensions/" class="pure-menu-link ">
         Extensions
     </a>
 </li>
@@ -1005,7 +1003,7 @@ body { counter-reset: eqnum; }
     </a>
 </li>
 <li class="pure-menu-item">
-    <a href="/Xranklin.jl/previews/PR/syntax/vars_funs/" class="pure-menu-link ">
+    <a href="/Xranklin.jl/previews/PR/syntax/vars_funs/" class="pure-menu-link selected">
         Page Variables
     </a>
 </li>
@@ -1132,18 +1130,54 @@ body { counter-reset: eqnum; }
 
         <div class="content">
             
-              <h1><a href="#">Markdown extensions</a></h1>
+              <h1><a href="#">Page Variables</a></h1>
             
 
-            <h2 id="overview" ><a href="#overview"> Overview</a></h2><p>Franklin adds a number of extension to the Markdown-like syntax in order to
-facilitate some operations such as adding <a href="#equations">equations</a>, <a href="#tables">tables</a>,
-<a href="#footnotes">footnotes</a>, <a href="#latex_like_commands">commands</a> and more.</p>
-<h2 id="injecting_html" ><a href="#injecting_html"> Injecting HTML</a></h2><p>You can always insert arbitrary HTML on a page in a block fenced with '<code>~~~</code>'.
-HTML inserted in this way is considered "inline" (it won't break an existing paragraph).
-Here's an example where we apply some local styling inside a paragraph:</p>
+            <h2 id="overview" ><a href="#overview"> Overview</a></h2><p>The main purpose of page variables is to communicate informations
+to the HTML layout from the page content.
+However, once you get the hang of it, you might decide to use them for quite
+a bit more than that.</p>
+<p>As a first example, let's say that you would like the layout of your blog pages to
+include an author blurb at the bottom.
+This could be some fixed HTML structure with different information for each page (e.g.: different
+author name, bio, path for mugshot, ...).</p>
+<p>In Franklin you can indicate this in the layout with something like:</p>
+<pre><code class="html">&lt;div class=&quot;author-card&quot;&gt;
+  &lt;div class=&quot;author-name&quot;&gt;&lbrace;&lbrace;author_name&rbrace;&rbrace;&lt;/div&gt;
+  &lt;div class=&quot;author-blurb&quot;&gt;&lbrace;&lbrace;author_blurb&rbrace;&rbrace;&lt;/div&gt;
+  &lt;div class=&quot;author-mug&quot;&gt;
+    &lt;img src=&quot;&lbrace;&lbrace;author_mug_src&rbrace;&rbrace;&quot; alt=&quot;&lbrace;&lbrace;author_name&rbrace;&rbrace;&quot;/&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+<p>The <code>&lbrace;&lbrace;author_name&rbrace;&rbrace;</code> syntax means "<em>insert the content of the <code>author_name</code> page variable here</em>".
+Page variables can be defined in the Markdown of a page inside a block fenced with '<code>+++</code>':</p>
+<pre><code class="plaintext">+++
+author_name  = &quot;Emmy Noether&quot;
+author_blurb = &quot;&quot;&quot;
+  German mathematician who made many important
+  contributions to abstract algebra.
+  &quot;&quot;&quot;
+author_mug = &quot;/assets/emmy.png&quot;
++++</code></pre>
+<p>This might already give you a good idea but let's dive into the specifics.</p>
+<h2 id="page_variables_basics" ><a href="#page_variables_basics"> Page variables basics</a></h2><h3 id="assignment" ><a href="#assignment"> Assignment</a></h3><p>Page variables can be defined on any page in a dedicated block fenced with '<code>+++</code>'.
+We'll call such a block a <em>def-block</em> from now on.
+What is placed inside that block must be valid Julia code and will be evaluated
+as such, all assignments will be extracted.</p>
+<p>There can be multiple such blocks anywhere on a page though, typically, there will
+only be one, at the top.
+Here's an example where we define two page variables <code>a</code> and <code>b</code>, page variables can be
+accessed from within the Markdown itself or in the HTML layout:</p>
 <div class="trim">
 
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">ABC ~~~&lt;span style=&quot;color:blue;&quot;&gt;~~~ **DEF** ~~~&lt;/span&gt;~~~ GHI.</code></pre>
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">+++
+a = 5
+b = &quot;hello&quot;
++++
+
+Rest of the markdown, we can also expose variables here:
+* `a`: &lbrace;&lbrace;a&rbrace;&rbrace;
+* `b`: &lbrace;&lbrace;b&rbrace;&rbrace;</code></pre>
 </fieldset>
 
 </div>
@@ -1152,15 +1186,788 @@ Here's an example where we apply some local styling inside a paragraph:</p>
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>ABC <span style="color:blue;"> <strong>DEF</strong> </span> GHI.</fieldset>
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Rest of the markdown, we can also expose variables here:<ul>
+<li><code>a</code>: true</li>
+<li><code>b</code>: [1, 2, 3]</li>
+</ul>
+</fieldset>
 
-</div><p>Here's another example where we insert a <code>&lt;fieldset&gt;</code>:</p>
+</div><p>Since the content of the def-block is evaluated as Julia code, you can load packages
+and use code to define variables:</p>
 <div class="trim">
 
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">~~~
-&lt;fieldset&gt;&lt;legend&gt;Foo&lt;/legend&gt;
-Some Content
-&lt;/fieldset&gt;
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">+++
+using Dates
+todays_date = Dates.today()
++++
+
+Build-date: &lbrace;&lbrace;todays_date&rbrace;&rbrace;.</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Build-date: 2022-12-20.</fieldset>
+
+</div>
+<div class="lskip"> </div><h3 id="usage" ><a href="#usage"> Usage</a></h3><p>Page variables can be used with the following syntax:</p>
+<pre><code class="julia">&lbrace;&lbrace;name_of_function name_of_var_1 ...&rbrace;&rbrace;</code></pre>
+<p>The case <code>&lbrace;&lbrace;name_of_var&rbrace;&rbrace;</code> is a shortcut for <code>&lbrace;&lbrace;fill name_of_var&rbrace;&rbrace;</code>.
+Note that if there is a clash between the name of a var and the name of a function, the function
+will be called with priority.</p>
+<p>The functions called in such a way are called HTML-functions or <em>hfuns</em> for short and can have
+zero or more arguments.
+There are several core functions like <code>fill</code> and you can define your own as we will show
+<a href="#hfuns">further</a>.</p>
+<p>When inserting a page variable with <code>&lbrace;&lbrace;var_name&rbrace;&rbrace;</code> or <code>&lbrace;&lbrace;fill var_name&rbrace;&rbrace;</code>, the Julia function
+<code>repr</code> will be called on the value of <code>var_name</code> and that is what will effectively be included.
+For basic Julia types (<code>Int</code>, <code>String</code>, <code>Bool</code>, ...), this will typically look like what you
+would expect but for custom types that you would have defined or that are defined in a package,
+you would have to consider what <code>repr(obj)</code> returns.</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">+++
+a = true
+b = [1,2,3]
+c = Dict(:a =&gt; 5, :b =&gt; 7)
++++
+
+* a: &lbrace;&lbrace;a&rbrace;&rbrace;
+* b: &lbrace;&lbrace;b&rbrace;&rbrace;
+* c: &lbrace;&lbrace;c&rbrace;&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><ul>
+<li>a: true</li>
+<li>b: [1, 2, 3]</li>
+<li>c: Dict(:a => 5, :b => 7)</li>
+</ul>
+</fieldset>
+
+</div>
+<div class="lskip"> </div><h3 id="local_and_global_contexts" ><a href="#local_and_global_contexts"> Local and global contexts</a></h3><p>In a Franklin session there is a <em>global</em> (site-wide) context and a set of <em>local</em> (page-related)
+contexts which are attached to it.
+Page variables can be assigned at both levels.
+You have already seen how to do so at a page-level by just adding a <code>+++...+++</code> block in
+the corresponding Markdown, you can do the same at global-level by adding such a block
+in your <code>config.md</code> file.</p>
+<p>Variables defined at global-level are accessible from anywhere whereas variables defined
+at local-level are only directly accessible from the page on which they are defined (see
+also the <a href="/Xranklin.jl/previews/PR/syntax/vars_funs/#cross_page_vars">next point</a>).
+When a variable is defined at both levels, the local one takes precedence.</p>
+<a id="cross_page_vars" class="anchor"></a><h3 id="accessing_variables_defined_on_another_page" ><a href="#accessing_variables_defined_on_another_page"> Accessing variables defined on another page</a></h3><p>You can fill the content of a page variable defined on another page with</p>
+<pre><code class="julia">&lbrace;&lbrace;fill var_name relative_path&rbrace;&rbrace;</code></pre>
+<p>where the <code>relative_path</code> indicates the relative path to the page which
+defines <code>var_name</code>.</p>
+<p>For instance both the current page and <code>/syntax/basics.md</code> define a variable <code>header</code>:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">* by default we fill from the local page: **&lbrace;&lbrace;header&rbrace;&rbrace;** (or **&lbrace;&lbrace;fill header&rbrace;&rbrace;**)
+* but we can query a specific page: **&lbrace;&lbrace;fill header syntax/basics&rbrace;&rbrace;**</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><ul>
+<li>by default we fill from the local page: <strong>Page Variables</strong> (or <strong>"Page Variables"</strong>)</li>
+<li>but we can query a specific page: <strong>"Markdown basics"</strong></li>
+</ul>
+</fieldset>
+
+</div><p>The path is relative to the website folder.
+You can add a <code>/</code> at the start and a <code>.md</code> at the end but it's not required.</p>
+<h2 id="default_variables" ><a href="#default_variables"> Default variables</a></h2><p>Franklin defines a number of page variables with default values that
+you can use and overwrite.
+You don't have to use or set any of those unless you find one useful.</p>
+<h3 id="local_variables" ><a href="#local_variables"> Local variables</a></h3><div class="lskip"> </div><table class="pure-table">
+<thead>
+<th > Variable name </th>
+<th > Default value </th>
+<th > Purpose / comment </th>
+</thead>
+<tbody>
+<tr>
+<td > <code>title</code> </td>
+<td > <code>nothing</code> </td>
+<td > title of the page </td>
+</tr>
+<tr>
+<td > <code>date</code> </td>
+<td > <code>Dates.Date(1)</code> </td>
+<td > publication date of the page </td>
+</tr>
+<tr>
+<td > <code>lang</code> </td>
+<td > <code>&quot;julia&quot;</code> </td>
+<td > default language of executed code blocks </td>
+</tr>
+<tr>
+<td > <code>tags</code> </td>
+<td > <code>String[]</code> </td>
+<td > tags for the page (see <a href="/Xranklin.jl/previews/PR/extras/tags/">tags</a>) </td>
+</tr>
+<tr>
+<td > <code>slug</code> </td>
+<td > <code>&quot;&quot;</code> </td>
+<td > slug for the page (see below) </td>
+</tr>
+<tr>
+<td > <code>ignore_cache</code> </td>
+<td > <code>Bool</code> </td>
+<td > if <code>true</code> re-evaluate all the code on the page on first pass </td>
+</tr>
+<tr>
+<td > <code>mintoclevel</code> </td>
+<td > <code>1</code> </td>
+<td > minimum heading level to add to the table of contents </td>
+</tr>
+<tr>
+<td > <code>maxtoclevel</code> </td>
+<td > <code>6</code> </td>
+<td > maximum heading level to add to the table of contents </td>
+</tr>
+<tr>
+<td > <code>showall</code> </td>
+<td > <code>true</code> </td>
+<td > show the output of every executed code blocks </td>
+</tr>
+<tr>
+<td > <code>fn_title</code> </td>
+<td > <code>&quot;Notes&quot;</code> </td>
+<td > heading of the footnotes section </td>
+</tr>
+</tbody>
+</table>
+<div class="lskip"> </div><p>The <code>slug</code> variable allows you to specify an explicit secondary output location
+for the page.
+For instance if you're currently working on a page <code>a/b/c.md</code>, the default output
+path will be such that the relevant page can be addressed at <code>/a/b/c/</code>.
+However if you specify <code>slug = &quot;c/d&quot;</code> then that page will also be available at <code>/c/d/</code>.
+You can also specify a path with a <code>.html</code> extension in which case exactly that path
+will be used:</p>
+<ul>
+<li><code>slug = &quot;c/d&quot;</code> → the page will also be available at <code>/c/d/</code></li>
+<li><code>slug = &quot;c/d.html&quot;</code> → the page will also be available at <code>/c/d.html</code></li>
+</ul>
+<p>For more on the topic you might want to read about <a href="/Xranklin.jl/previews/PR/workflow/folder_structure/#paths_in_franklin">default paths in Franklin</a>.
+Check also the <code>keep_path</code> global variable in the <a href="#global_variables">next section</a>.</p>
+<h3 id="global_variables" ><a href="#global_variables"> Global variables</a></h3><p>Just as with default local variables, you might find it useful to access or set some of those though many
+might be irrelevant for you.</p>
+<table class="pure-table">
+<thead>
+<th > Variable name </th>
+<th > Default value </th>
+<th > Purpose / comment </th>
+</thead>
+<tbody>
+<tr>
+<td > <code>author</code>  </td>
+<td > <code>The Author</code> </td>
+<td >  </td>
+</tr>
+<tr>
+<td > <code>base_url_previx</code> </td>
+<td > <code>&quot;&quot;</code> </td>
+<td > the site's base URL prefix (see also <a href="/Xranklin.jl/previews/PR/workflow/deployment/#howto_prepath">how to deploy</a>) </td>
+</tr>
+<tr>
+<td > <code>content_tag</code>    </td>
+<td > <code>&quot;div&quot;</code> </td>
+<td > the HTML tag which will wrap the content (can be empty) </td>
+</tr>
+<tr>
+<td > <code>content_class</code>  </td>
+<td > <code>&quot;franklin-content&quot;</code> </td>
+<td > the class of the content wrapper </td>
+</tr>
+<tr>
+<td > <code>content_id</code>     </td>
+<td > <code>&quot;&quot;</code>    </td>
+<td > the id of the content wrapper </td>
+</tr>
+<tr>
+<td > <code>autosavefigs</code> </td>
+<td > <code>true</code>  </td>
+<td > whether to automatically save figures </td>
+</tr>
+<tr>
+<td > <code>autoshowfigs</code> </td>
+<td > <code>true</code>  </td>
+<td > whether to automatically show figures </td>
+</tr>
+<tr>
+<td > <code>layout_head</code>  </td>
+<td > <code>&quot;_layout/head.html&quot;</code> </td>
+<td > the path to the layout head file (see also <a href="/Xranklin.jl/previews/PR/workflow/page_structure/">page structure</a>) </td>
+</tr>
+<tr>
+<td > <code>layout_foot</code>  </td>
+<td > <code>&quot;_layout/foot.html&quot;</code> </td>
+<td > the path to the layout foot file </td>
+</tr>
+<tr>
+<td > <code>layout_page_foot</code> </td>
+<td > <code>&quot;_layout/page_foot.html&quot;</code> </td>
+<td > the path to the page foot file </td>
+</tr>
+<tr>
+<td > <code>layout_head_lx</code> </td>
+<td > <code>&quot;_layout/latex/head.tex&quot;</code> </td>
+<td > the path to the LaTeX preamble </td>
+</tr>
+<tr>
+<td > <code>parse_script_blocks</code> </td>
+<td > <code>true</code> </td>
+<td > whether to parse <code>&lt;script&gt;</code> blocks </td>
+</tr>
+<tr>
+<td > <code>date_format</code> </td>
+<td > <code>&quot;U d, yyyy&quot;</code> </td>
+<td > base date format used </td>
+</tr>
+<tr>
+<td > <code>date_days</code>   </td>
+<td > <code>String[]</code>    </td>
+<td > specify custom day names (e.g. <code>[&quot;Lundi&quot;, ...]</code>) </td>
+</tr>
+<tr>
+<td > <code>date_shortdays</code> </td>
+<td > <code>String[]</code> </td>
+<td > specify custom short day names (e.g. <code>[&quot;Lun&quot;, ...]</code>) </td>
+</tr>
+<tr>
+<td > <code>date_months</code> </td>
+<td > <code>String[]</code> </td>
+<td > specify custom month names (e.g. <code>[&quot;Janvier&quot;, ...]</code>) </td>
+</tr>
+<tr>
+<td > <code>date_shortmonths</code> </td>
+<td > <code>String[]</code> </td>
+<td > specify custom short month names (e.g. <code>[&quot;Jan&quot;, ...]</code>) </td>
+</tr>
+<tr>
+<td > <code>ignore_base</code> </td>
+<td > <code>[&quot;LICENSE.md&quot;, &quot;README.md&quot;, ...]</code> </td>
+<td > base list of strings or regexes of files and directories to ignore </td>
+</tr>
+<tr>
+<td > <code>ignore</code> </td>
+<td > <code>[]</code> </td>
+<td > complements <code>ignore_base</code> </td>
+</tr>
+<tr>
+<td > <code>keep_path</code> </td>
+<td > <code>String[]</code> </td>
+<td > relative paths of files that should have their build path be identical to their source path </td>
+</tr>
+<tr>
+<td > <code>robots_disallow</code> </td>
+<td > <code>String[]</code> </td>
+<td > relative paths of files that should disallow robots </td>
+</tr>
+<tr>
+<td > <code>generate_robots</code> </td>
+<td > <code>true</code> </td>
+<td > whether to generate <code>robots.txt</code> </td>
+</tr>
+<tr>
+<td > <code>generate_sitemap</code> </td>
+<td > <code>true</code> </td>
+<td > whether to generate a sitemap </td>
+</tr>
+<tr>
+<td > <code>heading_class</code> </td>
+<td > <code>&quot;&quot;</code> </td>
+<td > class to add to headings (converted from <code>## ...</code>) </td>
+</tr>
+<tr>
+<td > <code>heading_link</code>  </td>
+<td > <code>true</code> </td>
+<td > whether to make headings into links </td>
+</tr>
+<tr>
+<td > <code>heading_link_class</code> </td>
+<td > <code>&quot;&quot;</code> </td>
+<td > class of the heading links if any </td>
+</tr>
+<tr>
+<td > <code>heading_post</code> </td>
+<td > <code>&quot;&quot;</code> </td>
+<td > HTML that should be placed after every heading if any (can contain <code>&lbrace;&lbrace;...&rbrace;&rbrace;</code>) </td>
+</tr>
+<tr>
+<td > <code>toc_class</code> </td>
+<td > <code>&quot;toc&quot;</code> </td>
+<td > class of the table of contents </td>
+</tr>
+<tr>
+<td > <code>anchor_class</code> </td>
+<td > <code>&quot;anchor&quot;</code> </td>
+<td > class of the page anchors </td>
+</tr>
+<tr>
+<td > <code>anchor_math_class</code> </td>
+<td > <code>&quot;anchor-math&quot;</code> </td>
+<td > class of anchors in math environment </td>
+</tr>
+<tr>
+<td > <code>anchor_bib_class</code>  </td>
+<td > <code>&quot;anchor-bib&quot;</code> </td>
+<td > class of anchors in references </td>
+</tr>
+<tr>
+<td > <code>date_format</code> </td>
+<td > <code>&quot;U dd, yyyy&quot;</code> </td>
+<td > date format on the site </td>
+</tr>
+<tr>
+<td > <code>date_days</code> </td>
+<td > <code>String[]</code> </td>
+<td > </td>
+</tr>
+<tr>
+<td > <code>date_shortdays</code> </td>
+<td > <code>String[]</code> </td>
+<td > </td>
+</tr>
+<tr>
+<td > <code>date_months</code> </td>
+<td > <code>String[]</code> </td>
+<td > </td>
+</tr>
+<tr>
+<td > <code>date_shortmonths</code> </td>
+<td > <code>String[]</code> </td>
+<td > </td>
+</tr>
+<tr>
+<td > <code>generate_rss</code> </td>
+<td > <code>false</code> </td>
+<td > whether to generate an RSS feed </td>
+</tr>
+<tr>
+<td > <code>rss_website_title</code> </td>
+<td > <code>&quot;&quot;</code> </td>
+<td > </td>
+</tr>
+<tr>
+<td > <code>rss_website_url</code>   </td>
+<td > <code>&quot;&quot;</code> </td>
+<td > </td>
+</tr>
+<tr>
+<td > <code>rss_feed_url</code>      </td>
+<td > <code>&quot;&quot;</code> </td>
+<td > </td>
+</tr>
+<tr>
+<td > <code>rss_website_descr</code> </td>
+<td > <code>&quot;&quot;</code> </td>
+<td > </td>
+</tr>
+<tr>
+<td > <code>rss_file</code>          </td>
+<td > <code>&quot;feed&quot;</code> </td>
+<td > file name for the RSS feed </td>
+</tr>
+<tr>
+<td > <code>rss_full_content</code>  </td>
+<td > false </td>
+<td > whether to insert the full page content on RSS items </td>
+</tr>
+<tr>
+<td > <code>tags_prefix</code>  </td>
+<td > <code>&quot;tags&quot;</code> </td>
+<td > tags will be at <code>/tags/...</code></td>
+</tr>
+<tr>
+<td > <code>tabs_tospaces</code>  </td>
+<td > <code>2</code> </td>
+<td > conversion tabs to spaces in list creation </td>
+</tr>
+</tbody>
+</table>
+<p>Same as for local variables, there is a set of default global variables that are used by Franklin and
+which you should, generally, not set yourself though you might want to access them.</p>
+<table class="pure-table">
+<thead>
+<th > Variable name </th>
+<th > Default value </th>
+<th > Purpose / comment </th>
+</thead>
+<tbody>
+<tr>
+<td > <code>_offset_lxdefs</code> </td>
+<td >  </td>
+<td >  </td>
+</tr>
+<tr>
+<td > <code>_paths</code> </td>
+<td >  </td>
+<td >  </td>
+</tr>
+<tr>
+<td > <code>_idx_rpath</code> </td>
+<td >  </td>
+<td >  </td>
+</tr>
+<tr>
+<td > <code>_idx_ropath</code> </td>
+<td >  </td>
+<td >  </td>
+</tr>
+<tr>
+<td ><code>_utils_hfun_names</code> </td>
+<td >  </td>
+<td >  </td>
+</tr>
+<tr>
+<td ><code>_utils_lxfun_names</code> </td>
+<td >  </td>
+<td >  </td>
+</tr>
+<tr>
+<td ><code>_utils_envfun_names</code> </td>
+<td >  </td>
+<td >  </td>
+</tr>
+<tr>
+<td ><code>_utils_var_names</code> </td>
+<td >  </td>
+<td >  </td>
+</tr>
+<tr>
+<td ><code>_refrefs</code> </td>
+<td >  </td>
+<td >  </td>
+</tr>
+<tr>
+<td ><code>_bibrefs</code> </td>
+<td >  </td>
+<td >  </td>
+</tr>
+</tbody>
+</table>
+<p><br>
+
+For legacy purposes, a number of these variables have aliases:</p>
+<table class="pure-table">
+<thead>
+<th > Alias </th>
+<th > Variable name </th>
+</thead>
+<tbody>
+<tr>
+<td > <code>prepath</code> </td>
+<td > <code>base_url_prefix</code> </td>
+</tr>
+<tr>
+<td > <code>prefix</code> </td>
+<td > <code>base_url_prefix</code> </td>
+</tr>
+<tr>
+<td > <code>base_path</code> </td>
+<td > <code>base_url_prefix</code> </td>
+</tr>
+<tr>
+<td > <code>website_url</code> </td>
+<td > <code>rss_website_url</code> </td>
+</tr>
+<tr>
+<td > <code>website_title</code> </td>
+<td > <code>rss_website_title</code> </td>
+</tr>
+<tr>
+<td > <code>website_description</code> </td>
+<td > <code>rss_website_descr</code> </td>
+</tr>
+<tr>
+<td > <code>website_descr</code> </td>
+<td > <code>rss_website_descr</code> </td>
+</tr>
+</tbody>
+</table>
+<a id="hfuns" class="anchor"></a><h2 id="html_functions_and_environments" ><a href="#html_functions_and_environments"> HTML functions and environments</a></h2><p>By now you should already have an idea</p>
+<ul>
+<li>XXX functions can be used in Markdown no problem</li>
+<li>environments should only be used in HTML (their scope is not resolved in Markdown which so something like <code>&lbrace;&lbrace;for x in iter&rbrace;&rbrace; **&lbrace;&lbrace;x&rbrace;&rbrace;** &lbrace;&lbrace;end&rbrace;&rbrace;</code> will try to resolve <code>&lbrace;&lbrace;x&rbrace;&rbrace;</code> first, fail) (or within a raw HTML block)</li>
+</ul>
+<h3 id="default_functions" ><a href="#default_functions"> Default functions</a></h3><h3 id="(xxx)_environments_conditionals" ><a href="#(xxx)_environments_conditionals"> (XXX) Environments: conditionals</a></h3><div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">+++
+flag = true
++++
+
+&lbrace;&lbrace;if flag&rbrace;&rbrace;
+Hello
+&lbrace;&lbrace;else&rbrace;&rbrace;
+Not Hello
+&lbrace;&lbrace;end&rbrace;&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>
+Hello
+</fieldset>
+
+</div><fieldset class="tip"><legend class="tip-legend">🚀 Tip</legend>
+
+While here the environment is demonstrated directly in Markdown, environments
+are best used in layout files (<code>_layout/...</code>) or raw HTML blocks and should, ideally,
+not be mixed with Markdown as the order in which elements are resolved by Franklin may not
+always be what you think and that can sometimes lead to unexpected results.This is even more true for loop environments introduced further below.
+
+</fieldset><p>Naturally, you can have multiple branches with <code>&lbrace;&lbrace;elseif variable&rbrace;&rbrace;</code>. Here's another example</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">+++
+flag_a = false
+flag_b = true
++++
+
+&lbrace;&lbrace;if flag_a&rbrace;&rbrace;
+ABC
+&lbrace;&lbrace;elseif flag_b&rbrace;&rbrace;
+DEF
+&lbrace;&lbrace;end&rbrace;&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>
+DEF
+</fieldset>
+
+</div><p>There are some standard conditionals that can be particularly useful in layout.</p>
+<table class="pure-table">
+<thead>
+<th > conditional </th>
+<th > effect </th>
+</thead>
+<tbody>
+<tr>
+<td > <code>&lbrace;&lbrace;ispage path&rbrace;&rbrace;</code> or <code>&lbrace;&lbrace;ispage path1 path2 ...&rbrace;&rbrace;</code> </td>
+<td > checks whether the present page corresponds to a path or a list of paths, this can be particularly useful if you want to toggle different part of layout for different pages </td>
+</tr>
+<tr>
+<td > <code>&lbrace;&lbrace;isdef var&rbrace;&rbrace;</code> </td>
+<td > ... </td>
+</tr>
+</tbody>
+</table>
+<p><strong>etc</strong> + check</p>
+<h3 id="(xxx)_environments_loops" ><a href="#(xxx)_environments_loops"> (XXX) Environments: loops</a></h3><div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">+++
+some_list = [&quot;bob&quot;, &quot;alice&quot;, &quot;emma&quot;, &quot;joe&quot;]
++++
+
+&lbrace;&lbrace;for x in some_list&rbrace;&rbrace;
+&lbrace;&lbrace;x&rbrace;&rbrace; \\
+&lbrace;&lbrace;end&rbrace;&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>
+b 
+<br>
+
+
+a 
+<br>
+
+
+e 
+<br>
+
+
+j 
+<br>
+
+</fieldset>
+
+</div><div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">+++
+iter = [&quot;ab&quot;, &quot;cd&quot;, &quot;ef&quot;]
++++
+
+&lbrace;&lbrace;for e in iter&rbrace;&rbrace;
+_value_ ? **&lbrace;&lbrace;e&rbrace;&rbrace;**\\
+&lbrace;&lbrace;end&rbrace;&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>
+<em>value</em> ? <strong>a</strong>
+<br>
+
+
+<em>value</em> ? <strong>c</strong>
+<br>
+
+
+<em>value</em> ? <strong>e</strong>
+<br>
+
+</fieldset>
+
+</div><fieldset class="tip"><legend class="tip-legend">🚀 Tip</legend>
+
+The example above shows mixing of Markdown inside the scope of the loop environment,
+here things are simple and work as expected but as indicated in the previous tip,
+you should generally keep environments for HTML blocks or layout files.
+
+</fieldset><h3 id="e_strings" ><a href="#e_strings"> E-strings</a></h3><p>E-strings allow you to run simple Julia code to define the parameters of a <code>&lbrace;&lbrace;...&rbrace;&rbrace;</code> block.
+This can be useful to</p>
+<ol>
+<li>insert some value derived from some page variables easily,</li>
+<li>have a conditional or a loop environment depend on a derivative of some page variables.</li>
+</ol>
+<p>The first case is best illustrated with a simple example:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">+++
+foo = 123
++++
+
+* &lbrace;&lbrace;e&quot;1+1&quot;&rbrace;&rbrace;
+* &lbrace;&lbrace;e&quot;$foo&quot;&rbrace;&rbrace; you can refer to page variables using `$name_of_variable`
+* &lbrace;&lbrace;e&quot;$foo^2&quot;&rbrace;&rbrace;
+* &lbrace;&lbrace;e&quot;round(sqrt($foo), digits=1)&quot;&rbrace;&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><ul>
+<li>2</li>
+<li>123 you can refer to page variables using <code>$name_of_variable</code></li>
+<li>15129</li>
+<li>11.1</li>
+</ul>
+</fieldset>
+
+</div><p>More generally the syntax is <code>&lbrace;&lbrace; e&quot;...&quot; &rbrace;&rbrace;</code> where the <code>...</code> is valid Julia code
+where page variables are prefixed with a <code>$</code>.
+The alternative syntax <code>&lbrace;&lbrace;&gt; ...&rbrace;&rbrace;</code> is also supported:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">+++
+bbb = 321
++++
+
+&lbrace;&lbrace;&gt; $bbb // 3&rbrace;&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>107//1</fieldset>
+
+</div><p>The code in the e-string is evaluated inside the <a href="/Xranklin.jl/previews/PR/syntax/utils/">utils module</a>
+and so could leverage any package it imports or any function it defines.
+For instance we added a function</p>
+<pre><code class="julia">bar(x) = &quot;hello from foo &lt;$x&gt;&quot;</code></pre>
+<p>to <code>utils.jl</code> and can call it from here in an e-string as:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">&lbrace;&lbrace;e&quot;bar($foo)&quot;&rbrace;&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>hello from foo <123></fieldset>
+
+</div><p>As noted earlier, these e-strings can also be useful for conditional and loop environments:</p>
+<ul>
+<li><code>&lbrace;&lbrace;if e&quot;...&quot;&rbrace;&rbrace;</code></li>
+<li><code>&lbrace;&lbrace;for ... in e&quot;...&quot;&rbrace;&rbrace;</code></li>
+</ul>
+<p>For the first, let's consider the case where you'd like to have some part of your layout
+depend on whether either one of two page variables is true.
+For this you can use an e-string and write <code>&lbrace;&lbrace;if e&quot;$flag1 || $flag2&quot;&rbrace;&rbrace;</code>:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">+++
+flag1 = false
+flag2 = true
++++
+&lbrace;&lbrace;if e&quot;$flag1 || $flag2&quot;&rbrace;&rbrace;
+Hello
+&lbrace;&lbrace;else&rbrace;&rbrace;
+Not Hello
+&lbrace;&lbrace;end&rbrace;&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>
+Hello
+</fieldset>
+
+</div><p>More generally you can use an e-string for any kind of condition written in Julia
+as long as it evaluates to a boolean value (<code>true</code> or <code>false</code>).</p>
+<p>For loop environments, you can likewise use an e-string that would give you some
+derived iterator that you'd wish to go over:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">+++
+iter1 = [1, 2, 3]
+iter2 = [&quot;abc&quot;, &quot;def&quot;, &quot;ghi&quot;]
++++
+~~~
+&lt;ul&gt;
+&lbrace;&lbrace;for (x, y) in e&quot;zip($iter1, $iter2)&quot;&rbrace;&rbrace;
+&lt;li&gt;&lt;strong&gt;&lbrace;&lbrace;x&rbrace;&rbrace;&lt;/strong&gt;: &lt;code&gt;&lbrace;&lbrace;y&rbrace;&rbrace;&lt;/code&gt;&lt;/li&gt;
+&lbrace;&lbrace;end&rbrace;&rbrace;
+&lt;/ul&gt;
 ~~~</code></pre>
 </fieldset>
 
@@ -1170,729 +1977,25 @@ Some Content
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><fieldset><legend>Foo</legend>
-Some Content
-</fieldset></fieldset>
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><ul>
 
-</div><p>Since you can  wrap this in a <a href="#latex_like_commands">LaTeX-like command</a>, you can define commands
-that apply whatever custom HTML you see  fit, or use this to insert buttons etc.</p>
-<h2 id="equations" ><a href="#equations"> Equations</a></h2><p>In Franklin, math is handled by <a href="https://katex.org/">KaTeX</a> (though you could set things
-up so that it's handled by <a href="https://www.mathjax.org/">MathJax</a> instead).
-For <em>inline</em> math, use a single '<code>$</code>' like in LaTeX (here's a <a href="http://tug.ctan.org/info/undergradmath/undergradmath.pdf">cheatsheet</a> for LaTeX math if you're unfamiliar with the syntax):</p>
-<div class="trim">
+<li><strong>1</strong>: <code>abc</code></li>
 
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">The variables $x, y \in \mathbb R$ are  such that $x^2+y^2 = 1$.</code></pre>
-</fieldset>
+<li><strong>2</strong>: <code>def</code></li>
 
-</div>
+<li><strong>3</strong>: <code>ghi</code></li>
 
+</ul></fieldset>
 
+</div><h3 id="more_customisation" ><a href="#more_customisation"> More customisation</a></h3><p>If the default functions and environments, possibly coupled with e-strings are
+not enough for your use case or are starting to feel a bit clunky, it's time
+to move on to <a href="/Xranklin.jl/previews/PR/syntax/utils/">writing custom hfuns</a>.</p>
+<p>This approach allows you to write <code>&lbrace;&lbrace;your_function p1 p2 ...&rbrace;&rbrace;</code> where
+<code>your_function</code> maps to a Julia function that you define and that produces a
+string based on whatever logic that would be appropriate for your use case.</p>
 
-<div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>The variables \(x, y \in \mathbb R\) are  such that \(x^2+y^2 = 1\).</fieldset>
-
-</div><p>For <em>display</em> math, use double '<code>$$</code>':</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">Here's a nice equation:
-
-$$ \exp(i\pi) + 1 = 0 $$</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Here's a nice equation:\[  \exp(i\pi) + 1 = 0  \]
-</fieldset>
-
-</div><p>"Display math" blocks get automatically numbered.
-You can suppress this using <code>\nonumber&lbrace;$$...$$&rbrace;</code>.
-For instance:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\nonumber&lbrace;
-  $$ x = 0 $$
-&rbrace;</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="nonumber">  \[  x = 0  \]
-</div></fieldset>
-
-</div><p>You can add labels to display-math blocks using <code>\label&lbrace;label name&rbrace;</code> and refer to them
-later with <code>\eqref&lbrace;label name&rbrace;</code>:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">$$
-  x + \underbrace&lbrace;y + z&rbrace;_&lbrace;w&rbrace; = u \label&lbrace;some equation&rbrace;
-$$
-
-And refer to it as \eqref&lbrace;some equation&rbrace;.</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><a id="some_equation" class="anchor anchor-math"></a>\[ 
-  x + \underbrace{y + z}_{w} = u 
- \]
-And refer to it as (<a href="#some_equation" class="eqref">2</a>).</fieldset>
-
-</div><p>Equations can span multiple lines and use multi-line environments</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">Here's an optimisation problem
-
-$$
-  \text&lbrace;arg&rbrace;\,\min_&lbrace;x\in[0,1]&rbrace; \,\, f(x)
-    \quad\text&lbrace;s.t.&rbrace;\quad f(x) =
-  \begin&lbrace;cases&rbrace;
-    x\sin(x^2) \,\,\text&lbrace;if&rbrace;\,\, x \in [0, \pi]\\
-    x\cos(x^2) \,\, \text&lbrace;elswhere&rbrace;
-  \end&lbrace;cases&rbrace;
-$$</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Here's an optimisation problem\[ 
-  \text{arg}\,\min_{x\in[0,1]} \,\, f(x)
-    \quad\text{s.t.}\quad f(x) =
-  \begin{cases}x\sin(x^2) \,\,\text{if}\,\, x \in [0, \pi]\\
-x\cos(x^2) \,\, \text{elswhere}\end{cases}
- \]
-</fieldset>
-
-</div><p>Like in LaTeX, you can define <a href="#latex_commands">commands</a> and use them in a math
-environment too:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\E&rbrace;[1]&lbrace;\mathbb E\left\&lbrace;#1\right\&rbrace;&rbrace;
-
-$$ \E&lbrace;\sum_&lbrace;i=1&rbrace;^n X^2_i&rbrace; = \lambda\exp(\sigma) $$</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>\[  \mathbb E\left\{ \sum_{i=1}^n X^2_i\right\} = \lambda\exp(\sigma)  \]
-</fieldset>
-
-</div><fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
-
-Double-braces (which can be used to call <a href="/Xranklin.jl/previews/PR/syntax/vars+funs/">hfuns</a> or insert page variables)
-are disabled in math environments.
-This is to avoid ambiguities since in LaTeX-like math syntax,
-double braces can happen. So, for instance, <code>$&lbrace;&lbrace;x&rbrace;&rbrace;$</code> will just show \(x\) even if you do have
-a page variable <code>x</code> on the page.
-
-</fieldset><fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
-
-Franklin uses its <strong>own counter</strong> to keep track of equation numbering.
-There is no communication between Franklin and any KaTeX or CSS counters.
-This means that you cannot effectively use KaTeX-specific commands that suppress numbering
-as this would cause issues with subsequent equation references done with <code>\eqref</code>.
-<br>
-
-Long story short: if you want to suppress numbering, use <code>\nonumber</code>.
-
-</fieldset><h3 id="environments" ><a href="#environments"> Environments</a></h3><p>Franklin also supports common math environments: <code>equation</code>, <code>align</code>, <code>aligned</code>, <code>eqnarray</code>,
-and their "starred" version (which suppresses the number):</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\begin&lbrace;eqnarray*&rbrace;
-  \mathcal F[g](\omega)
-          &amp;=&amp; \langle g, \exp(i\omega \cdot) \rangle \\
-          &amp;=&amp; \displaystyle&lbrace;\int_&lbrace;\mathbb R&rbrace; g(x)\exp(i\omega x)\mathrm&lbrace;d&rbrace;x&rbrace;
-\end&lbrace;eqnarray*&rbrace;</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="nonumber">\[ 
-\begin{array}{rcl}\mathcal F[g](\omega)
-        &=& \langle g, \exp(i\omega \cdot) \rangle \\
-        &=& \displaystyle{\int_{\mathbb R} g(x)\exp(i\omega x)\mathrm{d}x}\end{array}
- \]
-</div></fieldset>
-
-</div><fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
-
-In "proper" LaTeX, the use of <code>\eqnarray</code> is discouraged due to possible interference
-with array column spacing.
-In Franklin/KaTeX this does not happen and so the only practical difference is that
-<code>\eqnarray</code> will give you a bit more horizontal spacing around the <code>=</code> signs than
-the <code>align</code> environme
-nt.
-
-</fieldset><h3 id="styling" ><a href="#styling"> Styling</a></h3><p>The standard styling for KaTeX with Franklin will be something like</p>
-<pre><code class="css">body &lbrace; counter-reset: eqnum; &rbrace;
-
-.katex &lbrace; font-size: 1.1em !important; &rbrace;
-
-.katex-display .katex &lbrace;
-    display: inline-block;
-&rbrace;
-
-.katex-display::after &lbrace;
-    counter-increment: eqnum;
-    content: &quot;(&quot; counter(eqnum) &quot;)&quot;;
-    position: relative;
-    float: right;
-    padding-right: 5px; &rbrace;
-
-.nonumber .katex-display::after &lbrace;
-  counter-increment: nothing;
-  content: &quot;&quot;;
-&rbrace;</code></pre>
-<p>Increase the <code>1.1em</code> to e.g. <code>1.2em</code> if you want larger font or decrease to e.g. <code>1.0em</code> for smaller font.
-The class <code>.katex-display</code> is for block math, <code>eqnum</code> is the CSS counter used for numbering equations.
-The <code>.nonumber</code> class is used for equations with suppressed numbering.</p>
-<h2 id="tables" ><a href="#tables"> Tables</a></h2><p>Franklin supports inserting tables with the following syntax:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">| item | count | price |
-| ---- | ----- | ----- |
-| apple | 5 | 3 |
-| pear | 10 | 5 |</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><table class="pure-table">
-<thead>
-<th > item </th>
-<th > count </th>
-<th > price </th>
-</thead>
-<tbody>
-<tr>
-<td > apple </td>
-<td > 5 </td>
-<td > 3 </td>
-</tr>
-<tr>
-<td > pear </td>
-<td > 10 </td>
-<td > 5 </td>
-</tr>
-</tbody>
-</table>
-</fieldset>
-
-</div><p>Table rows <strong>must</strong> start <strong>and</strong> end with a '<code>|</code>' symbol and <strong>must</strong> be entirely defined
-on a single line (this is a bit stricter than what most Markdown flavour that support table
-  require).
-Observe that alignment of the '<code>|</code>' is not necessary (though it often helps readability!)
-and spaces around '<code>|</code>' are insignificant.
-If a row is found to have too many or too few cells, the table will be padded accordingly:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">| A | B | C |
-| - | - | - |
-| 1 |
-| 1 | 2 |
-| 1 | 2 | 3 |
-| 1 | 2 | 3 | 4 |</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><table class="pure-table">
-<thead>
-<th > A </th>
-<th > B </th>
-<th > C </th>
-<th ></th>
-</thead>
-<tbody>
-<tr>
-<td > 1 </td>
-<td ></td>
-<td ></td>
-<td ></td>
-</tr>
-<tr>
-<td > 1 </td>
-<td > 2 </td>
-<td ></td>
-<td ></td>
-</tr>
-<tr>
-<td > 1 </td>
-<td > 2 </td>
-<td > 3 </td>
-<td ></td>
-</tr>
-<tr>
-<td > 1 </td>
-<td > 2 </td>
-<td > 3 </td>
-<td > 4 </td>
-</tr>
-</tbody>
-</table>
-</fieldset>
-
-</div><p>Any <strong>inline</strong> element is allowed within table cells and header cells:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">| A | B |
-| - | - |
-| `x|y` | $x \in \mathbb R$ |</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><table class="pure-table">
-<thead>
-<th > A </th>
-<th > B </th>
-</thead>
-<tbody>
-<tr>
-<td > <code>x|y</code> </td>
-<td > \(x \in \mathbb R\) </td>
-</tr>
-</tbody>
-</table>
-</fieldset>
-
-</div><p>Images are also inline blocks and so can be inserted in cells as well:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">| Language | Logo |
-| -------- | ---- |
-| Julia | ![](/assets/icons/julia_icon_small.png) |
-| Python | ![](/assets/icons/python_icon_small.png) |</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><table class="pure-table">
-<thead>
-<th > Language </th>
-<th > Logo </th>
-</thead>
-<tbody>
-<tr>
-<td > Julia </td>
-<td > <img src="/Xranklin.jl/previews/PR/assets/icons/julia_icon_small.png"> </td>
-</tr>
-<tr>
-<td > Python </td>
-<td > <img src="/Xranklin.jl/previews/PR/assets/icons/python_icon_small.png"> </td>
-</tr>
-</tbody>
-</table>
-</fieldset>
-
-</div><p>By default content is left-aligned in columns.
-You can change this by using <code>:-</code> (left) or <code>:--:</code> (center) or <code>-:</code> (right)
-under the relevant column header:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">| Left (implicit) | Left (explicit) | Center | Right |
-| --------------- | :-------------- | :----: | ----: |
-| ABC | ABC | ABC | ABC |
-| DEF | DEF | DEF | DEF |
-| GHI | GHI | GHI | GHI |</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><table class="pure-table">
-<thead>
-<th > Left (implicit) </th>
-<th style="text-align:left;"> Left (explicit) </th>
-<th style="text-align:center;"> Center </th>
-<th style="text-align:right;"> Right </th>
-</thead>
-<tbody>
-<tr>
-<td > ABC </td>
-<td style="text-align:left;"> ABC </td>
-<td style="text-align:center;"> ABC </td>
-<td style="text-align:right;"> ABC </td>
-</tr>
-<tr>
-<td > DEF </td>
-<td style="text-align:left;"> DEF </td>
-<td style="text-align:center;"> DEF </td>
-<td style="text-align:right;"> DEF </td>
-</tr>
-<tr>
-<td > GHI </td>
-<td style="text-align:left;"> GHI </td>
-<td style="text-align:center;"> GHI </td>
-<td style="text-align:right;"> GHI </td>
-</tr>
-</tbody>
-</table>
-</fieldset>
-
-</div><h3 id="styling__2" ><a href="#styling__2"> Styling</a></h3><p>A generated table will have the following HTML structure:</p>
-<pre><code class="html">&lt;table class=&quot;&lbrace;&lbrace;table_class&rbrace;&rbrace;&quot;&gt;
-  &lt;thead&gt;
-    &lt;th&gt; Header column 1 &lt;/th&gt;
-    &lt;th&gt; Header column 2 &lt;/th&gt;
-    ...
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;                  &lt;!-- first row --&gt;
-      &lt;td&gt; content &lt;/td&gt;  &lt;!-- first column --&gt;
-      &lt;td&gt; ... &lt;/td&gt;
-      ...
-    &lt;/tr&gt;
-    ...
-  &lt;/tbody&gt;
-&lt;/table&gt;</code></pre>
-<p>The <code>table_class</code> is a <a href="/Xranklin.jl/previews/PR/syntax/vars+funs/">page variable</a> that you can specify,
-and which is empty by default.
-This can be useful if you're using a CSS framework like <a href="https://purecss.io/">Pure</a> which has specific
-classes for tables with good defaults (here, for instance, we're using
-<a href="https://purecss.io/tables/"><code>pure-table</code></a> as the class).</p>
-<p>If you're not using a framework, you will want to style the elements <code>table</code>, <code>thead</code>, <code>th</code>,
-<code>tbody</code>, <code>tr</code> and <code>td</code> as desired.
-CSS tricks has a <a href="https://css-tricks.com/complete-guide-table-element/">nice article</a> on
-styling tables.</p>
-<h2 id="footnotes" ><a href="#footnotes"> Footnotes</a></h2><p>You can add footnotes like you would a <a href="/Xranklin.jl/previews/PR/syntax/basics/#links">reference link</a> except
-that the reference must start with a caret '<code>^</code>' so for instance <code>[^1]</code> or
-<code>[^note about x]</code>.
-Footnotes get automatically numbered by order of appearance on the page.
-The "definition" of the footnote can be placed wherever is convenient in the Markdown.
-On the page however, they will be placed at the end of the page in the order in which
-they appeared.</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">Some point we want to add a note to.[^a note]
-
-[^a note]: did you know about this?</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Some point we want to add a note to.<sup><a href="#fn_a_note">[1]</a></sup>
-<a id="fnref_a_note"></a>
-</fieldset>
-
-</div><p>The numbering is automatic, irrelevant of whether the footnote id has a number in it or not:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">Some other point worth adding a footnote to.[^1]
-
-[^1]: how about this? This one is a very long note
-so that you can see how that works, it also has
-some $x$ math and `foo() = 5` code.</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Some other point worth adding a footnote to.<sup><a href="#fn_1">[2]</a></sup>
-<a id="fnref_1"></a>
-</fieldset>
-
-</div><p>Click on  one  of the footnote  link or check the <a href="#fn-defs">bottom of this page</a>
-to see the footnotes.</p>
-<p>The list of footnotes will be placed wherever you put a <code>&lbrace;&lbrace;footnotes&rbrace;&rbrace;</code>.
-Typically (like here), this is part of the layout in <code>_layout/foot.html</code>,
-but you could choose to place it manually.</p>
-<h2 id="div_blocks" ><a href="#div_blocks"> Div blocks</a></h2><p>It can sometimes be nice to use a specific CSS styling for a part of a page.
-For instance you might want to have some text that's in a different font, or a different colour,
-or that is centred.
-You can of course always achieve this by injecting <a href="#injecting_html">raw HTML</a> directly,
-another way is to use <code>@@c1,c2 ... @@</code> to indicate a <strong>div block</strong> with class <code>c1</code> and <code>c2</code>.</p>
-<p>This is particularly useful when you're working with a class-heavy framework such as <a href="https://getbootstrap.com/">Bootstrap</a>.
-Here's an example with a class <code>yellow-bg</code> and a class <code>red-text</code> with the following CSS:</p>
-<pre><code class="css">.yellow-bg  &lbrace;background-color: yellow; width: 50%; padding-left: 2em;&rbrace;
-.red-text &lbrace;color: red;&rbrace;</code></pre>
- 
- <style>
- .yellow-bg  {background-color: yellow; width: 50%; padding-left: 2em;}
- .red-text {color: red;}
- </style>
- <div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">@@yellow-bg
-  this will be in a box with yellow background
-@@
-
-@@yellow-bg,red-text
-  in a box with yellow background and red text
-@@</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><div class="yellow-bg"><p>  this will be in a box with yellow background</p>
-</div><div class="yellow-bg red-text"><p>  in a box with yellow background and red text</p>
-</div></fieldset>
-
-</div><h2 id="latex_like_commands" ><a href="#latex_like_commands"> LaTeX-like commands</a></h2><p>When writing blog posts or lecture notes for instance, you might end up having to repeatedly
-use some styling, or some sequence of commands, or some sentence.
-To help you with this, Franklin supports defining LaTeX-like commands in much the same way
-as in LaTeX with the syntax</p>
-<pre><code class="plaintext">\newcommand&lbrace;\command&rbrace;[nargs]&lbrace;definition&rbrace;</code></pre>
-<p>where <code>nargs</code> is the number of arguments of the command and the definition is any valid Franklin markdown with <code>#1</code>, <code>#2</code>, ... indicating where arguments must be placed.
-Examples will make all this much clearer.</p>
-<p>First, the case without arguments:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\command_a&rbrace;&lbrace;_a sentence that would be repeated many times_&rbrace;
-
-And here: \command_a</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>And here: <em>a sentence that would be repeated many times</em></fieldset>
-
-</div><p>Then a case with a single argument:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\warning&rbrace;[1]&lbrace;@@yellow-bg,red-text #1 @@&rbrace;
-
-And here: \warning&lbrace;some important text&rbrace;</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>And here: <div class="yellow-bg red-text"><p> some important text </p>
-</div></fieldset>
-
-</div><p>Finally a case with two arguments (there can be more, of course, though beyond 2 they become
-  harder to read and maintain):</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\theorem&rbrace;[2]&lbrace;**Theorem (#1)**. #2&rbrace;
-
-\theorem&lbrace;Schwarz&rbrace;&lbrace;
-  $$ (\mathbb E(XY))^2 \le \mathbb E(X^2) \mathbb E(Y^2). $$
-&rbrace;</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><strong>Theorem (Schwarz)</strong>. \[  (\mathbb E(XY))^2 \le \mathbb E(X^2) \mathbb E(Y^2).  \]</fieldset>
-
-</div><p>Since command can wrap around raw HTML injection as well, you can for instance define a
-command that applies custom local-styling to some text:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\style&rbrace;[2]&lbrace;~~~&lt;span style=&quot;#1&quot;&gt;~~~#2~~~&lt;/span&gt;~~~&rbrace;
-
-Here is \style&lbrace;color:blue&rbrace;&lbrace;some text in blue&rbrace; and
-\style&lbrace;font-weight:750;font-family:serif;&rbrace;&lbrace;some bolder serif text&rbrace;.</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Here is <span style="color:blue">some text in blue</span> and
-<span style="font-weight:750;font-family:serif;">some bolder serif text</span>.</fieldset>
-
-</div><fieldset class="tip"><legend class="tip-legend">🚀 Tip</legend>
-
-Command names cannot contain a space or end with either '<code>*</code>' or '<code>_</code>'.
-But they can end with one or more digits.
-For instance, <code>\com1b</code>, <code>\com1</code> or  <code>\com_a</code> are allowed but not <code>\com*</code> or <code>\com_</code>,
-to avoid ambiguities with emphasised text.
-
-</fieldset><h3 id="whitespaces" ><a href="#whitespaces"> Whitespaces</a></h3><p>In math environments, to  avoid issues with chaining Franklin-defined commands
-(which require braces for arguments) and KaTeX commands (which don't always require braces),
-Franklin forces the insertion of whitespaces left of injected arguments.
-This will usually not have a visible effect on the result but you may still
-want to switch this off.
-In this case, use '<code>!#</code>' in defining the command instead of just '<code>#</code>' when referring to an
-argument in a definition.
-This is best seen with an example:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\E&rbrace;[1]&lbrace;\mathbb E\left[#1\right]&rbrace;
-
-Zero expected-value: $\E&lbrace;X&rbrace;=0$.</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Zero expected-value: \(\mathbb E\left[ X\right]=0\).</fieldset>
-
-</div><p>The HTML generated by the above expression is:</p>
-<pre><code class="html">Zero expected-value: \(\mathbb E\left[ X\right]=0\).</code></pre>
-<p>Note  how there's a whitespace between the inserted '<code>X</code>' and the '<code>[</code>'.
-If you had instead used '<code>!#1</code>' in the definition of the command, that
-whitespace would not be there:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\E&rbrace;[1]&lbrace;\mathbb E\left[!#1\right]&rbrace;
-
-Zero expected-value: $\E&lbrace;X&rbrace;=0$.</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Zero expected-value: \(\mathbb E\left[X\right]=0\).</fieldset>
-
-</div><p>Observe that there's no visible difference in the result except that the HTML now is:</p>
-<pre><code class="html">Zero expected-value: \(\mathbb E\left[X\right]=0\).</code></pre>
-<p>without whitespace on the left of the '<code>X</code>'.</p>
-<fieldset class="tip"><legend class="tip-legend">🚀 Tip</legend>
-
-Generally you should not have to bother with this and can just ignore the <code>!#</code> case (in fact KaTeX does some processing of its own to avoid issues with whitespaces).
-
-</fieldset><h3 id="defining_commands_with_julia" ><a href="#defining_commands_with_julia"> Defining commands with Julia</a></h3><p>You can also define the behaviour of a LaTeX-like command with Julia code.
-This can be useful for more advanced processing and is
-covered on <a href="/Xranklin.jl/previews/PR/syntax/utils/">a dedicated page</a>.</p>
-<h2 id="latex_like_environments" ><a href="#latex_like_environments"> LaTeX-like environments</a></h2><p>To accompany LaTeX-like commands, you can also define LaTeX-like environments in
-Franklin which allow defining a custom behaviour for a block of text.
-The general syntax is</p>
-<pre><code class="plaintext">\newenvironment&lbrace;name&rbrace;[nargs]&lbrace;pre&rbrace;&lbrace;post&rbrace;</code></pre>
-<p>where <code>pre</code> and <code>post</code> are inserted before and after the content and can have
-one or more <code>#...</code> to refer to the arguments.</p>
-<p>Here's an example styling a block and using <a href="#injecting_html">raw HTML</a>.</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">\newcommand&lbrace;\html&rbrace;[1]&lbrace;~~~#1~~~&rbrace;
-\newenvironment&lbrace;blockstyle&rbrace;[1]&lbrace;
-  \html&lbrace;&lt;div style=&quot;#1&quot;&gt;&rbrace;
-&rbrace;&lbrace;
-  \html&lbrace;&lt;/div&gt;&rbrace;
-&rbrace;
-
-\begin&lbrace;blockstyle&rbrace;&lbrace;font-weight: 600; color: blue&rbrace;
-  Here some text
-\end&lbrace;blockstyle&rbrace;</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><p><div style="font-weight: 600; color: blue">Here some text</div></p>
-</fieldset>
-
-</div><h3 id="defining_environments_with_julia" ><a href="#defining_environments_with_julia"> Defining environments with Julia</a></h3><p>As with commands, you can also define the behaviour of a LaTeX-like environment
-with Julia code, this is covered <a href="/Xranklin.jl/previews/PR/syntax/utils/">on a dedicated page</a>.</p>
-<h2 id="raw_content" ><a href="#raw_content"> Raw content</a></h2><p>For both HTML and LaTeX output, raw content allows to pass some content completely untouched to the final  stage of the processing (either the web-browser or the  LaTeX compiler) without Franklin  interfering.
-For those,  use <code>??? ... ???</code>:</p>
-<div class="trim">
-
-<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">1. ABC **DEF** GHI (converted  by Franklin)
-1. ??? ABC **DEF** GHI ??? (untouched by Franklin)</code></pre>
-</fieldset>
-
-</div>
-
-
-
-<div class="trim">
-
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><ol>
-<li>ABC <strong>DEF</strong> GHI (converted  by Franklin)</li>
-<li> ABC **DEF** GHI  (untouched by Franklin)</li>
-</ol>
-</fieldset>
-
-</div>
-
-            <div id="fn-defs">
-<a id="fn-defs"></a>
-<div class="fn-title">Notes</div>
-<ol><li>
-  <a id="fn_a_note"></a>
-  <a href="#fnref_a_note" class="fn-hook-btn">&ldca;</a>
-  did you know about this?
-</li>
-<li>
-  <a id="fn_1"></a>
-  <a href="#fnref_1" class="fn-hook-btn">&ldca;</a>
-  how about this? This one is a very long note
-so that you can see how that works, it also has
-some \(x\) math and <code>foo() = 5</code> code.
-</li>
-  </ol>
-</div>
-
+            
 
             <div id="pg-foot">
               Website built with <a href="https://franklinjl.org">Franklin.jl</a>
@@ -1956,7 +2059,7 @@ some \(x\) math and <code>foo() = 5</code> code.
     <div id="marginToc">
         
           <div id="marginTocLegend"><a href="#">Contents</a></div>
-          <div class="toc"><ol><li><a href="#overview"> Overview</a></li><li><a href="#injecting_html"> Injecting HTML</a></li><li><a href="#equations"> Equations</a><ol><li><a href="#environments"> Environments</a></li><li><a href="#styling"> Styling</a></li></ol></li><li><a href="#tables"> Tables</a><ol><li><a href="#styling__2"> Styling</a></li></ol></li><li><a href="#footnotes"> Footnotes</a></li><li><a href="#div_blocks"> Div blocks</a></li><li><a href="#latex_like_commands"> LaTeX-like commands</a><ol><li><a href="#whitespaces"> Whitespaces</a></li><li><a href="#defining_commands_with_julia"> Defining commands with Julia</a></li></ol></li><li><a href="#latex_like_environments"> LaTeX-like environments</a><ol><li><a href="#defining_environments_with_julia"> Defining environments with Julia</a></li></ol></li><li><a href="#raw_content"> Raw content</a></li></ol></div>
+          <div class="toc"><ol><li><a href="#overview"> Overview</a></li><li><a href="#page_variables_basics"> Page variables basics</a><ol><li><a href="#assignment"> Assignment</a></li><li><a href="#usage"> Usage</a></li><li><a href="#local_and_global_contexts"> Local and global contexts</a></li><li><a href="#accessing_variables_defined_on_another_page"> Accessing variables defined on another page</a></li></ol></li><li><a href="#default_variables"> Default variables</a><ol><li><a href="#local_variables"> Local variables</a></li><li><a href="#global_variables"> Global variables</a></li></ol></li><li><a href="#html_functions_and_environments"> HTML functions and environments</a><ol><li><a href="#default_functions"> Default functions</a></li><li><a href="#(xxx)_environments_conditionals"> (XXX) Environments: conditionals</a></li><li><a href="#(xxx)_environments_loops"> (XXX) Environments: loops</a></li><li><a href="#e_strings"> E-strings</a></li><li><a href="#more_customisation"> More customisation</a></li></ol></li></ol></div>
         
     </div>
 </div>
@@ -2025,10 +2128,6 @@ some \(x\) math and <code>foo() = 5</code> code.
 }(this, this.document));
 </script>
 
-
-    <script src="/Xranklin.jl/previews/PR/libs/katex/katex.min.js"></script>
-    <script src="/Xranklin.jl/previews/PR/libs/katex/contrib/auto-render.min.js"></script>
-    <script>renderMathInElement(document.body)</script>
 
 
 
