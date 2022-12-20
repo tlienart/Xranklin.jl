@@ -107,7 +107,7 @@ function build_loop(
                     for (case, d) ∈ watched_files if case ∉ (:md, :html)
                 ]
                 msg *= " → triggering full pass [layout changed]"; @info msg
-                full_pass(gc, watched_files; skip_files, layout_changed=true)
+                full_pass(gc, watched_files; skip_files)
 
             # config changed
             elseif fpath == path(:folder) / "config.md"
