@@ -59,3 +59,38 @@ end
     @test dm.bwd[l2] == Set([p2])
     @test l1 ∉ keys(dm.hashes)
 end
+
+@testset "is_code_equal" begin
+    s1 = """
+        function foo()
+            return 0
+        end
+        """
+    s2 = """
+        function foo()
+            # hello
+            return 0
+
+        end
+        """
+    s3 = """
+        function foo()::Nothing
+            return 0
+        end
+        """
+    s4 = """
+        \"\"\"
+            foo
+        Function
+        \"\"\"
+        function foo()
+            # abc
+            return 0
+        
+        end
+        """
+
+    @test Xranklin.is_code_equal(s1, s2)
+    @test !Xranklin.is_code_equal(s1, s3)
+    @test Xranklin.is_code_equal(s1, s4) 
+end

@@ -15,11 +15,9 @@ struct Baz
 end
 newbaz(z) = Baz(z)
 
-
 # ####################################
 # # TTFX
 # ####################################
-
 # function hfun_ttfx(p)
 #     p  = first(p)
 #     r  = ""

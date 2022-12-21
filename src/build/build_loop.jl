@@ -115,9 +115,14 @@ function build_loop(
                 full_pass(gc, watched_files; config_changed=true)
 
             elseif fpath == path(:folder) / "utils.jl"
-                msg *= " → triggering full pass [utils changed]"; @info msg
-                # NOTE in this case gc is re-instantiated!
-                full_pass(gc, watched_files; utils_changed=true)
+                cand_new_utils = read(fpath, String)
+                if !is_code_equal(getvar(gc, :_utils_code, ""), cand_new_utils)
+                    msg *= " → triggering full pass [utils changed]"; @info msg
+                    # NOTE in this case gc is re-instantiated!
+                    full_pass(gc, watched_files; utils_changed=true)
+                else
+                    msg *= " → skipping [non-code changes to utils]"; @info msg
+                end
 
             # if it's a dependent file
             elseif rpath in gc.deps_map.bwd_keys

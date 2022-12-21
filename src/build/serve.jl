@@ -122,7 +122,7 @@ function serve(
     config_unchanged = !any(isfile, (cached_config, current_config)) ||
                         filecmp(cached_config, current_config)
     utils_unchanged  = !any(isfile, (cached_utils, current_utils)) ||
-                        filecmp(cached_utils, current_utils)
+                        utilscmp(cached_utils, current_utils)
 
     if !clear && isfile(gc_cache_path())
         start = time()
@@ -150,6 +150,12 @@ function serve(
 
         process_config(gc)
         process_utils(gc)
+    end
+
+    # useful to check if changes to utils are relevant or not, see
+    # build_loop and utils_changed
+    if isfile(current_utils)
+        setvar!(gc, :_utils_code, read(current_utils, String))
     end
 
     isempty(base_url_prefix) || setvar!(gc, :base_url_prefix, base_url_prefix)
