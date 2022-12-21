@@ -18,9 +18,9 @@ jobs:
         run: |
           if ${{ github.event_name == 'pull_request' }}
           then
-            echo "preview=previews/PR${{ github.event.number}}" >> $GITHUB_ENV
+            echo 'preview="previews/PR${{ github.event.number}}"' >> $GITHUB_ENV
           else
-            echo "preview=''" >> $GITHUB_ENV
+            echo 'preview=""' >> $GITHUB_ENV
           fi
         shell: bash
       ########################################
