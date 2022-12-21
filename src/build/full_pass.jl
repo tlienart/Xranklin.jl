@@ -341,6 +341,14 @@ function full_pass_markdown(
         for fp in keys(watched)
     )
 
+    # check if some file was removed
+    for (fp, _) in watched
+        fpath = joinpath(fp...)
+        if !isfile(fpath)
+            delete!(watched, fp)
+        end
+    end
+
     # ----------------------------------------------------------------------
     @info "> Full Pass [MD/1]"
     msg(fp, n="1️⃣") = " $n ⟨$(hl(str_fmt(get_rpath(gc, joinpath(fp...)))))⟩"

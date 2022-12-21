@@ -1,5 +1,5 @@
 <!--
- LAST REVISION: Feb 18, 2022 ✅
+ LAST REVISION: Dec 21, 2022 ✅
  -->
 
 +++
@@ -30,6 +30,37 @@ In the rest of this page we go over what the different files and folders do.
   So for instance if we talk about `foo/bar.md`, it's located at `TestWebsite/foo/bar.md`.
 }
 
+### How Franklin looks at files
+
+When building the website, Franklin looks at all files in your source folder and applies the following general rules:
+
+* `.md` file: convert it to HTML and place the result in `__site` (with the exception of `config.md`)
+* `.html` file: convert it to HTML (process Franklin-specific `{{...}}`) and place the result in `__site`
+* other file: place it in `__site`
+
+There are two "special" files which are treated differently:
+
+* `config.md` where you can make some global definitions available throughout your site,
+* `utils.jl` where you can define code that can be used throughout your site
+
+The first one is briefly covered further down, and the second one is covered in the [utils](/syntax/utils/) page.
+
+The rest of the page will provide more details on special paths and how Franklin treats them.
+
+#### Ignoring files
+
+You can indicate to Franklin to ignore files by defining `ignore` in `config.md` like so:
+
+```julia
+ignore = [
+  "foo/",             # ignore an entire directory
+  "foo/bar.md",       # ignore a specific file
+  Regex("foo/*.jpg"), # ignore files matching a pattern
+]
+```
+
+Frankin will also ignore `README.md`, `LICENSE.md`, and `.gitignore` by default (see also the global variable `:ignore_base`.) 
+
 ### Index file
 
 The root `index.md` file is what Franklin will convert into your website's landing page.
@@ -51,7 +82,7 @@ will contain matching HTML close to:
 ...
 ```
 
-In some cases you might want to have full control over the landing page
+In some cases you might want to have full control over the landing page,
 and write it directly in HTML.
 To do so, simply remove the file `index.md` and write a file `index.html` instead.
 
@@ -72,7 +103,7 @@ descr = """
 +++
 ```
 
-It is also the place where you will define the `base_url_prefix` (or `prepath`)
+It is also the place where you can define the `base_url_prefix` (or `prepath`)
 which is **crucial** to get your site to [deploy properly](/workflow/deployment/).
 In short, it is the prefix to use for your site landing page; for instance if your website
 is hosted on github, the website might be located at
@@ -84,8 +115,6 @@ https://username.github.io/theWebsite/
 and the `base_url_prefix` is then `theWebsite`.
 
 \note{
-  The `config.md` file is the only `.md` file in your website folder that won't get
-  converted into a `.html` file by default. Franklin considers it as a special file.
   If you **do** want to have a page with relative URL `/config/`, you can do so by
   writing a file at `/config/index.md`.
   See also the section [on paths](#paths_in_franklin).
@@ -105,7 +134,7 @@ For instance you might define a menu in a file `menu.html` and refer to it in th
 using `{{insert menu.html}}`.
 To understand how this works in details, you will need to be familiar with the section on
 [page variables and HTML functions](/syntax/vars+funs/)).
-For now though, the point is just that there may be more files in `_layout/` than just the two basic ones.
+For now though, the point is just that there may be multiple files in `_layout/` depending on how you modularise your layout.
 
 
 ## Site and cache folders
@@ -206,7 +235,11 @@ For other files (images etc):
 
 \lskip
 
-**Note**: in some cases you will want some paths to be kept _as is_. This can be done with the global page variable `keep_path`. For instance with things like Google Analytics, you may have to prove ownership of your site by placing a custom HTML file in a given location (see [this tutorial](https://support.google.com/webmasters/answer/9008080#html_verification)).
+#### Tweaks
+
+In some cases you will want some paths to be kept _as is_ (without the automatic addition of `index.html`).
+This can be done with the global page variable `keep_path`.
+For instance with things like Google Analytics, you may have to prove ownership of your site by placing a custom HTML file in a given location (see [this tutorial](https://support.google.com/webmasters/answer/9008080#html_verification)).
 For such cases you would indicate `keep_path=["the/path.html"]` and Franklin would respect that:
 
 ```plaintext
@@ -257,7 +290,7 @@ You can refer to them in your layout e.g. as:
 \lskip
 
 \tip{
-  You should not specify the base url prefix anywhere else than in your `config.md`.
+  You should not specify the base url prefix anywhere else than in your `config.md` (or in the github action).
   Franklin will automatically fix paths for you to take it into account.
   In other words you should never have to write `href="/PREFIX/css/layout.css"`,
   stick with `href=/css/layout.css`.

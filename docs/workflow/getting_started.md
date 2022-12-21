@@ -35,9 +35,9 @@ In particular, if you just want a super basic template to experiment with, the
 `"sandbox"` template should prove useful.
 
 \note{
-  Most of these templates are adapted, and simplified versions of common standard
+  Most of these templates are adapted (and simplified) versions of common standard
   static site templates.
-  They are not meant to be fully polished but should be easy to adjust to your liking
+  They are not meant to be fully polished, but should be easy to adjust to your liking
   once you're familiar with how Franklin operates.\\
   Your help to add new templates or make existing ones better is very welcome!
 }

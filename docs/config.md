@@ -22,7 +22,8 @@ menu = [
         "extensions" => "Extensions",
         "code_1"     => "Code Blocks (1)",
         "code_2"     => "Code Blocks (2)",
-        "vars_funs"  => "Page Variables",
+        "vars_1"     => "Page Variables (1)",
+        "vars_2"     => "Page Variables (2)",
         "utils"      => "Utils" 
     ],
     ("engine" => "Engine") => [
