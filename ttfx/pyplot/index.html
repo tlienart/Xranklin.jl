@@ -1,0 +1,39 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div class="franklin-content" >
+  <h1 id="ttfx_pyplot" ><a href="#ttfx_pyplot"> TTFX PyPlot</a></h1><pre><code class="julia">setgvar!(:skiplatex, true)
+START2 = time()
+using PyPlot
+x = range(0, pi, length=500)
+y = @. sin(exp(x)) * sinc(x)
+figure(figsize=(6, 4))
+plot(x, y)
+gcf()</code></pre>
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/ttfx/pyplot/assets/index/figs-html/__autofig_8068625071830446270.svg">
+</div><h1 id="time" ><a href="#time"> TIME</a></h1><pre><code class="julia">using Dates
+t0  = datetime2unix(now())
+delta  = t0 - 1671651844
+delta2 = t0 - START2
+delta  = round(delta  / 60, digits=2)
+delta2 = round(delta2, digits=2)
+ps(s) = joinpath(Utils.path(:site), s)
+write(ps(&quot;timer&quot;), delta)
+write(ps(&quot;timer2&quot;), delta2)
+println(&quot;Time taken: $(delta)min.&quot;)
+println(&quot;Time taken2: $(delta2)s.&quot;)</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 2.02min.
+Time taken2: 17.11s.
+</code></pre></div>
+  
+</div>
+
+
+
+  </body>
+</html>
