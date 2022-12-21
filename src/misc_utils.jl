@@ -180,7 +180,9 @@ Similar to `filecmp` but allows for changes which do not affect code. This
 allows to avoid triggering re-builds if changes in utils are irrelevant.
 Note: this is called at a point where it is certain that path1 and path2 exist.
 """
-utilscmp(path1, path2) = is_code_equal(read.((path1, path2), String)...)
+utilscmp(path1, path2) = 
+    (isfile(path1) && isfile(path2)) &&
+    is_code_equal(read.((path1, path2), String)...)
 
 
 """
