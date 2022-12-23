@@ -1141,7 +1141,7 @@ url = &quot;$bgh/index.html&quot;
 h = read(Downloads.download(url), String)
 replace(h,
     r&quot;src=\&quot;.*?\/figs-html\/(.*)\.svg\&quot;&quot; =&gt;
-    SubstitutionString(&quot;src=\&quot;$bgh/assets/index/figs-html/\\1.svg\&quot;&quot;)
+    SubstitutionString(&quot;src=\&quot;$bgh/assets/$lib/figs-html/\\1.svg\&quot;&quot;)
 )</code></pre>
 <div class="code-output"><pre><code class="code-result language-plaintext">1.6718209473081e9</code></pre></div><h2 id="gaston" ><a href="#gaston"> Gaston</a></h2><p>Dependencies (GA):</p>
 <pre><code class="julia">println(get(ENV, &quot;DEPS&quot;, &quot;&quot;))</code></pre>
@@ -1154,7 +1154,7 @@ set(term=&quot;qt&quot;)
 x = range(0, pi, length=500)
 y = @. sin(exp(x)) * sinc(x)
 plot(x, y)</code></pre>
-<div class="code-output"><img class="code-figure" src="https://raw.githubusercontent.com/tlienart/Xranklin.jl/gh-plots/gaston/assets/index/figs-html/__autofig_13206314231100259878.svg">
+<div class="code-output"><img class="code-figure" src="https://raw.githubusercontent.com/tlienart/Xranklin.jl/gh-plots/gaston/assets/gaston/figs-html/__autofig_13206314231100259878.svg">
 </div><h3 id="timers" ><a href="#timers"> Timers</a></h3><div class="code-output"><pre><code class="code-stdout language-plaintext">Code execution time: 8.48 seconds.
 Total time taken (setup + build): 1.91 minutes.
 </code></pre></div>
