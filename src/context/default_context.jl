@@ -208,8 +208,8 @@ function DefaultLocalContext(gc::GlobalContext; rpath::String="")
             rpath
     )
 end
-
-DefaultLocalContext(; kw...) = DefaultLocalContext(DefaultGlobalContext(); kw...)
+DefaultLocalContext(; kw...) = DefaultLocalContext(env(:cur_global_ctx); kw...)
+DefaultLocalContext(::Nothing; kw...) = DefaultLocalContext(DefaultGlobalContext(); kw...)
 
 # for html pages
 SimpleLocalContext(gc::GlobalContext; rpath::String="") =

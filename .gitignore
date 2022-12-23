@@ -7,6 +7,8 @@ package-lock.json
 package.json
 node_modules/
 
+test/_plots/__*
+
 test/_output
 basic.log
 docs/__*

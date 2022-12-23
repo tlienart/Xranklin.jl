@@ -1,6 +1,6 @@
 ```!
 #hideall
-tic_1 = get(ENV, "START", 0)
+tic_1 = parse(Int, get(ENV, "START", "0"))
 tic_2 = time()
 ```
 
@@ -16,6 +16,7 @@ Example
 
 ```!
 using Gaston
+set(term="qt")
 x = range(0, pi, length=500)
 y = @. sin(exp(x)) * sinc(x)
 plot(x, y)
