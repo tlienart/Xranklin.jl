@@ -1143,17 +1143,11 @@ replace(h,
     r&quot;src=\&quot;.*?\/figs-html\/(.*)\.svg\&quot;&quot; =&gt;
     SubstitutionString(&quot;src=\&quot;$bgh/assets/index/figs-html/\\1.svg\&quot;&quot;)
 )</code></pre>
-<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: ArgumentError: invalid base 10 digit '$' in "\$(date +%s)"
-Stacktrace:
-  [1] tryparse_internal(#unused#::Type{Int64}, s::String, startpos::Int64, endpos::Int64, base_::Int64, raise::Bool)
-    @ Base ./parse.jl:137
-  [2] parse(::Type{Int64}, s::String; base::Nothing)
-    @ Base ./parse.jl:241
-  [3] parse(::Type{Int64}, s::String)
-    @ Base ./parse.jl:240
-</code></pre></div><h2 id="gaston" ><a href="#gaston"> Gaston</a></h2><p>Dependencies (GA):</p>
-<pre><code class="julia">println(get(ENV, &quot;SETUP&quot;, &quot;&quot;))</code></pre>
-<div class="code-output"><pre><code class="code-stdout language-plaintext">using Pkg; Pkg.add(["Gaston"]);
+<div class="code-output"><pre><code class="code-result language-plaintext">1.6718209473081e9</code></pre></div><h2 id="gaston" ><a href="#gaston"> Gaston</a></h2><p>Dependencies (GA):</p>
+<pre><code class="julia">println(get(ENV, &quot;DEPS&quot;, &quot;&quot;))</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">sudo apt-get update -qq
+sudo apt-get install -y gnuplot
+
 </code></pre></div><p>Example</p>
 <pre><code class="julia">using Gaston
 set(term=&quot;qt&quot;)
@@ -1161,8 +1155,8 @@ x = range(0, pi, length=500)
 y = @. sin(exp(x)) * sinc(x)
 plot(x, y)</code></pre>
 <div class="code-output"><img class="code-figure" src="https://raw.githubusercontent.com/tlienart/Xranklin.jl/gh-plots/gaston/assets/index/figs-html/__autofig_13206314231100259878.svg">
-</div><h3 id="timers" ><a href="#timers"> Timers</a></h3><div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: UndefVarError: tic_2 not defined
-Stacktrace:
+</div><h3 id="timers" ><a href="#timers"> Timers</a></h3><div class="code-output"><pre><code class="code-stdout language-plaintext">Code execution time: 8.48 seconds.
+Total time taken (setup + build): 1.91 minutes.
 </code></pre></div>
 
             
