@@ -1,10 +1,9 @@
-# name: GLEPlot
+name: GLEPlot
 
-# on:
-#   push:
-#     branches:
-#       - ttfx
-#       - ttfx-gle
+on:
+  push:
+    branches:
+      - ttfx-gle
 
 # env:
 #   INDEX: "test/abc_min/index.md"

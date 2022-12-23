@@ -6,13 +6,14 @@ on:
       - ttfx-gaston
 
 env:
-  SETUP: "using Pkg; Pkg.add([\"Gaston\"]);"
-  BUILD: ""
-  SITED: "test/_plots"
-  INDEX: "test/_plots/index.md"
-  TARGD: "ttfx/gaston"
-  START: $(date +%s)
-  PPATH: "Xranklin.jl"
+  SETUP:  "using Pkg; Pkg.add([\"Gaston\"]);"
+  BUILD:  ""
+  SITED:  "test/_plots"
+  INDEX:  "test/_plots/index.md"
+  TARGD:  "gaston"
+  START:  $(date +%s)
+  PPATH:  "Xranklin.jl"
+  BRANCH: "gh-plots"
 
 jobs:
   gaston:
@@ -82,6 +83,6 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
-          BRANCH: gh-pages
+          BRANCH: ${{ env.BRANCH }}
           FOLDER: ${{ env.SITED }}/__site
-          TARGET-FOLDER: "${{ env.TARGD }}"
+          TARGET-FOLDER: ${{ env.TARGD }}
