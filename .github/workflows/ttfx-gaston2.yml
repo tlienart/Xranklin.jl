@@ -28,8 +28,9 @@ jobs:
       # =======================================================================
       # -- deps --
       - name: Install GnuPlot deps 💻
-        run: eval "${{ env.DEPS }}"
-        shell: bash
+        run: |
+          echo "${{ env.DEPS }}"
+          eval "${{ env.DEPS }}"
 
       # =======================================================================
       - name: Install Julia
