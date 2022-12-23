@@ -5,6 +5,13 @@ on:
     branches:
       - ttfx-gle
 
+jobs:
+  gleplot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: nothing
+        run: echo "nothing"
+
 # env:
 #   INDEX: "test/abc_min/index.md"
 #   SETUP: 'using Pkg; Pkg.add(url="https://github.com/tlienart/GLEPlot.jl", rev="dev");'

@@ -6,15 +6,15 @@ on:
       - ttfx-gaston
 
 env:
-  PLIB:   "gaston"
-  SETUP:  "using Pkg; Pkg.add([\"Gaston\"]);"
-  BUILD:  ""
-  SITED:  "test/_plots"
-  INDEX:  "test/_plots/index.md"
-  TARGD:  "gaston"
-  START:  $(date +%s)
-  PPATH:  "Xranklin.jl"
-  BRANCH: "gh-plots"
+  PLIB:    "Gaston"
+  SETUP:   "using Pkg; Pkg.add([\"Gaston\"]);"
+  BUILD:   ""
+  SITED:   "test/_plots"
+  INDEX:   "test/_plots/index.md"
+  START:   $(date +%s)
+  PPATH:   "Xranklin.jl"
+  XBRANCH: "ttfx-gaston"
+  TBRANCH: "gh-plots"
   DEPS: |
     sudo apt-get update -qq
     sudo apt-get install -y gnuplot
@@ -39,14 +39,14 @@ jobs:
                 ${{ env.SETUP }};
                 Pkg.add(
                   url="https://github.com/tlienart/Xranklin.jl",
-                  rev="main"
+                  rev="${{ env.XBRANCH }}"
                   );
                 using Xranklin;
                 build("${{ env.SITED }}";
                       clear=true,
                       prefix=joinpath(
                         "${{ env.PPATH }}",
-                        "${{ env.TARGD }}"
+                        lowercase("${{ env.PLIB }}")
                         )
                       );'
         env:
@@ -55,6 +55,6 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
-          BRANCH: ${{ env.BRANCH }}
+          BRANCH: ${{ env.TBRANCH }}
           FOLDER: ${{ env.SITED }}/__site
           TARGET-FOLDER: ${{ env.TARGD }}
