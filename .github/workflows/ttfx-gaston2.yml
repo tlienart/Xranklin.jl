@@ -61,7 +61,7 @@ jobs:
       - name: Install Julia
         uses: julia-actions/setup-julia@v1
         with:
-          version: 1.8
+          version: '1'
 
       - name: Building website 🚧
         run: ${{ env.BUILD }} julia -e '
@@ -79,9 +79,6 @@ jobs:
                         )
                       );'
 
-      - name: Move index
-        run: mv ${{ env.SITED }}/__site/index.html ${{ env.SITED }}/__site/_index.html 
-        shell: bash
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
