@@ -1,1 +1,1 @@
-<!-- filled by ttfx -->
+{{plot}}

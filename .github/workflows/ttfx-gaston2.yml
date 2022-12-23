@@ -14,6 +14,9 @@ env:
   START:  $(date +%s)
   PPATH:  "Xranklin.jl"
   BRANCH: "gh-plots"
+  DEPS: |
+    sudo apt-get update-qq
+    sudo apt-get install -y gnuplot
 
 jobs:
   gaston:
@@ -24,41 +27,11 @@ jobs:
 
       # =======================================================================
       # -- deps --
-      - name: Install GnuPlot 💻
-        run: |
-             sudo apt-get update -qq
-             sudo apt-get install -y gnuplot
-
-      # -- modify index --
-      - name: Set index.md 📖
-        run: |
-              echo "# TTFX Gaston"                  > ${{ env.INDEX }}
-              echo "\`\`\`!"                       >> ${{ env.INDEX }}
-              echo "setgvar!(:skiplatex, true)"    >> ${{ env.INDEX }}
-              echo "START2 = time()"               >> ${{ env.INDEX }}
-              echo "using Gaston"                  >> ${{ env.INDEX }}
-              echo "x = range(0, pi, length=500)"  >> ${{ env.INDEX }}
-              echo "y = @. sin(exp(x)) * sinc(x)"  >> ${{ env.INDEX }}
-              echo "plot(x, y)"                    >> ${{ env.INDEX }}
-              echo "\`\`\`"                        >> ${{ env.INDEX }}
-              echo "# TIME"                                  >> ${{ env.INDEX }}
-              echo "\`\`\`!"                                 >> ${{ env.INDEX }}
-              echo "using Dates"                             >> ${{ env.INDEX }}
-              echo "t0  = datetime2unix(now())"              >> ${{ env.INDEX }}
-              echo "delta  = t0 - ${{ env.START  }}"         >> ${{ env.INDEX }}
-              echo "delta2 = t0 - START2"                    >> ${{ env.INDEX }}
-              echo "delta  = round(delta  / 60, digits=2)"   >> ${{ env.INDEX }}
-              echo "delta2 = round(delta2, digits=2)"        >> ${{ env.INDEX }}
-              echo "ps(s) = joinpath(Utils.path(:site), s)"  >> ${{ env.INDEX }}
-              echo "write(ps(\"timer\"), delta)"             >> ${{ env.INDEX }}
-              echo "write(ps(\"timer2\"), delta2)"           >> ${{ env.INDEX }}
-              echo "println(\"Time taken: \$(delta)min.\")"  >> ${{ env.INDEX }}
-              echo "println(\"Time taken2: \$(delta2)s.\")"  >> ${{ env.INDEX }}
-              echo "\`\`\`"                                  >> ${{ env.INDEX }}
-              cat ${{ env.INDEX }}
+      - name: Install GnuPlot deps 💻
+        run: eval ${{ env.DEPS }}
+        shell: bash
 
       # =======================================================================
-
       - name: Install Julia
         uses: julia-actions/setup-julia@v1
         with:
