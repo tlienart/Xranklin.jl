@@ -14,6 +14,8 @@ X.setenv!(:strict_parsing, false)
 X = Xranklin
 MDL = X.env(:module_name)
 
+ggc = X.DefaultGlobalContext()
+X.setvar!(ggc, :skiplatex, false)
 
 nowarn() = Logging.disable_logging(Logging.Warn)
 logall() = (

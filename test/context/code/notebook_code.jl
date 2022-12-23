@@ -2,6 +2,7 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
 @testset "nb-code" begin
     gc = X.DefaultGlobalContext()
+    X.setvar!(gc, :skiplatex, false)
     lc = X.DefaultLocalContext(gc; rpath="foo")
     nb = lc.nb_code
     @test isa(nb, X.CodeNotebook)
