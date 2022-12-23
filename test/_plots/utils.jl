@@ -1,5 +1,5 @@
 function hfun_plot()
-    lib = lowercase(get(ENV, "PLIB", ""))
+    lib = get(ENV, "PLIB", "")
     if lib in ("gaston",)
         html(read(joinpath(path(:folder), "_$lib.md"), String))
     else
