@@ -13,7 +13,7 @@ url = "$bgh/index.html"
 h = read(Downloads.download(url), String)
 replace(h,
     r"src=\".*?\/figs-html\/(.*)\.svg\"" =>
-    SubstitutionString("src=\"$bgh/assets/index/figs-html/\\1.svg\"")
+    SubstitutionString("src=\"$bgh/assets/$lib/figs-html/\\1.svg\"")
 )
 ```
 
