@@ -13,7 +13,7 @@ env:
   INDEX:   "test/_plots/index.md"
   START:   $(date +%s)
   PPATH:   "Xranklin.jl"
-  XBRANCH: "ttfx-gaston"
+  XBRANCH: "main"
   TBRANCH: "gh-plots"
   DEPS: |
     sudo apt-get update -qq
