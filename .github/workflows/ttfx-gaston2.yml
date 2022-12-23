@@ -6,6 +6,7 @@ on:
       - ttfx-gaston
 
 env:
+  PLIB:   "gaston"
   SETUP:  "using Pkg; Pkg.add([\"Gaston\"]);"
   BUILD:  ""
   SITED:  "test/_plots"
@@ -25,13 +26,10 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v3
 
-      # =======================================================================
-      # -- deps --
-      - name: Install GnuPlot deps 💻
+      - name: Installing ${{ env.PLIB }} deps 💻
         run: eval "${{ env.DEPS }}"
 
-      # =======================================================================
-      - name: Install Julia
+      - name: Installing Julia
         uses: julia-actions/setup-julia@v1
         with:
           version: '1'
@@ -51,6 +49,8 @@ jobs:
                         "${{ env.TARGD }}"
                         )
                       );'
+        env:
+          PLIB: ${{ env.PLIB }}
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4

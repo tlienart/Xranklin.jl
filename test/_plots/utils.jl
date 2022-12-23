@@ -1,5 +1,5 @@
 function hfun_plot()
-    lib = get(ENV, "PLOTLIB", "")
+    lib = get(ENV, "PLIB", "")
     if lib in ("gaston",)
         html(read("_$lib.md", String))
     else
