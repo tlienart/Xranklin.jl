@@ -79,9 +79,9 @@ jobs:
                         )
                       );'
 
-      # Deployment
-      - name: No Jekyll
-        run: touch ${{ env.SITED }}/__site/.nojekyll
+      - name: Move index
+        run: mv ${{ env.SITED }}/__site/index.html ${{ env.SITED }}/__site/_index.html 
+        shell: bash
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
