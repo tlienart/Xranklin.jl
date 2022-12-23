@@ -1,0 +1,21 @@
+<h1 id="ttfx_gaston" ><a href="#ttfx_gaston"> TTFX Gaston</a></h1><pre><code class="julia">setgvar!(:skiplatex, true)
+START2 = time()
+using Gaston
+x = range(0, pi, length=500)
+y = @. sin(exp(x)) * sinc(x)
+plot(x, y)</code></pre>
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/ttfx/gaston/assets/index/figs-html/__autofig_11787316828808756648.svg">
+</div><h1 id="time" ><a href="#time"> TIME</a></h1><pre><code class="julia">using Dates
+t0  = datetime2unix(now())
+delta  = t0 - 1671797606
+delta2 = t0 - START2
+delta  = round(delta  / 60, digits=2)
+delta2 = round(delta2, digits=2)
+ps(s) = joinpath(Utils.path(:site), s)
+write(ps(&quot;timer&quot;), delta)
+write(ps(&quot;timer2&quot;), delta2)
+println(&quot;Time taken: $(delta)min.&quot;)
+println(&quot;Time taken2: $(delta2)s.&quot;)</code></pre>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">Time taken: 1.25min.
+Time taken2: 5.55s.
+</code></pre></div>
