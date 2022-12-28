@@ -113,7 +113,7 @@ jobs:
         env:
           PLIB: ${{ matrix.PLIB }}
           DEPS: ${{ matrix.DEPS }}
-          START: $START
+          START: ${{ env.START }}
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
