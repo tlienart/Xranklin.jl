@@ -1,9 +1,6 @@
 import Pkg
 import TOML
 
-@show get(ENV, "PLIB", "xxx")
-@show get(ENV, "START", "xxx")
-
 
 const PLIBS = Dict{String,String}(
     "cairomakie"   => "CairoMakie",   # dec 28'22
