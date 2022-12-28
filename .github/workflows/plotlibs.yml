@@ -8,7 +8,6 @@ on:
 env:
   SITED:   "test/_plots"
   INDEX:   "test/_plots/index.md"
-  START:   $(date +%s)
   PPATH:   "Xranklin.jl"
   XBRANCH: "main"
   TBRANCH: "gh-plots"    
@@ -16,6 +15,8 @@ env:
 jobs:
   plotlibs:
     runs-on: ubuntu-latest
+    run: |
+      echo 'START=$(date +%s)' >> $GITHUB_ENV
     strategy:
       fail-fast: false
       matrix:
