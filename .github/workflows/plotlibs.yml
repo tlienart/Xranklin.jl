@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        SITED:   "test/_plots"
-        INDEX:   "test/_plots/index.md"
-        START:   $(date +%s)
-        PPATH:   "Xranklin.jl"
-        XBRANCH: "main"
-        TBRANCH: "gh-plots"
+        SITED:   ["test/_plots"]
+        INDEX:   ["test/_plots/index.md"]
+        START:   [$(date +%s)]
+        PPATH:   ["Xranklin.jl"]
+        XBRANCH: ["main"]
+        TBRANCH: ["gh-plots"]
 
         include:
           - PLIB: "gaston"
