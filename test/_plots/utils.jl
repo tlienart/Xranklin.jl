@@ -46,7 +46,7 @@ function lx_ptic()
     deps  = get(ENV, "DEPS", "")
 
     pg = """
-        ```!tic
+        ```!
         # name: tic
         # hideall
         tic_1 = $start
