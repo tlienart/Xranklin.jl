@@ -51,6 +51,7 @@ function lx_ptic()
         # hideall
         tic_1 = $start
         tic_2 = time()
+        ;
         ```
 
         ### $lib
