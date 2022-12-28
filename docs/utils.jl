@@ -3,6 +3,20 @@ import HTTP
 import Downloads: download
 
 const PKG = "Xranklin.jl"
+const RAW = "https://raw.githubusercontent.com/tlienart/$PKG"
+
+const PLIBS = Dict{String,String}(
+    "cairomakie"   => "CairoMakie",   # dec 28'22
+    "gadfly"       => "Gadfly",       # dec 28'22
+    "gaston"       => "Gaston",       # dec 28'22
+    # "gleplots"     => "GLEPlots",   # todo
+    "pgfplots"     => "PGFPlots",     # dec 28'22
+    "pgfplotsx"    => "PGFPlotsX",    # dec 28'22
+    "plots"        => "Plots",        # dec 28'22
+    "pyplot"       => "PyPlot",       # dec 28'22
+    "unicodeplots" => "UnicodePlots", # dec 28'22
+    "wglmakie"     => "WGLMakie"      # dec 28'22
+)
 
 # used in syntax/vars+funs #e-strings demonstrating that e-strings are
 # evaluated in the Utils module
@@ -24,27 +38,31 @@ newbaz(z) = Baz(z)
 # # TTFX
 # ####################################
 
-function hfun_plotlib(p)
-    lib = first(p)
-    bgh = "https://raw.githubusercontent.com/tlienart/$PKG/gh-plots/$lib"
-    req = try
-        download(
-            "$bgh/index.html",
-            IOBuffer(),
-            timeout=1
-        ) |> take! |> String
-    catch
-        "Failed to retrieve results for plotting lib: '$(uppercasefirst(lib))'."
-    end
+function hfun_plotlibs()
+    io = IOBuffer()
+    for lib in keys(PLIBS)
+        bgh = "$RAW/gh-plots/$lib"
+        req = try
+            download(
+                "$bgh/index.html",
+                IOBuffer(),
+                timeout=1
+            ) |> take! |> String
+        catch
+            "Failed to retrieve results for plotting lib: '$(uppercasefirst(lib))'."
+        end
 
-    return """
-        <div class="plotlib plotlib-$lib">$(
-        replace(req,
-            r"src=\".*?\/figs-html\/(.*)\.svg\"" =>
-            SubstitutionString("src=\"$bgh/assets/$lib/figs-html/\\1.svg\"")
-            )
-        )</div>
-        """
+        write(io, """
+            <div class="plotlib plotlib-$lib">$(
+            replace(req,
+                r"src=\".*?\/figs-html\/(.*)\.svg\"" =>
+                SubstitutionString("src=\"$bgh/assets/$lib/figs-html/\\1.svg\"")
+                )
+            )</div>
+            """
+        )
+    end
+    return String(take!(io))
 end
 
 # function hfun_ttfx(p)
@@ -192,19 +210,6 @@ function hfun_rm_headings(ps::Vector{String})
     end
     return ""
 end
-
-const PLIBS = Dict{String,String}(
-    "cairomakie"   => "CairoMakie",   # dec 28'22
-    "gadfly"       => "Gadfly",       # dec 28'22
-    "gaston"       => "Gaston",       # dec 28'22
-    "gleplots"     => "GLEPlots",     # todo
-    "pgfplots"     => "PGFPlots",     # dec 28'22
-    "pgfplotsx"    => "PGFPlotsX",    # dec 28'22
-    "plots"        => "Plots",        # dec 28'22
-    "pyplot"       => "PyPlot",       # dec 28'22
-    "unicodeplots" => "UnicodePlots", # dec 28'22
-    "wglmakie"     => "WGLMakie"      # dec 28'22
-)
 
 function hfun_add_headings(ps::Vector{String})
     c = cur_lc()

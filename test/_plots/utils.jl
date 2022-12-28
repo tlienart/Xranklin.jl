@@ -49,28 +49,15 @@ function lx_ptic()
         ```!
         # name: tic
         # hideall
+        ps(s) = joinpath(Utils.path(:site), "assets", "$lib", s)
         tic_1 = $start
         tic_2 = time()
         ;
         ```
 
-        ### $lib
+        #### Setup
 
-        Setting up dependencies on Github Action:
-
-        $(
-            ifelse(
-                isempty(deps),
-                "",
-                """
-                ```plaintext
-                $deps
-                ```
-                """
-            )
-        )
-
-        Package version used in the example:
+        Version of the package used in the example:
 
         ```!
         # name: version
@@ -80,6 +67,21 @@ function lx_ptic()
         using $lib
         TOML.parsefile(joinpath(dirname(pathof($lib)), "..", "Project.toml"))["version"] |> println
         ```
+
+        $(
+            ifelse(
+                isempty(deps),
+                """
+                This package does not require installing dependencies on GitHub Action.
+                """,
+                """
+                To install dependencies on Github Action add a `run` step prior to the build with:
+                ```plaintext
+                $deps
+                ```
+                """
+            )
+        )
 
         #### Example
         """
@@ -102,7 +104,6 @@ function lx_ptoc()
         # page build exec time in minutes
         δ2  = round((toc - tic_1) / 60, digits=2)
 
-        ps(s) = joinpath(Utils.path(:site), "assets", "$lib", s)
         write(ps("timer-code"), δ1)
         write(ps("timer-build"), δ2)
 

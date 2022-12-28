@@ -5,9 +5,22 @@ menu_title = header
 hascode = true
 +++
 
-## Overview
+~~~
+<style>
+img.code-figure {
+  max-width: 600px;
+  min-width: 450px;
+}
 
-{{plotlib gaston}}
-
+.code-stdout {
+  visibility: hidden;
+}
+</style>
+~~~
 
 {{add_headings gaston}}
+
+
+## Overview
+
+{{plotlibs}}
