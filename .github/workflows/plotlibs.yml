@@ -15,8 +15,6 @@ env:
 jobs:
   plotlibs:
     runs-on: ubuntu-latest
-    run: |
-      echo 'START=$(date +%s)' >> $GITHUB_ENV
     strategy:
       fail-fast: false
       matrix:
@@ -75,6 +73,11 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v3
       
+      - name: Start Time
+        run: |
+          echo 'START=$(date +%s)' >> $GITHUB_ENV
+        shell: bash
+
       - name: Install QT 💻
         uses: jurplel/install-qt-action@v3
         if: matrix.PLIB == 'plots'
