@@ -1,6 +1,7 @@
 import Pkg
 import TOML
 
+
 const PLIBS = Dict{String,String}(
     "cairomakie"   => "CairoMakie",   # dec 28'22
     "gadfly"       => "Gadfly",       # dec 28'22
@@ -13,6 +14,7 @@ const PLIBS = Dict{String,String}(
     "unicodeplots" => "UnicodePlots", # dec 28'22
     "wglmakie"     => "WGLMakie"      # dec 28'22
 )
+
 
 function hfun_plot()
     lib = get(ENV, "PLIB", "")
@@ -112,6 +114,7 @@ function lx_ptoc()
         """
     return html(pg, cur_lc())
 end
+
 
 if get(ENV, "PLIB", "") == "unicodeplots"
     import UnicodePlots

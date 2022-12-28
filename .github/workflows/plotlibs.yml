@@ -12,6 +12,9 @@ env:
   PPATH:   "Xranklin.jl"
   XBRANCH: "main"
   TBRANCH: "gh-plots"
+  LXDEPS: |
+    sudo apt-get update -qq
+    sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
 
 jobs:
   plotlibs:
@@ -19,18 +22,51 @@ jobs:
     strategy:
       matrix:
         include:
+          - PLIB:  "cairomakie"
+            SETUP: "using Pkg; Pkg.add([\"CairoMakie\"]);"
+            BUILD: ""
+            DEPS:  ""
+          - PLIB:  "gadfly"
+            SETUP: "using Pkg; Pkg.add([\"Gadfly\"]);"
+            BUILD: ""
+            DEPS:  ""
           - PLIB:  "gaston"
             SETUP: "using Pkg; Pkg.add([\"Gaston\"]);"
             BUILD: ""
             DEPS: |
               sudo apt-get update -qq
               sudo apt-get install -y gnuplot
+          # - PLIB:  "gleplots"
+          #   SETUP: "using Pkg; Pkg.add([\"Gadfly\"]);"
+          #   BUILD: ""
+          #   DEPS:  ""
           - PLIB:  "pgfplots"
             SETUP: "using Pkg; Pkg.add([\"PGFPlots\"]);"
             BUILD: ""
-            DEPS: |
-              sudo apt-get update -qq
-              sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
+            DEPS: ${{ env.LXDEPS }}
+          - PLIB:  "pgfplotsx"
+            SETUP: "using Pkg; Pkg.add([\"PGFPlots\"]);"
+            BUILD: ""
+            DEPS: ${{ env.LXDEPS }}
+          - PLIB:  "plots"
+            SETUP: "using Pkg; Pkg.add([\"Plots\", \"GR\"]);"
+            BUILD: "xvfb-run"
+            DEPS:  ""
+          - PLIB:  "pyplot"
+            SETUP: "using Pkg; Pkg.add([\"PyCall\", \"PyPlot\"]); Pkg.build(\"PyCall\");"
+            BUILD: ""
+            DEPS:  |
+              pip install matplotlib
+              export PYTHON=$(which python)
+          - PLIB:  "unicodeplots"
+            SETUP: "using Pkg; Pkg.add([\"UnicodePlots\");"
+            BUILD: ""
+            DEPS:  |
+              pip install ansi2html
+          - PLIB:  "wglmakie"
+            SETUP: "using Pkg; Pkg.add([\"WGLMakie\");"
+            BUILD: ""
+            DEPS:  ""
 
     steps:
       - name: Git checkout
@@ -38,6 +74,16 @@ jobs:
 
       - name: Installing deps 💻 (for ${{ matrix.PLIB }})
         run: eval "${{ matrix.DEPS }}"
+      
+      - name: Install QT 💻
+        uses: jurplel/install-qt-action@v3
+        if: matrix.PLIB == 'plots'
+
+      - name: Install Python 🐍
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+        if: ${{ (matrix.PLIB == 'pyplot') || (matrix.PLIB == 'unicodeplots') }}
 
       - name: Installing Julia
         uses: julia-actions/setup-julia@v1
