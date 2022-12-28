@@ -5,26 +5,27 @@ on:
     branches:
       - plotlibs
 
+env:
+  SITED:   "test/_plots"
+  INDEX:   "test/_plots/index.md"
+  START:   $(date +%s)
+  PPATH:   "Xranklin.jl"
+  XBRANCH: "main"
+  TBRANCH: "gh-plots"
+
 jobs:
   plotlibs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        SITED:   ["test/_plots"]
-        INDEX:   ["test/_plots/index.md"]
-        START:   [$(date +%s)]
-        PPATH:   ["Xranklin.jl"]
-        XBRANCH: ["main"]
-        TBRANCH: ["gh-plots"]
-
         include:
-          - PLIB: "gaston"
+          - PLIB:  "gaston"
             SETUP: "using Pkg; Pkg.add([\"Gaston\"]);"
             BUILD: ""
             DEPS: |
               sudo apt-get update -qq
               sudo apt-get install -y gnuplot
-          - PLIB: "pgfplots"
+          - PLIB:  "pgfplots"
             SETUP: "using Pkg; Pkg.add([\"PGFPlots\"]);"
             BUILD: ""
             DEPS: |
@@ -48,14 +49,14 @@ jobs:
                 ${{ matrix.SETUP }};
                 Pkg.add(
                   url="https://github.com/tlienart/Xranklin.jl",
-                  rev="${{ matrix.XBRANCH }}"
+                  rev="${{ env.XBRANCH }}"
                   );
                 using Xranklin;
-                build("${{ matrix.SITED }}";
+                build("${{ env.SITED }}";
                       clear=true,
                       prefix=joinpath(
-                        "${{ matrix.PPATH }}",
-                        "${{ matrix.PLIB }}"
+                        "${{ env.PPATH }}",
+                        "${{ env.PLIB }}"
                         )
                       );'
         env:
@@ -64,6 +65,6 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
-          BRANCH: ${{ matrix.TBRANCH }}
-          FOLDER: ${{ matrix.SITED }}/__site
+          BRANCH: ${{ env.TBRANCH }}
+          FOLDER: ${{ env.SITED }}/__site
           TARGET-FOLDER: ${{ matrix.PLIB }}

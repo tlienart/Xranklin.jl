@@ -1,11 +1,5 @@
 import Pkg
 import TOML
-import UnicodePlots
-
-ENV["PLIB"]  = "wglmakie"
-ENV["DEPS"]  = "deps"
-ENV["START"] = "1.672235621765e9"
-
 
 const PLIBS = Dict{String,String}(
     "cairomakie"   => "CairoMakie",   # dec 28'22
@@ -19,7 +13,6 @@ const PLIBS = Dict{String,String}(
     "unicodeplots" => "UnicodePlots", # dec 28'22
     "wglmakie"     => "WGLMakie"      # dec 28'22
 )
-
 
 function hfun_plot()
     lib = get(ENV, "PLIB", "")
@@ -120,14 +113,17 @@ function lx_ptoc()
     return html(pg, cur_lc())
 end
 
-function html_show(p::UnicodePlots.Plot)
-    td = tempdir()
-    tf = tempname(td)
-    io = IOBuffer()
-    UnicodePlots.savefig(p, tf; color=true)
-    p = pipeline(`cat $tf`, `ansi2html -i -l`, io)
-    if success(p)
-        return "<pre>" * String(take!(io)) * "</pre>"
+if get(ENV, "PLIB", "") == "unicodeplots"
+    import UnicodePlots
+    function html_show(p::UnicodePlots.Plot)
+        td = tempdir()
+        tf = tempname(td)
+        io = IOBuffer()
+        UnicodePlots.savefig(p, tf; color=true)
+        p = pipeline(`cat $tf`, `ansi2html -i -l`, io)
+        if success(p)
+            return "<pre>" * String(take!(io)) * "</pre>"
+        end
+        return ""
     end
-    return ""
 end
