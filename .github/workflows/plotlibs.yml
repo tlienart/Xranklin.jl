@@ -77,10 +77,6 @@ jobs:
         run: echo "START=$(date +%s)" >> $GITHUB_ENV
         shell: bash
 
-      - name: CHECK TIME
-        run: echo $START
-        shell: bash
-
       - name: Install QT 💻
         uses: jurplel/install-qt-action@v3
         if: matrix.PLIB == 'plots'
