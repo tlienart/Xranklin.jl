@@ -17,7 +17,7 @@ jobs:
   plotlibs:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         include:
           - PLIB:  "cairomakie"
@@ -61,12 +61,12 @@ jobs:
               pip install matplotlib
               export PYTHON=$(which python)
           - PLIB:  "unicodeplots"
-            SETUP: "using Pkg; Pkg.add([\"UnicodePlots\");"
+            SETUP: "using Pkg; Pkg.add([\"UnicodePlots\"]);"
             BUILD: ""
             DEPS:  |
               pip install ansi2html
           - PLIB:  "wglmakie"
-            SETUP: "using Pkg; Pkg.add([\"WGLMakie\");"
+            SETUP: "using Pkg; Pkg.add([\"WGLMakie\"]);"
             BUILD: ""
             DEPS:  ""
 
