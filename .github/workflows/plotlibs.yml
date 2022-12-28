@@ -11,10 +11,7 @@ env:
   START:   $(date +%s)
   PPATH:   "Xranklin.jl"
   XBRANCH: "main"
-  TBRANCH: "gh-plots"
-  LXDEPS: |
-    sudo apt-get update -qq
-    sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
+  TBRANCH: "gh-plots"    
 
 jobs:
   plotlibs:
@@ -43,11 +40,15 @@ jobs:
           - PLIB:  "pgfplots"
             SETUP: "using Pkg; Pkg.add([\"PGFPlots\"]);"
             BUILD: ""
-            DEPS: ${{ env.LXDEPS }}
+            DEPS: |
+              sudo apt-get update -qq
+              sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
           - PLIB:  "pgfplotsx"
             SETUP: "using Pkg; Pkg.add([\"PGFPlots\"]);"
             BUILD: ""
-            DEPS: ${{ env.LXDEPS }}
+            DEPS: |
+              sudo apt-get update -qq
+              sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
           - PLIB:  "plots"
             SETUP: "using Pkg; Pkg.add([\"Plots\", \"GR\"]);"
             BUILD: "xvfb-run"
