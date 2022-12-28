@@ -1,5 +1,8 @@
 import Literate
 import HTTP
+import Downloads: download
+
+const PKG = "Xranklin.jl"
 
 # used in syntax/vars+funs #e-strings demonstrating that e-strings are
 # evaluated in the Utils module
@@ -15,9 +18,35 @@ struct Baz
 end
 newbaz(z) = Baz(z)
 
+
+
 # ####################################
 # # TTFX
 # ####################################
+
+function hfun_plotlib(p)
+    lib = first(p)
+    bgh = "https://raw.githubusercontent.com/tlienart/$PKG/gh-plots/$lib"
+    req = try
+        download(
+            "$bgh/index.html",
+            IOBuffer(),
+            timeout=1
+        ) |> take! |> String
+    catch
+        "Failed to retrieve results for plotting lib: '$(uppercasefirst(lib))'."
+    end
+
+    return """
+        <div class="plotlib plotlib-$lib">$(
+        replace(req,
+            r"src=\".*?\/figs-html\/(.*)\.svg\"" =>
+            SubstitutionString("src=\"$bgh/assets/$lib/figs-html/\\1.svg\"")
+            )
+        )</div>
+        """
+end
+
 # function hfun_ttfx(p)
 #     p  = first(p)
 #     r  = ""

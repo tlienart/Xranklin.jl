@@ -157,12 +157,17 @@ function process_utils(
     # keep track of utils code
     setvar!(gc, :_utils_code, utils)
     # update the gc modules to use the utils
+    # we disable warnings here as docstrings update might
+    # show warnings and we don't care.
+    pre_log_level = Base.CoreLogging._min_enabled_level[]
+    Logging.disable_logging(Logging.Warn)
     for m in (gc.nb_vars.mdl, gc.nb_code.mdl)
         include_string(
             m.Utils,
             utils_code(gc, m, crop=true)
         )
     end
+    Base.CoreLogging._min_enabled_level[] = pre_log_level
 
     # check names of hfun, lx and vars; since we wiped the module before the
     # include_string, all the proper names recuperated here are 'fresh'.

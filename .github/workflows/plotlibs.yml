@@ -1,0 +1,69 @@
+name: PlotLibs
+
+on:
+  push:
+    branches:
+      - plotlibs
+
+jobs:
+  plotlibs:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        SITED:   "test/_plots"
+        INDEX:   "test/_plots/index.md"
+        START:   $(date +%s)
+        PPATH:   "Xranklin.jl"
+        XBRANCH: "main"
+        TBRANCH: "gh-plots"
+
+        include:
+          - PLIB: "gaston"
+            SETUP: "using Pkg; Pkg.add([\"Gaston\"]);"
+            BUILD: ""
+            DEPS: |
+              sudo apt-get update -qq
+              sudo apt-get install -y gnuplot
+          - PLIB: "pgfplots"
+            SETUP: "using Pkg; Pkg.add([\"PGFPlots\"]);"
+            BUILD: ""
+            DEPS: |
+              sudo apt-get update -qq
+              sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
+
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Installing deps 💻 (for ${{ matrix.PLIB }})
+        run: eval "${{ matrix.DEPS }}"
+
+      - name: Installing Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: '1'
+
+      - name: Building website 🚧
+        run: ${{ matrix.BUILD }} julia -e '
+                ${{ matrix.SETUP }};
+                Pkg.add(
+                  url="https://github.com/tlienart/Xranklin.jl",
+                  rev="${{ matrix.XBRANCH }}"
+                  );
+                using Xranklin;
+                build("${{ matrix.SITED }}";
+                      clear=true,
+                      prefix=joinpath(
+                        "${{ matrix.PPATH }}",
+                        "${{ matrix.PLIB }}"
+                        )
+                      );'
+        env:
+          PLIB: ${{ matrix.PLIB }}
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        with:
+          BRANCH: ${{ matrix.TBRANCH }}
+          FOLDER: ${{ matrix.SITED }}/__site
+          TARGET-FOLDER: ${{ matrix.PLIB }}

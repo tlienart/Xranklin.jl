@@ -180,10 +180,11 @@ Similar to `filecmp` but allows for changes which do not affect code. This
 allows to avoid triggering re-builds if changes in utils are irrelevant.
 Note: this is called at a point where it is certain that path1 and path2 exist.
 """
-utilscmp(path1, path2) = 
-    (isfile(path1) && isfile(path2)) &&
-    is_code_equal(read.((path1, path2), String)...)
-
+function utilscmp(path1, path2)
+    (isfile(path1) && isfile(path2)) || return false
+    p1, p2 = Meta.parseall.(read.((path1, path2), String))
+    return is_code_equal(p1, p2)
+end
 
 """
     is_code_equal(a, b)
@@ -192,38 +193,42 @@ Try to assess whether the code in a and b (e.g. two strings) is the same
 apart from small changes like whitespaces and docstrings. This allows to
 check whether changes on `utils.jl` need to trigger a rebuild or not.
 """
-is_code_equal(s1::AbstractString, s2::AbstractString) =
-    is_code_equal(Meta.parseall.((s1, s2))...)
-is_code_equal(e1::Expr, e2::Expr) = is_code_equal(e1.args, e2.args)
-is_code_equal(c1, c2) = (c1 == c2)
+is_code_equal(e1::Expr, e2::Expr) = is_code_equal(_trim.((e1, e2))...)
 function is_code_equal(a::Vector, b::Vector)
-    a, b = _trim_args.((a, b))
     length(a) == length(b) || return false
     for (ai, bi) in zip(a, b)
         is_code_equal(ai, bi) || return false
     end
     return true
 end
+is_code_equal(c1, c2) = (c1 == c2)
 
 """
-    _trim_args(a)
+    _trim(e)
 
-Helper function for is_code_equal: expands and removes docstrings, removes
-line number nodes.
+Internal function to trim the args of an Expr to discard toplevel docstring
+lines and line number node lines.
 """
-function _trim_args(a::Vector)
+function _trim(e::Expr)
+    if e.head != :toplevel
+        return filter(x -> !(x isa LineNumberNode), e.args)
+    end
+
+    # for toplevel, discard docstring lines (+ LineNumberNode)
     r = []
-    for e in a
-        if e isa Expr && e.head == :macrocall
-            append!(r, e.args)
+    for ei in e.args
+        if ei isa LineNumberNode
+            continue
+        elseif ei isa Expr && ei.head == :macrocall
+            for a in ei.args
+                if !(typeof(a) in (LineNumberNode, GlobalRef, String))
+                    push!(r, a)
+                end
+            end
         else
-            push!(r, e)
+            push!(r, ei)
         end
     end
-    filter!(
-        x -> !(typeof(x) in (LineNumberNode, GlobalRef, String)),
-        r
-    )
     return r
 end
 

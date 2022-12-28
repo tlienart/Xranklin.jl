@@ -2,6 +2,6 @@
 skiplatex = true
 
 ignore = [
-    r"\_(.*)\.md"
+    r"\_(.*)\.jl"
 ]
 +++
