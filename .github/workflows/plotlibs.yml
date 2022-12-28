@@ -17,8 +17,8 @@ jobs:
   plotlibs:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: true
       matrix:
-        fail-fast: false
         include:
           - PLIB:  "cairomakie"
             SETUP: "using Pkg; Pkg.add([\"CairoMakie\"]);"
