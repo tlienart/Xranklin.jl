@@ -1,5 +1,4 @@
 import Literate
-import HTTP
 import Downloads: download
 
 const PKG = "Xranklin.jl"
@@ -34,9 +33,6 @@ newbaz(z) = Baz(z)
 
 
 
-# ####################################
-# # TTFX
-# ####################################
 
 function hfun_plotlib(p)
     lib = first(p)
@@ -61,30 +57,29 @@ function hfun_plotlib(p)
         """
 end
 
-# function hfun_ttfx(p)
-#     p  = first(p)
-#     r  = ""
-#     r2 = ""
 
-#     # XXX PERF XXX
-#     return ""
+# ####################################
+# # TTFX
+# ####################################
 
-#     try
-#         r = HTTP.request(
-#             "GET",
-#             "https://raw.githubusercontent.com/tlienart/Xranklin.jl/gh-ttfx/ttfx/$(p)/timer"
-#         )
-#         r2 = HTTP.request(
-#             "GET",
-#             "https://raw.githubusercontent.com/tlienart/Xranklin.jl/gh-ttfx/ttfx/$(p)/timer2"
-#         )
-#     catch e
-#         return ""
-#     end
-#     t  = first(reinterpret(Float64, r.body))
-#     t2 = first(reinterpret(Float64, r2.body))
-#     return "$(t)min / $(t2)s"
-# end
+function hfun_ttfx(p)
+    lib = first(p)
+    bgh = "$RAW/gh-plots/$lib/assets/$lib"
+
+    try
+        # in seconds
+        r = download("$bgh/timer-code") |> read
+        r = first(reinterpret(Float64, r))
+        
+        # in minutes
+        r2 = download("$bgh/timer-build") |> read
+        r2 = first(reinterpret(Float64, r2))
+
+        return "$(r) </td><td> $(r2) "
+    catch
+        return ""
+    end
+end
 
 
 ####################################
