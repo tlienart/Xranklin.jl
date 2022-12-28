@@ -1,6 +1,7 @@
 import Pkg
 import TOML
 
+ENV["PLIB"] = "wglmakie"
 
 const PLIBS = Dict{String,String}(
     "cairomakie"   => "CairoMakie",   # dec 28'22

@@ -207,10 +207,10 @@ function hfun_rm_headings(ps::Vector{String})
     return ""
 end
 
-function hfun_add_headings(ps::Vector{String})
+function hfun_add_plot_headings()
     c = cur_lc()
     c === nothing && return ""
-    for h in ps
+    for h in keys(PLIBS)
         if h ∉ keys(c.headings)
             c.headings[h] = (1, 3, PLIBS[h])
         end

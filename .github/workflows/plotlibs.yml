@@ -65,7 +65,7 @@ jobs:
             DEPS:  |
               pip install ansi2html
           - PLIB:  "wglmakie"
-            SETUP: "using Pkg; Pkg.add([\"WGLMakie\"]);"
+            SETUP: "using Pkg; Pkg.add([\"WGLMakie\", \"JSServe\"]);"
             BUILD: ""
             DEPS:  ""
 

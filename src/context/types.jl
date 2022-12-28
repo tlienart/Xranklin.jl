@@ -125,8 +125,10 @@ title. For instance when converting to HTML,
 will given an entry
 
     `foo_bar => (1, 3, "Foo <strong>bar</strong>")
+
+DEV: we must use a little dict here to guarantee order.
 """
-const PageHeadings = Dict{
+const PageHeadings = LittleDict{
     String,
     Tuple{Int, Int, String}
 }

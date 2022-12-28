@@ -18,9 +18,45 @@ img.code-figure {
 </style>
 ~~~
 
-{{add_headings gaston}}
-
-
 ## Overview
 
+
+{{add_plot_headings}}
+
+### CairoMakie
+
+{{plotlib cairomakie}}
+
+### Gadfly
+
+{{plotlib gadfly}}
+
+### Gaston
+
 {{plotlib gaston}}
+
+### PGFPlots
+
+{{plotlib pgfplots}}
+
+### PGFPlotsX
+
+{{plotlib pgfplotsx}}
+
+### Plots
+
+{{plotlib plots}}
+
+### PyPlot
+
+{{plotlib pyplot}}
+
+### UnicodePlots
+
+{{plotlib unicodeplots}}
+
+### WGLMakie
+
+{{plotlib wglmakie}}
+
+
