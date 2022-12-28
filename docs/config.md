@@ -26,6 +26,10 @@ menu = [
         "vars_2"     => "Page Variables (2)",
         "utils"      => "Utils" 
     ],
+    ("extras" => "Extras") => [
+        "plots" => "Plots",
+        "tags"  => "Tags"
+    ],
     ("engine" => "Engine") => [
         "build_passes" => "Build passes",
         "cache"        => "Cache"
@@ -37,7 +41,9 @@ menu = [
 a_global_variable = "hello from a global variable!"
 
 ignore = [
-  r"extras/*"
+  r"extras/literate.md",
+  r"extras/plots_old.md",
+  r"extras/rss.md"
 ]
 +++
 

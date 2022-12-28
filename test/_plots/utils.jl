@@ -105,7 +105,7 @@ function lx_ptoc()
         write(ps("timer-code"), δ1)
         write(ps("timer-build"), δ2)
 
-        println(\"\"\"
+        print(\"\"\"
             Code execution time: \$(δ1) seconds.
             Total time taken (setup + build): \$(δ2) minutes.
             \"\"\"

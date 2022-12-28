@@ -126,7 +126,7 @@ will given an entry
 
     `foo_bar => (1, 3, "Foo <strong>bar</strong>")
 """
-const PageHeadings = LittleDict{
+const PageHeadings = Dict{
     String,
     Tuple{Int, Int, String}
 }
