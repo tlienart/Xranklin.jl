@@ -23,4 +23,4 @@ img.code-figure {
 
 ## Overview
 
-{{plotlibs}}
+{{plotlib gaston}}

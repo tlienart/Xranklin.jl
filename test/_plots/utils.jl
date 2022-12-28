@@ -42,14 +42,15 @@ end
 
 function lx_ptic()
     start = get(ENV, "START", "0")
-    lib   = PLIBS[get(ENV, "PLIB", "")]
+    libk  = get(ENV, "PLIB", "")
+    lib   = PLIBS[libk]
     deps  = get(ENV, "DEPS", "")
 
     pg = """
         ```!
         # name: tic
         # hideall
-        ps(s) = joinpath(Utils.path(:site), "assets", "$lib", s)
+        ps(s) = joinpath(Utils.path(:site), "assets", "$libk", s)
         tic_1 = $start
         tic_2 = time()
         ;

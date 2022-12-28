@@ -38,31 +38,27 @@ newbaz(z) = Baz(z)
 # # TTFX
 # ####################################
 
-function hfun_plotlibs()
-    io = IOBuffer()
-    for lib in keys(PLIBS)
-        bgh = "$RAW/gh-plots/$lib"
-        req = try
-            download(
-                "$bgh/index.html",
-                IOBuffer(),
-                timeout=1
-            ) |> take! |> String
-        catch
-            "Failed to retrieve results for plotting lib: '$(uppercasefirst(lib))'."
-        end
-
-        write(io, """
-            <div class="plotlib plotlib-$lib">$(
-            replace(req,
-                r"src=\".*?\/figs-html\/(.*)\.svg\"" =>
-                SubstitutionString("src=\"$bgh/assets/$lib/figs-html/\\1.svg\"")
-                )
-            )</div>
-            """
-        )
+function hfun_plotlib(p)
+    lib = first(p)
+    bgh = "$RAW/gh-plots/$lib"
+    req = try
+        download(
+            "$bgh/index.html",
+            IOBuffer(),
+            timeout=1
+        ) |> take! |> String
+    catch
+        "Failed to retrieve results for plotting lib: '$(uppercasefirst(lib))'."
     end
-    return String(take!(io))
+
+    return """
+        <div class="plotlib plotlib-$lib">$(
+        replace(req,
+            r"src=\".*?\/figs-html\/(.*)\.svg\"" =>
+            SubstitutionString("src=\"$bgh/assets/$lib/figs-html/\\1.svg\"")
+            )
+        )</div>
+        """
 end
 
 # function hfun_ttfx(p)
