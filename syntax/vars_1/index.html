@@ -13,8 +13,6 @@
     
 
     
-    foo
-    
 
 </head>
 <body>
@@ -563,11 +561,16 @@ body { counter-reset: eqnum; }
   .code-output {
     margin-top: 1em;
     margin-left: 1em;
-    border: 1px solid var(--col-coral);
+    border: 1px dashed var(--purple70);
     background-color: var(--output-background);
         padding: .5em;
   }
   
+.code-output pre {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
   .code-output .code-figure {
     padding-top: 1em;
     padding-bottom: .75em;
@@ -593,7 +596,9 @@ body { counter-reset: eqnum; }
   }
 
 
-
+.plotlib .code-stdout {
+  visibility: visible;
+}
 
 
 
@@ -1020,6 +1025,23 @@ body { counter-reset: eqnum; }
 </ul>
 </li>
 <li class="pure-menu-item">
+<a href="/Xranklin.jl/extras/plots/" class="pure-menu-link">
+    Extras
+</a>
+<ul class="pure-menu-list">
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/extras/plots/" class="pure-menu-link ">
+        Plots
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/extras/tags/" class="pure-menu-link ">
+        Tags
+    </a>
+</li>
+</ul>
+</li>
+<li class="pure-menu-item">
 <a href="/Xranklin.jl/engine/build_passes/" class="pure-menu-link">
     Engine
 </a>
@@ -1215,7 +1237,7 @@ Build-date: &lbrace;&lbrace;todays_date&rbrace;&rbrace;.</code></pre>
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Build-date: 2022-12-23.</fieldset>
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Build-date: 2022-12-28.</fieldset>
 
 </div>
 <div class="lskip"> </div><h3 id="usage" ><a href="#usage"> Usage</a></h3><p>Page variables can be used with the following syntax:</p>

@@ -561,11 +561,16 @@ body { counter-reset: eqnum; }
   .code-output {
     margin-top: 1em;
     margin-left: 1em;
-    border: 1px solid var(--col-coral);
+    border: 1px dashed var(--purple70);
     background-color: var(--output-background);
         padding: .5em;
   }
   
+.code-output pre {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
   .code-output .code-figure {
     padding-top: 1em;
     padding-bottom: .75em;
@@ -591,7 +596,9 @@ body { counter-reset: eqnum; }
   }
 
 
-
+.plotlib .code-stdout {
+  visibility: visible;
+}
 
 
 
@@ -1018,6 +1025,23 @@ body { counter-reset: eqnum; }
 </ul>
 </li>
 <li class="pure-menu-item">
+<a href="/Xranklin.jl/extras/plots/" class="pure-menu-link">
+    Extras
+</a>
+<ul class="pure-menu-list">
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/extras/plots/" class="pure-menu-link ">
+        Plots
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/extras/tags/" class="pure-menu-link ">
+        Tags
+    </a>
+</li>
+</ul>
+</li>
+<li class="pure-menu-item">
 <a href="/Xranklin.jl/engine/build_passes/" class="pure-menu-link">
     Engine
 </a>
@@ -1133,31 +1157,59 @@ body { counter-reset: eqnum; }
 
         <div class="content">
             
+              <h1><a href="#">Using tags and pagination</a></h1>
+            
 
-            <h1 id="gaston" ><a href="#gaston"> Gaston</a></h1><pre><code class="julia">import Downloads
-lib = &quot;gaston&quot;
-bgh = &quot;https://raw.githubusercontent.com/tlienart/Xranklin.jl/gh-plots/$lib&quot;
-url = &quot;$bgh/index.html&quot;
-h = read(Downloads.download(url), String)
-replace(h,
-    r&quot;src=\&quot;.*?\/figs-html\/(.*)\.svg\&quot;&quot; =&gt;
-    SubstitutionString(&quot;src=\&quot;$bgh/assets/$lib/figs-html/\\1.svg\&quot;&quot;)
-)</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">1.6718209473081e9</code></pre></div><h2 id="gaston" ><a href="#gaston"> Gaston</a></h2><p>Dependencies (GA):</p>
-<pre><code class="julia">println(get(ENV, &quot;DEPS&quot;, &quot;&quot;))</code></pre>
-<div class="code-output"><pre><code class="code-stdout language-plaintext">sudo apt-get update -qq
-sudo apt-get install -y gnuplot
+            <h2 id="tags" ><a href="#tags"> Tags</a></h2><h3 id="overview" ><a href="#overview"> Overview</a></h3><p>You can add tags to a page by filling the <code>tags</code> page variable.
+For instance</p>
+<pre><code class="plaintext">+++
+...
+tags = [&quot;foo&quot;, &quot;a tag&quot;, &quot;another tag&quot;]
+...
++++</code></pre>
+<p>Franklin will automatically generate tag pages where it gathers all pages that have a specific
+tag.
+Following the example above, there will be a page <code>/tags/foo/index.html</code> with a list of links
+to pages that have the <code>&quot;foo&quot;</code> tag.</p>
+<p>If you add or remove tags, Franklin will take care of updating these pages, possibly deleting them if necessary.</p>
+<h3 id="specifying_how_tag_pages_look_like" ><a href="#specifying_how_tag_pages_look_like"> Specifying how tag pages look like</a></h3><p>By default, tag pages are generated with a structure like</p>
+<pre><code class="html">...
+&lt;head&gt;
+  ...
+  &lt;title&gt;Tag: &lbrace;&lbrace;fill tag_name&rbrace;&rbrace;&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;tagpage&quot;&gt;
+    &lbrace;&lbrace;taglist&rbrace;&rbrace;
+  &lt;/div&gt;
+&lt;/body&gt;
+...</code></pre>
+<p>where <code>taglist</code> is an internal <a href="/Xranklin.jl/syntax/vars+funs/">hfun</a> generating a simple list with items:</p>
+<pre><code class="html">&lt;li&gt;
+  &lt;a href=&quot;..url-to-page..&quot;&gt;..page-title..&lt;/a&gt;
+&lt;/li&gt;</code></pre>
+<p>You can alter both of these things by providing a <code>_layout/tag.html</code> (which will then be used
+to generate the tag pages), or re-defining a <code>hfun_taglist</code> (or both).</p>
+<h2 id="pagination" ><a href="#pagination"> Pagination</a></h2><p>Say that, for a blog, you have a list of 100 pages but you would like to show
+it 10 pages at the time.
+This is an example where <em>pagination</em> helps.</p>
+<p>Basically, you indicate a list over which to paginate, the number of items to place per
+page, and Franklin will generate this page with each chunk of items.</p>
+<p>Let's see an example first:</p>
+<ul>
+<li>item number 6</li>
+<li>item number 7</li>
+<li>item number 8</li>
+<li>item number 9</li>
+<li>item number 10</li>
+</ul>
+<p>the <code>item_list</code> is defined as</p>
+<pre><code class="julia">item_list = [
+  &quot;* item $i\n&quot;
+  for i in 1:10
+]</code></pre>
+<p>on the current page, only the first five items of the list are shown; on <a href="/Xranklin.jl/extras/tags/">the previous one</a> you'll see that it's the exact same page except with the other 5 items.</p>
 
-</code></pre></div><p>Example</p>
-<pre><code class="julia">using Gaston
-set(term=&quot;qt&quot;)
-x = range(0, pi, length=500)
-y = @. sin(exp(x)) * sinc(x)
-plot(x, y)</code></pre>
-<div class="code-output"><img class="code-figure" src="https://raw.githubusercontent.com/tlienart/Xranklin.jl/gh-plots/gaston/assets/gaston/figs-html/__autofig_13206314231100259878.svg">
-</div><h3 id="timers" ><a href="#timers"> Timers</a></h3><div class="code-output"><pre><code class="code-stdout language-plaintext">Code execution time: 8.48 seconds.
-Total time taken (setup + build): 1.91 minutes.
-</code></pre></div>
 
             
 
@@ -1223,7 +1275,7 @@ Total time taken (setup + build): 1.91 minutes.
     <div id="marginToc">
         
           <div id="marginTocLegend"><a href="#">Contents</a></div>
-          
+          <div class="toc"><ol><li><a href="#tags"> Tags</a><ol><li><a href="#overview"> Overview</a></li><li><a href="#specifying_how_tag_pages_look_like"> Specifying how tag pages look like</a></li></ol></li><li><a href="#pagination"> Pagination</a></li></ol></div>
         
     </div>
 </div>

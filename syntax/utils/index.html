@@ -13,8 +13,6 @@
     
 
     
-    foo
-    
 
 </head>
 <body>
@@ -563,11 +561,16 @@ body { counter-reset: eqnum; }
   .code-output {
     margin-top: 1em;
     margin-left: 1em;
-    border: 1px solid var(--col-coral);
+    border: 1px dashed var(--purple70);
     background-color: var(--output-background);
         padding: .5em;
   }
   
+.code-output pre {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
   .code-output .code-figure {
     padding-top: 1em;
     padding-bottom: .75em;
@@ -593,7 +596,9 @@ body { counter-reset: eqnum; }
   }
 
 
-
+.plotlib .code-stdout {
+  visibility: visible;
+}
 
 
 
@@ -1015,6 +1020,23 @@ body { counter-reset: eqnum; }
 <li class="pure-menu-item">
     <a href="/Xranklin.jl/syntax/utils/" class="pure-menu-link selected">
         Utils
+    </a>
+</li>
+</ul>
+</li>
+<li class="pure-menu-item">
+<a href="/Xranklin.jl/extras/plots/" class="pure-menu-link">
+    Extras
+</a>
+<ul class="pure-menu-list">
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/extras/plots/" class="pure-menu-link ">
+        Plots
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/extras/tags/" class="pure-menu-link ">
+        Tags
     </a>
 </li>
 </ul>
