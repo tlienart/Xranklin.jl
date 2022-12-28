@@ -45,7 +45,7 @@ jobs:
               sudo apt-get update -qq
               sudo apt install -y pdf2svg texlive-latex-base texlive-binaries texlive-pictures texlive-latex-extra texlive-luatex
           - PLIB:  "pgfplotsx"
-            SETUP: "using Pkg; Pkg.add([\"PGFPlots\"]);"
+            SETUP: "using Pkg; Pkg.add([\"PGFPlotsX\"]);"
             BUILD: ""
             DEPS: |
               sudo apt-get update -qq
@@ -73,9 +73,6 @@ jobs:
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
-
-      - name: Installing deps 💻 (for ${{ matrix.PLIB }})
-        run: eval "${{ matrix.DEPS }}"
       
       - name: Install QT 💻
         uses: jurplel/install-qt-action@v3
@@ -86,6 +83,9 @@ jobs:
         with:
           python-version: '3.10'
         if: ${{ (matrix.PLIB == 'pyplot') || (matrix.PLIB == 'unicodeplots') }}
+
+      - name: Installing deps 💻 (for ${{ matrix.PLIB }})
+        run: eval "${{ matrix.DEPS }}"
 
       - name: Installing Julia
         uses: julia-actions/setup-julia@v1
@@ -109,6 +109,8 @@ jobs:
                       );'
         env:
           PLIB: ${{ matrix.PLIB }}
+          DEPS: ${{ matrix.DEPS }}
+          START: ${{ env.START }}
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
