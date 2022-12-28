@@ -183,12 +183,36 @@ Remove headings from page TOC. Useful for a page demonstrating headings which
 ends up adding a lot of dummy headings to the toc.
 """
 function hfun_rm_headings(ps::Vector{String})
-c = cur_lc()
-c === nothing && return ""
-for h in ps
-    if h in keys(c.headings)
-        delete!(c.headings, h)
+    c = cur_lc()
+    c === nothing && return ""
+    for h in ps
+        if h in keys(c.headings)
+            delete!(c.headings, h)
+        end
     end
+    return ""
 end
-return ""
+
+const PLIBS = Dict{String,String}(
+    "cairomakie"   => "CairoMakie",   # dec 28'22
+    "gadfly"       => "Gadfly",       # dec 28'22
+    "gaston"       => "Gaston",       # dec 28'22
+    "gleplots"     => "GLEPlots",     # todo
+    "pgfplots"     => "PGFPlots",     # dec 28'22
+    "pgfplotsx"    => "PGFPlotsX",    # dec 28'22
+    "plots"        => "Plots",        # dec 28'22
+    "pyplot"       => "PyPlot",       # dec 28'22
+    "unicodeplots" => "UnicodePlots", # dec 28'22
+    "wglmakie"     => "WGLMakie"      # dec 28'22
+)
+
+function hfun_add_headings(ps::Vector{String})
+    c = cur_lc()
+    c === nothing && return ""
+    for h in ps
+        if h ∉ keys(c.headings)
+            c.headings[h] = (1, 3, PLIBS[h])
+        end
+    end
+    return ""
 end

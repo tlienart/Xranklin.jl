@@ -29,7 +29,6 @@ const FP = FranklinParser
 
 import URIs
 import IOCapture
-import OrderedCollections: LittleDict
 
 # copied from CommonMark.jl, used in dealing with autolink
 @inline issafe(c::Char) = c in "?:/,-+@._()#=*&%" ||
