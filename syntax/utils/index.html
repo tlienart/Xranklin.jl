@@ -22,7 +22,7 @@
 
 :root {
     /* GEOMETRY */
-    --topbar-height:     45px;
+    --topbar-height:     50px;
     --topbar-ph:         60px;
     --menu-width:        225px;
     --content-max-width: 800px;
@@ -648,7 +648,7 @@ body { counter-reset: eqnum; }
 
 /* -- Responsive Styles (Media Queries) ----------------------------------- */
 
-@media (min-width: 48em) {
+@media (min-width: 768px) {
     #layout {
 		padding-left: var(--menu-width); /* left col width "#menu" */
 		left: 0;
@@ -660,7 +660,7 @@ body { counter-reset: eqnum; }
 	}
 }
 
-@media (min-width: 79em) {
+@media (min-width: 1265px) {
     #layout {
         padding-left: calc(var(--menu-width) + var(--wide-leftpad));
     }
@@ -742,6 +742,9 @@ body { counter-reset: eqnum; }
     
         /* This styles the menu heading. */
         #menu-top {
+            position: fixed;
+            z-index: 100;
+            top: 0;
             color: white;
             height: var(--topbar-height);
             background: var(--col-dark);
@@ -860,7 +863,7 @@ body { counter-reset: eqnum; }
     .v-spacer-menulist {
         width: 100%;
         display: block;
-        height: 25px;
+        height: 90px;
     }
     
     /* -- When layout is active ----------------------------------------------- */
@@ -888,7 +891,7 @@ body { counter-reset: eqnum; }
         }
     
         .v-spacer-menulist {
-            height: 75px;
+            height: 90px;
         }
         .menu-logos {
             padding-bottom: 15px;
@@ -1303,64 +1306,64 @@ end</code></pre>
         </div>
     </div>
     <style>
-#rightMargin{
-    display: none;
-}
-@media (min-width: 79em) and (min-height: 56em){
-    #rightMargin {
-        position: fixed;
-        top: 218px;
-        padding-left: var(--content-max-width);
-        z-index: -1;
-        display: block;
-        width: var(--menu-width);
-        float: right;
+    #rightMargin{
+        display: none;
     }
-
-    #marginToc {
-        font-size: var(--text-sm);
-        color: var(--col-gray);
-        border-left: 1px solid var(--col-xlight);
-        padding-left: 1em;
-        line-height: 1.5;
-    }
-        #marginToc a {
-            text-decoration: none;
-            color: inherit;
+    @media (min-width: 1264px) and (min-height: 500px){
+        #rightMargin {
+            position: fixed;
+            top: 218px;
+            padding-left: var(--content-max-width);
+            z-index: -1;
+            display: block;
+            width: var(--menu-width);
+            float: right;
         }
-        #marginToc a:hover {
-            color: var(--col-lblue);
-            text-decoration: none;
-        }
-        #marginToc ol {
-            list-style: none;
-            padding-left: 0em;
-        }
-        #marginToc li {
-            padding-top: 0.6em;
-            line-height: 1.2;
-        }
-        #marginToc li li {
+    
+        #marginToc {
+            font-size: var(--text-sm);
+            color: var(--col-gray);
+            border-left: 1px solid var(--col-xlight);
             padding-left: 1em;
+            line-height: 1.5;
         }
-
-        #marginTocLegend {
-            text-transform: uppercase;
-            font-weight:    650;
-            letter-spacing: 0.0375em;
-            /* padding-left: 	1.6em; */
-        }
-}
-</style>
-
-<div id="rightMargin">
-    <div id="marginToc">
-        
-          <div id="marginTocLegend"><a href="#">Contents</a></div>
-          <div class="toc"><ol><li><a href="#overview"> Overview</a><ol><li><a href="#definining_objects_and_functions_in_the_utils_module"> Definining objects and functions in the <code>Utils</code> module</a></li><li><a href="#custom_show_method"> Custom show method</a></li></ol></li><li><a href="#custom_functions"> Custom functions</a><ol><li><a href="#custom_lxfuns"> Custom lxfuns</a></li><li><a href="#custom_envfuns"> Custom envfuns</a></li><li><a href="#custom_hfuns"> Custom hfuns</a></li></ol></li><li><a href="#utils_tools"> Utils tools</a></li></ol></div>
-        
+            #marginToc a {
+                text-decoration: none;
+                color: inherit;
+            }
+            #marginToc a:hover {
+                color: var(--col-lblue);
+                text-decoration: none;
+            }
+            #marginToc ol {
+                list-style: none;
+                padding-left: 0em;
+            }
+            #marginToc li {
+                padding-top: 0.6em;
+                line-height: 1.2;
+            }
+            #marginToc li li {
+                padding-left: 1em;
+            }
+    
+            #marginTocLegend {
+                text-transform: uppercase;
+                font-weight:    650;
+                letter-spacing: 0.0375em;
+                /* padding-left: 	1.6em; */
+            }
+    }
+    </style>
+    
+    <div id="rightMargin">
+        <div id="marginToc">
+            
+              <div id="marginTocLegend"><a href="#">Contents</a></div>
+              <div class="toc"><ol><li><a href="#overview"> Overview</a><ol><li><a href="#definining_objects_and_functions_in_the_utils_module"> Definining objects and functions in the <code>Utils</code> module</a></li><li><a href="#custom_show_method"> Custom show method</a></li></ol></li><li><a href="#custom_functions"> Custom functions</a><ol><li><a href="#custom_lxfuns"> Custom lxfuns</a></li><li><a href="#custom_envfuns"> Custom envfuns</a></li><li><a href="#custom_hfuns"> Custom hfuns</a></li></ol></li><li><a href="#utils_tools"> Utils tools</a></li></ol></div>
+            
+        </div>
     </div>
-</div>
 </div>  
 </div>
 
