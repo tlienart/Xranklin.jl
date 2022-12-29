@@ -35,16 +35,29 @@ newbaz(z) = Baz(z)
 
 
 function hfun_plotlib(p)
+    gc  = cur_gc()
     lib = first(p)
     bgh = "$RAW/gh-plots/$lib"
-    req = try
-        download(
-            "$bgh/index.html",
-            IOBuffer(),
-            timeout=1
-        ) |> take! |> String
-    catch
-        "Failed to retrieve results for plotting lib: '$(uppercasefirst(lib))'."
+
+    # see if there's a local version, if so skip
+    dpath = mkpath(joinpath(Utils.path(:site), "assets", "plibs", lib))
+    ipath = joinpath(dpath, "index.html")
+    if isfile(ipath)
+        @info " ... skipping plib dl ($lib)..."
+        req = read(ipath, String)
+    else
+        @info " ... plib dl ($lib) ..."
+        req = try
+            r = download(
+                "$bgh/index.html",
+                IOBuffer(),
+                timeout=1
+            ) |> take! |> String
+            write(ipath, r)
+            r
+        catch
+            "Failed to retrieve results for plotting lib: '$(uppercasefirst(lib))'."
+        end
     end
 
     return """
@@ -66,19 +79,30 @@ function hfun_ttfx(p)
     lib = first(p)
     bgh = "$RAW/gh-plots/$lib/assets/$lib"
 
-    try
-        # in seconds
-        r = download("$bgh/timer-code") |> read
-        r = first(reinterpret(Float64, r))
-        
-        # in minutes
-        r2 = download("$bgh/timer-build") |> read
-        r2 = first(reinterpret(Float64, r2))
+    dpath = mkpath(joinpath(Utils.path(:site), "assets", "plibs", lib))
+    bpath = joinpath(dpath, "timer-build")
+    cpath = joinpath(dpath, "timer-code")
+    if isfile(bpath) && isfile(cpath)
+        @info " ... skipping plib timers dl ($lib)..."
+        r  = read(cpath)
+        r2 = read(bpath)
+    else
+        try
+            @info " ... plib timers dl ($lib) ..."
+            # in seconds
+            r = download("$bgh/timer-code") |> read    
+            # in minutes
+            r2 = download("$bgh/timer-build") |> read
 
-        return "$(r) </td><td> $(r2) "
-    catch
-        return ""
+            write(cpath, r)
+            write(bpath, r2)
+        catch
+            return ""
+        end
     end
+    r  = first(reinterpret(Float64, r))
+    r2 = first(reinterpret(Float64, r2))
+    return "$(r) </td><td> $(r2) "
 end
 
 
