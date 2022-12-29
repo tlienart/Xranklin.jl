@@ -67,6 +67,9 @@
     
         /* This styles the menu heading. */
         #menu-top {
+            position: fixed;
+            z-index: 100;
+            top: 0;
             color: white;
             height: var(--topbar-height);
             background: var(--col-dark);
@@ -185,7 +188,7 @@
     .v-spacer-menulist {
         width: 100%;
         display: block;
-        height: 25px;
+        height: 90px;
     }
     
     /* -- When layout is active ----------------------------------------------- */
@@ -213,7 +216,7 @@
         }
     
         .v-spacer-menulist {
-            height: 75px;
+            height: 90px;
         }
         .menu-logos {
             padding-bottom: 15px;

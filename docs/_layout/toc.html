@@ -1,59 +1,59 @@
 <style>
-#rightMargin{
-    display: none;
-}
-@media (min-width: 79em) and (min-height: 56em){
-    #rightMargin {
-        position: fixed;
-        top: 218px;
-        padding-left: var(--content-max-width);
-        z-index: -1;
-        display: block;
-        width: var(--menu-width);
-        float: right;
+    #rightMargin{
+        display: none;
     }
-
-    #marginToc {
-        font-size: var(--text-sm);
-        color: var(--col-gray);
-        border-left: 1px solid var(--col-xlight);
-        padding-left: 1em;
-        line-height: 1.5;
-    }
-        #marginToc a {
-            text-decoration: none;
-            color: inherit;
+    @media (min-width: 1264px) and (min-height: 500px){
+        #rightMargin {
+            position: fixed;
+            top: 218px;
+            padding-left: var(--content-max-width);
+            z-index: -1;
+            display: block;
+            width: var(--menu-width);
+            float: right;
         }
-        #marginToc a:hover {
-            color: var(--col-lblue);
-            text-decoration: none;
-        }
-        #marginToc ol {
-            list-style: none;
-            padding-left: 0em;
-        }
-        #marginToc li {
-            padding-top: 0.6em;
-            line-height: 1.2;
-        }
-        #marginToc li li {
+    
+        #marginToc {
+            font-size: var(--text-sm);
+            color: var(--col-gray);
+            border-left: 1px solid var(--col-xlight);
             padding-left: 1em;
+            line-height: 1.5;
         }
-
-        #marginTocLegend {
-            text-transform: uppercase;
-            font-weight:    650;
-            letter-spacing: 0.0375em;
-            /* padding-left: 	1.6em; */
-        }
-}
-</style>
-
-<div id="rightMargin">
-    <div id="marginToc">
-        {{if showtoc}}
-          <div id="marginTocLegend"><a href="#">Contents</a></div>
-          {{toc 2 3}}
-        {{end}}
+            #marginToc a {
+                text-decoration: none;
+                color: inherit;
+            }
+            #marginToc a:hover {
+                color: var(--col-lblue);
+                text-decoration: none;
+            }
+            #marginToc ol {
+                list-style: none;
+                padding-left: 0em;
+            }
+            #marginToc li {
+                padding-top: 0.6em;
+                line-height: 1.2;
+            }
+            #marginToc li li {
+                padding-left: 1em;
+            }
+    
+            #marginTocLegend {
+                text-transform: uppercase;
+                font-weight:    650;
+                letter-spacing: 0.0375em;
+                /* padding-left: 	1.6em; */
+            }
+    }
+    </style>
+    
+    <div id="rightMargin">
+        <div id="marginToc">
+            {{if showtoc}}
+              <div id="marginTocLegend"><a href="#">Contents</a></div>
+              {{toc 2 3}}
+            {{end}}
+        </div>
     </div>
-</div>
