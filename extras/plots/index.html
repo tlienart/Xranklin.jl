@@ -561,7 +561,7 @@ body { counter-reset: eqnum; }
   .code-output {
     margin-top: 1em;
     margin-left: 1em;
-    border: 1px dashed var(--purple70);
+    border-left: 3px solid var(--purple70);
     background-color: var(--output-background);
         padding: .5em;
   }
@@ -879,7 +879,7 @@ body { counter-reset: eqnum; }
     
     /* -- Responsive Styles (Media Queries) ----------------------------------- */
     
-    @media (min-width: 48em) {
+    @media (min-width: 768px) {
         #menu {
             left: var(--menu-width);
         }
@@ -898,16 +898,18 @@ body { counter-reset: eqnum; }
         }
     }
     
-    @media (min-width: 79em) {
+    @media (min-width: 1264px) {
         #menu {
             padding-left: var(--wide-leftpad);
         }
         #menuTopFill {
+            position: fixed;
+            top: 0;
             display: block;
             background-color: var(--col-dark);
             z-index: -1;
             width: 100%;
-            position: absolute;
+            /* position: absolute; */
             left: 0;
             height: var(--topbar-height);
         }
@@ -1167,11 +1169,6 @@ body { counter-reset: eqnum; }
             <style>
 img.code-figure {
   max-width: 600px;
-  min-width: 450px;
-}
-
-.code-stdout {
-  visibility: hidden;
 }
 </style><h2 id="overview" ><a href="#overview"> Overview</a></h2><p>Julia has many packages that offer plotting capacity and you can use any of them in Franklin as long as the resulting plot is showable as SVG or PNG or has a <a href="/Xranklin.jl/syntax/code/#custom_show">custom show</a> method.</p>
 <p>One key difficulty is that if you want your site to be built remotely (e.g. by <a href="https://docs.github.com/en/actions">GitHub Action</a>) then you need to ensure that the relevant dependencies (if any) are installed to enable this.
@@ -1190,61 +1187,61 @@ If you use another approach to remotely build your website, for instance with Gi
 <p>Note that the exact time you get in your case will depend on GA and so you should take these numbers as indicators rather than an exact figure.</p>
 <style>
 .pure-table {margin:auto;}
-</style><table class="pure-table">
+</style><div class="lskip"> </div><table class="pure-table">
 <thead>
-<th > Plotting package </th>
+<th > Package </th>
 <th > Example </th>
-<th > Time 1 <th>Time 2</th>   </th>
+<th > ΔT1 (sec) <th>ΔT2 (min)</th>   </th>
 </thead>
 <tbody>
 <tr>
 <td > <a href="https://github.com/JuliaPlots/CairoMakie.jl">CairoMakie.jl</a>     </td>
-<td > <a href="#cairomakie">example</a>   </td>
+<td > <a href="#cairomakie">➡️</a>   </td>
 <td > 51.92 </td><td> 6.68    </td>
 </tr>
 <tr>
 <td > <a href="https://github.com/GiovineItalia/Gadfly.jl">Gadfly.jl</a>          </td>
-<td > <a href="#gadfly">example</a>       </td>
+<td > <a href="#gadfly">➡️</a>       </td>
 <td > 39.65 </td><td> 2.44        </td>
 </tr>
 <tr>
 <td > <a href="https://github.com/mbaz/Gaston.jl">Gaston.jl</a>                   </td>
-<td > <a href="#gaston">example</a>       </td>
+<td > <a href="#gaston">➡️</a>       </td>
 <td > 7.29 </td><td> 1.6        </td>
 </tr>
 <tr>
 <td > <a href="https://github.com/JuliaTeX/PGFPlots.jl">PGFPlots.jl</a>           </td>
-<td > <a href="#pgfplots">example</a>     </td>
+<td > <a href="#pgfplots">➡️</a>     </td>
 <td > 14.84 </td><td> 4.65      </td>
 </tr>
 <tr>
 <td > <a href="https://github.com/KristofferC/PGFPlotsX.jl">PGFPlotsX.jl</a>      </td>
-<td > <a href="#pgfplotsx">example</a>    </td>
+<td > <a href="#pgfplotsx">➡️</a>    </td>
 <td > 6.88 </td><td> 1.85     </td>
 </tr>
 <tr>
-<td > <a href="https://github.com/JuliaPlots/Plots.jl">Plots.jl</a> (GR backend)  </td>
-<td > <a href="#plots">example</a>        </td>
+<td > <a href="https://github.com/JuliaPlots/Plots.jl">Plots.jl</a> (GR)  </td>
+<td > <a href="#plots">➡️</a>        </td>
 <td > 16.65 </td><td> 3.66         </td>
 </tr>
 <tr>
 <td > <a href="https://github.com/JuliaPy/PyPlot.jl">PyPlot.jl</a>                </td>
-<td > <a href="#pyplot">example</a>       </td>
+<td > <a href="#pyplot">➡️</a>       </td>
 <td > 13.6 </td><td> 1.83        </td>
 </tr>
 <tr>
 <td > <a href="https://github.com/JuliaPlots/UnicodePlots.jl">UnicodePlots.jl</a> </td>
-<td > <a href="#unicodeplots">example</a> </td>
+<td > <a href="#unicodeplots">➡️</a> </td>
 <td > 6.08 </td><td> 2.57  </td>
 </tr>
 <tr>
 <td > <a href="https://github.com/JuliaPlots/WGLMakie.jl">WGLMakie.jl</a>         </td>
-<td > <a href="#wglmakie">example</a>     </td>
+<td > <a href="#wglmakie">➡️</a>     </td>
 <td > 83.37 </td><td> 8.03      </td>
 </tr>
 </tbody>
 </table>
-<p>A final note here is that if the pages on which you have plots don't change and that you use the cache, these pages will be skipped at build time and you won't have to pay the full overhead (only the installation of the dependencies but that's always under 1 min).</p>
+<div class="lskip"> </div><p>Lastly, note that if the pages on which you have plots don't change and that you use the cache, these pages will be skipped at build time and you won't have to pay the full overhead (only the installation of the dependencies but that's always under 1 min).</p>
 <h2 id="examples" ><a href="#examples"> Examples</a></h2><h3 id="cairomakie" ><a href="#cairomakie"> CairoMakie</a></h3><div class="plotlib plotlib-cairomakie"><h4 id="setup" ><a href="#setup"> Setup</a></h4><p>Version of the package used in the example:</p>
 <div class="code-output"><pre><code class="code-stdout language-plaintext">0.10.0
 </code></pre></div><p>This package does not require installing dependencies on GitHub Action.</p>
