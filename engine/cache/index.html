@@ -739,17 +739,17 @@ body { counter-reset: eqnum; }
             }
     
         /* This styles the menu heading. */
-        #menu-top {
-            position: fixed;
+        #menuTop {
+            position: absolute;
             z-index: 100;
             top: 0;
             color: white;
             height: var(--topbar-height);
             background: var(--col-dark);
             width: var(--menu-width);
-            /* border-right: 1px solid var(--col-light); */
         }
-    
+
+     
     /*
     Dynamic Button For Responsive Menu
     
@@ -871,7 +871,7 @@ body { counter-reset: eqnum; }
         left: var(--menu-width);
         width: var(--menu-width);
     }
-    
+
     #layout.active #menuLink {
         display: none;
     }
@@ -908,7 +908,6 @@ body { counter-reset: eqnum; }
             background-color: var(--col-dark);
             z-index: -1;
             width: 100%;
-            /* position: absolute; */
             left: 0;
             height: var(--topbar-height);
         }
@@ -938,7 +937,7 @@ body { counter-reset: eqnum; }
         <div id="menuTopFill"></div>
     
         <div class="pure-menu">
-            <div id="menu-top">
+            <div id="menuTop">
                 <form id="lunrSearchForm" name="lunrSearchForm">
                     <input class="search-input" name="q" placeholder="Search the docs..." type="text">
                     <input type="submit" value="🔍" formaction="/Xranklin.jl/search/index.html">
