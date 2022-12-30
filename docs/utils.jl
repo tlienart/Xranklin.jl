@@ -180,7 +180,7 @@ function hfun_generate_menu()
              """)        
          write(io, """
              <a href="/$base/$(first(m.second).first)/" class="pure-menu-link">
-                 $name
+                 <strong>$name</strong>
              </a>
              <ul class="pure-menu-list">
              """)
