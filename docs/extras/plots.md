@@ -9,11 +9,6 @@ hascode = true
 <style>
 img.code-figure {
   max-width: 600px;
-  min-width: 450px;
-}
-
-.code-stdout {
-  visibility: hidden;
 }
 </style>
 ~~~
@@ -49,20 +44,23 @@ Note that the exact time you get in your case will depend on GA and so you shoul
 </style>
 ~~~
 
-| Plotting package | Example | Time 1 ~~~<th>Time 2</th>~~~   |
+\lskip
+
+| Package | Example | ΔT1 (sec) ~~~<th>ΔT2 (min)</th>~~~   |
 | ---------------- | ------ | --------------- |
-| [CairoMakie.jl](https://github.com/JuliaPlots/CairoMakie.jl)     | [example](#cairomakie)   | {{ttfx cairomakie}}   |
-| [Gadfly.jl](https://github.com/GiovineItalia/Gadfly.jl)          | [example](#gadfly)       | {{ttfx gadfly}}       |
-| [Gaston.jl](https://github.com/mbaz/Gaston.jl)                   | [example](#gaston)       | {{ttfx gaston}}       |
-| [PGFPlots.jl](https://github.com/JuliaTeX/PGFPlots.jl)           | [example](#pgfplots)     | {{ttfx pgfplots}}     |
-| [PGFPlotsX.jl](https://github.com/KristofferC/PGFPlotsX.jl)      | [example](#pgfplotsx)    | {{ttfx pgfplotsx}}    |
-| [Plots.jl](https://github.com/JuliaPlots/Plots.jl) (GR backend)  | [example](#plots)        | {{ttfx plots}}        |
-| [PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl)                | [example](#pyplot)       | {{ttfx pyplot}}       |
-| [UnicodePlots.jl](https://github.com/JuliaPlots/UnicodePlots.jl) | [example](#unicodeplots) | {{ttfx unicodeplots}} |
-| [WGLMakie.jl](https://github.com/JuliaPlots/WGLMakie.jl)         | [example](#wglmakie)     | {{ttfx wglmakie}}     |
+| [CairoMakie.jl](https://github.com/JuliaPlots/CairoMakie.jl)     | [➡️](#cairomakie)   | {{ttfx cairomakie}}   |
+| [Gadfly.jl](https://github.com/GiovineItalia/Gadfly.jl)          | [➡️](#gadfly)       | {{ttfx gadfly}}       |
+| [Gaston.jl](https://github.com/mbaz/Gaston.jl)                   | [➡️](#gaston)       | {{ttfx gaston}}       |
+| [PGFPlots.jl](https://github.com/JuliaTeX/PGFPlots.jl)           | [➡️](#pgfplots)     | {{ttfx pgfplots}}     |
+| [PGFPlotsX.jl](https://github.com/KristofferC/PGFPlotsX.jl)      | [➡️](#pgfplotsx)    | {{ttfx pgfplotsx}}    |
+| [Plots.jl](https://github.com/JuliaPlots/Plots.jl) (GR)  | [➡️](#plots)        | {{ttfx plots}}        |
+| [PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl)                | [➡️](#pyplot)       | {{ttfx pyplot}}       |
+| [UnicodePlots.jl](https://github.com/JuliaPlots/UnicodePlots.jl) | [➡️](#unicodeplots) | {{ttfx unicodeplots}} |
+| [WGLMakie.jl](https://github.com/JuliaPlots/WGLMakie.jl)         | [➡️](#wglmakie)     | {{ttfx wglmakie}}     |
 
+\lskip
 
-A final note here is that if the pages on which you have plots don't change and that you use the cache, these pages will be skipped at build time and you won't have to pay the full overhead (only the installation of the dependencies but that's always under 1 min).
+Lastly, note that if the pages on which you have plots don't change and that you use the cache, these pages will be skipped at build time and you won't have to pay the full overhead (only the installation of the dependencies but that's always under 1 min).
 
 ## Examples
 

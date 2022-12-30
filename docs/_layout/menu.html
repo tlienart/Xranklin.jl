@@ -204,7 +204,7 @@
     
     /* -- Responsive Styles (Media Queries) ----------------------------------- */
     
-    @media (min-width: 48em) {
+    @media (min-width: 768px) {
         #menu {
             left: var(--menu-width);
         }
@@ -223,16 +223,18 @@
         }
     }
     
-    @media (min-width: 79em) {
+    @media (min-width: 1264px) {
         #menu {
             padding-left: var(--wide-leftpad);
         }
         #menuTopFill {
+            position: fixed;
+            top: 0;
             display: block;
             background-color: var(--col-dark);
             z-index: -1;
             width: 100%;
-            position: absolute;
+            /* position: absolute; */
             left: 0;
             height: var(--topbar-height);
         }
