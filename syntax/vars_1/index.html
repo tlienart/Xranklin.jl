@@ -748,7 +748,8 @@ body { counter-reset: eqnum; }
             color: white;
             height: var(--topbar-height);
             background: var(--col-dark);
-            border-right: 1px solid var(--col-light);
+            width: var(--menu-width);
+            /* border-right: 1px solid var(--col-light); */
         }
     
     /*
@@ -863,7 +864,7 @@ body { counter-reset: eqnum; }
     .v-spacer-menulist {
         width: 100%;
         display: block;
-        height: 90px;
+        height: 80px;
     }
     
     /* -- When layout is active ----------------------------------------------- */
@@ -894,7 +895,7 @@ body { counter-reset: eqnum; }
             height: 90px;
         }
         .menu-logos {
-            padding-bottom: 15px;
+            padding-bottom: 10px;
         }
     }
     
@@ -963,7 +964,7 @@ body { counter-reset: eqnum; }
             <ul class="pure-menu-list">
 <li class="pure-menu-item">
 <a href="/Xranklin.jl/workflow/getting_started/" class="pure-menu-link">
-    Workflow
+    <strong>Workflow</strong>
 </a>
 <ul class="pure-menu-list">
 <li class="pure-menu-item">
@@ -990,7 +991,7 @@ body { counter-reset: eqnum; }
 </li>
 <li class="pure-menu-item">
 <a href="/Xranklin.jl/syntax/basics/" class="pure-menu-link">
-    Syntax
+    <strong>Syntax</strong>
 </a>
 <ul class="pure-menu-list">
 <li class="pure-menu-item">
@@ -1032,7 +1033,7 @@ body { counter-reset: eqnum; }
 </li>
 <li class="pure-menu-item">
 <a href="/Xranklin.jl/extras/plots/" class="pure-menu-link">
-    Extras
+    <strong>Extras</strong>
 </a>
 <ul class="pure-menu-list">
 <li class="pure-menu-item">
@@ -1049,7 +1050,7 @@ body { counter-reset: eqnum; }
 </li>
 <li class="pure-menu-item">
 <a href="/Xranklin.jl/engine/build_passes/" class="pure-menu-link">
-    Engine
+    <strong>Engine</strong>
 </a>
 <ul class="pure-menu-list">
 <li class="pure-menu-item">
@@ -1757,7 +1758,7 @@ For legacy purposes, a number of these variables have aliases:</p>
     @media (min-width: 1264px) and (min-height: 500px){
         #rightMargin {
             position: fixed;
-            top: 218px;
+            top: 140px;
             padding-left: var(--content-max-width);
             z-index: -1;
             display: block;
@@ -1770,7 +1771,7 @@ For legacy purposes, a number of these variables have aliases:</p>
             color: var(--col-gray);
             border-left: 1px solid var(--col-xlight);
             padding-left: 1em;
-            line-height: 1.5;
+            line-height: 1.2;
         }
             #marginToc a {
                 text-decoration: none;
