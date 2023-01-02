@@ -740,16 +740,13 @@ body { counter-reset: eqnum; }
     
         /* This styles the menu heading. */
         #menuTop {
-            position: fixed;
+            position: sticky;
             z-index: 100;
             top: 0;
             color: white;
             height: var(--topbar-height);
             background: var(--col-dark);
             width: var(--menu-width);
-
-            /* https://stackoverflow.com/questions/4889601/position-fixed-doesnt-work-on-ipad-and-iphone */
-            transform: translate3d(0,0,0); 
         }
 
      
