@@ -162,7 +162,15 @@ cur_gc() = env(:cur_global_ctx)::GlobalContext
 """
     attach(lc, dep_rpath)
 
-Add the dependency `lc` to `dep` to the global dependency map.
+Add the dependency `lc` to the file at `dep_rpath` to the global dependency 
+map.
+
+This is used internally to attach a literate file to the page(s)
+that call(s) it.
+
+DEV:
+    - context/deps_map.jl
+    - convert/markdown/lxfuns/literate.jl (_process_literate_file)
 """
 attach(lc::LocalContext, dep_rpath::String) =
     push!(lc.glob.deps_map, lc.rpath, dep_rpath)

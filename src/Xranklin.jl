@@ -39,19 +39,17 @@ normalize_uri(s) = URIs.escapeuri(s, issafe)
 # ------------------------------------------------------------------------
 # Main functions
 export serve, build, html, html2, latex
-export cur_gc
+export attach, cur_gc
 
 export toy_example
-
-# XXX attach?
-# export attach
-# export auto_cell_name
+export notebook
 
 
 # ------------------------------------------------------------------------
 
 const FRANKLIN_ENV = Dict{Symbol, Any}(
     :module_name       => "Xranklin",     # TODO: remove here, in newmodule, in delay
+    :module_path       => Base.find_package("Xranklin"),
     :strict_parsing    => false,          # if true, fail on any parsing issue
     :offset_lxdefs     => -typemax(Int),  # helps keep track of order in lxcoms/envs
     :cur_global_ctx    => nothing,        # current global context
@@ -192,5 +190,6 @@ include("$p/full_pass.jl")
 include("$p/build_loop.jl")
 include("$p/serve.jl")
 include("$p/toy.jl")
+include("$p/notebook.jl")
 
 end

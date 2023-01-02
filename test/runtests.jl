@@ -21,7 +21,7 @@ end
     include(p/"modules.jl")
     include(p/"notebook_vars.jl")
     include(p/"notebook_code.jl")
-    include(p/"code-show.jl")
+    include(p/"code_show.jl")
 end
 
 @testset "LaTeX" begin

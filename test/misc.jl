@@ -90,9 +90,9 @@ end
         end
         """
 
-    @test Xranklin.is_code_equal(s1, s2)
-    @test !Xranklin.is_code_equal(s1, s3)
-    @test Xranklin.is_code_equal(s1, s4) 
+    @test Xranklin.is_codestr_equal(s1, s2)
+    @test !Xranklin.is_codestr_equal(s1, s3)
+    @test Xranklin.is_codestr_equal(s1, s4) 
 
     # string changes should change code
     s1 = """
@@ -123,7 +123,7 @@ end
         end
         """
     # only docstring change
-    @test Xranklin.is_code_equal(s1, s2)
+    @test Xranklin.is_codestr_equal(s1, s2)
     # actual string change
-    @test !Xranklin.is_code_equal(s1, s3)
+    @test !Xranklin.is_codestr_equal(s1, s3)
 end

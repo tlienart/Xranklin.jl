@@ -16,3 +16,5 @@ test/abc_utils/_layout/* linguist-vendored
 
 docs/* linguist-vendored
 docs/_layout/* linguist-vendored
+
+src/other/water.css linguist-vendored

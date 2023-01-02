@@ -193,7 +193,10 @@ Try to assess whether the code in a and b (e.g. two strings) is the same
 apart from small changes like whitespaces and docstrings. This allows to
 check whether changes on `utils.jl` need to trigger a rebuild or not.
 """
-is_code_equal(e1::Expr, e2::Expr) = is_code_equal(_trim.((e1, e2))...)
+function is_code_equal(e1::Expr, e2::Expr)
+    v1, v2 = _trim.((e1, e2))
+    is_code_equal(v1, v2)
+end
 function is_code_equal(a::Vector, b::Vector)
     length(a) == length(b) || return false
     for (ai, bi) in zip(a, b)
@@ -202,6 +205,7 @@ function is_code_equal(a::Vector, b::Vector)
     return true
 end
 is_code_equal(c1, c2) = (c1 == c2)
+is_codestr_equal(s1, s2) = is_code_equal(Meta.parseall.((s1, s2))...)
 
 """
     _trim(e)
