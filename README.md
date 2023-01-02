@@ -125,7 +125,7 @@ So it will look something like this:
 ```
 __site/
 __cache/
-.DS_Store  # if you're on mac
+.DS_Store  # if you're on macos
 ```
 
 ---
