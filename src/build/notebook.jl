@@ -5,10 +5,7 @@ const NB_HEAD = """
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1.0">
       <style>
-      $(read(
-          dirname(FRANKLIN_ENV[:module_path]) / "other" / "water.css",
-          String
-        ))
+        $WATER_CSS
       </style>
     </head>
     <body>
