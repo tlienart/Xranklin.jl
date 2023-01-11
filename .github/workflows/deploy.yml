@@ -35,7 +35,7 @@ jobs:
         with:
           SITE_FOLDER: "docs/"
           BASE_URL_PREFIX: "Xranklin.jl"
-          PREVIEW: ${{ env.preview }}
+          PREVIEW: ${{ env.PRID }}
           PYTHON_LIBS: "matplotlib pandas ansi2html"
           LUNR: true
 
