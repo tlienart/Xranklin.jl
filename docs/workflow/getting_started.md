@@ -10,8 +10,8 @@ menu_title = header
 
 ## Generate a site from a template
 
-To get started with Franklin, you can use the `FranklinTemplates.newsite` function
-in a Julia REPL.
+To get started with Franklin, you can use the `FranklinTemplates.newsite`
+function in a Julia REPL.
 That function will generate a _website folder_ on your computer that's ready
 to be built by Franklin, and that you can modify at will:
 

@@ -22,8 +22,12 @@ jobs:
 
       - name: 👀 Set preview path for PRs
         run: |
-          echo 'PRID=${{ env.PREVIEWS_PREFIX}}${{ github.event.number}}' >> $GITHUB_ENV
-        if: github.event_name == 'pull_request'
+          if ${{ github.event_name == 'pull_request' }}
+          then
+            echo 'PRID=${{ env.PREVIEWS_PREFIX}}${{ github.event.number}}' >> $GITHUB_ENV
+          else
+            echo 'PRID=' >> $GITHUB_ENV
+          fi
         shell: bash
 
       - name: 🚀 Build and Deploy
@@ -31,7 +35,7 @@ jobs:
         with:
           SITE_FOLDER: "docs/"
           BASE_URL_PREFIX: "Xranklin.jl"
-          PREVIEW: ${{ env.preview }}
+          PREVIEW: ${{ env.PRID }}
           PYTHON_LIBS: "matplotlib pandas ansi2html"
           LUNR: true
 
@@ -40,6 +44,6 @@ jobs:
         with:
           message: |
             Preview should be up in a couple of mins at
-            https://${{ env.GH_USERNAME }}.github.io/${{ env.REPO_PREFIX }}/${{ env.preview }}
+            https://${{ env.GH_USERNAME }}.github.io/${{ env.REPO_PREFIX }}/${{ env.PRID }}
             (if you get a 404, wait 30s then refresh).
         if: github.event_name == 'pull_request'
