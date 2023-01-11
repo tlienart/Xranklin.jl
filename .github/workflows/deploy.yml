@@ -22,8 +22,12 @@ jobs:
 
       - name: 👀 Set preview path for PRs
         run: |
-          echo 'PRID=${{ env.PREVIEWS_PREFIX}}${{ github.event.number}}' >> $GITHUB_ENV
-        if: github.event_name == 'pull_request'
+          if ${{ github.event_name == 'pull_request' }}
+          then
+            echo 'PRID=${{ env.PREVIEWS_PREFIX}}${{ github.event.number}}' >> $GITHUB_ENV
+          else
+            echo 'PRID=' >> $GITHUB_ENV
+          fi
         shell: bash
 
       - name: 🚀 Build and Deploy
