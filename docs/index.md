@@ -79,7 +79,7 @@ julia> serve()
 ```
 
 If you navigate to that URL in your browser, you will see the website.
-If you then open `mySite/index.md` in an editor and modify it at will, the changes
-will be live-rendered in your browser.
+If you then open `mySite/index.md` in an editor and modify it at will,
+the changes will be live-rendered in your browser.
 
 Read more in [Getting Started](/workflow/getting_started/).
