@@ -40,6 +40,6 @@ jobs:
         with:
           message: |
             Preview should be up in a couple of mins at
-            https://${{ env.GH_USERNAME }}.github.io/${{ env.REPO_PREFIX }}/${{ env.preview }}
+            https://${{ env.GH_USERNAME }}.github.io/${{ env.REPO_PREFIX }}/${{ env.PRID }}
             (if you get a 404, wait 30s then refresh).
         if: github.event_name == 'pull_request'
