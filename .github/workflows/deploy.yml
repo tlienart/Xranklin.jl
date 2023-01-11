@@ -1,11 +1,17 @@
-name: Deploy
-
+name: Build and Deploy
 on:
   push:
     branches:
       - main
   pull_request:
+    branches:
+      - main
     types: [opened, synchronize]
+
+env:
+  GH_USERNAME: "tlienart"
+  REPO_PREFIX: "Xranklin.jl"
+  PREVIEWS_PREFIX: "previews/PR"  # will be followed by PR number
 
 jobs:
   docs:
@@ -13,18 +19,14 @@ jobs:
     permissions: write-all
     steps:
       - uses: actions/checkout@v3
-      ########################################
-      - name: SET PREVIEW PATH IF PULL REQUEST
+
+      - name: 👀 Set preview path for PRs
         run: |
-          if ${{ github.event_name == 'pull_request' }}
-          then
-            echo 'preview=previews/PR${{ github.event.number}}' >> $GITHUB_ENV
-          else
-            echo 'preview=' >> $GITHUB_ENV
-          fi
+          echo 'PRID=${{ env.PREVIEWS_PREFIX}}${{ github.event.number}}' >> $GITHUB_ENV
+        if: github.event_name == 'pull_request'
         shell: bash
-      ########################################
-      - name: BUILD AND DEPLOY
+
+      - name: 🚀 Build and Deploy
         uses: tlienart/xranklin-build-action@main
         with:
           SITE_FOLDER: "docs/"
@@ -32,10 +34,12 @@ jobs:
           PREVIEW: ${{ env.preview }}
           PYTHON_LIBS: "matplotlib pandas ansi2html"
           LUNR: true
-      ########################################
-      - name: URL INDICATION
+
+      - name: 🗒️ Preview URL indication for PRs
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            Preview should be up in a couple of mins at https://tlienart.github.io/Xranklin.jl/${{env.preview}} (if you get a 404, wait 30s then refresh).
+            Preview should be up in a couple of mins at
+            https://${{ env.GH_USERNAME }}.github.io/${{ env.REPO_PREFIX }}/${{ env.preview }}
+            (if you get a 404, wait 30s then refresh).
         if: github.event_name == 'pull_request'
