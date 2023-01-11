@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      # - ttfx-gaston
   pull_request:
     types: [opened, synchronize]
 
@@ -33,6 +32,7 @@ jobs:
           PREVIEW: ${{ env.preview }}
           PYTHON_LIBS: "matplotlib pandas ansi2html"
           LUNR: true
+      ########################################
       - name: URL INDICATION
         uses: thollander/actions-comment-pull-request@v2
         with:
