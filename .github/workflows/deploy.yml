@@ -34,7 +34,7 @@ jobs:
         uses: tlienart/xranklin-build-action@main
         with:
           SITE_FOLDER: "docs/"
-          BASE_URL_PREFIX: "Xranklin.jl"
+          BASE_URL_PREFIX: ${{ env.REPO_PREFIX }}
           PREVIEW: ${{ env.PRID }}
           PYTHON_LIBS: "matplotlib pandas ansi2html"
           LUNR: true
