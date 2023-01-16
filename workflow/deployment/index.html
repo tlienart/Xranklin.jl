@@ -9,6 +9,8 @@
 
     
     
+        <link rel="stylesheet" href="/Xranklin.jl/libs/highlight/github.min.css">
+    
 
     
 
@@ -1164,8 +1166,92 @@ body { counter-reset: eqnum; }
               <h1><a href="#">Deploying a Website</a></h1>
             
 
-            <a id="howto_prepath" class="anchor"></a><h2 id="setting_the_base_url_prefix" ><a href="#setting_the_base_url_prefix"> Setting the base URL prefix</a></h2><h2 id="deployment_on_github" ><a href="#deployment_on_github"> Deployment on GitHub</a></h2><h3 id="caching" ><a href="#caching"> Caching</a></h3><p>What happens with caching</p>
-<h2 id="deployment_on_gitlab" ><a href="#deployment_on_gitlab"> Deployment on GitLab</a></h2><h3 id="caching__2" ><a href="#caching__2"> Caching</a></h3><h2 id="manual_deployment" ><a href="#manual_deployment"> Manual deployment</a></h2>
+            <a id="howto_prepath" class="anchor"></a><h2 id="overview" ><a href="#overview"> Overview</a></h2><p>When calling <code>serve()</code> locally, your website is generated and the corresponding files are placed in the folder <code>__site</code> (e.g. you will find <code>__site/index.html</code> which corresponds to your site's landing page). </p>
+<p>To deploy your site, we have to place the content of this <code>__site</code> folder somewhere appropriate after fixing relative paths. Consider the following two scenarios:</p>
+<ol>
+<li>you want your landing page to correspond to <code>https://www.foo.bar/</code>,</li>
+<li>you want your landing page to correspond to <code>https://www.foo.bar/abc/</code>.</li>
+</ol>
+<p>In the first case, the setting is the same as your local setting except your local setting uses something like <code>https://localhost:8000/</code>.
+In this context there is no need to change anything.</p>
+<p>In the second case, the setting is not the same, there is a <em>prefix</em> (<code>abc</code>) which must be taken into account to guarantee all your relative links will work.</p>
+<p>If you intend to use GitHub to deploy your site, the GitHub action will take care of almost everything, you will only have to specify the prefix.
+If you intend to use another approach there is two steps to deploy your site:</p>
+<ol>
+<li>call <code>build</code> which will generate <code>__site</code> and fix the links according to the provided prefix,</li>
+<li>place the generated content of <code>__site</code> somewhere where it can be seen by others.</li>
+</ol>
+<h3 id="setting_the_base_url_prefix" ><a href="#setting_the_base_url_prefix"> Setting the base URL prefix</a></h3><p>The easiest is to specify the prefix in your <code>config.md</code> by specifying <code>base_url_prefix</code> or <code>prefix</code> to the correct string:</p>
+<pre><code class="julia">base_url_prefix = &quot;abc&quot;</code></pre>
+<p>Alternatively you can specify that as a keyword to the <code>build</code> command:</p>
+<pre><code class="julia">build(base_url_prefix=&quot;abc&quot;)</code></pre>
+<p>Lastly, if you want to use GitHub for deployment, you can also specify the prefix in the GitHub Action's <code>with</code> parameters:</p>
+<pre><code class="yml">    ...
+    with:
+        BASE_URL_PREFIX: &quot;abc&quot;
+        ...</code></pre>
+<fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+
+The prefix can be made of several parts, <code>abc/def</code> is allowed for instance.
+
+</fieldset><h2 id="deployment_with_github" ><a href="#deployment_with_github"> Deployment with GitHub</a></h2><p>It is very convenient to use GitHub to deploy your site, and so we add details for that specific case.</p>
+<h3 id="prefix_on_github" ><a href="#prefix_on_github"> Prefix on GitHub</a></h3><p>There are three possible scenarios on GitHub:</p>
+<ol>
+<li>the repo is <code>username.github.io</code> in which case your site will be available at <code>https://username.github.io</code>, no prefix.</li>
+<li>the repo is <code>someRepo</code> in which case your site will be available at <code>https://username.github.io/someRepo/</code>, prefix should be <code>&quot;someRepo&quot;</code>.</li>
+<li>you want a deployment on a custom URL, set the prefix if you want the landing page to be elsewhere than the root e.g. for <code>www.yourURL.com/blah/</code> set the prefix to <code>&quot;blah&quot;</code>.</li>
+</ol>
+<p>In short, you have to be mindful of what the prefix is and indicate it to Franklin.</p>
+<h3 id="using_the_github_action" ><a href="#using_the_github_action"> Using the GitHub action</a></h3><p>On GitHub there's a <a href="https://github.com/tlienart/xranklin-build-action">dedicated action</a> that you can use to deploy your site.
+This is by far the easiest approach to deploying your website.</p>
+<p>In order to use it, create a <code>.github/workflows/deploy.yml</code> file in your repo and adjust the following blueprint as needed:</p>
+<pre><code class="yml">name: Build and Deploy
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: 🚀 Build and Deploy
+        uses: tlienart/xranklin-build-action@main
+        with:
+          BASE_URL_PREFIX: &quot;abc&quot;</code></pre>
+<p>You could choose to extend this quite a lot e.g. if you want PRs to the repo to deploy to a dedicated URLs as <a href="https://github.com/tlienart/Xranklin.jl/.github/workflows/deploy.yml">done here</a>.</p>
+<h2 id="deployment_with_gitlab" ><a href="#deployment_with_gitlab"> Deployment with GitLab</a></h2><p>On GitLab you will just need to have a <code>.gitlab-ci.yml</code> script which </p>
+<ol>
+<li>calls <code>build</code>,</li>
+<li>places <code>__site</code> to <code>public</code></li>
+</ol>
+<p>something like the following:</p>
+<pre><code class="yml">image: julia:1.8
+
+pages:
+  stage: deploy
+  script:
+    - julia --project=@. -e '
+        import Pkg;
+        Pkg.add(&quot;Franklin&quot;);
+        using Franklin;
+        build(prefix=&quot;abc&quot;);'
+    - mv __site public
+  artifacts:
+    paths:
+      - public
+  only:
+    - main</code></pre>
+<h2 id="manual_deployment" ><a href="#manual_deployment"> Manual deployment</a></h2><p>If you want to deploy things yourself or use some other platform than GitHub or GitLab to do it, you will have to:</p>
+<ol>
+<li>call <code>build(prefix=&quot;...&quot;)</code> for instance locally (possibly remotely if you're using a platform that can run code),</li>
+<li>move the content of <code>__site</code> somewhere where it can be seen by others.</li>
+</ol>
+<p>The GitLab case above should hopefully provide a useful blueprint for this.</p>
+
 
             
 
@@ -1231,7 +1317,7 @@ body { counter-reset: eqnum; }
         <div id="marginToc">
             
               <div id="marginTocLegend"><a href="#">Contents</a></div>
-              <div class="toc"><ol><li><a href="#setting_the_base_url_prefix"> Setting the base URL prefix</a></li><li><a href="#deployment_on_github"> Deployment on GitHub</a><ol><li><a href="#caching"> Caching</a></li></ol></li><li><a href="#deployment_on_gitlab"> Deployment on GitLab</a><ol><li><a href="#caching__2"> Caching</a></li></ol></li><li><a href="#manual_deployment"> Manual deployment</a></li></ol></div>
+              <div class="toc"><ol><li><a href="#overview"> Overview</a><ol><li><a href="#setting_the_base_url_prefix"> Setting the base URL prefix</a></li></ol></li><li><a href="#deployment_with_github"> Deployment with GitHub</a><ol><li><a href="#prefix_on_github"> Prefix on GitHub</a></li><li><a href="#using_the_github_action"> Using the GitHub action</a></li></ol></li><li><a href="#deployment_with_gitlab"> Deployment with GitLab</a></li><li><a href="#manual_deployment"> Manual deployment</a></li></ol></div>
             
         </div>
     </div>
@@ -1302,6 +1388,9 @@ body { counter-reset: eqnum; }
 
 
 
+
+    <script src="/Xranklin.jl/libs/highlight/highlight.min.js"></script>
+    <script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
 
 
 </body>
