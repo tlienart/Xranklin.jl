@@ -1262,19 +1262,19 @@ some_list = [&quot;bob&quot;, &quot;alice&quot;, &quot;emma&quot;, &quot;joe&quo
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend>
-b 
+bob 
 <br>
 
 
-a 
+alice 
 <br>
 
 
-e 
+emma 
 <br>
 
 
-j 
+joe 
 <br>
 
 </fieldset>
@@ -1297,15 +1297,15 @@ _value_ ? **&lbrace;&lbrace;e&rbrace;&rbrace;**\\
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend>
-<em>value</em> ? <strong>a</strong>
+<em>value</em> ? <strong>ab</strong>
 <br>
 
 
-<em>value</em> ? <strong>c</strong>
+<em>value</em> ? <strong>cd</strong>
 <br>
 
 
-<em>value</em> ? <strong>e</strong>
+<em>value</em> ? <strong>ef</strong>
 <br>
 
 </fieldset>
@@ -1453,7 +1453,43 @@ iter2 = [&quot;abc&quot;, &quot;def&quot;, &quot;ghi&quot;]
 
 </ul></fieldset>
 
-</div><h3 id="more_customisation" ><a href="#more_customisation"> More customisation</a></h3><p>If the default functions and environments, possibly coupled with e-strings are
+</div><div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">+++
+team = [
+  (name=&quot;Alice&quot;, role=&quot;CEO&quot;),
+  (name=&quot;Bob&quot;, role=&quot;CTO&quot;),
+  (name=&quot;Jon&quot;, role=&quot;Eng&quot;)
+]
++++
+~~~
+&lt;ul&gt;
+&lbrace;&lbrace;for person in team&rbrace;&rbrace;
+&lt;li&gt;&lt;strong&gt;&lbrace;&lbrace;&gt; $person.name&rbrace;&rbrace;&lt;/strong&gt;: &lbrace;&lbrace;&gt; $person.role&rbrace;&rbrace;&lt;/li&gt;
+&lbrace;&lbrace;end&rbrace;&rbrace;
+&lt;/ul&gt;
+~~~</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><ul>
+
+<li><strong><span style="color:red;">[FAILED:]&gt;&lbrace;&lbrace; > $person.name&rbrace;&rbrace;&lt;</span></strong>: <span style="color:red;">[FAILED:]&gt;&lbrace;&lbrace; > $person.role&rbrace;&rbrace;&lt;</span></li>
+
+<li><strong><span style="color:red;">[FAILED:]&gt;&lbrace;&lbrace; > $person.name&rbrace;&rbrace;&lt;</span></strong>: <span style="color:red;">[FAILED:]&gt;&lbrace;&lbrace; > $person.role&rbrace;&rbrace;&lt;</span></li>
+
+<li><strong><span style="color:red;">[FAILED:]&gt;&lbrace;&lbrace; > $person.name&rbrace;&rbrace;&lt;</span></strong>: <span style="color:red;">[FAILED:]&gt;&lbrace;&lbrace; > $person.role&rbrace;&rbrace;&lt;</span></li>
+
+</ul></fieldset>
+
+</div><p>in that second example, we use an e-string inside the for loop and so we must
+use a <code>$</code> to indicate that <code>person</code> should be obtained from the context.</p>
+<h3 id="more_customisation" ><a href="#more_customisation"> More customisation</a></h3><p>If the default functions and environments, possibly coupled with e-strings are
 not enough for your use case or are starting to feel a bit clunky, it's time
 to move on to <a href="/Xranklin.jl/syntax/utils/">writing custom hfuns</a>.</p>
 <p>This approach allows you to write <code>&lbrace;&lbrace;your_function p1 p2 ...&rbrace;&rbrace;</code> where
