@@ -32,8 +32,6 @@ function eval_str(
 
     code = _eval_str(lc, estr)
 
-    @show code
-
     lock(env(:lock))
     captured = IOCapture.capture(; rethrow=Union{}) do
         include_string(
