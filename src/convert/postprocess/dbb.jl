@@ -113,6 +113,7 @@ function _dbb_fill_estr(
         variables are prefixed with a \$.
         """
     write(io, hfun_failed([string(cb)]))
+    return
 end
 
 

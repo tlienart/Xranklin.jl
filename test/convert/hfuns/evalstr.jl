@@ -25,3 +25,29 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
     es = raw""" e"$c2 || $c1" """
     @test Xranklin.eval_str(lc, es)
 end
+
+@testset "i190" begin
+    h = raw"""
+        +++
+        team = [
+            (name="Alice", role="CEO"),
+            (name="Bob", role="CTO"),
+            (name="Jon", role="Eng")
+        ]
+        +++
+        ~~~
+        <ul>
+        {{for person in team}}
+            <li><strong>{{> $person.name}}</strong>: {{> $person.role}}</li>
+        {{end}}
+        </ul>
+        ~~~
+        """ |> html
+    @test isapproxstr(h, """
+        <ul>
+        <li><strong>Alice</strong>: CEO</li>
+        <li><strong>Bob</strong>: CTO</li>
+        <li><strong>Jon</strong>: Eng</li>
+        </ul>
+        """)
+end

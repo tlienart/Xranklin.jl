@@ -32,6 +32,8 @@ function eval_str(
 
     code = _eval_str(lc, estr)
 
+    @show code
+
     lock(env(:lock))
     captured = IOCapture.capture(; rethrow=Union{}) do
         include_string(
@@ -86,6 +88,7 @@ function _eval_str(
             if !take_char || at_end
                 # might be empty
                 varname = String(take!(tmp_io))
+
                 if !isempty(varname)
                     # we use getvarfrom because this will be evaluated in the
                     # Utils module which doesn't have an LC set.

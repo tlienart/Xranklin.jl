@@ -59,11 +59,19 @@ function resolve_henv_for(
 
     # For each element of iter, evaluate the scope with the updated
     # value for the variable(s)
-    for vals in iter
-        for (name, value) in zip(vars, vals)
-            setvar!(lc, name, value)
+    if length(vars) == 1
+        # avoid too much unpacking, see issue #190
+        for vals in iter
+            setvar!(lc, vars[1], vals)
+            write(io, html2(scope, lc))
         end
-        write(io, html2(scope, lc))
+    else
+        for vals in iter
+            for (name, value) in zip(vars, vals)
+                setvar!(lc, name, value)
+            end
+            write(io, html2(scope, lc))
+        end
     end
 
     # reinstate or destroy bindings

@@ -179,6 +179,27 @@ derived iterator that you'd wish to go over:
   ~~~
 }
 
+\showmd{
+  +++
+  team = [
+    (name="Alice", role="CEO"),
+    (name="Bob", role="CTO"),
+    (name="Jon", role="Eng")
+  ]
+  +++
+  ~~~
+  <ul>
+  {{for person in team}}
+  <li><strong>{{> $person.name}}</strong>: {{> $person.role}}</li>
+  {{end}}
+  </ul>
+  ~~~
+}
+
+in that second example, we use an e-string inside the for loop and so we must
+use a `$` to indicate that `person` should be obtained from the context.
+
+
 ### More customisation
 
 If the default functions and environments, possibly coupled with e-strings are
