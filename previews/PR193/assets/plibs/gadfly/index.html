@@ -1,0 +1,13 @@
+<h4 id="setup" ><a href="#setup"> Setup</a></h4><p>Version of the package used in the example:</p>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">1.3.4
+</code></pre></div><p>This package does not require installing dependencies on GitHub Action.</p>
+<h4 id="example" ><a href="#example"> Example</a></h4><pre><code class="julia">using Gadfly
+
+x = range(0, pi, length=500)
+y = @. sin(exp(x)) * sinc(x)
+
+plot(x=x, y=y, Geom.path)</code></pre>
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/gadfly/assets/gadfly/figs-html/__autofig_10301745623014842663.svg">
+</div><h4 id="timers" ><a href="#timers"> Timers</a></h4><div class="code-output"><pre><code class="code-stdout language-plaintext">Code execution time: 39.65 seconds.
+Total time taken (setup + build): 2.44 minutes.
+</code></pre></div>
