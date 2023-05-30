@@ -34,7 +34,7 @@ track of what needs to be updated upon modification.
 
 ### Note on `init_trigger`
 
-Generally it is 'to_trigger' that is used. The logic there is that when a page
+Generally it is `to_trigger` that is used. The logic there is that when a page
 queries directly from GC we know that arrow (pg -> GC) and so when GC gets
 updated we necessarily need to go the other way (GC -> pg). When a page
 requires from another page (pg1 -> pg2) then this is handled via pg2's

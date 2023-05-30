@@ -48,6 +48,13 @@ Extract the relative path out of the full path to a file.
 get_rpath(gc::GlobalContext, fpath::String) =
     fpath[(getvar(gc, :_idx_rpath, 1)::Int):end]
 
+"""
+    exists_rpath(gc, rpath)
+
+Check if a relative path `rpath` corresponds to an actual file.
+"""
+exists_rpath(gc::GlobalContext, rpath::String) =
+    isfile(paths(gc)[:folder] / rpath)
 
 """
     get_ropath(gc, opath)

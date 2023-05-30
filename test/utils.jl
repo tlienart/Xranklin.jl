@@ -73,3 +73,24 @@ function lc_with_utils(utils="")
 end
 
 has(h, p) = @test occursin(p, h)
+
+tdir(n) = toy_example(name=n, parent=tempdir(), silent=true)
+cdir(n) = isdir(n) && rm(n, recursive=true)
+
+
+macro testindir(dn, tn, body)
+    FOLDER = tdir(dn)
+    try
+        eval(:(
+            @testset(
+                $tn,
+                begin
+                    FOLDER = $FOLDER
+                    $body
+                end
+            )))
+    catch
+        println("Testindir ERROR")
+    end
+    cdir(FOLDER)
+end

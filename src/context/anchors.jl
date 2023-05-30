@@ -46,17 +46,19 @@ function add_anchor(
 
     # add the id to the gc anchors
     if id in keys(gc.anchors)
-        # generally there'll be just one, possibly a couple of
-        # locs so it's not very expensive to go over the whole vector
+        # these are usually small vectors so it's fine to reconstruct them
+        # each time and it makes the logic easier
+        # the end result should be that locs = [existing_loc, ..., rpath]
+        # i.e.: a vector of existing rpaths with the last one being the most
+        # recent one (the one that will be used)
         locs = gc.anchors[id].locs
-        # do what's needed to get rpath at the end of locs
-        if rpath ∉ locs
-            push!(locs, rpath)
-        elseif last(locs) != rpath
-            # re-order so that rpath is the last one
-            prev = copy(locs)
-            empty!(locs)
-            append!(locs, [l for l in prev if l != rpath])
+        prev = copy(locs)
+        empty!(locs)
+        for loc in prev
+            if (loc != rpath) && exists_rpath(gc, loc)
+                push!(locs, loc)
+            end
+            # final one should be rpath
             push!(locs, rpath)
         end
     else
@@ -95,9 +97,9 @@ function get_anchor(
         a = gc.anchors[id]
         union!(a.reqs, [rpath])
         # Return the target link e.g. 'foo/bar/#anchor_id'. The last loc is
-        # always used. This is why it's recommended to only have unique global ids;
-        # if there's more than one loc for one id, it's ambiguous which target will be
-        # obtained where.
+        # always used. This is why it's recommended to only have unique global
+        # ids; if there's more than one loc for one id, it's ambiguous which
+        # target will be obtained where.
         if length(a.locs) > 1
             @warn """
                 Anchor target

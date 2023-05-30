@@ -101,4 +101,13 @@ end
 spurious_assets = dirname(dirname(pathof(Xranklin))) / "assets"
 rm(spurious_assets, recursive=true, force=true)
 
+# =========================================================
+# tests that require a directory with files etc
+
+@testset "tests-in-folder" begin
+    @testset "anchors" begin
+        include("context/anchors.jl")
+    end
+end
+
 end

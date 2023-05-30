@@ -11,19 +11,25 @@ in the current directory.
 
 """
 function toy_example(;
-            name::String="toy_example"
-        )::Nothing
+            name::String="toy_example",
+            parent::String="",
+            silent::Bool=false
+        )::String
 
+    if !isempty(parent)
+        name = parent / name
+    end
+    
     if isdir(name)
         @warn """
             toy example
             A directory named '$name' already exists. Remove it
             or change the name when calling toy_example.
             """
-        return
+        return name
     end
     parent = name
-    mkdir(parent)
+    mkpath(parent)
 
     layout = parent / "_layout"
     mkdir(layout)
@@ -82,11 +88,11 @@ function toy_example(;
         This will be in \css{color: red; font-weight: 500;}{red}.
         """)
 
-    @info """
+    silent || @info """
         The toy folder is available at '$parent', you can try it by
         running the following command:
 
             serve("$parent")
         """
-    return
+    return parent
 end
