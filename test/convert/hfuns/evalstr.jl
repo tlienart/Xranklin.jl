@@ -51,3 +51,36 @@ end
         </ul>
         """)
 end
+
+@testset "i191" begin
+    h = raw"""
+        +++
+        a = (b="", c="foo")
+        +++
+        {{isempty e"$a.c"}}
+        foo
+        {{else}}bar{{end}}
+        """ |> html
+    @test isapproxstr(h, """
+        <p>bar</p>
+        """)
+
+    h = raw"""
+        +++
+        a = (b="", c="foo")
+        +++
+        {{if e"isempty($a.c)"}}
+        foo
+        {{else}}bar{{end}}
+        """ |> html
+    @test isapproxstr(h, """
+        <p>bar</p>
+        """)
+
+    h = raw"""
+        {{isempty e"sqrt(-1)"}}
+        foo
+        {{else}}bar{{end}}
+        """ |> html
+    @test contains(h, "FAILED")
+end

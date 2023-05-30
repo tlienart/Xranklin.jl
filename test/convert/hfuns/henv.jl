@@ -73,8 +73,8 @@ end
 
         {{isdef a}}yes{{else}}no{{end}}
         {{isdef b}}yes{{else}}no{{end}}
-        {{isndef b}}yes{{else}}no{{end}}
-        {{isndef a}}yes{{elseif c}}foo{{else}}no{{end}}
+        {{isnotdef b}}yes{{else}}no{{end}}
+        {{isnotdef a}}yes{{elseif c}}foo{{else}}no{{end}}
         """
     h = html(s, lc; nop=true)
     @test isapproxstr(h, "yes no yes foo")

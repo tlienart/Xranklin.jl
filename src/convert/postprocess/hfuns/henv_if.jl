@@ -10,7 +10,10 @@ CONDS FORMAT
 v        --> equivalent to e"$v"
 e"$v"    --> equivalent to e"getlvar(:v)"
 e"f($v)" --> run in utils module
-e"..."  --> ANY failure and ignore code block (with warning)
+e"..."   --> ANY failure and ignore code block (with warning)
+
+1. resolve the e-string (which may be a variable name)
+
 
 =#
 
@@ -43,7 +46,7 @@ function resolve_henv_if(
         p.name == :end && continue
         flag, err = _check_cond(lc, p)
         if err
-            write(io, hfun_failed([env_name]))
+            write(io, hfun_failed([string.(env_name)]))
             break
         elseif flag
             b_cur = p.block
@@ -67,7 +70,30 @@ end
 Return the boolean associated with condition `p` and a boolean indicating
 whether there was any error resolving the condition.
 
-Note: e-string allowed only for if/elseif.
+### With arg, may be an e-string
+
+* if, elseif         | basic condition
+* ifempty, ifnempty  | condition based on emptiness
+
+### With arg, may only be a string
+
+* ifdef, ifndef      | condition based on existence of var
+* ifpage, ifnotpage  | condition based on relative path
+
+### Without arg
+
+* hasmath, hascode   | condition based on presence of math/code
+* isfinal            | check if we're in the final build, can be used to adjust
+                       path prefix and differentiate between development where
+                       the prepath should not be injected, and the final build
+                       where it should.
+
+### Returns
+
+The function returns a bool tuple (flag, err) where
+
+    * `flag` indicates true/false (gate passing or not)
+    * `err` indicates whether something errorred (e.g. wrong syntax)
 """
 function _check_cond(
             lc::LocalContext,
@@ -88,14 +114,14 @@ function _check_cond(
     elseif env_name in (:ifdef, :isdef, :isdefined)
         flag, err = _check_isdef(lc, args)
 
-    elseif env_name in (:ifndef, :ifnotdef, :isndef, :isnotdef, :isnotdefined)
+    elseif env_name in (:ifnotdef, :isnotdef, :isnotdefined)
         flag, err = _check_isdef(lc, args)
         flag      = !flag
 
     elseif env_name in (:ifempty, :isempty)
         flag, err = _check_isempty(lc, args)
 
-    elseif env_name in (:ifnempty, :ifnotempty, :isnotempty)
+    elseif env_name in (:ifnotempty, :isnotempty)
         flag, err = _check_isempty(lc, args)
         flag      = !flag
 
@@ -151,7 +177,12 @@ function _check_isdef(lc, args)
             """
         err = true
     else
-        flag = all(a -> getvar(lc, Symbol(a), nothing) !== nothing, args)
+        # go over all args, try to retrieve them, and check that they're not
+        # nothing
+        flag = all(
+            a -> getvar(lc, Symbol(a), nothing) !== nothing,
+            args
+        )
     end
     return (flag, err)
 end
@@ -178,7 +209,27 @@ function _check_isempty(lc, args)
             """
         err = true
     else
-        flag = all(a -> _isemptyvar(getvar(lc, Symbol(a), nothing)), args)
+        flag = true
+        for a in args
+            flag &= begin
+                if is_estr(a)
+                    v = eval_str(lc, a)
+                    if v isa EvalStrError
+                        @warn """
+                            {{isempty ...}}
+                            Found and {{isempty ...}} variant with an e-string '$a' that
+                            failed to resolve.
+                            """
+                        err = true
+                        false
+                    else
+                        _isemptyvar(v)
+                    end
+                else
+                    _isemptyvar(getvar(lc, Symbol(a), nothing))
+                end
+            end
+        end
     end
     return (flag, err)
 end
