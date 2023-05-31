@@ -22,11 +22,11 @@ end
 # composite types are serialisable if the composition is and if each element is
 is_easily_serializable(x::Union{Tuple, NamedTuple}) =
     all(is_easily_serializable, v for v in x)
-is_easily_serializable(x::AA) where AA <: AbstractArray{T} where T =
+is_easily_serializable(::AA) where AA <: AbstractArray{T} where T =
     all(is_easily_serializable, (T, AA))
-is_easily_serializable(x::AR) where AR <: AbstractRange{T} where T =
+is_easily_serializable(::AR) where AR <: AbstractRange{T} where T =
     all(is_easily_serializable, (T, AR))
-is_easily_serializable(x::AD) where AD <: AbstractDict{K, V} where {K, V} =
+is_easily_serializable(::AD) where AD <: AbstractDict{K, V} where {K, V} =
     all(is_easily_serializable, (K, V, AD))
 
 # For composites with Any type, we need to go over each entry
@@ -123,7 +123,9 @@ function serialize_gc(gc::GlobalContext)
         # to_trigger
         # init_trigger
         deps_map   = gc.deps_map,
-        children   = collect(keys(gc.children_contexts))
+        children   = collect(keys(gc.children_contexts)),
+        # keep track of layout hashes
+        layout_hashes = compute_layout_hashes(gc)
     )
     @info "📓 serializing $(hl("global context", :cyan))..."
     open(gc_cache_path(), "w") do outf
@@ -140,7 +142,6 @@ function serialize_gc(gc::GlobalContext)
 end
 
 function deserialize_gc(gc::GlobalContext)
-
     @info "📓 de-serializing $(hl("global context", :cyan))..."
     nt = deserialize(gc_cache_path())
     merge!(gc.anchors,   nt.anchors)
@@ -151,6 +152,8 @@ function deserialize_gc(gc::GlobalContext)
     process_config(gc)
     process_utils(gc)
 
+    setvar!(gc, :_layout_hashes, nt.layout_hashes)
+
     # recover the children if the cache exists
     nc = length(nt.children)
     @info "📓 de-serializing $(hl("$nc local contexts", :cyan))..."
@@ -160,4 +163,46 @@ function deserialize_gc(gc::GlobalContext)
     end
 
     return gc
+end
+
+
+function compute_layout_hashes(gc::GlobalContext)::Dict{String,UInt32}
+    hashes = Dict{String,UInt32}()
+    layout_dir = path(gc, :layout)
+    isdir(layout_dir) || return hashes
+    @info "📓 fingerprinting of $(hl("layout files", :cyan))..."
+    for (root, _, files) in walkdir(layout_dir)
+        for file in files
+            fp = joinpath(root, file)
+            hashes[fp] = filehash(fp)
+        end
+    end
+    return hashes
+end
+
+function changed_layout_hashes(gc::GlobalContext)::Bool
+    hashes = getvar(gc, :_layout_hashes, Dict{String,UInt32}())
+    z32    = zero(UInt32)
+    layout_dir = path(gc, :layout)
+    if !isdir(layout_dir)
+        isempty(hashes) && return true
+        return false
+    end
+    @info "📓 checking if $(hl("layout files", :cyan)) have changed..."
+    have_changed = false
+    for (root, _, files) in walkdir(layout_dir)
+        for file in files
+            fp = joinpath(root, file)
+            if filehash(fp) != get(hashes, fp, z32)
+                have_changed = true
+                break
+            end
+        end
+    end
+    if have_changed
+        @info "... at least one layout file changed --> clearing."
+    else
+        @info "... no change in layout files."
+    end
+    return have_changed
 end

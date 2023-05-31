@@ -124,6 +124,8 @@ function serve(
     utils_unchanged  = !any(isfile, (cached_utils, current_utils)) ||
                         utilscmp(cached_utils, current_utils)
 
+    deserialized_gc = false
+
     if !clear && isfile(gc_cache_path())
         start = time()
         # try to load previously-serialised contexts if any, the process config
@@ -134,15 +136,25 @@ function serve(
             δt = time() - start; @info """
                 💡 $(hl("de-serialization done", :yellow)) $(hl(time_fmt(δt), :red))
                 """
+            deserialized_gc = true
         catch
             @info """
                 ❌ failed to deserialize cache, maybe the previous session crashed.
                 """
             clear = true
         end
+
+        # check if layout files have changed, if they have --> clear
+        clear = clear || changed_layout_hashes(gc)
     end
 
     if clear || !utils_unchanged
+        if deserialized_gc
+            # changed_layout_hashes -> restart from scratch
+            folder = path(:folder)
+            gc     = DefaultGlobalContext()
+            set_paths!(gc, folder)
+        end
         # if clear, destroy output directories if any
         for odir in (path(gc, :site), path(gc, :pdf), path(gc, :cache))
             rm(odir; force=true, recursive=true)
