@@ -93,13 +93,13 @@ function _process_literate_file(
          )::String
     # check if Literate.jl is loaded, otherwise interrupt
     if !env(:literate)
-        if (:Literate ∉ names(utils_module(lc), imported=true))
+        if !isdefined(utils_module(lc), :Literate)
             @warn """
                 \\literate{...}
                 It looks like you have not imported Literate in your Utils.
                 Add 'using Literate' or 'import Literate' in your utils.jl.
                 """
-            return failed_lxc("literate", VS())
+            return failed_lxc("literate", VS([rpath]))
         else
             setenv!(:literate, true)
         end
@@ -118,7 +118,7 @@ function _process_literate_file(
             It looks like you're using a version of Literate that's older than
             v2.9. Please update your version of Literate.
             """
-        return failed_lxc("literate", VS())
+        return failed_lxc("literate", VS([rpath]))
     end
 
     # add the dependency lc.rpath <=> literate rpath
