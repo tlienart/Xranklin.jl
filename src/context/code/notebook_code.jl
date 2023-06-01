@@ -202,8 +202,8 @@ function _eval_code_cell(
         Base.CoreLogging._min_enabled_level[] = pre_log_level
 
         msg = """
-              Code evaluation
-              There was an error of type '$err' when running code '$(cell_name)'
+              <Code evaluation>
+              An error was caught when attempting to run a code cell ('$(cell_name)')
               Details:
               $stacktrace
               """

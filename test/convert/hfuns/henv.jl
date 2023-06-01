@@ -152,4 +152,41 @@ end
     @test isapproxstr(h, """
         1 : a ; 2 : b ; 3 : c ;
         """)
+
+    s = raw"""
+        {{for a in e"[1, 4]"}}
+             {{a}} (from {{> sqrt($a)}})
+        {{end}}
+        """
+    h = html(s, nop=true)
+    @test isapproxstr(h, """
+        1 (from 1.0)
+        4 (from 2.0)
+        """) 
+    
+    s = raw"""
+        {{for (a, b) in e"[(i, i+1).^2 for i in 1:2]"}}
+            {{a}} (from {{> sqrt($a)}}) - {{b}} (from {{> sqrt($b)}})
+        {{end}}
+        """
+    h = html(s, nop=true)
+    @test isapproxstr(h, """
+        1 (from 1.0) - 4 (from 2.0)
+        4 (from 2.0) - 9 (from 3.0)
+        """)
+end
+
+@testset "for over non-iterable" begin
+    @test_warn_with begin
+        s = raw"""
+        +++
+        struct Foo; end
+        f = Foo()
+        +++
+        {{for x in f}}
+        won't be shown
+        {{end}}
+        """
+        html(s)
+    end "The object corresponding to 'f' is not iterable"
 end

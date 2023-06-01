@@ -1,5 +1,11 @@
 include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
+@testset "basics" begin
+    @test X.eval_str("5^2") == 25
+    @test X.eval_str("[i for i in 1:3]") == [1,2,3]
+    @test X.eval_str("sqrt(-1)") isa Xranklin.EvalStrError
+end
+
 @testset "hfun eval str" begin
     # conversion from e"..." --> "..."
     @test estr(raw"foo $bar") == "foo getvarfrom(:bar, \"loc\")"
@@ -77,10 +83,12 @@ end
         <p>bar</p>
         """)
 
-    h = raw"""
-        {{isempty e"sqrt(-1)"}}
-        foo
-        {{else}}bar{{end}}
-        """ |> html
-    @test contains(h, "FAILED")
+    @test_warn_with begin
+        h = raw"""
+            {{isempty e"sqrt(-1)"}}
+            foo
+            {{else}}bar{{end}}
+            """ |> html
+        @test contains(h, "FAILED")
+    end "Found an {{isempty ...}} variant with an e-string"
 end

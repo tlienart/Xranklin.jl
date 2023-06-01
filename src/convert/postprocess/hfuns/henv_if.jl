@@ -217,7 +217,7 @@ function _check_isempty(lc, args)
                     if v isa EvalStrError
                         @warn """
                             {{isempty ...}}
-                            Found and {{isempty ...}} variant with an e-string '$a' that
+                            Found an {{isempty ...}} variant with an e-string '$a' that
                             failed to resolve.
                             """
                         err = true

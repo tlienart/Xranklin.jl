@@ -21,7 +21,6 @@ function eval_str(
             lc::LocalContext,
             estr::SS
         )
-
     estr = replace(strip(estr), "\\\"" => "⁰")
 
     if startswith(estr, "e")
@@ -46,6 +45,7 @@ function eval_str(
     return captured.value
 end
 eval_str(lc, es::String) = eval_str(lc, subs(es))
+eval_str(es::String) = eval_str(ToyLocalContext(), es)
 
 
 """

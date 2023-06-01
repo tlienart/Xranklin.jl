@@ -191,21 +191,21 @@ const DefaultLocalVarsAlias = Alias(
 
 function DefaultGlobalContext()
     gc = GlobalContext(
-            deepcopy(DefaultGlobalVars),
-            LxDefs(),
-            alias=copy(DefaultGlobalVarsAlias)
-         )
+        deepcopy(DefaultGlobalVars),
+        LxDefs(),
+        alias=copy(DefaultGlobalVarsAlias)
+    )
     setvar!(gc, :project, Pkg.project().path)
     set_current_global_context(gc)
 end
 
 function DefaultLocalContext(gc::GlobalContext; rpath::String="")
     LocalContext(
-            gc,
-            deepcopy(DefaultLocalVars),
-            LxDefs();
-            alias=copy(DefaultLocalVarsAlias),
-            rpath
+        gc,
+        deepcopy(DefaultLocalVars),
+        LxDefs();
+        alias=copy(DefaultLocalVarsAlias),
+        rpath
     )
 end
 DefaultLocalContext(; kw...) = DefaultLocalContext(env(:cur_global_ctx); kw...)
@@ -214,6 +214,9 @@ DefaultLocalContext(::Nothing; kw...) = DefaultLocalContext(DefaultGlobalContext
 # for html pages
 SimpleLocalContext(gc::GlobalContext; rpath::String="") =
     LocalContext(gc; rpath)
+
+# Detached context for simple eval str
+ToyLocalContext() = LocalContext(GlobalContext(); rpath="_toy_")
 
 
 ##############################################################################

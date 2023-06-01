@@ -1,6 +1,7 @@
 using Xranklin
 using Xranklin: (/)
 using Test
+using Logging
 using Dates
 using Logging
 using Colors
@@ -93,4 +94,15 @@ macro testindir(dn, tn, body)
         println("Testindir ERROR")
     end
     cdir(FOLDER)
+end
+
+# @test_warn_with something() "partial msg"
+macro test_warn_with(body, msg)
+    test_logger = TestLogger()
+    with_logger(test_logger) do
+        eval(:($body))
+    end
+    w = first(e for e in test_logger.logs if e.level == Logging.Warn)
+    w.message
+    :(@test $(esc(contains(w.message, msg))))
 end

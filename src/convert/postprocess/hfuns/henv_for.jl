@@ -1,8 +1,20 @@
-
 # ------------------------------------------------
 # FOR-style h-env
 # > resolve the scope with a context in which the
 #    variable(s) from the iterator are inserted
+#
+# {{ for (x, y) in iter}}
+#     foo {{x}} bar {{y}}
+# {{end}}
+#
+# Special cases:
+#   - 'iter' can be an estring
+#   - access can be via an estring
+#
+# {{for a in e"[1, 4]"}}
+#     {{a}} (from {{> sqrt($a)}})
+# {{end}}
+#
 function resolve_henv_for(
             lc::LocalContext,
             io::IOBuffer,
@@ -22,8 +34,10 @@ function resolve_henv_for(
     #
     # so basically transform things so that we're in case B
     #
+    # NOTE: need to limit the split in case there's an e-string with itself
+    # an iterator in there! {{for x in e"[i for i in 1:2]"}}
     argiter    = join(henv[1].args, " ")
-    vars, istr = strip.(split(argiter, " in "))
+    vars, istr = strip.(split(argiter, " in ", limit=2))
 
     # recover the iterator, either from an e-string or from a variable
     if is_estr(istr)
@@ -40,6 +54,16 @@ function resolve_henv_for(
         end
     else
         iter = getvar(lc, Symbol(istr))
+    end
+
+    if !hasmethod(iterate, tuple(typeof(iter)))
+        @warn """
+            {{for ...}}
+            -----------
+            The object corresponding to '$istr' is not iterable.
+            """
+        write(io, hfun_failed("for", henv[1].args))
+        return
     end
 
     # "a"         => [:a]
