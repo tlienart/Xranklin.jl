@@ -216,7 +216,7 @@ SimpleLocalContext(gc::GlobalContext; rpath::String="") =
     LocalContext(gc; rpath)
 
 # Detached context for simple eval str
-ToyLocalContext() = LocalContext(GlobalContext(); rpath="_toy_")
+ToyLocalContext(rpath="_toy_") = LocalContext(GlobalContext(); rpath)
 
 
 ##############################################################################

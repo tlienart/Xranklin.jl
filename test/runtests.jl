@@ -106,7 +106,8 @@ rm(spurious_assets, recursive=true, force=true)
 
 @testset "tests-in-folder" begin
     @testset "anchors" begin
-        include("context/anchors.jl")
+        include("context" / "anchors.jl")
+        include("convert" / "hfuns" / "integrated.jl")
     end
 end
 

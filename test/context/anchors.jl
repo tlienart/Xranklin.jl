@@ -3,7 +3,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
 
 # WORK
 
-@testindir "_anchors" "global anchors" begin
+@test_in_dir "_anchors" "global anchors" begin
     write(joinpath(FOLDER, "a.md"), """
         Hello
 

@@ -79,7 +79,7 @@ tdir(n) = toy_example(name=n, parent=tempdir(), silent=true)
 cdir(n) = isdir(n) && rm(n, recursive=true)
 
 
-macro testindir(dn, tn, body)
+macro test_in_dir(dn, tn, body)
     FOLDER = tdir(dn)
     try
         eval(:(
@@ -91,7 +91,7 @@ macro testindir(dn, tn, body)
                 end
             )))
     catch
-        println("Testindir ERROR")
+        println("test_in_dir ERROR")
     end
     cdir(FOLDER)
 end
