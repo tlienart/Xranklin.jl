@@ -1325,7 +1325,7 @@ randstring(5)
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">randstring(5)</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">"i1dSv"</code></pre></div></fieldset>
+<div class="code-output"><pre><code class="code-result language-plaintext">"lZ0aj"</code></pre></div></fieldset>
 
 </div><div class="trim">
 
@@ -1861,9 +1861,15 @@ Stacktrace:
 And since you can call <code>serve()</code> from within the site folder or from elsewhere specifying
 <code>serve(&quot;path/to/folder&quot;)</code>, this path can vary.
 As a consequence, if you want some code to do something with a path (e.g. read or write a file),
-you should use <code>Utils.path(:folder)</code> as the base path pointing to your website folder.
-You can also use <code>Utils.path(:site)</code> as the base path pointing to the website build folder.</p>
-<p>For instance let's say you want to save a DataFrame to a CSV that you can link to
+you should use <code>Utils.path(:folder)</code> as the base path pointing to your website folder.</p>
+<p>You can also use <code>Utils.path(:site)</code> as the base path pointing to the website build folder.</p>
+<fieldset class="tip"><legend class="tip-legend">🚀 Tip</legend>
+
+Out of convenience, you can also use <code>folderpath(...)</code> as
+shorthand for <code>joinpath(Utils.path(:folder), ...)</code> (and, correspondingly,
+<code>sitepath(...)</code>).
+
+</fieldset><p>For instance let's say you want to save a DataFrame to a CSV that you can link to
 as an asset on your site:</p>
 <pre><code class="julia">using DataFrames, CSV
 build_dir  = Utils.path(:site)

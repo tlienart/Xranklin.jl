@@ -1243,7 +1243,7 @@ Build-date: &lbrace;&lbrace;todays_date&rbrace;&rbrace;.</code></pre>
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Build-date: 2023-06-01.</fieldset>
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Build-date: 2023-06-12.</fieldset>
 
 </div>
 <div class="lskip"> </div><h3 id="usage" ><a href="#usage"> Usage</a></h3><p>Page variables can be used with the following syntax:</p>
@@ -1257,9 +1257,10 @@ There are several core functions like <code>fill</code> and you can define your 
 <a href="#hfuns">further</a>.</p>
 <p>When inserting a page variable with <code>&lbrace;&lbrace;var_name&rbrace;&rbrace;</code> or <code>&lbrace;&lbrace;fill var_name&rbrace;&rbrace;</code>, the Julia function
 <code>repr</code> will be called on the value of <code>var_name</code> and that is what will effectively be included.
-For basic Julia types (<code>Int</code>, <code>String</code>, <code>Bool</code>, ...), this will typically look like what you
+For basic Julia types (<code>Int</code>, <code>Bool</code>, ...), this will typically look like what you
 would expect but for custom types that you would have defined or that are defined in a package,
-you would have to consider what <code>repr(obj)</code> returns.</p>
+you would have to consider what <code>repr(obj)</code> returns.
+For types in <code>AbstractString</code>, <code>repr(obj)</code> adds quotation marks which are stripped.</p>
 <div class="trim">
 
 <fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">+++
@@ -1315,8 +1316,8 @@ defines <code>var_name</code>.</p>
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><ul>
-<li>by default we fill from the local page: <strong>Page Variables (part 1)</strong> (or <strong>"Page Variables (part 1)"</strong>)</li>
-<li>but we can query a specific page: <strong>"Markdown basics"</strong></li>
+<li>by default we fill from the local page: <strong>Page Variables (part 1)</strong> (or <strong>Page Variables (part 1)</strong>)</li>
+<li>but we can query a specific page: <strong>Markdown basics</strong></li>
 </ul>
 </fieldset>
 
