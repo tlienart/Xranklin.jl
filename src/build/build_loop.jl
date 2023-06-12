@@ -90,7 +90,7 @@ function build_loop(
             cur_t = mtime(fpath)
             cur_t <= t && continue
 
-            # update the modif time of that file & mark it for reprocessing
+            # update the modif time of that file & mark it for process_file_from_triggering
             msg   = "💥 file $(hl(str_fmt(rpath), :cyan)) changed"
             d[fp] = cur_t
 
@@ -124,14 +124,27 @@ function build_loop(
                     msg *= " → skipping [non-code changes to utils]"; @info msg
                 end
 
+            # ======================
+            # NONFULLPASS TRIGGERS =
+            # ======================
+            
             # if it's a dependent file
             elseif rpath in gc.deps_map.bwd_keys
                 # trigger all pages that require this dependency
+                # Note that we assume the file only possibly calls getvar but
+                # does NOT set variables. Indeed `process_file_from_trigger`
+                # will call in recursive mode which means that no further page
+                # will be triggered (depth 1 constraint).
+                #
+                # Explicit example: say A.md calls lit.jl and B.md requires
+                # something from A.md.
+                # If lit.jl changes, A.md will be triggered. Not B.md.
+                #
                 for rp in gc.deps_map.bwd[rpath]
-                    ft = splitdir(path(:folder) / rp)
-                    fp = ft[1] => ft[2]
-                    msg *= " → triggering '$rp' [dependent file changed]"; @info msg
-                    process_file(gc, fp, :md, cur_t)
+                    @info msg
+                    process_file_from_trigger(rp, gc;
+                        msg = "'$rp' depends on '$rpath' which changed",
+                    )
                 end
 
             # it's a standard file, process just that one

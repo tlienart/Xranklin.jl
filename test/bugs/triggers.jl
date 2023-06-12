@@ -67,8 +67,8 @@ end
 	lc1 = gc.children_contexts[r1]
 	lc2 = gc.children_contexts[r2]
 
-	@test "pg1.md" in keys(lc2.req_vars)
-	@test :a in lc2.req_vars["pg1.md"]
+	@test "pg2.md" in keys(lc1.req_vars)
+	@test :a in lc1.req_vars["pg2.md"]
 
 	# Change in pg1 followed by process, should trigger process of pg2
 	write(joinpath(i1...), """
@@ -85,4 +85,7 @@ end
 
 	@test p1 == "7"
 	@test p2 == "7"
+
+	@test isempty(lc1.to_trigger)
+	@test isempty(lc2.to_trigger)
 end

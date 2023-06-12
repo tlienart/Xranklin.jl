@@ -58,17 +58,21 @@ which ones do.
                         a potential cached utils file)
     final            : whether this is the last pass, in which case prepath
                         should be applied
+
+Note: it's not necessarily in place which is why `full_pass` returns the gc
+indeed in the case where `utils_changed` or `config_changed`, a new GC is
+created so that all modules can be reloaded.
 """
 function full_pass(
             gc::GlobalContext,
             watched_files::Dict{Symbol,TrackedFiles};
             # kwargs
             skip_files::Vector{Pair{String,String}}=Pair{String,String}[],
-            initial_pass::Bool=false,
-            config_changed::Bool=false,
-            utils_changed::Bool=false,
-            final::Bool=false
-        )::Nothing
+            initial_pass::Bool   = false,
+            config_changed::Bool = false,
+            utils_changed::Bool  = false,
+            final::Bool          = false
+        )::GlobalContext
 
     setvar!(gc, :_final, final)
 
@@ -76,22 +80,22 @@ function full_pass(
     # allow skipping a file if the source markdown hasn't changed, and
     # the output file is available (as it would be identical).
     # This boolean is passed further down.
-    allow_skip = initial_pass & !(config_changed | utils_changed)
+    allow_init_skip = initial_pass & !(config_changed | utils_changed)
 
     if initial_pass
         # check if dependent files (e.g. literate files) have changed and,
         # if so, discard the hash of pages which would depend upon those
-        # to guarantee that they're reprocessed and consider the latest
-        # dependent file.
+        # to guarantee that they're process_file_from_triggered and consider
+        # the latest dependent file.
         for rp in have_changed_deps(gc.deps_map)
             pgh = path(:cache) / noext(rp) / "pg.hash"
             rm(pgh, force=true)
         end
     end
 
-    if utils_changed
-        # save code blocks marked as independent from utils to avoid having
-        # to reload them
+    if utils_changed || config_changed
+        # save code blocks marked as independent from context to avoid
+        # having to reload them
         bk_indep_code  = Dict{String,Dict{String,CodeRepr}}()
         for (rp, c) in gc.children_contexts
             if !isempty(c.nb_code.indep_code)
@@ -118,8 +122,8 @@ function full_pass(
             setvar!(gc, :project, Pkg.project().path)
         end
 
-        process_utils(gc)
-        process_config(gc)
+        utils_changed  && process_utils(gc)
+        config_changed && process_config(gc)
 
         # reinstate independent code from backup
         for rp in keys(bk_indep_code)
@@ -127,13 +131,8 @@ function full_pass(
             merge!(lc.nb_code.indep_code, bk_indep_code[rp])
             gc.children_contexts[rp] = lc
         end
-
-        # *all* pages will now be built from a reseted code and
+        # Now *all* pages will now be built from a resetted code and
         # vars module with the latest utils.
-
-    elseif config_changed
-        process_config(gc)
-
     end
 
     # now we can skip utils/config (will happen in full_pass_other)
@@ -167,7 +166,7 @@ function full_pass(
     full_pass_markdown(gc,
         watched_files[:md];
         skip_files,
-        allow_skip,
+        allow_init_skip,
         final
     )
     full_pass_html(gc,
@@ -191,7 +190,7 @@ function full_pass(
         """
     println("")
     # ---------------------------------------------------------
-    return
+    return gc
 end
 
 full_pass(watched_files::Dict{Symbol,TrackedFiles}; kw...) =
@@ -266,7 +265,7 @@ end
 # =======================
 
 """
-    _md_loop_1(gc, fp, skip_dict, allow_skip)
+    _md_loop_1(gc, fp, skip_dict, allow_init_skip)
 
 [internal,threads] go from MD to iHTML. The main function call returns a flag
 indicating whether the file was skipped (in a context where this is allowed).
@@ -274,15 +273,19 @@ This happens if the hash of the file hasn't changed nor the context.
 This flag is stored in skip_dict so that any skippable file can be directly
 skipped in pass 2 as well.
 """
-function _md_loop_1(gc, fp, skip_dict, allow_skip)
-    skip_dict[fp] && return
+function _md_loop_1(gc, fp, skip_dict=nothing, allow_init_skip=false; reproc=false)
+    isnothing(skip_dict) || (skip_dict[fp] && return true)
 
     fpath = joinpath(fp...)
     rpath = get_rpath(gc, fpath)
-    lc = gc.children_contexts[rpath]
+    lc    = gc.children_contexts[rpath]
 
-    skip_dict[fp] = process_md_file_pass_1(lc, fpath; allow_skip)
-    return
+    reproc && reset_both_notebooks!(lc; leave_indep=true)
+
+    skip = process_md_file_pass_1(lc, fpath; allow_init_skip)
+    isnothing(skip_dict) || (skip_dict[fp] = skip)
+
+    return skip
 end
 
 """
@@ -324,14 +327,21 @@ function full_pass_markdown(
             gc,
             watched;
             skip_files=Pair{String,String}[],
-            allow_skip=false,
+            allow_init_skip=false,
             final=false
             )::Nothing
 
     n_watched   = length(watched)
-    use_threads = env(:use_threads)
     iszero(n_watched) && return
     allocate_children_contexts(gc, watched)
+
+    use_threads = env(:use_threads)
+    entries     = nothing
+    n_entries   = 0
+    if use_threads
+        entries   = dic2vec(watched)
+        n_entries = length(entries)
+    end
 
     # keep track of files to skip (either because marked as such
     # or because their hash hasn't changed) so that they can also
@@ -350,33 +360,79 @@ function full_pass_markdown(
     end
 
     # ----------------------------------------------------------------------
-    @info "> Full Pass [MD/1]"
-    msg(fp, n="1️⃣") = " $n ⟨$(hl(str_fmt(get_rpath(gc, joinpath(fp...)))))⟩"
+    threaded = ifelse(
+        use_threads,
+        "using $(Threads.nthreads()) threads",
+        "threading disabled"
+    )
+    @info "> Full Pass [MD/1] ($threaded)"
+    rp(fp) = get_rpath(gc, joinpath(fp...))
+    msg(fp, n="1️⃣") = " $n ⟨$(hl(str_fmt(rp(fp))))⟩"
     if use_threads
-        entries = dic2vec(watched)
-        info_thread(length(entries))
+        info_thread(n_entries)
         Threads.@threads for (fp, _) in entries
             @info msg(fp)
-            _md_loop_1(gc, fp, skip_dict, allow_skip)
+            skip = _md_loop_1(gc, fp, skip_dict, allow_init_skip)
+            skip && @info " ... ($(hl("skipped '$(rp(fp))'", :yellow)))"
         end
     else
         for (fp, _) in watched
             @info msg(fp)
-            _md_loop_1(gc, fp, skip_dict, allow_skip)
+            skip = _md_loop_1(gc, fp, skip_dict, allow_init_skip)
+            skip && @info " ... ($(hl("skipped '$(rp(fp))'", :yellow)))"
+        end
+    end
+
+    # Some pages may have been skipped from cache but should in fact be
+    # done anyway because they depend upon a page that changed
+    all_to_trigger = Set{String}()
+    for (_, lci) in gc.children_contexts
+        union!(all_to_trigger, lci.to_trigger)
+    end    
+    check_trigger = Dict(
+        fp => skip_dict[fp] && (get_rpath(gc, joinpath(fp...)) in all_to_trigger)
+        for (fp, _) in watched
+    )
+    if any(values(check_trigger))
+        @info "> Full Pass [MD/1/reprocess] ($threaded)"
+        if use_threads
+            info_thread(n_entries)
+            Threads.@threads for (fp, _) in entries
+                if check_trigger[fp]
+                    @info " ... $(hl("♻ '$(get_rpath(gc, joinpath(fp...)))'", :green))"
+                    _md_loop_1(gc, fp; reproc=true)
+                end
+            end
+        else
+            for (fp, _) in watched
+                if check_trigger[fp]
+                    @info " ... $(hl("♻ '$(get_rpath(gc, joinpath(fp...)))'", :green))"
+                    _md_loop_1(gc, fp; reproc=true)
+                end
+            end
+        end
+    end
+    # purge lc to_trigger
+    for (_, lci) in gc.children_contexts
+        empty!(lci.to_trigger)
+    end
+    # purge skip if triggered so that subsequent steps are executed
+    for fp in keys(skip_dict)
+        if skip_dict[fp] && check_trigger[fp]
+            skip_dict[fp] = false
         end
     end
 
     # ----------------------------------------------------------------------
-    @info "> Full Pass [MD/I]"
+    @info "> Full Pass [MD/I] (sequential)"
     _md_loop_i(gc)
 
     # ----------------------------------------------------------------------
-    @info "> Full Pass [MD/2]"
+    @info "> Full Pass [MD/2] ($threaded)"
     # now all page variables are uncovered and hfuns can be resolved
     # without ambiguities. Assemble layout and iHTML, call html2 and write
     if use_threads
-        entries = dic2vec(watched)
-        info_thread(length(entries))
+        info_thread(n_entries)
         Threads.@threads for (fp, _) in entries
             @info msg(fp, "2️⃣")
             _md_loop_2(gc, fp, skip_dict, final)
@@ -426,7 +482,12 @@ function full_pass_html(
     iszero(n_watched) && return
     allocate_children_contexts(gc, watched)
 
-    @info "> Full Pass [HTML]"
+    threaded = ifelse(
+        use_threads,
+        "using $(Threads.nthreads()) threads",
+        "threading disabled"
+    )
+    @info "> Full Pass [HTML] ($threaded)"
     if use_threads
         entries = dic2vec(watched)
         info_thread(length(entries))
@@ -451,7 +512,7 @@ function full_pass_other(
     n_watched = length(watched)
     iszero(n_watched) && return
 
-    @info "> Full Pass [O]"
+    @info "> Full Pass [O] (always threaded)"
     entries = dic2vec(watched)
     info_thread(length(entries))
     Threads.@threads for (fp, _) in dic2vec(watched)

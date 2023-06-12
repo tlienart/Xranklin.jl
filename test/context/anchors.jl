@@ -1,7 +1,7 @@
 include(joinpath(@__DIR__, "..", "utils.jl"))
 
 
-# WORK
+nowarn()
 
 @test_in_dir "_anchors" "global anchors" begin
     write(joinpath(FOLDER, "a.md"), """
@@ -42,3 +42,5 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     gc = cur_gc()
     @test length(gc.anchors["anchor_a.a"].locs) == 1
 end
+
+logall()

@@ -45,7 +45,7 @@ function html2(
                 end
 
             elseif b.name in (:MATH_INLINE, :MATH_BLOCK)
-                # do not reprocess what's inside, so, specifically, if there's a double
+                # do not process_file_from_trigger what's inside, so, specifically, if there's a double
                 # brace block within a math context, it will be ignored, this prevents
                 # errors where you'd have math with {{ and or }}
                 write(io, string(b.ss))

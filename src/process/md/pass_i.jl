@@ -1,5 +1,7 @@
 """
     process_md_file_pass_i(lc)
+
+Processing of tags and anchors.
 """
 function process_md_file_pass_i(
             lc::LocalContext

@@ -135,7 +135,7 @@ function _process_literate_file(
         flavor      = (Base.@invokelatest L.FranklinFlavor()),
         mdstrings   = getvar(lc, :literate_mdstrings, false),
         config      = LITERATE_CONFIG,
-        preprocess  = s -> replace(s, r"#hide\s*?\n" => "# hide\n"),
+        pprocess_file_from_trigger  = s -> replace(s, r"#hide\s*?\n" => "# hide\n"),
         postprocess = _postprocess_literate_script,
         credit      = getvar(lc, :literate_credits, false),
     )

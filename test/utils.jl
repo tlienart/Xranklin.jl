@@ -96,6 +96,14 @@ macro test_in_dir(dn, tn, body)
     cdir(FOLDER)
 end
 
+function output_contains(folder, p, s; show=false)
+    c = read(folder / "__site" / p / "index.html", String)
+    if show
+        println(c)
+    end
+    return contains(c, s)
+end
+
 # @test_warn_with something() "partial msg"
 macro test_warn_with(body, msg)
     test_logger = TestLogger()

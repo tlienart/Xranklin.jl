@@ -50,23 +50,16 @@ function serialize_lc(lc::LocalContext)
         return
     end
     nt = (
-        # glob
-        vars     = lc.vars,      # serialisable by explicit check
-        lxdefs   = lc.lxdefs,    # always serialisable
-        headings = lc.headings,  # as
-        rpath    = lc.rpath,     # as
-        anchors  = lc.anchors,   # as
-        # is_recursive
-        # is_math
+        vars       = lc.vars,       # serialisable by explicit check
+        lxdefs     = lc.lxdefs,     # always serialisable
+        headings   = lc.headings,   # as
+        rpath      = lc.rpath,      # as
+        anchors    = lc.anchors,    # as
         req_vars   = lc.req_vars,   # as
-        req_lxdefs = lc.req_lxdefs, # as
-        # vars_aliases
-        nb_vars_cp  = lc.nb_vars.code_pairs,  # serialisable since lc.vars is
-        nb_code_cp  = lc.nb_code.code_pairs,  # as (string only)
-        nb_code_cn  = lc.nb_code.code_names,  # as
-        nb_code_ic  = lc.nb_code.indep_code,  # as
-        # nb_code
-        to_trigger = lc.to_trigger,  # as
+        nb_vars_cp = lc.nb_vars.code_pairs,  # serialisable since lc.vars is
+        nb_code_cp = lc.nb_code.code_pairs,  # as (string only)
+        nb_code_cn = lc.nb_code.code_names,  # as
+        nb_code_ic = lc.nb_code.indep_code,  # as
         page_hash  = lc.page_hash[], # as
         # --
         applied_prefix = getvar(lc, :_applied_base_url_prefix, "")
@@ -88,8 +81,6 @@ function deserialize_lc(rp::String, gc::GlobalContext)
     merge!(lc.headings,   nt.headings)
     union!(lc.anchors,    nt.anchors)
     merge!(lc.req_vars,   nt.req_vars)
-    union!(lc.req_lxdefs, nt.req_lxdefs)
-    union!(lc.to_trigger, nt.to_trigger)
     lc.page_hash[] = nt.page_hash
 
     # deserialise notebooks and mark as stale
@@ -112,16 +103,9 @@ function serialize_gc(gc::GlobalContext)
     # of course this is only true for LC that could be serialised.
     # For those that couldn't we would re-evaluate the page anyway.
     nt = (
-        # vars
-        # lxdefs
-        # vars_aliases
-        # nb_vars
-        # nb_code
         anchors    = gc.anchors,
         tags       = gc.tags,
         paginated  = gc.paginated,
-        # to_trigger
-        # init_trigger
         deps_map   = gc.deps_map,
         children   = collect(keys(gc.children_contexts)),
         # keep track of layout hashes

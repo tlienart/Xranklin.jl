@@ -23,27 +23,11 @@ track of what needs to be updated upon modification.
     tags              : dictionary of all tags {id => Tag}
     paginated         : set of pages `{rpath}` which are paginated
     children_contexts : associated local contexts {rpath => lc}
-    to_trigger        : set of dependent pages to trigger after updating GC
-                         (e.g. if config redefines a var used by some pages)
-    init_trigger      : set of pages to trigger a second time after the initial
-                         full pass so they have access to everything defined in
-                         the full pass (e.g. all anchors).
+    req_vars          : mapping {pg => set of vars requested from GC}
+    req_lxdefs        : mapping {pg => set of lxdefs requested from GC}
     deps_map          : data structure keeping track of what markdown pages
                          depends on what files (e.g. literate scripts) and vice
                          versa, to check whether a page needs to be updated.
-
-### Note on `init_trigger`
-
-Generally it is `to_trigger` that is used. The logic there is that when a page
-queries directly from GC we know that arrow (pg -> GC) and so when GC gets
-updated we necessarily need to go the other way (GC -> pg). When a page
-requires from another page (pg1 -> pg2) then this is handled via pg2's
-LC.to_trigger.
-
-However in some cases like the anchors, pages might request an information from
-another page without knowing which page provides it. In this context these
-pages need to be re-processed after the initial full pass so that they can
-'find' the right provider page. That's what the init_trigger is for.
 """
 struct GlobalContext{LC<:Context} <: Context
     vars::Vars
@@ -55,8 +39,8 @@ struct GlobalContext{LC<:Context} <: Context
     tags::Dict{String, Tag}
     paginated::Set{String}
     children_contexts::Dict{String, LC}
-    to_trigger::Set{String}
-    init_trigger::Set{String}
+    req_vars::Dict{String, Set{Symbol}}
+    req_lxdefs::Dict{String, Set{String}}
     deps_map::DepsMap
 end
 
@@ -72,6 +56,7 @@ conversion is happening.
 
     glob          : the parent context
     vars          : a dictionary of the local variables
+    vars_aliases  : other accepted names for default variables
     lxdefs        : a dictionary of the local lx-definitions
     headings      : a dictionary of the current page headings
     rpath         : relative path to the page with this local context
@@ -81,16 +66,46 @@ conversion is happening.
     is_recursive  : whether we're in a recursive context
     is_math       : whether we're recursing in a math environment
     req_vars      : mapping {pg => set of vars requested from pg}
-    req_lxdefs    : set of lxdefs names requested by the page from global
-    vars_aliases  : other accepted names for default variables
     nb_vars       : notebook associated with markdown defs
     nb_code       : notebook associated with the page code
     to_trigger    : set of dependent pages to trigger after updating LC
 
+### Notes on `req_lxdefs`
+
+This field is a dictionary of lxdefs requested from the global context.
+
+### Notes on `req_vars`
+
+The purpose of `req_vars` is to keep track of cross-context symbol requests.
+
+There are two scenarios:
+
+TODO UPDATE THIS
+
+
+1. The current local context requests something from its global context,
+    in that case there's a special entry `"__global__" => set_of_global_symbols`
+2. Another context requests something from the current context, in that case
+    there's an entry `"path_of_requester" => set_of_requested_symbols`.
+
+**Example for (1)**:
+    Page `A.md` fills a variable `gg` from global context (e.g. via `{{gg}}`),
+    then `req_vars` of `A.md` will necessarily have an entry
+    `"__global__" => set` with `:gg` in set.
+
+**Example for (2)**:
+    Page `B.md` fills a variable `aa` from page `A.md` (e.g. via
+    `{{fill aa A.md}}`) then the `req_vars` of `A.md` will necessarily have an
+    entry `"B.md" => set_of_symbols`
+where `:aa` is now in the `set_of_symbols`.
+
+If `B.md` is triggered, all pages which may have a `B.md` entry, lose that entry
+(and if `B.md` still makes a request from them, that entry will be re-added).
 """
 struct LocalContext <: Context
     glob::GlobalContext
     vars::Vars
+    vars_aliases::Alias
     lxdefs::LxDefs
     headings::PageHeadings
     rpath::String
@@ -100,8 +115,6 @@ struct LocalContext <: Context
     is_math::Ref{Bool}
     # stores
     req_vars::Dict{String, Set{Symbol}}
-    req_lxdefs::Set{String}
-    vars_aliases::Alias
     # notebooks
     nb_vars::VarsNotebook
     nb_code::CodeNotebook
@@ -140,8 +153,8 @@ function GlobalContext(
     tags         = Dict{String, Tag}()
     paginated    = Set{String}()
     children     = Dict{String, LocalContext}()
-    to_trigger   = Set{String}()
-    init_trigger = Set{String}()
+    req_vars     = Dict{String, Set{Symbol}}()
+    req_lxdefs   = Dict{String, Set{String}}()
     deps_map     = DepsMap()
 
     gc = GlobalContext(
@@ -154,8 +167,8 @@ function GlobalContext(
         tags,
         paginated,
         children,
-        to_trigger,
-        init_trigger,
+        req_vars,
+        req_lxdefs,
         deps_map
     )
 
@@ -191,11 +204,8 @@ function LocalContext(glob, vars, defs, headings, rpath, alias=Alias())
     )
     nb_code  = CodeNotebook(mdl)
 
-    # req vars (keep track of what is requested by this page)
-    req_vars = Dict{String, Set{Symbol}}(
-        "__global__" => Set{Symbol}()
-    )
-    req_defs   = Set{String}()
+    # req vars (keep track of what is requested from this page)
+    req_vars   = Dict{String, Set{Symbol}}()
     anchors    = Set{String}()
     to_trigger = Set{String}()
     page_hash  = Ref(UInt64(0))
@@ -204,6 +214,7 @@ function LocalContext(glob, vars, defs, headings, rpath, alias=Alias())
     lc = LocalContext(
         glob,
         vars,
+        alias,
         defs,
         headings,
         rpath,
@@ -211,8 +222,6 @@ function LocalContext(glob, vars, defs, headings, rpath, alias=Alias())
         Ref(false),    # is recursive
         Ref(false),    # is math
         req_vars,
-        req_defs,
-        alias,
         nb_vars,
         nb_code,
         to_trigger,

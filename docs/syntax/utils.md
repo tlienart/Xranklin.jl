@@ -119,7 +119,7 @@ end
 
 and if we call `\exlx2` we get: \exlx2.
 
-As indicated earlier, the output of an lxfun gets reprocessed at the second pass, so
+As indicated earlier, the output of an lxfun gets process_file_from_triggered at the second pass, so
 for instance:
 
 ```julia

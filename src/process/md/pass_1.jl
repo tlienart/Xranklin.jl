@@ -20,7 +20,7 @@ function process_md_file_pass_1(
             lc::LocalContext,
             fpath::String;
             # kwargs
-            allow_skip::Bool = false
+            allow_init_skip::Bool = false
         )::Bool
 
     crumbs(@fname)
@@ -42,7 +42,8 @@ function process_md_file_pass_1(
     opath = get_opath(lc.glob, fpath)
     set_meta_parameters(lc, fpath, opath)
 
-    skip = allow_skip && all((
+
+    skip = allow_init_skip && all((
                 !ignore_cache,
                 prev_hash == page_hash,
                 !isempty(getvar(lc, :_generated_ihtml, ""))
@@ -53,7 +54,8 @@ function process_md_file_pass_1(
 
     else
         # set notebook counters at the top (might already be there)
-        reset_notebook_counters!(lc)
+        reset_counter!(lc.nb_code)
+        reset_counter!(lc.nb_vars)
 
         # evaluate
         ihtml = convert_md(page_content_md, lc)
@@ -61,7 +63,7 @@ function process_md_file_pass_1(
 
         # Now that the page has been evaluated, we can discard entries
         # from `indep_code` mapping that are obsolete (e.g. if an indep
-        # cell changed)
+        # cell changed, or was removed)
         refresh_indep_code!(lc)
 
         # Check if any anchors were removed so that they can be removed

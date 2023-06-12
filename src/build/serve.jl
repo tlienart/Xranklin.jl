@@ -177,7 +177,7 @@ function serve(
     # added that should be watched
     wf = find_files_to_watch(gc, folder)
 
-    full_pass(
+    gc = full_pass(
         gc, wf;
         initial_pass    = true,
         config_changed  = !config_unchanged,

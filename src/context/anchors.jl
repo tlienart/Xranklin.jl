@@ -153,7 +153,7 @@ function rm_anchor(
         delete!(gc.anchors, id)
     end
     for rp in reqs
-        reprocess(rp, gc; msg="(depends on updated anchor)")
+        process_file_from_trigger(rp, gc; msg="(depends on updated anchor)")
     end
     return
 end

@@ -30,7 +30,9 @@ getvar(v::Vars, name::Symbol, d::Nothing=nothing) = get(v, name, nothing)
 
 Set the value of a variable (overwriting existing one if any).
 """
-setvar!(v::Vars, name::Symbol, val) = (v[name] = val; nothing)
+function setvar!(v::Vars, name::Symbol, val)
+    (v[name] = val; nothing)
+end
 
 
 """

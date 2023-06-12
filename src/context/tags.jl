@@ -184,12 +184,8 @@ end
 """
     get_all_tags(gc)
 
-Recover the tags associated with the current gc and mark the page as
-requesting it so that it can be retriggered.
+Recover the tags associated with the current gc.
 
 Note: see also `modules_setup` which defines `get_all_tags` for users.
 """
-function get_all_tags(gc::GlobalContext, lc::Union{Nothing,LocalContext})
-    isnothing(lc) || union!(gc.init_trigger, [lc.rpath])
-    return gc.tags
-end
+get_all_tags(gc::GlobalContext) = gc.tags

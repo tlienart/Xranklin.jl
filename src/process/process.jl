@@ -28,10 +28,9 @@ function process_file(
             t::Float64    = 0.0;   # to compare modif time
             # kwargs
             skip_files::Vector{Pair{String, String}} = Pair{String, String}[],
-            initial_pass::Bool = false,
-            final::Bool        = false,
-            reproc::Bool       = false,
-            allow_skip::Bool   = false
+            final::Bool           = false,
+            from_trigger::Bool    = false,
+            allow_init_skip::Bool = false
         )::Nothing
 
     crumbs(@fname, "$(fpair.first) => $(fpair.second)")
@@ -57,18 +56,29 @@ function process_file(
     # 2. the file is something else (e.g. an image) then Franklin will just
     #   copy it over to the appropriate location
     #
-    off = ifelse(reproc, "... ", "")
     if case in (:md, :html)
         rpath = get_rpath(gc, fpath)
         lc    = rpath in keys(gc.children_contexts) ?
                     gc.children_contexts[rpath]     :
                     DefaultLocalContext(gc; rpath)
 
-        # to check nesting of re-processing
-        lc.is_recursive[] = reproc
+        # to check nesting of re-processing + the *context* has changed and so
+        # as a result all cells (apart from indep ones potentially) must be
+        # re-evaluated.
+        if from_trigger
+            lc.is_recursive[] = true
+            # we take a conservative view that we don't know precisely where
+            # the change that caused the trigger would impact the LC, we
+            # therefore re-evaluate everything to make sure that any getvar
+            # either in mddef or in code blocks would get apropriately
+            # refreshed.
+            # This points to cross context calls being inherently expensive
+            # as they require a full re-run of dependent pages.
+            reset_both_notebooks!(lc; leave_indep=true)
+        end
 
         if case == :md
-            process_md_file(lc, fpath, opath, skip_files, allow_skip, final)
+            process_md_file(lc, fpath, opath, skip_files, allow_init_skip, final)
 
         elseif case == :html
             process_html_file(lc, fpath, opath, final)

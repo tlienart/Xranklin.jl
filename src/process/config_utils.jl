@@ -26,50 +26,21 @@ function process_config(
     # ensure we're in the relevant gc
     set_current_global_context(gc)
     # set the notebook counters at the top
-    reset_notebook_counters!(gc)
+    reset_counter!(gc.nb_code)
+    reset_counter!(gc.nb_vars)
 
-    # keep track of current lxdefs to see if the config.md redefines
-    # them; if that's the case (either changed or removed) update all
-    # pages dependent on these defs at the end of this function.
-    old_lxdefs = Dict{String, UInt64}(
-        n => hash(lxd.def)
-        for (n, lxd) in gc.lxdefs
-    )
-
-    # -------------------------------------------
-    # Effective config processing: run html as
-    # usual for a .md file except that we ignore
-    # the resulting HTML; we just use that to
-    # populate fields such as lxdefs etc
-    #
+    # Effective config processing: run html as usual for a .md file except that
+    # we ignore the resulting HTML; we just use that to populate fields such as
+    # lxdefs etc
     start = time(); @info """
         ⌛ processing config.md
-        """
-
+        """    
     html(config, gc)
-
     δt = time() - start; @info """
         ... [config.md] ✔ $(hl(time_fmt(δt)))
         """
-    # -------------------------------------------
 
     _check_rss(gc)
-
-    # -----------------------------------------------------
-    # Check if any lxdefs were updated and, if so, mark all
-    # pages that use this lxdef as to be triggered.
-    updated_lxdefs = [
-        (@debug "✋ lxdef $n has changed"; n)
-        for (n, h) in old_lxdefs
-        if n ∉ keys(gc.lxdefs) || h != hash(gc.lxdefs[n].def)
-    ]
-    if !isempty(updated_lxdefs)
-        for (rpath, ctx) in gc.children_contexts
-            if anymatch(ctx.req_lxdefs, updated_lxdefs)
-                union!(gc.to_trigger, [rpath])
-            end
-        end
-    end
     return
 end
 
@@ -153,7 +124,8 @@ function process_utils(
     # ensure we're in the relevant gc
     set_current_global_context(gc)
     # set the notebooks at the top
-    reset_notebook_counters!(gc)
+    reset_counter!(gc.nb_code)
+    reset_counter!(gc.nb_vars)
     # keep track of utils code
     setvar!(gc, :_utils_code, utils)
     # update the gc modules to use the utils

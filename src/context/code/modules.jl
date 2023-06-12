@@ -110,17 +110,16 @@ end
 """
     UTILS_UTILS
 
-Names of core functionalities imported in all nb_vars and nb_code
-modules. These are specific to the environment, so for instance the
-`__lc` is associated with the page to which the notebooks are
-attached.
+Names of core functionalities imported in all nb_vars and nb_code modules.
+These are specific to the environment, so for instance the `__lc` is
+associated with the page to which the notebooks are attached.
 """
 const UTILS_UTILS = [
     # from module
     "cur_gc", "html", "latex", "html2",
     # others
     "__gc", "__lc",
-    "cur_lc", "path",
+    "cur_lc", "path", "folderpath", "sitepath",
     "getlvar", "getgvar", "getvarfrom",
     "setlvar!", "setgvar!",
     "locvar", "globvar", "pagevar",
@@ -172,8 +171,11 @@ modules_setup(c::Context) = begin
             const __gc = cur_gc()
             const __lc = get(__gc.children_contexts, "$rpath", nothing)
 
-            cur_lc()        = __lc
-            path(s::Symbol) = $F.path(__gc, s)
+            cur_lc()         = __lc
+            path(s::Symbol)  = $F.path(__gc, s)
+            folderpath(p...) = joinpath(path(:folder), p...)
+            sitepath(p...)   = joinpath(path(:site), p...)
+
 
             getlvar(n::Symbol, d=nothing; default=d) =
                 $F.getvar(__lc, __lc, n, default)
@@ -198,7 +200,7 @@ modules_setup(c::Context) = begin
 
             get_page_tags()   = $F.get_page_tags(__lc)
             get_page_tags(rp) = $F.get_page_tags(rp)
-            get_all_tags()    = $F.get_all_tags(__gc, __lc)
+            get_all_tags()    = $F.get_all_tags(__gc)
             get_rpath()       = $F.get_rpath(__lc)
             """
 

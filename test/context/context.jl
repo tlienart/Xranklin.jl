@@ -59,8 +59,8 @@ end
     @test X.getdef(lc, "abc").def == "hello"
 
     # dependencies
-    @test lc.req_vars["__global__"] == Set([:a])
-    @test lc.req_lxdefs == Set(["abc"])
+    @test gc.req_vars[lc.rpath]   == Set([:a])
+    @test gc.req_lxdefs[lc.rpath] == Set(["abc"])
 
     # children contexts
     @test gc.children_contexts["REQ"] === lc
@@ -87,15 +87,15 @@ end
 
     @test X.getvar(lc, :la) == 3
     @test X.getvar(lc, :ga) == 5
-    @test :ga in lc.req_vars["__global__"]
+    @test :ga in gc.req_vars[lc.rpath]
 
-    @test X.getvar(nothing, lc, :la) == nothing
+    @test X.getvar(nothing, lc, :la) === nothing
 
     lc2 = X.DefaultLocalContext(gc; rpath="local2")
     X.setvar!(lc2, :lb, 4)
 
     @test X.getvar(lc2, lc, :lb) == 4
-    @test :lb in lc.req_vars["local2"]
+    @test :lb in lc2.req_vars[lc.rpath]
 
     # in module
     include_string(gc.nb_vars.mdl, """
@@ -125,7 +125,7 @@ end
     @test X.getvar(lc, :baz) == -1
     @test X.getvar(lc, :bat) == 10
 
-    @test :lc in lc.req_vars["local2"]
+    @test :lc in lc2.req_vars["local"]
 
     @test X.setvar!(nothing) === nothing
 
@@ -169,4 +169,28 @@ end
     @test X.getvar(lc, :b) == 0
     @test X.hasdef(lc, "abc") === true
     @test X.getdef(lc, "abc").def == "hello"
+end
+
+@testset "getvar++" begin
+    # a lot of these tests may be redundant, with previous ones but it's about
+    # testing specfically the getvar logic, and making sure that things are set
+    # appropriately for all use cases
+    gc  = X.DefaultGlobalContext()
+    lc1 = X.DefaultLocalContext(gc; rpath="lc1")
+    lc2 = X.DefaultLocalContext(gc; rpath="lc2")
+
+    # basic
+    X.eval_vars_cell!(gc,  X.subs("g1 = 0"))
+    X.eval_vars_cell!(lc1, X.subs("l1 = 0"))
+    X.eval_vars_cell!(lc2, X.subs("l2 = 0"))
+
+    # request from gc
+    X.eval_vars_cell!(lc1, X.subs("rg1 = getgvar(:g1)"))
+    @test X.getvar(lc1, :rg1) == X.getvar(gc, :g1)
+    @test :g1 in gc.req_vars[lc1.rpath]
+
+    # cross page
+    X.eval_vars_cell!(lc1, X.subs("rl1 = getvarfrom(:l2, \"$(lc2.rpath)\")"))
+    @test X.getvar(lc1, :rl1) == X.getvar(lc2, :l2)
+    @test :l2 in lc2.req_vars[lc1.rpath]
 end

@@ -586,7 +586,14 @@ And since you can call `serve()` from within the site folder or from elsewhere s
 `serve("path/to/folder")`, this path can vary.
 As a consequence, if you want some code to do something with a path (e.g. read or write a file),
 you should use `Utils.path(:folder)` as the base path pointing to your website folder.
+
 You can also use `Utils.path(:site)` as the base path pointing to the website build folder.
+
+\tip{
+  Out of convenience, you can also use `folderpath(...)` as
+  shorthand for `joinpath(Utils.path(:folder), ...)` (and, correspondingly,
+  `sitepath(...)`).
+}
 
 For instance let's say you want to save a DataFrame to a CSV that you can link to
 as an asset on your site:

@@ -23,6 +23,7 @@ function hl(s, c::Symbol=:light_magenta)
     return io |> take! |> String
 end
 hprint(a...) = println(hl(a...))
+yprint(a) = hprint("\n<"*string(a)*">\n", :yellow)
 
 """
     time_fmt(δt)

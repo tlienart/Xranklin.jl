@@ -140,25 +140,6 @@ end
     <p>r: bar</p>
     </div>
     """)
-
-    # Modify var of configaf
-    write(d/"config.md", raw"""
-        +++
-        a = 7
-        +++
-        \newcommand{\foo}{bar}
-        """)
-    X.process_config(gc)
-    @test gc.to_trigger == Set(["pg1.md"])
-    empty!(gc.to_trigger)
-    write(d/"config.md", raw"""
-        +++
-        a = 7
-        +++
-        \newcommand{\foo}{baz}
-        """)
-    X.process_config(gc)
-    @test gc.to_trigger == Set(["pg2.md"])
 end
 
 @testset "cross var deps" begin
@@ -190,5 +171,4 @@ end
         """)
     X.process_md_file(gc, "pg1.md")
     @test readpg("pg1.md") // "<p>r: 7</p>"
-    @test cur_gc().children_contexts["pg1.md"].to_trigger == Set(["pg2.md"])
 end

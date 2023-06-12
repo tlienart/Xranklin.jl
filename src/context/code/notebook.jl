@@ -7,28 +7,38 @@ increment!(nb::Notebook)     = (nb.cntr_ref[] += 1)
 reset_counter!(nb::Notebook) = (nb.cntr_ref[] = 1)
 
 """
-    reset_notebook_counters!(ctx)
-
-Reset the counter of each of the context's notebook.
-"""
-function reset_notebook_counters!(c::Context)
-    reset_counter!(c.nb_vars)
-    reset_counter!(c.nb_code)
-    return
-end
-
-"""
-    reset_code_notebook!(c::Context)
+    reset_code_notebook!(nb)
 
 Clear code notebooks so that it can be re-evaluated from scratch in case the
 page variable `ignore_cache` is used for instance.
 """
-function reset_code_notebook!(c::LocalContext)
-    reset_counter!(c.nb_code)
-    empty!(c.nb_code.code_pairs)
-    empty!(c.nb_code.code_names)
-    empty!(c.nb_code.indep_code)
-    fresh_notebook!(c.nb_code)
+function reset_notebook!(
+            nb::CodeNotebook;
+            leave_indep::Bool=false
+        )
+    reset_counter!(nb)
+    empty!(nb.code_pairs)
+    empty!(nb.code_names)
+    leave_indep || empty!(nb.indep_code)
+    fresh_notebook!(nb)
+    return
+end
+
+function reset_notebook!(
+            nb::VarsNotebook
+        )
+    reset_counter!(nb)
+    empty!(nb.code_pairs)
+    fresh_notebook!(nb)
+    return
+end
+
+function reset_both_notebooks!(
+            c::Context;
+            leave_indep::Bool=false
+        )
+    reset_notebook!(c.nb_code; leave_indep)
+    reset_notebook!(c.nb_vars)
     return
 end
 
