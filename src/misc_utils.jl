@@ -10,6 +10,14 @@ Acts as joinpath.
 """
 (/)(s...) = joinpath(s...)
 
+"""
+    repr(s::AbstractString)
+
+Calls `repr` but strips away the `\"`.
+"""
+stripped_repr(s::AbstractString) = strip(repr(s), '\"')
+stripped_repr(o) = repr(o)
+
  """
     hl(s, c)
 

@@ -12,6 +12,8 @@ INSERT / INCLUDE
 
 Write the value of variable `x` from either the local context or the context
 of the page at `from`.
+
+See also `_dbb_fill` (called from `{{varname}}`).
 """
 function hfun_fill(
             lc::LocalContext,
@@ -33,12 +35,14 @@ function _hfun_fill_1(
             p::VS
         )::String
 
+    @show "got here"
+
     vname = Symbol(p[1])
     if (v = getvar(lc, vname)) !== nothing
-        return repr(v)
+        return stripped_repr(v)
     elseif vname in utils_var_names(lc.glob)
         mdl = cur_gc().nb_code.mdl
-        return repr(getproperty(mdl, vname))
+        return stripped_repr(getproperty(mdl, vname))
     else
         @warn """
             {{fill $vname}}
@@ -69,7 +73,7 @@ function _hfun_fill_2(
                 lc,
                 vname
             )
-        return repr(v)
+        return stripped_repr(v)
     else
         @warn """
             {{fill $vname $rpath}}

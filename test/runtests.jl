@@ -95,9 +95,10 @@ include("utils.jl")
 
     @testset "bug fixes" begin
         p = "bugs"
-        include(p / "latex.jl")
-        include(p / "triggers.jl")
-        include(p / "parsing.jl")
+        include(p/"latex.jl")
+        include(p/"triggers.jl")
+        include(p/"parsing.jl")
+        include(p/"misc.jl")
     end
 
     spurious_assets = dirname(dirname(pathof(Xranklin))) / "assets"

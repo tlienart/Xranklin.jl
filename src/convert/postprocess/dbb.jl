@@ -68,7 +68,6 @@ function resolve_dbb(
     # B | utils function or internal function (utils have priority)
     elseif (external = fname in utils_hfun_names(lc.glob)) ||
            ((fname in INTERNAL_HFUNS) & !only_external)
-
         # run the function either in the Utils module or internally
         _dbb_fun(lc, io, fname, args; internal=!external)
 

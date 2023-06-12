@@ -101,9 +101,10 @@ There are several core functions like `fill` and you can define your own as we w
 
 When inserting a page variable with `{{var_name}}` or `{{fill var_name}}`, the Julia function
 `repr` will be called on the value of `var_name` and that is what will effectively be included.
-For basic Julia types (`Int`, `String`, `Bool`, ...), this will typically look like what you
+For basic Julia types (`Int`, `Bool`, ...), this will typically look like what you
 would expect but for custom types that you would have defined or that are defined in a package,
 you would have to consider what `repr(obj)` returns.
+For types in `AbstractString`, `repr(obj)` adds quotation marks which are stripped.
 
 \showmd{
   +++
