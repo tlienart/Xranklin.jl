@@ -56,3 +56,14 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     serve(FOLDER, single=true)
     @test read(FOLDER / "counter", Int) == 2
 end
+
+@test_in_dir "_title_default" "i46" begin
+    write(FOLDER / "config.md", "")
+    write(FOLDER / "index.md", """
+        # The Title
+
+        title: {{title}}
+        """)
+    serve(FOLDER, single=true)
+    @test output_contains(FOLDER, "", "title: The Title")
+end
