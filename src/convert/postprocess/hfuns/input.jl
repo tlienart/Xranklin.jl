@@ -35,8 +35,6 @@ function _hfun_fill_1(
             p::VS
         )::String
 
-    @show "got here"
-
     vname = Symbol(p[1])
     if (v = getvar(lc, vname)) !== nothing
         return stripped_repr(v)
