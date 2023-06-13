@@ -6,7 +6,7 @@ module Xranklin
 import Dates
 import Dates: Date
 import Base.(/)
-import REPL: softscope
+import REPL: softscope, ends_with_semicolon
 import Pkg
 import Serialization: serialize, deserialize
 import Logging

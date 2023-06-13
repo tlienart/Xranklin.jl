@@ -18,10 +18,6 @@ const CODE_INFO_PAT = r"^\`+([^\n]+)?"
 "Language getter (allow space after language for highlighting in VSCode)"
 const CODE_LANG_PAT = r"([^\!\:\s]+)?\s*([\!\:]{1,2})?(\S+)?"
 
-"Check end of code block to see if should be hidden or not.
-This is fragile if people do something silly like `x = 5 # foo ; # bar`"
-const HIDE_FINAL_OUTPUT_PAT = r";\s*(:?#.*)?\n?"
-
 "Trim the non-relevant part of a stacktrace when evaluating code."
 const STACKTRACE_TRIM_PAT = r"\[\d+\]\stop-level\sscope"
 

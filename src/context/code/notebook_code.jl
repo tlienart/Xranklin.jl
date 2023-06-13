@@ -224,7 +224,7 @@ function _eval_code_cell(
 
     # if the end of the cell is a ';' or a `@show` then
     # suppress the result
-    if endswith(code, HIDE_FINAL_OUTPUT_PAT)
+    if ends_with_semicolon(code)
         result = nothing
     else
         # Check if the last expression is a show and if so set the returned
