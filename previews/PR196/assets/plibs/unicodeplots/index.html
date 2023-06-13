@@ -1,0 +1,38 @@
+<h4 id="setup" ><a href="#setup"> Setup</a></h4><p>Version of the package used in the example:</p>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">3.3.1
+</code></pre></div><p>To install dependencies on Github Action add a <code>run</code> step prior to the build with:</p>
+<pre><code class="plaintext">pip install ansi2html</code></pre>
+<h4 id="example" ><a href="#example"> Example</a></h4><pre><code class="julia">using UnicodePlots
+
+x = range(0, pi, length=500)
+y = @. sin(exp(x)) * sinc(x)
+
+lineplot(x, y,
+    xlabel=&quot;x&quot;,
+    ylabel=&quot;y&quot;,
+    border=:dotted,
+    xlim=[0,pi],
+    ylim=[-0.2,1]
+)</code></pre>
+<div class="code-output"><pre>          <span style="color: #7f7f7f">⡤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⢤</span> 
+        <span style="color: #7f7f7f">1</span> <span style="color: #7f7f7f">⡇</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #7f7f7f">⢸</span> <span style="color: #7f7f7f"></span>
+         <span style="color: #7f7f7f"></span> <span style="color: #7f7f7f">⡇</span><span style="color: #00aa00">⡠</span><span style="color: #00aa00">⠖</span><span style="color: #00aa00">⠦</span><span style="color: #00aa00">⣄</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #7f7f7f">⢸</span> <span style="color: #7f7f7f"></span>
+         <span style="color: #7f7f7f"></span> <span style="color: #7f7f7f">⡇</span>⠀⠀⠀<span style="color: #00aa00">⠈</span><span style="color: #00aa00">⢧</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #7f7f7f">⢸</span> <span style="color: #7f7f7f"></span>
+         <span style="color: #7f7f7f"></span> <span style="color: #7f7f7f">⡇</span>⠀⠀⠀⠀⠀<span style="color: #00aa00">⢣</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #7f7f7f">⢸</span> <span style="color: #7f7f7f"></span>
+         <span style="color: #7f7f7f"></span> <span style="color: #7f7f7f">⡇</span>⠀⠀⠀⠀⠀<span style="color: #00aa00">⠈</span><span style="color: #00aa00">⢇</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #7f7f7f">⢸</span> <span style="color: #7f7f7f"></span>
+         <span style="color: #7f7f7f"></span> <span style="color: #7f7f7f">⡇</span>⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⠘</span><span style="color: #00aa00">⡄</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #7f7f7f">⢸</span> <span style="color: #7f7f7f"></span>
+         <span style="color: #7f7f7f"></span> <span style="color: #7f7f7f">⡇</span>⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⢹</span><span style="color: #00aa00">⡀</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #7f7f7f">⢸</span> <span style="color: #7f7f7f"></span>
+   y     <span style="color: #7f7f7f"></span> <span style="color: #7f7f7f">⡇</span>⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⢇</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #7f7f7f">⢸</span> <span style="color: #7f7f7f"></span>
+         <span style="color: #7f7f7f"></span> <span style="color: #7f7f7f">⡇</span>⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⠘</span><span style="color: #00aa00">⡄</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #7f7f7f">⢸</span> <span style="color: #7f7f7f"></span>
+         <span style="color: #7f7f7f"></span> <span style="color: #7f7f7f">⡇</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⢱</span><span style="color: #00aa00">⡀</span>⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⢀</span><span style="color: #00aa00">⣀</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #7f7f7f">⢸</span> <span style="color: #7f7f7f"></span>
+         <span style="color: #7f7f7f"></span> <span style="color: #7f7f7f">⡇</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⢣</span>⠀⠀⠀⠀⠀<span style="color: #00aa00">⢀</span><span style="color: #00aa00">⡴</span><span style="color: #00aa00">⠉</span><span style="color: #00aa00">⠈</span><span style="color: #00aa00">⠱</span><span style="color: #00aa00">⡄</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #7f7f7f">⢸</span> <span style="color: #7f7f7f"></span>
+         <span style="color: #7f7f7f"></span> <span style="color: #7f7f7f">⡇</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⠈</span><span style="color: #00aa00">⢧</span>⠀⠀⠀<span style="color: #00aa00">⢠</span><span style="color: #00aa00">⠞</span>⠀⠀⠀⠀<span style="color: #00aa00">⠘</span><span style="color: #00aa00">⣆</span>⠀⠀⠀<span style="color: #00aa00">⢀</span><span style="color: #00aa00">⣀</span>⠀⠀⠀⠀<span style="color: #00aa00">⢠</span><span style="color: #00aa00">⠛</span><span style="color: #00aa00">⢆</span>⠀⠀⠀⠀⠀<span style="color: #7f7f7f">⢸</span> <span style="color: #7f7f7f"></span>
+         <span style="color: #7f7f7f"></span> <span style="color: #7f7f7f">⡇</span>⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒<span style="color: #00aa00">⠚</span><span style="color: #00aa00">⠳</span><span style="color: #00aa00">⠶</span><span style="color: #00aa00">⠶</span><span style="color: #00aa00">⠓</span>⠒⠒⠒⠒⠒⠒<span style="color: #00aa00">⠚</span><span style="color: #00aa00">⠶</span><span style="color: #00aa00">⣶</span><span style="color: #00aa00">⠖</span><span style="color: #00aa00">⠛</span><span style="color: #00aa00">⠚</span><span style="color: #00aa00">⢳</span><span style="color: #00aa00">⡒</span>⠒<span style="color: #00aa00">⢒</span><span style="color: #00aa00">⠟</span>⠒<span style="color: #00aa00">⠚</span><span style="color: #00aa00">⣖</span><span style="color: #00aa00">⢲</span><span style="color: #00aa00">⠖</span><span style="color: #00aa00">⠶</span><span style="color: #00aa00">⠞</span><span style="color: #7f7f7f">⢸</span> <span style="color: #7f7f7f"></span>
+         <span style="color: #7f7f7f"></span> <span style="color: #7f7f7f">⡇</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⢣</span><span style="color: #00aa00">⣀</span><span style="color: #00aa00">⡼</span>⠀⠀⠀<span style="color: #00aa00">⠈</span><span style="color: #00aa00">⠉</span>⠀⠀⠀<span style="color: #7f7f7f">⢸</span> <span style="color: #7f7f7f"></span>
+     <span style="color: #7f7f7f">-0.2</span> <span style="color: #7f7f7f">⡇</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #00aa00">⠉</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #7f7f7f">⢸</span> <span style="color: #7f7f7f"></span>
+          <span style="color: #7f7f7f">⠓⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠚</span> 
+          ⠀<span style="color: #7f7f7f">0</span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #7f7f7f"></span>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀<span style="color: #7f7f7f">3.14159</span>⠀ 
+          ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀x⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ 
+</pre></div><h4 id="timers" ><a href="#timers"> Timers</a></h4><div class="code-output"><pre><code class="code-stdout language-plaintext">Code execution time: 6.08 seconds.
+Total time taken (setup + build): 2.57 minutes.
+</code></pre></div>

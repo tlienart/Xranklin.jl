@@ -1,0 +1,17 @@
+<h4 id="setup" ><a href="#setup"> Setup</a></h4><p>Version of the package used in the example:</p>
+<div class="code-output"><pre><code class="code-stdout language-plaintext">2.11.0
+</code></pre></div><p>To install dependencies on Github Action add a <code>run</code> step prior to the build with:</p>
+<pre><code class="plaintext">pip install matplotlib
+export PYTHON=$(which python)</code></pre>
+<h4 id="example" ><a href="#example"> Example</a></h4><pre><code class="julia">using PyPlot
+
+x = range(0, pi, length=500)
+y = @. sin(exp(x)) * sinc(x)
+
+figure(figsize=(6, 4))
+plot(x, y)
+gcf() # this is necessary</code></pre>
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/pyplot/assets/pyplot/figs-html/__autofig_14803363174094316395.svg">
+</div><h4 id="timers" ><a href="#timers"> Timers</a></h4><div class="code-output"><pre><code class="code-stdout language-plaintext">Code execution time: 13.6 seconds.
+Total time taken (setup + build): 1.83 minutes.
+</code></pre></div>
