@@ -332,7 +332,12 @@ function _form_code_repr(
         skiplatex || append_result_latex!(ctx, io_latex, result, fig_latex)
     end
 
-    hrepr, lrepr, rrepr = String.(take!.((io_html, io_latex, io_raw)))
+    # retrieve the string representations and discard any occurrence of the
+    # explicit sandbox name e.g. Main.__FRANKLIN_0123456.Foo -> Foo
+    hrepr, lrepr, rrepr = replace.(
+        String.(take!.((io_html, io_latex, io_raw))),
+        "$(ctx.nb_code.mdl)." => ""
+    )
 
     # see note
     if figshow
