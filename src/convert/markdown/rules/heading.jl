@@ -65,7 +65,8 @@ Return a processed version of `heading_text` which can identify the heading
 Also add it to the global set of anchors (see `lx_reflink`).
 """
 function heading_id(c::LocalContext, heading_text::String, hk::Symbol)::String
-    id  = string_to_anchor(heading_text)
+    ht  = strip(heading_text)
+    id  = string_to_anchor(ht)
     lvl = parse(Int, String(hk)[2])
     if id in keys(c.headings)
         # keep track of occurrence number for the original id
@@ -74,7 +75,7 @@ function heading_id(c::LocalContext, heading_text::String, hk::Symbol)::String
         id = "$(id)__$(n+1)"
     end
     # add the heading to the local context set of headings
-    c.headings[id] = (1, lvl, heading_text)
+    c.headings[id] = (1, lvl, ht)
     # add the anchor to the global context set of anchors
     # note that this can overwrite an existing anchor
     add_anchor(c.glob, id, c.rpath)

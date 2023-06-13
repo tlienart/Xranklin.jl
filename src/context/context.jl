@@ -248,13 +248,13 @@ end
 Base.show(io::IO, gc::GlobalContext) = println(io, """
         GlobalContext
         -------------
-        - $(length(gc.vars)) variables
-        - $(length(gc.lxdefs)) lx definitions
-        - $(length(gc.children_contexts)) children contexts
+        - $(length(gc.vars)) variable(s)
+        - $(length(gc.lxdefs)) lx definition(s)
+        - $(length(gc.children_contexts)) children context(s)
         """)
 
 Base.show(io::IO, lc::LocalContext) = println(io, """
-        LocalContext ($(lc.rpath))
+        LocalContext (rpath: '$(lc.rpath)')
         ------------
-        - $(length(lc.vars)) variables
+        - $(length(lc.vars)) variable(s)
         """)

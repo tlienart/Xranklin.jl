@@ -33,15 +33,14 @@ function process_md_file_pass_1(
 
     # get markdown and compute hash so we can check whether the content
     # has changed (if it's been seen before).
-    # NOTE: we don't use `filehash` here because we need to read the page
-    # content anyway, so might as well compute the hash from the full content.
+    # NOTE: we don't use `filehash` here because we need the actual content of
+    # NOTE: the page anyway, so we compute the hash after retrieving the content
     page_content_md = read(fpath, String)
     page_hash       = hash(page_content_md)
     lc.page_hash[]  = page_hash
 
     opath = get_opath(lc.glob, fpath)
     set_meta_parameters(lc, fpath, opath)
-
 
     skip = allow_init_skip && all((
                 !ignore_cache,
@@ -69,6 +68,13 @@ function process_md_file_pass_1(
         # Check if any anchors were removed so that they can be removed
         # from gc.anchors later on
         setvar!(lc, :_rm_anchors, setdiff(bk_state.anchors, lc.anchors))
+
+        # Check if a title is set, if not, take the first heading if there's
+        # one; the headings are ordered so we just take the first, the 3d entry
+        # is the text of the heading (see PageHeadings)
+        if isempty(getvar(lc, :title, "")) && !isempty(lc.headings)
+            setvar!(lc, :title, first(values(lc.headings))[3])
+        end
 
         # Check if any tag was removed / added so it can be adjusted in
         # the gc later on

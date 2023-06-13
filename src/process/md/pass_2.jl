@@ -16,9 +16,9 @@ function process_md_file_pass_2(
     cleanup_paginated(odir)
 
     # NOTE: we pre-resolve the html so that we resolve any *external*
-    # command present in the markdown that might control the layout
-    # further. E.g. the hfun_rm_headings in the docs which removes
-    # some headings of the lc
+    # NOTE: command present in the markdown that might control the layout
+    # NOTE: further. E.g. the hfun_rm_headings in the docs which removes
+    # NOTE: some headings of the lc
     body_html = html2(ihtml, lc; only_external=true)
     setvar!(lc, :_generated_body, body_html)
 
@@ -30,12 +30,12 @@ function process_md_file_pass_2(
     else # ----------------------------------------------------------------
 
         pgfoot_path = path(:folder) / getvar(lc, :layout_page_foot, "")
-        page_foot = isfile(pgfoot_path) ? read(pgfoot_path, String) : ""
+        page_foot   = isfile(pgfoot_path) ? read(pgfoot_path, String) : ""
 
-        c_tag = getvar(lc, :content_tag, "")
+        c_tag   = getvar(lc, :content_tag, "")
         c_class = getvar(lc, :content_class, "")
-        c_id = getvar(lc, :content_id, "")
-        body = ""
+        c_id    = getvar(lc, :content_id, "")
+        body    = ""
 
         if !isempty(c_tag)
             body = """

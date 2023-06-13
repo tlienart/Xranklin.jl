@@ -109,7 +109,7 @@ robots_disallow: disallow the current page
 =#
 const DefaultLocalVars = Vars(
     # General
-    :title        => nothing,
+    :title        => "",
     :date         => Date(1),
     :lang         => "julia",
     :tags         => String[],
