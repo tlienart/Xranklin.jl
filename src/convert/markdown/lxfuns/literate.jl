@@ -40,8 +40,22 @@ function lx_literate(
 
     c = _lx_check_nargs(:literate, p, 1)
     isempty(c) || return c
-    # ----------------------------------
-    rpath = unixify(strip(p[1]))
+    # -------------------------------------------------------------------------
+    # i144 allow \literate{path; project=ppath} and activate the dir
+    # at project if it exists.
+    # Special cases:
+    # - project is not specified, nothing is activated
+    # - project doesn't exist, warning shown, nothing is activated
+    # - path starts with a './' (or is just a '.'): look relative to where the
+    #   literate file is, with '.' assuming it's just next to it
+    if occursin(c, ";")
+        rpath, cand_ppath = strip.(split(p[1], ';', limit=2))
+    else
+        rpath = strip(p[1])
+        cand_ppath = ""
+    end
+
+    # check rpath first
     if !endswith(rpath, ".jl")
         @warn """
             \\literate{...}
@@ -64,8 +78,36 @@ function lx_literate(
         return failed_lxc("literate", p)
     end
 
-    # here fpath is the full path to an existing literate script
-    return _process_literate_file(lc, rpath, fpath)
+    # check ppath
+    if !isempty(cand_ppath)
+        m = match(r"project\s*=\s*\"?([^\s\"]*)\"?", cand_ppath)
+        if isnothing(cand_ppath)
+            @warn """
+                \\literate{...; ...}
+                Couldn't properly parse '$([1])' allowed syntax are either
+                \\literate{rpath} or \\literate{rpath; project=ppath}
+                """
+            return failed_lxc("literate", p)
+        end
+        ppath = m.captures[1]
+        if ppath == "."
+            ppath = dirname(fpath)
+        elseif startswith(ppath, "./")
+            ppath = path(:folder) / ppath[3:end]
+        end
+        if !isdir(ppath)
+            @warn """
+                \\literate{...; project=...}
+                The path to the project directory '$ppath' couldn't be
+                found; leaving the environment unchanged.
+                """
+        else
+            Pkg.activate(ppath)
+            Pkg.instantiate()
+        end
+    end
+
+    return _process_literate_file(lc, string(rpath), fpath)
 end
 
 

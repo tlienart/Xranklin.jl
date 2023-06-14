@@ -50,14 +50,15 @@ include("utils.jl")
         include(p/"henv.jl")
     end
 
+    @testset "LxFuns" begin
+        p = "convert/lxfuns"
+        include(p/"utils.jl")
+    end
+
     @testset "EnvFuns" begin
         p = "convert/envfuns"
         include(p/"math.jl")
         include(p/"utils.jl")
-    end
-
-    @testset "LxFuns" begin
-        p = "convert/lxfuns"
     end
 
     # bug fixes etc
@@ -65,7 +66,6 @@ include("utils.jl")
         p = "convert/extras"
         include(p/"refs.jl")
     end
-
 
     @testset "build" begin
         p = "build"
@@ -115,6 +115,7 @@ end # basic
 
     @testset "general" begin
         include("indir" / "general.jl")
+        include("indir" / "literate.jl")
     end
 
 end # integration / in folder

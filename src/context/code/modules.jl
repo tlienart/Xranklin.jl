@@ -123,7 +123,9 @@ const UTILS_UTILS = [
     "getlvar", "getgvar", "getvarfrom",
     "setlvar!", "setgvar!",
     "locvar", "globvar", "pagevar",
-    "get_page_tags", "get_all_tags", "get_rpath"
+    "get_page_tags", "get_all_tags", "get_rpath",
+    # project
+    "setproject!"
 ]
 
 """
@@ -167,6 +169,7 @@ modules_setup(c::Context) = begin
     for m in (c.nb_vars.mdl, c.nb_code.mdl)
         base_code = """
             using $F
+            import Pkg
 
             const __gc = cur_gc()
             const __lc = get(__gc.children_contexts, "$rpath", nothing)
@@ -175,7 +178,6 @@ modules_setup(c::Context) = begin
             path(s::Symbol)  = $F.path(__gc, s)
             folderpath(p...) = joinpath(path(:folder), p...)
             sitepath(p...)   = joinpath(path(:site), p...)
-
 
             getlvar(n::Symbol, d=nothing; default=d) =
                 $F.getvar(__lc, __lc, n, default)
@@ -202,6 +204,8 @@ modules_setup(c::Context) = begin
             get_page_tags(rp) = $F.get_page_tags(rp)
             get_all_tags()    = $F.get_all_tags(__gc)
             get_rpath()       = $F.get_rpath(__lc)
+
+            setproject!(p::AbstractString) = $F.setproject!(__lc, p)
             """
 
         # Utils module

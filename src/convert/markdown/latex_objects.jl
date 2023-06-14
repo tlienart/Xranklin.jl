@@ -330,6 +330,7 @@ function try_resolve_lxcom(
     return Block(:RAW_INLINE, subs(r2)), nargs
 end
 
+
 """
     is_in_utils(gc, n; isenv)
 
@@ -345,6 +346,7 @@ function is_in_utils(
         (n in utils_envfun_names(gc)) || (n in INTERNAL_ENVFUNS) :
         (n in utils_lxfun_names(gc))  || (n in INTERNAL_LXFUNS)
 end
+
 
 """
     from_utils(n, i, blocks, lc; isenv, tohtml)
@@ -401,6 +403,7 @@ function from_utils(
     o = outputof(fsymb, args, lc; internal, tohtml)
     return Block(kind, subs(o)), length(args)
 end
+
 
 """
     next_adjacent_brackets(i, blocks, lc)

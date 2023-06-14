@@ -50,3 +50,30 @@ function _lx_check_nargs(n::Symbol, p::VS, k::Int)
     end
     return ""
 end
+
+
+"""
+    _lx_split_args_kwargs(s::String)
+
+Attempt at splitting a string of the form "a, b, c; d=..., e=...".
+Return a corresponding (tuple, namedtuple). In the case where the parsing
+failed, return empty tuples and let the calling command handle the issue by
+calling `failed_lxc`.
+"""
+function _lx_split_args_kwargs(s::String)::Tuple{Tuple, NamedTuple}
+    try
+        p = Meta.parse("_splitter_helper($s)")
+        e = eval(p)
+        if length(e) == 1
+            typeof(e) == Tuple && return (e, (;))
+            return ((), e)
+        else
+            return (e[1], NamedTuple(e[2]))
+        end
+    catch
+        return ((), (;))
+    end
+end
+
+_splitter_helper(a...; kw...) = (a, kw)
+

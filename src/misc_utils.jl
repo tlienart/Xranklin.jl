@@ -11,9 +11,9 @@ Acts as joinpath.
 (/)(s...) = joinpath(s...)
 
 """
-    repr(s::AbstractString)
+    repr(o)
 
-Calls `repr` but strips away the `\"`.
+Calls `repr` but strips away the `\"` for string-like objects.
 """
 stripped_repr(s::AbstractString) = strip(repr(s), '\"')
 stripped_repr(o) = repr(o)
