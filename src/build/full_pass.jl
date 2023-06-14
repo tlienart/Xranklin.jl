@@ -211,9 +211,9 @@ MARKDOWN (full_pass_markdown)
     3. [🔏] adjust tags, anchors in GC
     4. [🧵] convert iHTML to HTML ("pass 2")
               - resolve dbb
-              - resolve pagination (XXX)
-              - resolve tags       (XXX)
-              - apply prefix       (XXX)
+              - resolve pagination
+              - resolve tags
+              - apply prefix
               - write to file
 
 HTML (full_pass_html)
@@ -221,8 +221,8 @@ HTML (full_pass_html)
     1. [🔏] ensure all children_contexts are allocated
     2. [🧵] convert (i)HTML to HTML
               - resolve dbb
-              - resolve pagination (XXX) (???)
-              - apply prefix       (XXX)
+              - resolve pagination
+              - apply prefix
               - write to file
 
 OTHER (full_pass_markdown)

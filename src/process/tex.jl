@@ -2,7 +2,7 @@
 # TEX FILE PROCESSING #
 # ------------------- #
 
-# XXX (should be the same as HTML)
+# (should be the same as HTML)
 
 
 # """

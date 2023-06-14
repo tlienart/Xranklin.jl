@@ -69,7 +69,7 @@ end
         <img src="B" alt="A">
         """)
 
-    # XXX should be post-processed in latex2 in some way
+    # NOTE: should be post-processed in latex2 in some way
     @test isapproxstr(l, """
         {{img_a a "A"}}
         """)

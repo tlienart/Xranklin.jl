@@ -115,10 +115,10 @@ end
             }
         }
 
-        \comb{XXX}
+        \comb{ZZZ}
         """
     h = html(s, nop=true)
-    @test h // "ABC class=foo<pre><code class=\"markdown\">XXX</code></pre>\nDEF"
+    @test h // "ABC class=foo<pre><code class=\"markdown\">ZZZ</code></pre>\nDEF"
 
     s = raw"""
         \newcommand{\coma}[1]{

@@ -33,7 +33,7 @@ Once returned the blocks need to be validated.
     {{if ...}}  ... {{elseif ...}} ...   --> [IF, ELSEIF, ELSEIF, ..., ELSE, END]
     {{for ...}} ... {{end}}              --> [FOR, END]
 
-## Errors (see XXX)
+## Errors
 
     * environment not closed properly >> handled in html2
     * one of the henv part is ill formed

@@ -114,8 +114,10 @@ end # basic
     end
 
     @testset "general" begin
-        include("indir" / "general.jl")
-        include("indir" / "literate.jl")
+        p = "indir"
+        include(p/ "general.jl")
+        include(p/ "literate.jl")
+        include(p/ "pagination.jl")
     end
 
 end # integration / in folder
