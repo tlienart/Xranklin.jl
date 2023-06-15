@@ -15,12 +15,13 @@ const DefaultGlobalVars = Vars(
     :autosavefigs        => true,
     :skiplatex           => true,
     :autoshowfigs        => true,
-    :layout_skeleton     => "_layout" / "skeleton.html",
-    :layout_head         => "_layout" / "head.html",
-    :layout_foot         => "_layout" / "foot.html",
-    :layout_page_foot    => "_layout" / "page_foot.html",
-    :layout_tag          => "_layout" / "tag.html",
-    :layout_head_lx      => "_layout" / "latex/head.tex",
+    # each of those path(:layout)/
+    :layout_skeleton     => "skeleton.html",
+    :layout_head         => "head.html",
+    :layout_foot         => "foot.html",
+    :layout_page_foot    => "page_foot.html",
+    :layout_tag          => "tag.html",
+    :layout_head_lx      => "latex" / "head.tex",
     :parse_script_blocks => true,  # see html2; possibly disable DBB in <script>
     # Date format
     :date_format      => "U d, yyyy",
@@ -60,13 +61,13 @@ const DefaultGlobalVars = Vars(
     # RSS
     :generate_rss      => false,
     :rss_website_title => "",
-    :rss_website_url   => "",
-    :rss_feed_url      => "",      # generated
+    :rss_website_url   => "",      # mandatory
     :rss_website_descr => "",
-    :rss_file          => "feed",
     :rss_full_content  => false,
-    :rss_layout_head   => "_rss" / "head.xml",
-    :rss_layout_item   => "_rss" / "item.xml",
+    :rss_file          => "feed",
+    :rss_layout_head   => "head.xml", # path(:rss)/...
+    :rss_layout_item   => "item.xml", # path(:rss)/...
+    :rss_feed_url      => "",      # generated
     # Tags
     :tags_prefix       => "tags",
     # Literate
@@ -92,13 +93,14 @@ const DefaultGlobalVars = Vars(
     :_final => false,
 )
 const DefaultGlobalVarsAlias = Alias(
-    :prepath                => :base_url_prefix,
-    :prefix                 => :base_url_prefix,
-    :base_path              => :base_url_prefix,
-    :website_url            => :rss_website_url,
-    :website_title          => :rss_website_title,
-    :website_description    => :rss_website_descr,
-    :website_descr          => :rss_website_descr
+    :prepath                 => :base_url_prefix,
+    :prefix                  => :base_url_prefix,
+    :base_path               => :base_url_prefix,
+    :website_url             => :rss_website_url,
+    :website_title           => :rss_website_title,
+    :website_description     => :rss_website_descr,
+    :website_descr           => :rss_website_descr,
+    :rss_website_description => :rss_website_descr,
 )
 
 #=
@@ -184,7 +186,7 @@ const DefaultLocalVarsAlias = Alias(
     :reeval          => :ignore_cache,
     :hasmath         => :_hasmath,
     :hascode         => :_hascode,
-    :rss_description => :rss_descr
+    :rss_description => :rss_descr,
 )
 
 ##############################################################################

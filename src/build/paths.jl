@@ -18,16 +18,16 @@ function set_paths!(gc::GlobalContext, folder::String)
     @assert isdir(folder) "$folder is not a valid path"
     P = paths(gc)
     f = P[:folder] = normpath(folder)
-    P[:assets]     = f / "_assets"
-    P[:css]        = f / "_css"
-    P[:layout]     = f / "_layout"
-    P[:libs]       = f / "_libs"
-    P[:rss]        = f / "_rss"
+    P[:assets]     = f / env(:assets_folder)
+    P[:css]        = f / env(:css_folder)
+    P[:layout]     = f / env(:layout_folder)
+    P[:libs]       = f / env(:libs_folder)
+    P[:rss]        = f / env(:rss_folder)
 
     # output
-    P[:site]  = f / "__site"
-    P[:pdf]   = f / "__pdf"
-    P[:cache] = f / "__cache"
+    P[:site]  = f / env(:output_site_folder)
+    P[:pdf]   = f / env(:output_pdf_folder)
+    P[:cache] = f / env(:output_cache_folder)
 
     # keep track of prefix, see get_rpath, get_ropath
     setvar!(gc, :_idx_rpath,  lastindex(P[:folder] / "") + 1)

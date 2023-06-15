@@ -22,14 +22,14 @@ function process_md_file_pass_2(
     body_html = html2(ihtml, lc; only_external=true)
     setvar!(lc, :_generated_body, body_html)
 
-    skeleton_path = path(:folder) / getvar(lc, :layout_skeleton, "")
+    skeleton_path = path(lc.glob, :layout) / getvar(lc, :layout_skeleton, "")
     if isfile(skeleton_path) # --------------------------------------------
 
         full_page = read(skeleton_path, String)
 
     else # ----------------------------------------------------------------
 
-        pgfoot_path = path(:folder) / getvar(lc, :layout_page_foot, "")
+        pgfoot_path = path(lc.glob, :layout) / getvar(lc, :layout_page_foot, "")
         page_foot   = isfile(pgfoot_path) ? read(pgfoot_path, String) : ""
 
         c_tag   = getvar(lc, :content_tag, "")
@@ -51,10 +51,10 @@ function process_md_file_pass_2(
                 """
         end
 
-        head_path  = path(:folder) / getvar(lc.glob, :layout_head, "")::String
+        head_path  = path(lc.glob, :layout) / getvar(lc.glob, :layout_head, "")::String
         full_page  = isfile(head_path) ? read(head_path, String) : ""
         full_page *= body
-        foot_path  = path(:folder) / getvar(lc.glob, :layout_foot, "")::String
+        foot_path  = path(lc.glob, :layout) / getvar(lc.glob, :layout_foot, "")::String
         full_page *= isfile(foot_path) ? read(foot_path, String) : ""
 
     end

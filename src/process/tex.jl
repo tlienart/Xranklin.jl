@@ -22,7 +22,7 @@
 #     end
 #
 #     full_page_latex = raw"\begin{document}" * "\n\n"
-#     head_path = path(:folder) / getvar(lc.glob, :layout_head_lx)::String
+#     head_path = path(:layout) / getvar(lc.glob, :layout_head_lx)::String
 #     if !isempty(head_path) && isfile(head_path)
 #         full_page_latex = read(head_path, String)
 #     end

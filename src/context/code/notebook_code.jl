@@ -183,12 +183,10 @@ function _eval_code_cell(
 
         Base.CoreLogging._min_enabled_level[] = pre_log_level
 
-    catch e
+    catch
         # also write to REPL so the user is doubly aware
         # if we're in 'strict_parsing' mode then this will throw
         # and interrupt the server
-        err = typeof(e)
-
         if VERSION >= v"1.7.0-"
             exc, bt = last(Base.current_exceptions())
         else
@@ -207,15 +205,19 @@ function _eval_code_cell(
               Details:
               $stacktrace
               """
-        @warn msg
-        env(:strict_parsing)::Bool && throw(msg)
-
-        return (std_out, std_err, result)
+        
+        if env(:strict_parsing)
+            throw(msg)
+        else
+            @warn msg
+        end
 
     finally
         unlock(env(:lock))
 
     end
+    isempty(std_err) || @goto end_of_eval
+
     # ------------------------------------------------------------------------
 
     δt = time() - start; @debug """
@@ -239,6 +241,8 @@ function _eval_code_cell(
             is_show && (result = nothing)
         end
     end
+
+    @label end_of_eval
     return std_out, std_err, result
 end
 

@@ -83,15 +83,16 @@ function _check_rss(
         setvar!(gc, :generate_rss, false)
     else
         endswith(url, '/') || (url *= '/')
-        full_url =  url * getvar(gc, :rss_file)::String * ".xml"
+        full_url = url * getvar(gc, :rss_file)::String * ".xml"
         setvar!(gc, :rss_feed_url, full_url)
     end
 
     #
     # CHECK 2
     # :rss_layout_head + :rss_layout_item must exists
-    rss_head = getvar(gc, :rss_layout_head, "")
-    rss_item = getvar(gc, :rss_layout_item, "")
+    rss_head = path(gc, :rss) / getvar(gc, :rss_layout_head, "")
+    rss_item = path(gc, :rss) / getvar(gc, :rss_layout_item, "")
+
     if !isfile(rss_head) || !isfile(rss_item)
         @warn """
             Process config.md

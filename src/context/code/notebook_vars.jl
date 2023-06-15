@@ -115,28 +115,61 @@ function _eval_vars_cell(
         code::String
         )::Vector{VarPair}
 
-    exs = parse_code(code)
-    try
-        start = time(); @debug """
-        ⏳ evaluating vars cell...
+    start = time(); @debug """
+        ⏳ evaluating variable assignment cell...
         """
-        foreach(ex -> Core.eval(mdl, ex), exs)
-        δt = time() - start; @debug """
-            ... [vars cell] ✔ $(hl(time_fmt(δt)))
-            """
+
+    exs = parse_code(code)
+    lock(env(:lock))
+    pre_log_level = Base.CoreLogging._min_enabled_level[]
+    Logging.disable_logging(Logging.Warn)
+    std_err = ""
+    try
+        captured = IOCapture.capture() do
+            foreach(ex -> Core.eval(mdl, ex), exs)
+        end
+        std_out = captured.output
+        
+        Base.CoreLogging._min_enabled_level[] = pre_log_level
+
     catch
+        if VERSION >= v"1.7.0-"
+            exc, bt = last(Base.current_exceptions())
+        else
+            exc, bt = last(Base.catch_stack())
+        end
+
+        # retrieve the stacktrace string so it can be shown in repl
+        stacktrace = sprint(showerror, exc, bt) |> trim_stacktrace
+        std_err    = stacktrace
+
+        Base.CoreLogging._min_enabled_level[] = pre_log_level
+
         msg = """
-              Page Var assignment
-              -------------------
-              Encountered an error while trying to evaluate one or more page
-              variable definitions.
+              <Variables assignment code>
+              An error was caught when attempting to run a variable assignment
+              cell.
+              Details:
+              $stacktrace
               """
-        if env(:strict_parsing)::Bool
+
+        if env(:strict_parsing)
             throw(msg)
         else
             @warn msg
         end
+
+    finally
+        unlock(env(:lock))
+
     end
+
+    isempty(std_err) || return Vector{VarPair}()
+
+    δt = time() - start; @debug """
+        ... [variable assignment cell] ✔ $(hl(time_fmt(δt)))
+        """
+
     # get the variable names from all assignment expressions
     vnames = []
     for ex in exs

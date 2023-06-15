@@ -4,7 +4,7 @@ module Xranklin
 # stdlib
 
 import Dates
-import Dates: Date
+import Dates: Date, DateTime
 import Base.(/)
 import REPL: softscope, ends_with_semicolon
 import Pkg
@@ -59,6 +59,15 @@ const FRANKLIN_ENV = Dict{Symbol, Any}(
     :nocode            => false,          # whether to evaluate code cells
     :use_threads       => false,          # whether to use multithreading
     :lock              => ReentrantLock(),
+    # see paths.jl
+    :layout_folder       => "_layout",
+    :rss_folder          => "_rss",
+    :libs_folder         => "_libs",
+    :assets_folder       => "_assets",
+    :css_folder          => "_css",
+    :output_site_folder  => "__site",
+    :output_pdf_folder   => "__pdf",
+    :output_cache_folder => "__cache",
 )
 env(s::Symbol)        = FRANKLIN_ENV[s]
 setenv!(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
@@ -162,6 +171,7 @@ include("$p/henv_for.jl")
 include("$p/henv_if.jl")
 include("$p/tags_pagination.jl")
 include("$p/dates.jl")
+include("$p/rss.jl")
 
 p = "convert/postprocess"
 include("$p/dbb.jl")
