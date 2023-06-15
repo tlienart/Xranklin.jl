@@ -170,6 +170,7 @@ modules_setup(c::Context) = begin
         base_code = """
             using $F
             import Pkg
+            import Dates
 
             const __gc = cur_gc()
             const __lc = get(__gc.children_contexts, "$rpath", nothing)

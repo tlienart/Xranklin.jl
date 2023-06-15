@@ -32,7 +32,7 @@ const INTERNAL_HORPHAN = [
 
 const INTERNAL_HFUNS = [
     # .
-    :failed,
+    :failed, :html,
     # /input.jl
     :fill,
     :insert, :include,
@@ -49,6 +49,9 @@ const INTERNAL_HFUNS = [
     :footnotes,
     # /dates.jl
     :last_modification_date, :creation_date,
+    # /rss.jl
+    :rss_website_title, :rss_website_descr, :rss_descr,
+    :rss_pubdate, :rss_page_url,
 ]
 
 
@@ -89,4 +92,29 @@ function _hfun_check_nargs(n::Symbol, p::VS; k::Int=0, kmin::Int=k, kmax::Int=k)
         return hfun_failed(n |> string, p)
     end
     return ""
+end
+
+
+"""
+    {{html varname}}
+
+Assuming varname corresponds to a markdown string, convert it to HTML and insert
+without adding paragraphs.
+"""
+function hfun_html(
+            lc::LocalContext,
+            p::VS;
+            tohtml=true
+        )::String
+    c = _hfun_check_nargs(:html, p; k=1)
+    isempty(c) || return c
+
+    src = getvar(lc, Symbol(p[1]))
+    if isnothing(src) || !isa(src, String)
+        @warn """
+            {{html $(p[1])}}
+            Couldn't find var '$(p[1])' or it doesn't correspond to a String.
+            """
+    end
+    return html(src, lc)
 end

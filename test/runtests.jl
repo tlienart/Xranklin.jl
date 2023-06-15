@@ -48,6 +48,8 @@ include("utils.jl")
         p = "convert/hfuns"
         include(p/"evalstr.jl")
         include(p/"henv.jl")
+        # include(p/"integrated.jl") see indirs further below
+        include(p/"misc.jl")
     end
 
     @testset "LxFuns" begin
@@ -99,6 +101,7 @@ include("utils.jl")
         include(p/"triggers.jl")
         include(p/"parsing.jl")
         include(p/"misc.jl")
+        include(p/"vars.jl")
     end
 
     spurious_assets = dirname(dirname(pathof(Xranklin))) / "assets"
@@ -118,6 +121,7 @@ end # basic
         include(p/ "general.jl")
         include(p/ "literate.jl")
         include(p/ "pagination.jl")
+        include(p/ "rss.jl")
     end
 
 end # integration / in folder

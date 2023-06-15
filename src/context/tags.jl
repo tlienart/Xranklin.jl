@@ -116,7 +116,7 @@ function write_tag_page(
         </html>
         """
     # check if a tag layout is not given explicitly
-    tt = getvar(gc, :layout_tag, "_layout/tag.html")
+    tt = path(gc, :layout) / getvar(gc, :layout_tag, "")
     if isfile(tt)
         ct = read(tt, String)
     end
