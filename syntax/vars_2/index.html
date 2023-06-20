@@ -1463,14 +1463,10 @@ team = [
 ]
 +++
 
-&lbrace;&lbrace;for person in team&rbrace;&rbrace;
-&lbrace;&lbrace;&gt; $person.name&rbrace;&rbrace;
-&lbrace;&lbrace;end&rbrace;&rbrace;
-
 ~~~
 &lt;ul&gt;
 &lbrace;&lbrace;for person in team&rbrace;&rbrace;
-  &lt;li&gt;&lt;strong&gt;&lbrace;&lbrace;&gt; $person.name&rbrace;&rbrace;&lt;/strong&gt;:: &lbrace;&lbrace;&gt; $person.role&rbrace;&rbrace;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;&lbrace;&lbrace;&gt; $person.name&rbrace;&rbrace;&lt;/strong&gt;: &lbrace;&lbrace;&gt; $person.role&rbrace;&rbrace;&lt;/li&gt;
 &lbrace;&lbrace;end&rbrace;&rbrace;
 &lt;/ul&gt;
 ~~~</code></pre>
@@ -1482,19 +1478,13 @@ team = [
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend>
-Alice
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><ul>
 
-Bob
+  <li><strong>Alice</strong>: CEO</li>
 
-Jon
-<ul>
+  <li><strong>Bob</strong>: CTO</li>
 
-  <li><strong>Alice</strong>:: CEO</li>
-
-  <li><strong>Bob</strong>:: CTO</li>
-
-  <li><strong>Jon</strong>:: Eng</li>
+  <li><strong>Jon</strong>: Eng</li>
 
 </ul></fieldset>
 
