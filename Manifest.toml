@@ -114,10 +114,10 @@ uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 version = "1.6.0"
 
 [[deps.Expat_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "bad72f730e9e91c08d9427d5e8db95478a3c323d"
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "4558ab818dcceaab612d1bb8c19cee87eda2b83c"
 uuid = "2e619515-83b5-522b-bb60-26c02a35a201"
-version = "2.4.8+0"
+version = "2.5.0+0"
 
 [[deps.FFMPEG]]
 deps = ["FFMPEG_jll"]
@@ -517,9 +517,9 @@ uuid = "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79"
 
 [[deps.PyCall]]
 deps = ["Conda", "Dates", "Libdl", "LinearAlgebra", "MacroTools", "Serialization", "VersionParsing"]
-git-tree-sha1 = "62f417f6ad727987c755549e9cd88c46578da562"
+git-tree-sha1 = "08c74e61c63bf63530c03cde3fe59586fcae8941"
 uuid = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
-version = "1.95.1"
+version = "1.95.2"
 
 [[deps.PyPlot]]
 deps = ["Colors", "LaTeXStrings", "PyCall", "Sockets", "Test", "VersionParsing"]
