@@ -115,60 +115,10 @@ function _eval_vars_cell(
         code::String
         )::Vector{VarPair}
 
-    start = time(); @debug """
-        ⏳ evaluating variable assignment cell...
-        """
-
     exs = parse_code(code)
-    lock(env(:lock))
-    pre_log_level = Base.CoreLogging._min_enabled_level[]
-    Logging.disable_logging(Logging.Warn)
-    std_err = ""
-    try
-        captured = IOCapture.capture() do
-            foreach(ex -> Core.eval(mdl, ex), exs)
-        end
-        std_out = captured.output
-        
-        Base.CoreLogging._min_enabled_level[] = pre_log_level
+    res = eval_nb_cell(mdl, code)
 
-    catch
-        if VERSION >= v"1.7.0-"
-            exc, bt = last(Base.current_exceptions())
-        else
-            exc, bt = last(Base.catch_stack())
-        end
-
-        # retrieve the stacktrace string so it can be shown in repl
-        stacktrace = sprint(showerror, exc, bt) |> trim_stacktrace
-        std_err    = stacktrace
-
-        Base.CoreLogging._min_enabled_level[] = pre_log_level
-
-        msg = """
-              <Variables assignment code>
-              An error was caught when attempting to run a variable assignment
-              cell.
-              Details:
-              $stacktrace
-              """
-
-        if env(:strict_parsing)
-            throw(msg)
-        else
-            @warn msg
-        end
-
-    finally
-        unlock(env(:lock))
-
-    end
-
-    isempty(std_err) || return Vector{VarPair}()
-
-    δt = time() - start; @debug """
-        ... [variable assignment cell] ✔ $(hl(time_fmt(δt)))
-        """
+    res.success || return Vector{VarPair}()
 
     # get the variable names from all assignment expressions
     vnames = []
@@ -179,6 +129,8 @@ function _eval_vars_cell(
             push!(vnames, ex.args[1].args[1])
         end
     end
-    filter!(v -> v isa Symbol, vnames)
-    return [VarPair((vn, getproperty(mdl, vn))) for vn in vnames]
+    return [
+        VarPair((vn, getproperty(mdl, vn)))
+        for vn in vnames if vn isa Symbol
+    ]
 end

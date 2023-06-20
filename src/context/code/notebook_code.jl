@@ -132,9 +132,9 @@ shown).
 
 # Return
 
-    * std_out::String
-    * std_err::String
-    * result::T where T
+    * out::String
+    * err::String
+    * result::R where R
 """
 function _eval_code_cell(
                 mdl::Module,
@@ -142,17 +142,7 @@ function _eval_code_cell(
                 cell_name::String
                 )::Tuple
 
-    start = time(); @debug """
-        ⏳ evaluating code cell... $(hl(
-            isempty(cell_name) ? "" : "($cell_name)",
-            :light_green))
-        """
-
-    std_out = ""
-    std_err = ""
-    result  = nothing
-
-    # discard mock lines
+    # trim mock lines
     io = IOBuffer()
     for line in split(code, '\n')
         m = match(CODE_MOCK_PAT, line)
@@ -162,89 +152,31 @@ function _eval_code_cell(
     end
     code = String(take!(io))
 
-    # NOTE: IOCapture will capture stdout for all thread so we need to lock
-    # in order to do this in sequence. This means that pages with code are
-    # effectively processed sequentially (it's not the case with vars code
-    # as the output of that is not captured)
-    # same as well with the _min_enabled_level thing actually...
-    # ------------------------------------------------------------------------
-    lock(env(:lock))
+    # evaluate code 
+    res = eval_nb_cell(mdl, code; cell_name)
 
-    # avoid Precompilation info and warning showing up in stdout
-    pre_log_level = Base.CoreLogging._min_enabled_level[] # yeah.. I know
-    Logging.disable_logging(Logging.Warn)
-    try
-        captured = IOCapture.capture() do
-            include_string(softscope, mdl, code)
-        end
-        # if we're here then 'output' and 'value' are set
-        std_out = captured.output
-        result  = captured.value
-
-        Base.CoreLogging._min_enabled_level[] = pre_log_level
-
-    catch
-        # also write to REPL so the user is doubly aware
-        # if we're in 'strict_parsing' mode then this will throw
-        # and interrupt the server
-        if VERSION >= v"1.7.0-"
-            exc, bt = last(Base.current_exceptions())
+    # the return value may be suppressed so we extract it and check
+    result = res.value
+    if res.success
+        if ends_with_semicolon(code)
+            result = nothing
         else
-            exc, bt = last(Base.catch_stack())
-        end
-
-        # retrieve the stacktrace string so it can be shown in repl
-        stacktrace = sprint(showerror, exc, bt) |> trim_stacktrace
-        std_err    = stacktrace
-
-        Base.CoreLogging._min_enabled_level[] = pre_log_level
-
-        msg = """
-              <Code evaluation>
-              An error was caught when attempting to run a code cell ('$(cell_name)')
-              Details:
-              $stacktrace
-              """
-        
-        if env(:strict_parsing)
-            throw(msg)
-        else
-            @warn msg
-        end
-
-    finally
-        unlock(env(:lock))
-
-    end
-    isempty(std_err) || @goto end_of_eval
-
-    # ------------------------------------------------------------------------
-
-    δt = time() - start; @debug """
-            ... [code cell] ✔ $(hl(time_fmt(δt)))
-            """
-
-    # if the end of the cell is a ';' or a `@show` then
-    # suppress the result
-    if ends_with_semicolon(code)
-        result = nothing
-    else
-        # Check if the last expression is a show and if so set the returned
-        # value to nothing to avoid double shows
-        pc  = parse_code(code)
-        if !isempty(pc)
-            lex = last(pc)
-            is_show = isa(lex, Expr) &&
-                        length(lex.args) > 1 &&
-                        lex.args[1] == Symbol("@show")
-
-            is_show && (result = nothing)
+            # Check if the last expression is a show and if so set the returned
+            # value to nothing to avoid double shows
+            pc = parse_code(code)
+            if !isempty(pc)
+                lex = last(pc)
+                is_show = isa(lex, Expr) &&
+                            length(lex.args) > 1 &&
+                            lex.args[1] == Symbol("@show")
+    
+                is_show && (result = nothing)
+            end
         end
     end
-
-    @label end_of_eval
-    return std_out, std_err, result
+    return (res.out, res.err, result)
 end
+
 
 """
     trim_stacktrace(error_string)
@@ -290,35 +222,35 @@ suppressed or enabled by the user via CSS (and will be suppressed by default).
 """
 function _form_code_repr(
             ctx::Context,
-            output::Tuple{String,String,<:Any},
-            fig_html::NT,
-            fig_latex::NT,
+            code_output::Tuple{String,String,<:Any},
+            fig_html::NamedTuple,
+            fig_latex::NamedTuple,
             skiplatex::Bool = false
-        )::CodeRepr where NT <: NamedTuple
+        )::CodeRepr
 
     # extract the raw stuff from the output tuple (from _eval_code_cell)
-    std_out, std_err, result  = output
+    out, err, result = code_output
     io_html, io_latex, io_raw = IOBuffer(), IOBuffer(), IOBuffer()
 
     # (1) Representation of STDOUT (printout in a div)
-    if !isempty(std_out)
+    if !isempty(out)
         write(io_html,
             "<pre><code class=\"code-stdout language-plaintext\">",
-            std_out,
+            out,
             "</code></pre>"
         )
-        write(io_latex, std_out)
-        write(io_raw,   std_out, "\n")
+        write(io_latex, out)
+        write(io_raw,   out, "\n")
     end
 
     # (2) Representation of STDERR (printout in a div)
-    if !isempty(std_err)
+    if !isempty(err)
         write(io_html,
             "<pre><code class=\"code-stderr language-plaintext\">",
-            std_err,
+            err,
             "</code></pre>"
         )
-        write(io_latex, std_out)
+        write(io_latex, out)
     end
 
     # (3) Representation of the result
@@ -327,9 +259,7 @@ function _form_code_repr(
         # If there's a non-empty result, keep track of what it looks like
         write(
             io_raw,
-            result isa AbstractString ?
-                string(result) :
-                Base.@invokelatest Base.repr(result)
+            stripped_repr(result)
         )
         # Check if there's a dedicated show or a custom show available
         figshow = append_result_html!(ctx, io_html, result, fig_html)

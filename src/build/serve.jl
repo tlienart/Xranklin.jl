@@ -24,9 +24,13 @@ Runs Franklin in the directory `d` (current directory if unspecified).
     use_threads (Bool)  : [EXPERIMENTAL] if set to true, use multi-threading
                            in the full pass. You can only use this if there
                            is a single, site-wide environment (single Project
-                           and Manifest files). Also not recommended if one
-                           or several of your pages make use of multithreading
-                           themselves.
+                           and Manifest files). Also, if your pages make use of
+                           code (both page variables or actual code), then their
+                           processing will lock, effectively defeating the
+                           multi-threading. This is because code-execution needs
+                           to be captured, this is done with IOCapture which,
+                           for now, requires to be locked.
+                           https://github.com/JuliaDocs/IOCapture.jl/issues/14
 
     base_url_prefix (String)  : override the base url prefix and force it to a
                                  given value.
