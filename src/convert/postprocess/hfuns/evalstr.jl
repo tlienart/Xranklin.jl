@@ -1,5 +1,3 @@
-struct EvalStrError end
-
 is_estr(s; allow_short=false) = begin
     startswith(s, "e\"") || (allow_short && startswith(s, "> "))
 end
@@ -20,32 +18,27 @@ See tests for examples.
 function eval_str(
             lc::LocalContext,
             estr::SS
-        )
-    estr = replace(strip(estr), "\\\"" => "⁰")
+        )::EvalResult
 
+    estr = replace(strip(estr), "\\\"" => "⁰")
     if startswith(estr, "e")
         estr = strip(strip(lstrip(estr, 'e'), '\"'))
     else
         estr = strip(lstrip(estr, '>'))
     end
-
     code = _eval_str(lc, estr)
+    code = replace(code, "⁰" => "\"")
 
-    lock(env(:lock))
-    captured = IOCapture.capture(; rethrow=Union{}) do
-        include_string(
-            softscope,
-            utils_module(lc),
-            replace(code, "⁰" => "\"")
-        )
-    end
-    unlock(env(:lock))
+    res = eval_nb_cell(
+        utils_module(lc),
+        code,
+        cell_name = "__estr__"
+    )
 
-    captured.error && return EvalStrError()
-    return captured.value
+    return res
 end
 eval_str(lc, es::String) = eval_str(lc, subs(es))
-eval_str(es::String) = eval_str(ToyLocalContext(), es)
+eval_str(es::String)     = eval_str(ToyLocalContext(), es)
 
 
 """

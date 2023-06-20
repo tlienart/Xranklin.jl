@@ -1,9 +1,9 @@
 include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
 @testset "basics" begin
-    @test X.eval_str("5^2") == 25
-    @test X.eval_str("[i for i in 1:3]") == [1,2,3]
-    @test X.eval_str("sqrt(-1)") isa Xranklin.EvalStrError
+    @test X.eval_str("5^2").value == 25
+    @test X.eval_str("[i for i in 1:3]").value == [1,2,3]
+    @test !X.eval_str("sqrt(-1)").success
 end
 
 @testset "hfun eval str" begin
@@ -23,13 +23,15 @@ end
         """
     html(s, lc)
     es = raw""" e"$a" """
-    @test Xranklin.eval_str(lc, es) == 5
+    @test Xranklin.eval_str(lc, es).value == 5
+    nowarn()
     es = raw""" e"2*$b" """
-    @test Xranklin.eval_str(lc, es) isa Xranklin.EvalStrError
+    @test !Xranklin.eval_str(lc, es).success
+    logall()
     es = raw""" e"$b" """
-    @test isnothing(Xranklin.eval_str(lc, es))
+    @test isnothing(Xranklin.eval_str(lc, es).value)
     es = raw""" e"$c2 || $c1" """
-    @test Xranklin.eval_str(lc, es)
+    @test Xranklin.eval_str(lc, es).value
 end
 
 @testset "i190" begin
@@ -90,5 +92,5 @@ end
             {{else}}bar{{end}}
             """ |> html
         @test contains(h, "FAILED")
-    end "Found an {{isempty ...}} variant with an e-string"
+    end "error was caught when attempting to run code ('__estr__')"
 end

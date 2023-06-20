@@ -187,10 +187,15 @@ derived iterator that you'd wish to go over:
     (name="Jon", role="Eng")
   ]
   +++
+
+  {{for person in team}}
+  {{> $person.name}}
+  {{end}}
+
   ~~~
   <ul>
   {{for person in team}}
-  <li><strong>{{> $person.name}}</strong>: {{> $person.role}}</li>
+    <li><strong>{{> $person.name}}</strong>:: {{> $person.role}}</li>
   {{end}}
   </ul>
   ~~~

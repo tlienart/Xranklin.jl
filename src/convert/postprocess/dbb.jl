@@ -15,13 +15,10 @@ function resolve_dbb(
     cb = strip(content(parts[idx]))
 
     #
-    # Early skips: empty dbb or e-string
+    # Early skips: empty dbb
     #
     if isempty(cb)
         write(io, EMPTY_DBB)
-        return idx
-    elseif is_estr(cb; allow_short = true)
-        _dbb_fill_estr(lc, io, cb)
         return idx
     end
 
@@ -29,8 +26,10 @@ function resolve_dbb(
     # Actual DBB treatment
     # > A.  internal HENV (if, etc)
     # > A'. dangling HENV (orphan else, elseif, end)
-    # > B.  hfun
-    # > C.  fill attempt
+    # > B.  e-string?
+    # > C.  hfun
+    # > D.  fill attempt
+    # > E.  only_external
     #
     split_cb = FP.split_args(cb)
     fname    = Symbol(lowercase(first(split_cb)))
@@ -65,16 +64,21 @@ function resolve_dbb(
             """
         write(io, hfun_failed(split_cb))
 
-    # B | utils function or internal function (utils have priority)
+    # B | independent e-string (outside of henv)
+    elseif is_estr(cb; allow_short = true) & !only_external
+        _dbb_fill_estr(lc, io, cb)
+
+    # C | utils function or internal function (utils have priority)
     elseif (external = fname in utils_hfun_names(lc.glob)) ||
            ((fname in INTERNAL_HFUNS) & !only_external)
         # run the function either in the Utils module or internally
         _dbb_fun(lc, io, fname, args; internal=!external)
 
-    # C | fill attempt
+    # D | fill attempt
     elseif !only_external
         _dbb_fill(lc, io, fname, args, dots)
 
+    # E
     else
         # this is if only_external / we just re-write the command
         # for later processing
@@ -92,26 +96,18 @@ function _dbb_fill_estr(
             cb::SubString
         )::Nothing
 
-    v = eval_str(lc, cb)
-
-    if !isa(v, EvalStrError)
-        sv = string(v)
-        if isempty(sv)
+    res = eval_str(lc, cb)
+    if res.success
+        r = stripped_repr(res.value)
+        if isempty(r)
             write(io, EMPTY_DBB)
         else
-            write(io, sv)
+            write(io, r)
         end
-        return
+    else
+        # warning / throw handled by eval
+        write(io, hfun_failed([string(cb)]))
     end
-
-    @warn """
-        {{ e"..." }} or {{ > ... }}
-        ---------------------------
-        An environment '{{ e"..." }}' failed to evaluate properly,
-        check that the code in the e-string is valid and that
-        variables are prefixed with a \$.
-        """
-    write(io, hfun_failed([string(cb)]))
     return
 end
 

@@ -213,17 +213,12 @@ function _check_isempty(lc, args)
         for a in args
             flag &= begin
                 if is_estr(a)
-                    v = eval_str(lc, a)
-                    if v isa EvalStrError
-                        @warn """
-                            {{isempty ...}}
-                            Found an {{isempty ...}} variant with an e-string '$a' that
-                            failed to resolve.
-                            """
+                    res = eval_str(lc, a)
+                    if !res.success
                         err = true
                         false
                     else
-                        _isemptyvar(v)
+                        _isemptyvar(res.value)
                     end
                 else
                     _isemptyvar(getvar(lc, Symbol(a), nothing))
@@ -271,23 +266,19 @@ function _check_if(lc, args)
     else
         arg = args[1]
         if is_estr(arg)
-            v = eval_str(lc, arg)
-            if v isa EvalStrError
-                @warn """
-                    {{if ...}} / {{elseif ...}}
-                    Found and {{if ...}} variant with an e-string '$arg' that
-                    failed to resolve.
-                    """
+            res = eval_str(lc, arg)
+            if !res.success
                 err = true
-            elseif !(v isa Bool)
+            elseif !(res.value isa Bool)
                 @warn """
                     {{if ...}} / {{elseif ...}}
                     Found and {{if ...}} variant with an e-string '$arg' that
-                    did not resolve to a boolean ('$v' of type '$(typeof(v))').
+                    did not resolve to a boolean ('$(res.value)' of type
+                    '$(typeof(res.value))').
                     """
                 err = true
             else
-                flag = v
+                flag = res.value
             end
         else
             v = getvar(lc, Symbol(arg))

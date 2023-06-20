@@ -41,16 +41,12 @@ function resolve_henv_for(
 
     # recover the iterator, either from an e-string or from a variable
     if is_estr(istr)
-        iter = eval_str(lc, istr)
-        if iter isa EvalStrError
-            @warn """
-                {{ for ... }}
-                -------------
-                The e-string '$istr' expected to give an iterator failed
-                to evaluate properly.
-                """
+        res = eval_str(lc, istr)
+        if !res.success
             write(io, hfun_failed("for", henv[1].args))
             return
+        else
+            iter = res.value
         end
     else
         iter = getvar(lc, Symbol(istr))

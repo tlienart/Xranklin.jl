@@ -49,7 +49,15 @@ function eval_nb_cell(
         )::EvalResult
 
     lock(env(:lock))
-    cn       = ifelse(isempty(cell_name), "vars-assignment", cell_name)
+    cn = ifelse(
+        isempty(cell_name),
+        "vars-assignment",
+        ifelse(
+            cell_name == "__estr__",
+            "e-string",
+            cell_name
+        )
+    )
     start    = time(); @debug """
             ⏳ evaluating code... $(hl(cn, :light_green))
         """

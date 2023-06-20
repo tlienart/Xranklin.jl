@@ -24,8 +24,6 @@ logall() = (
     ENV["JULIA_DEBUG"] = "all";
 )
 
-logall()
-
 # ----------------------- #
 # String comparison utils #
 # ----------------------- #
