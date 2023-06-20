@@ -234,7 +234,8 @@ end
     {{ispage p1}}
     {{ispage p1 p2}}
 
-Check if the current page matches one of the given paths.
+Check if the current page matches one of the given paths. Paths can be given
+as e-strings.
 """
 function _check_ispage(lc, args)
     flag, err = false, false
@@ -247,6 +248,10 @@ function _check_ispage(lc, args)
         err = true
     else
         rurl = getvar(lc, :_relative_url, "")
+        if any(is_estr, args)
+            args = [is_estr(arg) ? eval_str(lc, arg).value : arg for arg in args]
+        end
+        
         flag = any(a -> match_url(rurl, a), args)
     end
     return (flag, err)
