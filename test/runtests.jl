@@ -122,7 +122,7 @@ end # basic
         include(p/ "literate.jl")
         include(p/ "pagination.jl")
         include(p/ "rss.jl")
-    end
+    end 
 
 end # integration / in folder
 

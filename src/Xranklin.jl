@@ -44,11 +44,14 @@ export attach, cur_gc
 export toy_example
 export notebook
 
+# NOTE: these exports should not be confused with the functions loaded in Utils
+# NOTE: module that can be leveraged in var assignment and code cells. For that
+# NOTE: see the list UTILS_UTILS (in context/code/modules.jl)
 
 # ------------------------------------------------------------------------
 
 const FRANKLIN_ENV = Dict{Symbol, Any}(
-    :module_name       => "Xranklin",     # TODO: remove here, in newmodule, in delay
+    :module_name       => "Xranklin",     # TODO: remove when merging into Franklin
     :module_path       => Base.find_package("Xranklin"),
     :strict_parsing    => false,          # if true, fail on any parsing issue
     :offset_lxdefs     => -typemax(Int),  # helps keep track of order in lxcoms/envs
@@ -119,6 +122,7 @@ include("$p/default_context.jl")
 p = "context/code"
 include("$p/modules.jl")
 include("$p/notebook.jl")
+include("$p/eval.jl")
 include("$p/notebook_vars.jl")
 include("$p/notebook_code.jl")
 

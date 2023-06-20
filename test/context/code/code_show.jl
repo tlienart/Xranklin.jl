@@ -65,7 +65,7 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
         @test occursin("""sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).""", h)
         @test occursin("""Stacktrace:""", h)
         @test occursin("""throw_complex_domainerror""", h)
-    end "An error was caught when attempting to run a code cell ('ex')"
+    end "An error was caught when attempting to run code ('ex')"
 end
 
 @testset "figure" begin
