@@ -1462,10 +1462,15 @@ team = [
   (name=&quot;Jon&quot;, role=&quot;Eng&quot;)
 ]
 +++
+
+&lbrace;&lbrace;for person in team&rbrace;&rbrace;
+&lbrace;&lbrace;&gt; $person.name&rbrace;&rbrace;
+&lbrace;&lbrace;end&rbrace;&rbrace;
+
 ~~~
 &lt;ul&gt;
 &lbrace;&lbrace;for person in team&rbrace;&rbrace;
-&lt;li&gt;&lt;strong&gt;&lbrace;&lbrace;&gt; $person.name&rbrace;&rbrace;&lt;/strong&gt;: &lbrace;&lbrace;&gt; $person.role&rbrace;&rbrace;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;&lbrace;&lbrace;&gt; $person.name&rbrace;&rbrace;&lt;/strong&gt;:: &lbrace;&lbrace;&gt; $person.role&rbrace;&rbrace;&lt;/li&gt;
 &lbrace;&lbrace;end&rbrace;&rbrace;
 &lt;/ul&gt;
 ~~~</code></pre>
@@ -1477,13 +1482,19 @@ team = [
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><ul>
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>
+Alice
 
-<li><strong><span style="color:red;">[FAILED:]&gt;&lbrace;&lbrace; > $person.name&rbrace;&rbrace;&lt;</span></strong>: <span style="color:red;">[FAILED:]&gt;&lbrace;&lbrace; > $person.role&rbrace;&rbrace;&lt;</span></li>
+Bob
 
-<li><strong><span style="color:red;">[FAILED:]&gt;&lbrace;&lbrace; > $person.name&rbrace;&rbrace;&lt;</span></strong>: <span style="color:red;">[FAILED:]&gt;&lbrace;&lbrace; > $person.role&rbrace;&rbrace;&lt;</span></li>
+Jon
+<ul>
 
-<li><strong><span style="color:red;">[FAILED:]&gt;&lbrace;&lbrace; > $person.name&rbrace;&rbrace;&lt;</span></strong>: <span style="color:red;">[FAILED:]&gt;&lbrace;&lbrace; > $person.role&rbrace;&rbrace;&lt;</span></li>
+  <li><strong>Alice</strong>:: CEO</li>
+
+  <li><strong>Bob</strong>:: CTO</li>
+
+  <li><strong>Jon</strong>:: Eng</li>
 
 </ul></fieldset>
 
