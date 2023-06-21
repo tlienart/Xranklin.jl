@@ -1,12 +1,14 @@
 """
-    generate_rss(gc)
+generate_rss_feeds(gc)
 
 Form the RSS items associated with each local context attached to `gc` and
-write the full feed file.
+write the full feed file. Do the same for each of the tags.
 
 Note: this only gets called if `:generate_rss` is true which only happens if
 `_check_rss` has been called and returns `true`. This guarantees that
 `rss_layout_head` and `rss_layout_item` point to existing files.
+
+## Global feed
 
 Process:
 1. form the "head" by calling `html2` (only resolving dbb) on the rss head file
@@ -18,74 +20,140 @@ Process:
 3. finish the buffer, extract the string, make all relative links into absolute
     links via `rss_website_url` (which should correspond to the absolute URL
     of the landing page)
+
+## Per-tag feeds
+
+Assuming there are tags, the process is the same but filtering for each tag.
 """
-function generate_rss(
-            gc::GlobalContext
-        )::Nothing
-
-    crumbs(@fname)
-
-    # ---------------------------------------------
-    println("")
-    start = time(); @info """
-        💡 $(hl("starting rss generation", :yellow))
-        """
-    println("")
-    # ---------------------------------------------
-
-    io   = IOBuffer()
-    head = path(:rss) / getvar(gc, :rss_layout_head, "")
-    head = html2(read(head, String), DefaultLocalContext(gc; rpath="__rss__"))
-    head = replace(head, EMPTY_LINE_PAT => "\n")
-    write(io, head)
-
-    # Get the relative path of each local context associated with gc
-    # and get the relevant date (either rss_pubdate or date) then sort
-    # by date in anti-chronological order
-    rps = [
+function generate_rss_feeds(gc::GlobalContext)::Nothing
+    # Get the relative path of each local context associated with gc that has
+    # an rss_descr associated with it.
+    # Then, get a relevant date (or fill one) and sort by date in anti-chron
+    # order (newest at the top)
+    rss_rpaths_with_date = [
         (rp, _rss_sort_date(c))
         for (rp, c) in gc.children_contexts
         if !isempty(getvar(c, :rss_descr, ""))
     ]
-    sort!(rps, by=x->x[2], rev=true)
+    sort!(rss_rpaths_with_date, by = x -> x[2], rev=true)
+    rss_rpaths = [e[1] for e in rss_rpaths_with_date]
 
-    # form the rss item for each rp and write to io
-    item_template = read(path(:rss) / getvar(gc, :rss_layout_item, ""), String)
-    # read the template and remove comments
-    item_template = replace(
-        item_template,
-        HTML_COMMENT_PAT => ""
-    )
-    for (rp, _) in rps
-        write(io, form_rss_item(gc.children_contexts[rp], item_template))
-    end
-
-    # close the rss feed
-    write(io, "</channel></rss>")
-
-    # make the relative links into absolute links
+    #
+    # base url to make all relative links into absolute links
+    #
     base_url = getvar(gc, :rss_website_url)
     endswith(base_url, "index.html") && (base_url = base_url[1:end-10])
     endswith(base_url, '/') || (base_url *= '/')
 
+    # global feed takes all the paths
+    head_path = path(:rss) / getvar(gc, :rss_layout_head, "")
+    item_path = path(:rss) / getvar(gc, :rss_layout_item, "")
+    _generate_rss_feed(
+        gc, rss_rpaths, head_path, item_path, base_url
+    )
+
+    # per-tag feed takes only the paths for the tag; also there's a possibility
+    # to provide a dedicated tag-head which will default to the same rss head
+    # as the global feed.
+    head_path = path(:rss) / getvar(gc, :rss_layout_head_tag, "")
+    item_path = path(:rss) / getvar(gc, :rss_layout_item_tag, "")
+    for tag_id in keys(gc.tags)
+        tag_rss_rpaths = filter(rp -> rp ∈ gc.tags[tag_id].locs, rss_rpaths)
+        _generate_rss_feed(
+            gc, tag_rss_rpaths, head_path, item_path, base_url, tag_id
+        )
+    end
+    return
+end
+
+
+"""
+    _generate_rss_feed(...)
+
+Main function to assemble the RSS feed either for the global or one of the tag
+feed.
+
+Note: no need to check whether head/item exist, see _check_rss.
+"""
+function _generate_rss_feed(
+            gc::GlobalContext,
+            rss_rpaths::Vector{String},
+            head_path::String,
+            item_path::String,
+            base_url::String,
+            tag_id::String = ""
+        )::Nothing
+
+    crumbs(@fname)
+
+    case  = ifelse(isempty(tag_id), "global", tag_id)
+    start = time(); @info """
+        💡 $(hl("starting rss generation", :yellow)) [$(hl(case, :magenta))]
+        """
+
+    # 
+    # Retrieve the template files and pre-process them
+    #
+    feed_ctx = DefaultLocalContext(gc; rpath="__rss__")
+    if case != "global"
+        setvar!(feed_ctx, :tag, gc.tags[tag_id].name)
+    end
+    head = read(head_path, String)
+    head = html2(head, feed_ctx)
+    head = replace(head, EMPTY_LINE_PAT => "\n", HTML_COMMENT_PAT => "")
+
+    item = read(item_path, String)
+    item = replace(item, HTML_COMMENT_PAT => "")
+
+    #
+    # Write the stream
+    #
+    io = IOBuffer()
+    write(io, head)
+    for rp in rss_rpaths
+        rp_ctx = gc.children_contexts[rp]
+        rp_rss = _form_rss_item(rp_ctx, item)
+        write(io, rp_rss)
+    end
+    write(io, "</channel></rss>")
+
+    #
+    # Extract the stream and make relative links into absolute ones
+    #
     full_rss = replace(
         String(take!(io)),
         PREPATH_FIX_PAT => SubstitutionString("\\1=\\2$base_url")
     )
 
-    # write to file
-    outpath = path(:site) / splitext(getvar(gc, :rss_file, "feed"))[1] * ".xml"
+    #
+    # write stream to file after
+    #   1. adjusting the rss feed URL for tags
+    #   2. getting the right outpath
+    #
+    feed_file_name = splitext(getvar(gc, :rss_file, "feed"))[1] * ".xml"
+    tags_prefix    = getvar(gc, :tags_prefix, "tags")
+    glob_url       = getvar(gc, :rss_feed_url, "NA")  # set by _check_rss
+    if case != "global"
+        feed_url = replace(
+            glob_url,
+            feed_file_name => "$tags_prefix/$tag_id/$feed_file_name"
+        )
+        full_rss = replace(
+            full_rss,
+            glob_url => feed_url
+        )
+        outpath = path(:site) / tags_prefix / tag_id / feed_file_name
+        mkpath(dirname(outpath))
+    else
+        outpath = path(:site) / feed_file_name
+    end
     open(outpath, "w") do f
         write(f, full_rss)
     end
 
-    # ---------------------------------------------
-    println("")
     δt = time() - start; @info """
-        💡 $(hl("rss generation done", :yellow)) $(hl(time_fmt(δt), :light_red))
+        🏁 ... done $(hl(time_fmt(δt), :light_red))
         """
-    println("")
-    # ---------------------------------------------
     return
 end
 
@@ -105,13 +173,13 @@ end
 
 
 """
-    form_rss_item(lc)
+    _form_rss_item(lc)
 
 Form the RSS item out of the local context `lc`.
 
 Note: called under the assumption that 'path(:rss)/item.xml' exists.
 """
-function form_rss_item(
+function _form_rss_item(
             lc::LocalContext,
             item_template::String
         )::String

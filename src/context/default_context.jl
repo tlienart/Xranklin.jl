@@ -59,15 +59,17 @@ const DefaultGlobalVars = Vars(
     :date_months      => String[],
     :date_shortmonths => String[],
     # RSS
-    :generate_rss      => false,
-    :rss_website_title => "",
-    :rss_website_url   => "",      # mandatory
-    :rss_website_descr => "",
-    :rss_full_content  => false,
-    :rss_file          => "feed",
-    :rss_layout_head   => "head.xml", # path(:rss)/...
-    :rss_layout_item   => "item.xml", # path(:rss)/...
-    :rss_feed_url      => "",      # generated
+    :generate_rss        => false,
+    :rss_website_title   => "",
+    :rss_website_url     => "",      # mandatory
+    :rss_website_descr   => "",
+    :rss_full_content    => false,
+    :rss_file            => "feed",
+    :rss_layout_head     => "head.xml", # path(:rss)/...
+    :rss_layout_item     => "item.xml", # path(:rss)/...
+    :rss_layout_head_tag => "head.xml", # path(:rss)/...
+    :rss_layout_item_tag => "item.xml", # ...
+    :rss_feed_url        => "",         # generated
     # Tags
     :tags_prefix       => "tags",
     # Literate

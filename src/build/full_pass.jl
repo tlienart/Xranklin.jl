@@ -155,12 +155,10 @@ function full_pass(
     end
 
     # ---------------------------------------------
-    println("")
     start = time()
     @info """
         💡 $(hl("starting the full pass", :yellow))
         """
-    println("")
     # ---------------------------------------------
 
     full_pass_markdown(gc,
@@ -180,15 +178,13 @@ function full_pass(
     )
 
     # RSS generation
-    final && getvar(gc, :generate_rss, false) && generate_rss(gc)
+    final && getvar(gc, :generate_rss, false) && generate_rss_feeds(gc)
 
     # ---------------------------------------------------------
-    println("")
     δt = time() - start
     @info """
-        💡 $(hl("full pass done", :yellow)) $(hl(time_fmt(δt), :light_red))
+        🏁 🏁 $(hl("full pass done", :yellow)) $(hl(time_fmt(δt), :light_red))
         """
-    println("")
     # ---------------------------------------------------------
     return gc
 end

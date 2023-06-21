@@ -69,7 +69,7 @@ function serialize_lc(lc::LocalContext)
     open(fp, "w") do outf
         serialize(outf, nt)
     end
-    @info "... [lc of $(lc.rpath)] ✓"
+    @info "... done [lc of $(lc.rpath)] ✓"
     return
 end
 
@@ -116,10 +116,11 @@ function serialize_gc(gc::GlobalContext)
         serialize(outf, nt)
     end
     @info "... [global context] ✓"
-    nc = length(gc.children_contexts)
+    nc = sum(1 for rp in keys(gc.children_contexts) if !startswith(rp, "__"))
     @info "📓 serializing $(hl("$nc local context", :cyan))..."
     for (rp, lc) in gc.children_contexts
-        endswith(rp, ".md") || continue
+        # ignore special contexts built for RSS / Tags
+        startswith(rp, "__") && continue
         serialize_lc(lc)
     end
     return

@@ -138,7 +138,7 @@ function serve(
         try
             deserialize_gc(gc)
             δt = time() - start; @info """
-                💡 $(hl("de-serialization done", :yellow)) $(hl(time_fmt(δt), :red))
+                🏁 ... done $(hl(time_fmt(δt), :red))
                 """
             deserialized_gc = true
         catch
@@ -221,7 +221,7 @@ function serve(
         setenv!(:cur_global_ctx, nothing)
         setenv!(:cur_local_ctx,  nothing)
         δt = time() - start; @info """
-            💡 $(hl("cleaning up done", :yellow)) $(hl(time_fmt(δt), :red))
+            🏁 ... done $(hl(time_fmt(δt), :red))
             """
         println("")
     end
@@ -265,7 +265,7 @@ function serialize_contexts(gc::GlobalContext)::Nothing
     end
 
     δt = time() - start; @info """
-        💡 $(hl("serializing done", :yellow)) $(hl(time_fmt(δt), :red))
+        🏁 ... done $(hl(time_fmt(δt), :red))
         """
     println("")
     return
