@@ -28,3 +28,16 @@ end
     @test !contains(s, "Main.__FRANKLIN")
     @test contains(s, ">Foo(1)</code>")
 end
+
+@testset "i205" begin
+    s = raw"""
+       +++
+       x = 5
+       +++
+
+       {{>$x}}
+
+       {{> $x}}
+       """ |> html
+    @test s == "55"
+end

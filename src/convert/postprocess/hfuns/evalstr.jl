@@ -1,5 +1,11 @@
-is_estr(s; allow_short=false) = begin
-    startswith(s, "e\"") || (allow_short && startswith(s, "> "))
+"""
+    is_estr(s; allow_short)
+
+Check if a candidate string looks like an e-string (starts with `e"`).
+If `allow_short` is `true`, also allow an e-string to start with `>`.
+"""
+function is_estr(s; allow_short::Bool=false)
+    return startswith(s, "e\"") || (allow_short && startswith(s, ">"))
 end
 
 """
