@@ -173,7 +173,7 @@ const DefaultLocalVars = Vars(
     :_applied_base_url_prefix => "",
     # Generated HTML (when skipping, allows to recover previously generated)
     :_generated_ihtml  => "",
-    :_generated_body   => "",
+    :_generated_html   => "",
     :_rm_anchors       => Set{String}(),
     :_rm_tags          => Set{String}(),
     :_add_tags         => Vector{Pair{String}}(),
@@ -189,6 +189,7 @@ const DefaultLocalVarsAlias = Alias(
     :hasmath         => :_hasmath,
     :hascode         => :_hascode,
     :rss_description => :rss_descr,
+    :_generated_body => :_generated_html
 )
 
 ##############################################################################

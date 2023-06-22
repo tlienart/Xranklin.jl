@@ -20,7 +20,7 @@ function process_md_file_pass_2(
     # NOTE: further. E.g. the hfun_rm_headings in the docs which removes
     # NOTE: some headings of the lc
     body_html = html2(ihtml, lc; only_external=true)
-    setvar!(lc, :_generated_body, body_html)
+    setvar!(lc, :_generated_html, body_html)
 
     skeleton_path = path(lc.glob, :layout) / getvar(lc, :layout_skeleton, "")
     if isfile(skeleton_path) # --------------------------------------------
@@ -97,7 +97,7 @@ To do this we check that no current local context leads to that dir.
 """
 function from_paginated(dp)
     gc = cur_gc()
-    for (rp, lc) in gc.children_contexts
+    for (rp, _) in gc.children_contexts
         op = get_opath(gc, path(gc, :folder) / rp)
         if occursin(dp, dirname(op))
             return false
@@ -176,7 +176,7 @@ function process_paginated(
         )::Nothing
 
     iter = getvar(lc, Symbol(paginator_name)) |> collect
-    npp = getvar(lc, :_paginator_npp, 10)
+    npp  = getvar(lc, :_paginator_npp, 10)
     odir = dirname(opath)
 
     # how many pages?
@@ -220,7 +220,7 @@ function process_paginated(
     cp(
         odir / "1" / "index.html",
         odir / "index.html",
-        force=true
+        force = true
     )
     return
 end
