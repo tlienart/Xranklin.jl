@@ -8,6 +8,7 @@ const DefaultGlobalVars = Vars(
     # General
     :author          => "The Author",
     :base_url_prefix => "",
+    :website_url     => "",     # necessary for generate_{rss,sitemap}
     # Layout
     :content_tag         => "div",
     :content_class       => "franklin-content",
@@ -36,9 +37,12 @@ const DefaultGlobalVars = Vars(
                          ],
     :ignore           => StringOrRegex[],
     :keep_path        => String[],
+    # Robots/sitemap
     :robots_disallow  => String[],
     :generate_robots  => true,
     :generate_sitemap => true,
+    :sitemap_file     => "sitemap",
+    :_sitemap_url     => "",
     # Headings
     :heading_class      => "",
     :heading_link       => true,
@@ -61,7 +65,6 @@ const DefaultGlobalVars = Vars(
     # RSS
     :generate_rss        => false,
     :rss_website_title   => "",
-    :rss_website_url     => "",      # mandatory
     :rss_website_descr   => "",
     :rss_full_content    => false,
     :rss_file            => "feed",
@@ -69,9 +72,9 @@ const DefaultGlobalVars = Vars(
     :rss_layout_item     => "item.xml", # path(:rss)/...
     :rss_layout_head_tag => "head.xml", # path(:rss)/...
     :rss_layout_item_tag => "item.xml", # ...
-    :rss_feed_url        => "",         # generated
+    :rss_feed_url       => "",         # generated
     # Tags
-    :tags_prefix       => "tags",
+    :tags_prefix => "tags",
     # Literate
     :literate_mdstrings => false,
     :literate_credits   => false,
@@ -98,7 +101,6 @@ const DefaultGlobalVarsAlias = Alias(
     :prepath                 => :base_url_prefix,
     :prefix                  => :base_url_prefix,
     :base_path               => :base_url_prefix,
-    :website_url             => :rss_website_url,
     :website_title           => :rss_website_title,
     :website_description     => :rss_website_descr,
     :website_descr           => :rss_website_descr,
@@ -109,7 +111,6 @@ const DefaultGlobalVarsAlias = Alias(
 autofig: automatically save figures that can be saved
 prerender: specific switch, there can be a global optimise but a page skipping it
 slug: allow specific target url
-robots_disallow: disallow the current page
 =#
 const DefaultLocalVars = Vars(
     # General
@@ -140,10 +141,9 @@ const DefaultLocalVars = Vars(
     :sitemap_priority   => 0.5,
     :sitemap_exclude    => false,
     # robots
-    :robots_disallow => false,
+    :robots_disallow_page => false,
     # latex config
     :latex_img_opts => "width=0.5\\textwidth",
-
     #
     # INTERNAL VARIABLES
     #

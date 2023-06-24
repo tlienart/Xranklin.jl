@@ -40,7 +40,7 @@ function process_config(
         ... [config.md] ✔ $(hl(time_fmt(δt)))
         """
 
-    _check_rss(gc)
+    _config_checks(gc)
     return
 end
 
@@ -59,48 +59,60 @@ end
 
 
 """
-    _check_rss(gc)
+    _config_checks(gc)
 
-Internal function to check whether the relevant variables and files are set
-properly when `generate_rss` is true. This is called in `process_config`.
+Apply some basic chekcs to what might have been set as value for variables in
+config file. This may expand over time to help config settings.
 """
-function _check_rss(
+function _config_checks(
             gc::GlobalContext
         )::Nothing
 
-    getvar(gc, :generate_rss, false) || return
-
     #
-    # CHECK 1
-    # :website_url must be given
-    url = getvar(gc, :rss_website_url, "")
-    if isempty(url)
-        @warn """
-            Process config.md
-            When `generate_rss=true`, `rss_website_url` must be given.
-            Setting `generate_rss=false` in the meantime.
-            """
-        setvar!(gc, :generate_rss, false)
-    else
-        endswith(url, '/') || (url *= '/')
-        full_url = url * getvar(gc, :rss_file)::String * ".xml"
-        setvar!(gc, :rss_feed_url, full_url)
+    # 1. if website_url is given, check it matches the format, otherwise try
+    #    to continue with an implicit format
+    #
+    website_url = getvar(gc, :website_url, "")
+    if !isempty(website_url)
+        if endswith(website_url, "index.html")
+            website_url =  website_url[1:end-10]
+        elseif !endswith(website_url, '/')
+            website_url *= '/'
+        end
+        setvar!(gc, :website_url, website_url)
     end
 
     #
-    # CHECK 2
-    # :rss_layout_head + :rss_layout_item must exists
-    rss_head = path(gc, :rss) / getvar(gc, :rss_layout_head, "")
-    rss_item = path(gc, :rss) / getvar(gc, :rss_layout_item, "")
+    # 2. if generate_rss, check that the template files exist
+    #
+    generate_rss = getvar(gc, :generate_rss, false)
+    if generate_rss
+        rss_file = noext(getvar(gc, :rss_file, "feed"))
+        rss_url  = website_url * rss_file * ".xml"
+        setvar!(gc, :rss_feed_url, rss_url)
 
-    if !isfile(rss_head) || !isfile(rss_item)
-        @warn """
-            Process config.md
-            When `generate_rss=true`, `rss_layout_head` & `rss_layout_item`
-            must point to existing files.
-            Setting `generate_rss=false` in the meantime.
-            """
-        setvar!(gc, :generate_rss, false)
+        # check that template files are there
+        rss_head = path(gc, :rss) / getvar(gc, :rss_layout_head, "")
+        rss_item = path(gc, :rss) / getvar(gc, :rss_layout_item, "")
+        if !isfile(rss_head) || !isfile(rss_item)
+            @warn """
+                Process config.md
+                When `generate_rss=true`, `rss_layout_head` & `rss_layout_item`
+                must point to existing files.
+                Setting `generate_rss=false` in the meantime.
+                """
+            setvar!(gc, :generate_rss, false)
+        end
+    end
+
+    #
+    # 3. if generate_sitemap, set the sitemap_url
+    #
+    generate_sitemap = getvar(gc, :generate_sitemap, false)
+    if generate_sitemap
+        sitemap_file = noext(getvar(gc, :sitemap_file, "sitemap"))
+        sitemap_url  = website_url * sitemap_file * ".xml"
+        setvar!(gc, :_sitemap_url, sitemap_url)
     end
     return
 end
