@@ -151,8 +151,10 @@ function keep_path(
             f_or_rpath::String
         )::Bool
 
-    keep = getvar(gc, :keep_path, String[])
-    isempty(keep) && return false
+    keep = union(
+        getvar(gc, :keep_path, String[]),
+        ["404.html"]
+    )
     if f_or_rpath in keys(gc.children_contexts)
         rpath = f_or_rpath
     else

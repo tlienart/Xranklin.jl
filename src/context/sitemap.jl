@@ -31,6 +31,8 @@ function generate_sitemap(gc::GlobalContext)::Nothing
         """
     )
     for (rp, lc) in gc.children_contexts
+        # ignore 404 file(s) in sitemap
+        last(splitdir(rp)) == "404.html" && continue
         if !getvar(lc, :sitemap_exclude, false)
             fp      = path(:folder) / rp
             lastmod = Date(unix2datetime(stat(fp).mtime))
