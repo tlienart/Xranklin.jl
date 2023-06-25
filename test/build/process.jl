@@ -31,7 +31,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         """)
     gc = X.DefaultGlobalContext()
     X.set_paths!(gc, d)
-    @test X.getvar(gc, :rss_website_url, "") == ""
+    @test X.getvar(gc, :website_url, "abc") == ""
     X.process_config(gc)
     @test X.getvar(gc, :generate_rss, true) == false
     logall()

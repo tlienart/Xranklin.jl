@@ -54,8 +54,5 @@ end
 Page URL
 """
 function hfun_rss_page_url(lc::LocalContext; tohtml=true)
-    base_url = getvar(lc.glob, :rss_website_url)
-    endswith(base_url, "index.html") && (base_url = base_url[1:end-10])
-    endswith(base_url, '/') || (base_url *= '/')
-    return base_url * getvar(lc, :_relative_url, "")
+    return get_full_url(lc.glob, lc.rpath)
 end

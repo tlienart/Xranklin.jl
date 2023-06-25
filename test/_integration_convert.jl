@@ -6,7 +6,7 @@ function itest(
         )
     @assert success(`lualatex -v`) "lualatex must be available to Julia for this to work"
 
-    INTEGRATION = normpath(joinpath(@__FILE__, "..", "integration"))
+    INTEGRATION = normpath(joinpath(@__FILE__, "..", "_integration"))
     OUTPUT      = normpath(joinpath(@__FILE__, "..", "_output"))
     INPUT_MD    = joinpath(INTEGRATION, "test_md_pages")
     ASSETS      = joinpath(INTEGRATION, "assets")

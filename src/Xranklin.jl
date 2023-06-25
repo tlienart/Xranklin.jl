@@ -4,7 +4,7 @@ module Xranklin
 # stdlib
 
 import Dates
-import Dates: Date, DateTime
+import Dates: Date, DateTime, unix2datetime
 import Base.(/)
 import REPL: softscope, ends_with_semicolon
 import Pkg
@@ -108,23 +108,25 @@ include("html_utils.jl")
 # to 'Notebook' objects which are tied to code environment.
 
 p = "context"
-include("$p/types.jl")          # Vars, LxDef, PageHeadings, PageRefs, Anchor, Tag
-include("$p/deps_map.jl")       # DepsMap, has_changed_deps
-include("$p/notebook.jl")       # VarsNotebook, CodeNotebook
-include("$p/context.jl")        # GlobalContext, LocalContext
-include("$p/context_utils.jl")  # getvar, setvar, getdef, setdef, attach
-include("$p/serialize.jl")
-include("$p/anchors.jl")
-include("$p/tags.jl")
-include("$p/rss.jl")
-include("$p/default_context.jl")
+include(p/"types.jl")          # Vars, LxDef, PageHeadings, PageRefs, Anchor, Tag
+include(p/"deps_map.jl")       # DepsMap, has_changed_deps
+include(p/"notebook.jl")       # VarsNotebook, CodeNotebook
+include(p/"context.jl")        # GlobalContext, LocalContext
+include(p/"context_utils.jl")  # getvar, setvar, getdef, setdef, attach
+include(p/"serialize.jl")
+include(p/"anchors.jl")
+include(p/"tags.jl")
+include(p/"rss.jl")
+include(p/"default_context.jl")
+include(p/"sitemap.jl")
+include(p/"robots.jl")
 
 p = "context/code"
-include("$p/modules.jl")
-include("$p/notebook.jl")
-include("$p/eval.jl")
-include("$p/notebook_vars.jl")
-include("$p/notebook_code.jl")
+include(p/"modules.jl")
+include(p/"notebook.jl")
+include(p/"eval.jl")
+include(p/"notebook_vars.jl")
+include(p/"notebook_code.jl")
 
 # ------------------------------------------------------------------------
 
@@ -135,75 +137,75 @@ include("convert/outputof.jl")
 
 # >> LxFuns
 p = "convert/markdown/lxfuns/"
-include("$p/utils.jl")
-include("$p/hyperrefs.jl")
-include("$p/show.jl")
-include("$p/literate.jl")
-include("$p/misc.jl")
+include(p/"utils.jl")
+include(p/"hyperrefs.jl")
+include(p/"show.jl")
+include(p/"literate.jl")
+include(p/"misc.jl")
 
 p = "convert/markdown/envfuns/"
-include("$p/utils.jl")
-include("$p/math.jl")
+include(p/"utils.jl")
+include(p/"math.jl")
 
 # >> LxObjects
 p = "convert/markdown"
-include("$p/latex_objects.jl")
+include(p/"latex_objects.jl")
 
 # >> Core
-include("$p/md_core.jl")
+include(p/"md_core.jl")
 
 # >> Rules
 p = "convert/markdown/rules/"
-include("$p/utils.jl")
-include("$p/text.jl")
-include("$p/list.jl")
-include("$p/table.jl")
-include("$p/heading.jl")
-include("$p/code.jl")
-include("$p/math.jl")
-include("$p/link.jl")
+include(p/"utils.jl")
+include(p/"text.jl")
+include(p/"list.jl")
+include(p/"table.jl")
+include(p/"heading.jl")
+include(p/"code.jl")
+include(p/"math.jl")
+include(p/"link.jl")
 
 # ===> POSTPROCESSING
 
 p = "convert/postprocess/hfuns"
-include("$p/utils.jl")
-include("$p/input.jl")
-include("$p/hyperref.jl")
-include("$p/evalstr.jl")
-include("$p/henv.jl")
-include("$p/henv_for.jl")
-include("$p/henv_if.jl")
-include("$p/tags_pagination.jl")
-include("$p/dates.jl")
-include("$p/rss.jl")
+include(p/"utils.jl")
+include(p/"input.jl")
+include(p/"hyperref.jl")
+include(p/"evalstr.jl")
+include(p/"henv.jl")
+include(p/"henv_for.jl")
+include(p/"henv_if.jl")
+include(p/"tags_pagination.jl")
+include(p/"dates.jl")
+include(p/"rss.jl")
 
 p = "convert/postprocess"
-include("$p/dbb.jl")
-include("$p/html2.jl")
-include("$p/latex2.jl")
+include(p/"dbb.jl")
+include(p/"html2.jl")
+include(p/"latex2.jl")
 
 # ------------------------------------------------------------------------
 
 p = "process"
-include("$p/utils.jl")
-include("$p/process.jl")
-include("$p/config_utils.jl")
-include("$p/html.jl")
-include("$p/tex.jl")
+include(p/"utils.jl")
+include(p/"process.jl")
+include(p/"config_utils.jl")
+include(p/"html.jl")
+include(p/"tex.jl")
 
-include("$p/md/pass_1.jl")
-include("$p/md/pass_i.jl")
-include("$p/md/pass_2.jl")
-include("$p/md/process.jl")
+include(p/"md/pass_1.jl")
+include(p/"md/pass_i.jl")
+include(p/"md/pass_2.jl")
+include(p/"md/process.jl")
 
 
 p = "build"
-include("$p/paths.jl")
-include("$p/watch.jl")
-include("$p/full_pass.jl")
-include("$p/build_loop.jl")
-include("$p/serve.jl")
-include("$p/toy.jl")
-include("$p/notebook.jl")
+include(p/"paths.jl")
+include(p/"watch.jl")
+include(p/"full_pass.jl")
+include(p/"build_loop.jl")
+include(p/"serve.jl")
+include(p/"toy.jl")
+include(p/"notebook.jl")
 
 end

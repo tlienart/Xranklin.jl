@@ -1,6 +1,6 @@
 include("utils.jl")
 logall()
-# include("integration_convert.jl")  # itest function
+# include("_integration_convert.jl")  # itest function
 
 @testset "everything" begin
 
@@ -121,8 +121,9 @@ end # basic
         include(p/ "general.jl")
         include(p/ "literate.jl")
         include(p/ "pagination.jl")
-        include(p/ "rss.jl")
         include(p/ "hfuns.jl")
+        include(p/ "rss.jl")
+        include(p/ "sitemap-robots.jl")
     end 
 
 end # integration / in folder

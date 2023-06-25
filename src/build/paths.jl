@@ -135,7 +135,7 @@ function form_output_base_path(
        # for special folders, strip away the preceding `_`
        return path(:site) / lstrip(get_rpath(gc, base), '_')
    end
-   return outpath = path(:site) / get_rpath(gc, base)
+   return path(:site) / get_rpath(gc, base)
 end
 
 
@@ -148,12 +148,18 @@ it's a dir indicator and fpath starts with it.
 """
 function keep_path(
             gc::GlobalContext,
-            fpath::String
+            f_or_rpath::String
         )::Bool
 
-    keep = getvar(gc, :keep_path, String[])
-    isempty(keep) && return false
-    rpath = get_rpath(gc, fpath)
+    keep = union(
+        getvar(gc, :keep_path, String[]),
+        ["404.html"]
+    )
+    if f_or_rpath in keys(gc.children_contexts)
+        rpath = f_or_rpath
+    else
+        rpath = get_rpath(gc, f_or_rpath)
+    end
     # check if either we have an exact match blog/page.md == blog/page.md
     # or if it's a dir and the starts match blog/page.md <> blog/
     for k in keep
@@ -196,7 +202,7 @@ function check_slug(lc::LocalContext, opath::String)::String
     isempty(slug) && return opath
 
     if !endswith(slug, ".html")
-        slug = splitext(slug)[1] / "index.html"
+        slug = noext(slug)slug / "index.html"
     end
     new_opath = path(:site) / slug
     mkpath(dirname(new_opath))
@@ -238,6 +244,25 @@ function get_rurl(rpath::String)
     rp = noext(rpath)
     rp = replace(rp, r"index$" => "")
     rp = unixify(rp)
-    startswith(rp, '/') && return rp
-    return "/$rp"
+    return "/$(lstrip(rp, '/'))"
+end
+
+
+"""
+    get_full_url(rpath)
+
+Construct the full url under the assumption that `:website_url` has been set.
+"""
+function get_full_url(gc::GlobalContext, rpath::String)
+    website_url = getvar(gc, :website_url, "")
+    #
+    # keep_path case
+    #
+    if keep_path(gc, rpath)
+        return website_url * normalize_uri(lstrip(unixify(rpath), '/'))
+    end
+    #
+    # basic case
+    #
+    return website_url * normalize_uri(lstrip(get_rurl(rpath), '/') * "index.html")
 end

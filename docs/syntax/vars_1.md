@@ -249,7 +249,8 @@ might be irrelevant for you.
 | Variable name | Default value | Purpose / comment |
 | ------------- | ------------- | ------- |
 | `author`  | `The Author` |  |
-| `base_url_previx` | `""` | the site's base URL prefix (see also [how to deploy](## howto prepath)) |
+| `base_url_prefix` | `""` | the site's base URL prefix (see also [how to deploy](## howto prepath)) |
+| `website_url`   | `""` | |
 | `content_tag`    | `"div"` | the HTML tag which will wrap the content (can be empty) |
 | `content_class`  | `"franklin-content"` | the class of the content wrapper |
 | `content_id`     | `""`    | the id of the content wrapper |
@@ -286,7 +287,6 @@ might be irrelevant for you.
 | `date_shortmonths` | `String[]` | |
 | `generate_rss` | `false` | whether to generate an RSS feed |
 | `rss_website_title` | `""` | |
-| `rss_website_url`   | `""` | |
 | `rss_feed_url`      | `""` | |
 | `rss_website_descr` | `""` | |
 | `rss_file`          | `"feed"` | file name for the RSS feed |

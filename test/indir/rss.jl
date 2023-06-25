@@ -13,7 +13,7 @@ RSS_HEAD = """
         <title>
           <![CDATA[ {{rss_website_title}} {{isnotempty tag}}| {{tag}}{{end}} ]]>
         </title>
-        <link> {{rss_website_url}} </link>
+        <link> {{website_url}} </link>
         <description>
           <![CDATA[ {{rss_website_descr}} ]]>
         </description>
@@ -68,7 +68,7 @@ RSS_ITEM = """
     write(FOLDER / "config.md", """
         +++
         generate_rss      = true
-        rss_website_url   = "https://foo.com"
+        website_url   = "https://foo.com"
         rss_website_title = "The Website"
         rss_website_descr = "Description for the **RSS** feed"
         rss_file          = "thefeed"
@@ -114,7 +114,7 @@ end
     write(FOLDER / "config.md", """
         +++
         generate_rss      = true
-        rss_website_url   = "https://foo.com"
+        website_url   = "https://foo.com"
         rss_website_title = "The Website"
         rss_website_descr = "Description for the **RSS** feed"
         +++

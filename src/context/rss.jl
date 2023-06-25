@@ -18,7 +18,7 @@ Process:
     This itself will call `html2` on the rss item file but using the actual
     local context associated with the item each time.
 3. finish the buffer, extract the string, make all relative links into absolute
-    links via `rss_website_url` (which should correspond to the absolute URL
+    links via `website_url` (which should correspond to the absolute URL
     of the landing page)
 
 ## Per-tag feeds
@@ -38,18 +38,11 @@ function generate_rss_feeds(gc::GlobalContext)::Nothing
     sort!(rss_rpaths_with_date, by = x -> x[2], rev=true)
     rss_rpaths = [e[1] for e in rss_rpaths_with_date]
 
-    #
-    # base url to make all relative links into absolute links
-    #
-    base_url = getvar(gc, :rss_website_url)
-    endswith(base_url, "index.html") && (base_url = base_url[1:end-10])
-    endswith(base_url, '/') || (base_url *= '/')
-
     # global feed takes all the paths
     head_path = path(:rss) / getvar(gc, :rss_layout_head, "")
     item_path = path(:rss) / getvar(gc, :rss_layout_item, "")
     _generate_rss_feed(
-        gc, rss_rpaths, head_path, item_path, base_url
+        gc, rss_rpaths, head_path, item_path
     )
 
     # per-tag feed takes only the paths for the tag; also there's a possibility
@@ -60,7 +53,7 @@ function generate_rss_feeds(gc::GlobalContext)::Nothing
     for tag_id in keys(gc.tags)
         tag_rss_rpaths = filter(rp -> rp ∈ gc.tags[tag_id].locs, rss_rpaths)
         _generate_rss_feed(
-            gc, tag_rss_rpaths, head_path, item_path, base_url, tag_id
+            gc, tag_rss_rpaths, head_path, item_path, tag_id
         )
     end
     return
@@ -80,7 +73,6 @@ function _generate_rss_feed(
             rss_rpaths::Vector{String},
             head_path::String,
             item_path::String,
-            base_url::String,
             tag_id::String = ""
         )::Nothing
 
@@ -120,9 +112,10 @@ function _generate_rss_feed(
     #
     # Extract the stream and make relative links into absolute ones
     #
-    full_rss = replace(
+    website_url = getvar(gc, :website_url, "")
+    full_rss    = replace(
         String(take!(io)),
-        PREPATH_FIX_PAT => SubstitutionString("\\1=\\2$base_url")
+        PREPATH_FIX_PAT => SubstitutionString("\\1=\\2$website_url")
     )
 
     #
@@ -132,7 +125,7 @@ function _generate_rss_feed(
     #
     feed_file_name = splitext(getvar(gc, :rss_file, "feed"))[1] * ".xml"
     tags_prefix    = getvar(gc, :tags_prefix, "tags")
-    glob_url       = getvar(gc, :rss_feed_url, "NA")  # set by _check_rss
+    glob_url       = getvar(gc, :rss_feed_url, "")  # set by _check_config
     if case != "global"
         feed_url = replace(
             glob_url,

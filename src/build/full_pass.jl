@@ -177,8 +177,33 @@ function full_pass(
         skip_files
     )
 
-    # RSS generation
-    final && getvar(gc, :generate_rss, false) && generate_rss_feeds(gc)
+    #
+    # RSS, Sitemap, Robots generation
+    #
+    if final
+        gen_rss     = getvar(gc, :generate_rss, false)
+        gen_sitemap = getvar(gc, :generate_sitemap, false)
+        gen_robots  = getvar(gc, :generate_robots, false)
+        # generation requires full URLs, so we check whether website_url is
+        # provided
+        if any((gen_rss, gen_sitemap))
+            website_url = getvar(gc, :website_url, "")
+            if isempty(website_url)
+                @warn """
+                    un-specified website_url
+                    When either `generate_rss` or `generate_sitemap` is true, the
+                    `website_url` must be specified (in config.md) as these
+                    protocols require absolute URLs.
+                    Setting both to false as a result.
+                    """
+                gen_rss     = false
+                gen_sitemap = false
+            end
+        end
+        gen_rss     && generate_rss_feeds(gc)
+        gen_sitemap && generate_sitemap(gc)
+        gen_robots  && generate_robots_txt(gc)
+    end
 
     # ---------------------------------------------------------
     δt = time() - start
