@@ -35,8 +35,9 @@ const INTERNAL_HFUNS = [
     :failed, :html,
     # /input.jl
     :fill,
-    :insert, :include,
+    :insert, :include, :insertmd, :includemd,
     :page_content,
+    :redirect, :slug,
     # /tags_pagination.jl
     :taglist,
     :paginate,

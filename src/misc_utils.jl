@@ -76,7 +76,7 @@ end
 
 Return `fpath` without extension `foo/bar.md` --> `foo/bar`.
 """
-function noext(fp::String)
+function noext(fp::AbstractString)
     return first(splitext(fp))
 end
 

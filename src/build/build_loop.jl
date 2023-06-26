@@ -60,7 +60,7 @@ function build_loop(
         end
         # scan the directory and add the new files to the watched_files
         _, newpg = update_files_to_watch!(
-                        watched_files, gc, path(:folder);
+                        watched_files, gc, path(gc, :folder);
                         in_loop=true
                     )
         # if files were deleted from the children contexts, we must
@@ -104,17 +104,17 @@ function build_loop(
                 # ignore all files that are not directly mapped to an output file
                 skip_files = [
                     k for k in keys(d)
-                    for (case, d) ∈ watched_files if case ∉ (:md, :html)
+                    for (case, _) ∈ watched_files if case ∉ (:md, :html)
                 ]
                 msg *= " → triggering full pass [layout changed]"; @info msg
                 full_pass(gc, watched_files; skip_files)
 
             # config changed
-            elseif fpath == path(:folder) / "config.md"
+            elseif fpath == path(gc, :folder) / "config.md"
                 msg *= " → triggering full pass [config changed]"; @info msg
                 full_pass(gc, watched_files; config_changed=true)
 
-            elseif fpath == path(:folder) / "utils.jl"
+            elseif fpath == path(gc, :folder) / "utils.jl"
                 cand_new_utils = read(fpath, String)
                 if !is_code_equal(getvar(gc, :_utils_code, ""), cand_new_utils)
                     msg *= " → triggering full pass [utils changed]"; @info msg

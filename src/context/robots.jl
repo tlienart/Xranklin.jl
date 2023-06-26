@@ -27,12 +27,14 @@ function generate_robots_txt(gc::GlobalContext)::Nothing
         end
     end
     if getvar(gc, :generate_sitemap, false)
+        wurl = getvar(gc, :website_url, "")
+        smap = wurl * getvar(gc, :sitemap_file, "sitemap") * ".xml"
         print(io, """
-            \nSitemap: $(getvar(gc, :website_url, ""))sitemap.xml
+            \nSitemap: $(smap)
             """)
     end
     write(
-        path(:site) / "robots.txt",
+        path(:site) / getvar(gc, :robots_file, "robots") * ".txt",
         take!(io)
     )
     return

@@ -155,7 +155,7 @@ function serve(
     if clear || !utils_unchanged
         if deserialized_gc
             # changed_layout_hashes -> restart from scratch
-            folder = path(:folder)
+            folder = path(gc, :folder)
             gc     = DefaultGlobalContext()
             set_paths!(gc, folder)
         end

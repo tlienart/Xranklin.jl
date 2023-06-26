@@ -11,6 +11,7 @@ paths(gc::GlobalContext) = gc.vars[:_paths]::Dict{Symbol, String}
 Return the path corresponding to `s` e.g. `path(:folder)`.
 """
 path(gc::GlobalContext, s::Symbol)::String = get(paths(gc), s, "")
+path(lc::LocalContext, s::Symbol)::String  = path(lc.glob, s)
 path(s::Symbol) = path(cur_gc(), s)
 
 
@@ -128,14 +129,14 @@ function form_output_base_path(
             base::String
         )::String
 
-    if startswith(base, path(:assets)) ||
-       startswith(base, path(:css))    ||
-       startswith(base, path(:layout)) ||
-       startswith(base, path(:libs))
+    if startswith(base, path(gc, :assets)) ||
+       startswith(base, path(gc, :css))    ||
+       startswith(base, path(gc, :layout)) ||
+       startswith(base, path(gc, :libs))
        # for special folders, strip away the preceding `_`
-       return path(:site) / lstrip(get_rpath(gc, base), '_')
+       return path(gc, :site) / lstrip(get_rpath(gc, base), '_')
    end
-   return path(:site) / get_rpath(gc, base)
+   return path(gc, :site) / get_rpath(gc, base)
 end
 
 
@@ -204,7 +205,7 @@ function check_slug(lc::LocalContext, opath::String)::String
     if !endswith(slug, ".html")
         slug = noext(slug)slug / "index.html"
     end
-    new_opath = path(:site) / slug
+    new_opath = path(lc, :site) / slug
     mkpath(dirname(new_opath))
 
     # copy the file at the new location so it can be attained

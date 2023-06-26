@@ -7,10 +7,10 @@ function resolve_dbb(
             parts::Vector{Block},
             idx::Int,
             lc::LocalContext;
-            only_external::Bool=false
+            only_utils::Bool=false
         )::Int
 
-    crumbs(@fname, (parts[idx].ss |> strip) * ifelse(only_external, " (only ext)", " (all)"))
+    crumbs(@fname, (parts[idx].ss |> strip) * ifelse(only_utils, " (only ext)", " (all)"))
 
     cb = strip(content(parts[idx]))
 
@@ -22,70 +22,81 @@ function resolve_dbb(
         return idx
     end
 
-    #
-    # Actual DBB treatment
-    # > A.  internal HENV (if, etc)
-    # > A'. dangling HENV (orphan else, elseif, end)
-    # > B.  e-string?
-    # > C.  hfun
-    # > D.  fill attempt
-    # > E.  only_external
-    #
     split_cb = FP.split_args(cb)
     fname    = Symbol(lowercase(first(split_cb)))
     args     = split_cb[2:end] # may be empty
     dots     = ifelse(isempty(args), "", " ...")
 
-    # A | if and variations
-    if (fname in INTERNAL_HENVS) & !only_external
-        # find the full environment with branches etc
-        henv, ci = find_henv(parts, idx, fname, args)
-        # if an empty env is returned, it means the opening token
-        # was not closed properly --> failed
-        if isempty(henv)
+    #
+    # DBB Processing, done in two phases:
+    #   1. the external (utils-defined) functions (as they may affect context)
+    #   2. the rest
+    #        > A.  internal HENV (if, etc)
+    #        > A'. dangling HENV (orphan else, elseif, end)
+    #        > B.  e-string?
+    #        > C.  hfun
+    #        > D.  fill attempt / fail if unknown
+    #
+    #  see also `process_md_file_pass_2`
+    #
+    if only_utils
+        if fname in utils_hfun_names(lc.glob)
+            # run the function in the Utils module
+            _dbb_fun(lc, io, fname, args; internal=false)
+        else
+            # just re-write the command for later processing
+            write(io, parts[idx].ss)
+        end
+    else
+        # A | if + variations
+        if fname in INTERNAL_HENVS
+            # find the full environment with branches etc
+            henv, ci = find_henv(parts, idx, fname, args)
+            # if an empty env is returned, it means the opening token
+            # was not closed properly --> failed
+            if isempty(henv)
+                @warn """
+                    {{ ... }}
+                    ---------
+                    An environment '{{$fname$dots}}' was not closed properly.
+                    """
+                write(io, hfun_failed(split_cb))
+            else
+                resolve_henv(lc, henv, io)
+            end
+            # move the head after the last seen token from find_henv
+            idx = ci
+
+        # A' | dangling {{elseif}}, {{else}} or {{end}}
+        elseif fname in INTERNAL_HORPHAN
             @warn """
                 {{ ... }}
                 ---------
-                An environment '{{$fname$dots}}' was not closed properly.
+                A block '{{$fname$dots}}' was found out of a relevant context.
                 """
             write(io, hfun_failed(split_cb))
+
+        # B | independent e-string (outside of henv)
+        elseif is_estr(cb; allow_short = true)
+            _dbb_fill_estr(lc, io, cb)
+
+        # C | utils or internal function, utils have priority
+        elseif (external = fname in utils_hfun_names(lc.glob)) ||
+               (fname in INTERNAL_HFUNS)
+            # NOTE: 
+            #   the pass only_utils may already have resolved all utils-defined
+            #   hfuns, unless some of those injected "order-2" double braces
+            #   (not recommended...). This is why we check if fname is in utils.
+            #   it should generally not happen but it might.
+            #
+            _dbb_fun(lc, io, fname, args; internal=!external)
+
+        # D | fill attempt (if fail, warn+err)
         else
-            resolve_henv(lc, henv, io)
+            _dbb_fill(lc, io, fname, args, dots)
+
         end
-        # move the head after the last seen token from find_henv
-        idx = ci
-
-    # A' | dangling {{elseif}}, {{else}} or {{end}}
-    elseif (fname in INTERNAL_HORPHAN) & !only_external
-        @warn """
-            {{ ... }}
-            ---------
-            A block '{{$fname$dots}}' was found out of a relevant context.
-            """
-        write(io, hfun_failed(split_cb))
-
-    # B | independent e-string (outside of henv)
-    elseif is_estr(cb; allow_short = true) & !only_external
-        _dbb_fill_estr(lc, io, cb)
-
-    # C | utils function or internal function (utils have priority)
-    elseif (external = fname in utils_hfun_names(lc.glob)) ||
-           ((fname in INTERNAL_HFUNS) & !only_external)
-        # run the function either in the Utils module or internally
-        _dbb_fun(lc, io, fname, args; internal=!external)
-
-    # D | fill attempt
-    elseif !only_external
-        _dbb_fill(lc, io, fname, args, dots)
-
-    # E
-    else
-        # this is if only_external / we just re-write the command
-        # for later processing
-        write(io, parts[idx].ss)
-
     end
-
     return idx
 end
 

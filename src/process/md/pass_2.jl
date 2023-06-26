@@ -12,14 +12,23 @@ function process_md_file_pass_2(
     crumbs(@fname)
 
     ihtml = getvar(lc, :_generated_ihtml, "")
-    odir = dirname(opath)
+    odir  = dirname(opath)
     cleanup_paginated(odir)
 
-    # NOTE: we pre-resolve the html so that we resolve any *external*
-    # NOTE: command present in the markdown that might control the layout
-    # NOTE: further. E.g. the hfun_rm_headings in the docs which removes
-    # NOTE: some headings of the lc
-    body_html = html2(ihtml, lc; only_external=true)
+    # NOTE:
+    #  html2 done in several phases:
+    #
+    #   1. we resolve utils-defined hfuns since they may affect LC
+    #   2. we resolve everything else --> get the body_html
+    #   3. we plug the body_html in the template (either via skeleton or via
+    #       head/foot), the template may itself contain dbb so we need...
+    #   4. ... a final pass which will hunt for any remaining dbb and resolve.
+    #   5. ... pagination token processing
+    #
+    ihtml2 = html2(ihtml, lc; only_utils=true)
+    setvar!(lc, :_generated_ihtml2, ihtml2)
+
+    body_html = html2(ihtml2, lc)
     setvar!(lc, :_generated_html, body_html)
 
     skeleton_path = path(lc.glob, :layout) / getvar(lc, :layout_skeleton, "")
@@ -51,10 +60,10 @@ function process_md_file_pass_2(
                 """
         end
 
-        head_path  = path(lc.glob, :layout) / getvar(lc.glob, :layout_head, "")::String
+        head_path  = path(lc.glob, :layout) / getvar(lc.glob, :layout_head, "")
         full_page  = isfile(head_path) ? read(head_path, String) : ""
         full_page *= body
-        foot_path  = path(lc.glob, :layout) / getvar(lc.glob, :layout_foot, "")::String
+        foot_path  = path(lc.glob, :layout) / getvar(lc.glob, :layout_foot, "")
         full_page *= isfile(foot_path) ? read(foot_path, String) : ""
 
     end
@@ -62,7 +71,15 @@ function process_md_file_pass_2(
     # ---------------------------------------------------------------------
     # process at least once, if there's a pagination token here
     # the page will be re-processed (see process_paginated)
+    #
+    # In the case of skeleton, this will call {{page_content}} which,
+    # itself, will call html2 on :_generated_ihtml2 before it gets
+    # injected in converted_html.
+    #
     converted_html = html2(full_page, lc)
+
+    process_redirect(lc, final)
+    opath2 = process_slug(lc, opath)
 
     #
     # PAGINATION
@@ -75,16 +92,15 @@ function process_md_file_pass_2(
     paginator_name = getvar(lc, :_paginator_name)
 
     if isempty(paginator_name)
-        open(opath, "w") do outf
+        open(opath2, "w") do outf
             write(outf, converted_html)
         end
-        process_not_paginated(lc.glob, lc.rpath, opath, final)
+        process_not_paginated(lc.glob, lc.rpath, opath2, final)
 
     else
-        process_paginated(lc, full_page, opath, paginator_name, final)
+        process_paginated(lc, full_page, opath2, paginator_name, final)
 
     end
-
     return
 end
 
@@ -223,4 +239,97 @@ function process_paginated(
         force = true
     )
     return
+end
+
+"""
+    process_redirect(lc)
+
+Redirect: a URL which, when navigated to, redirects to the present page.
+
+Expected to be in unix format. Outer forward slashes are ignored.
+
+## Redirect examples
+
+* aa/bb.html    --> /aa/bb.html redir
+* /aa/bb.html   --> /aa/bb.html redir
+* /aa/bb        --> /aa/bb/index.html redir
+"""
+function process_redirect(
+            lc::LocalContext,
+            final::Bool
+        )::Nothing
+
+    redirect = strip(getvar(lc, :redirect, ""), '/')
+    if !isempty(redirect)
+        if !endswith(redirect, ".html")
+            redirect = noext(redirect) / "index.html"
+        end
+        redir_path = path(lc, :site) / redirect
+        mkpath(dirname(redir_path))
+
+        if final
+            pp = getvar(lc.glob, :base_url_prefix, "")
+            isempty(pp) || (pp = "/$pp")
+        end
+        redir_url = pp * get_rurl(lc.rpath)
+
+        write(
+            redir_path,
+            """
+            <!-- Generated Redirect -->
+            <!doctype html>
+            <html>
+            <head>
+                <meta http-equiv="refresh" content='0; url="$redir_url"'>
+            </head>
+            </html>
+            """
+        )
+    end
+    return
+end
+
+
+"""
+    process_slug(lc)
+
+The desired URL that should correspond to the present file.
+
+Expected to be in unix format. Outer forward slashes are ignored.
+
+## Slug examples
+
+* aa/bb.html --> __site/aa/bb.html
+* aa/bb/     --> __site/aa/bb/index.html
+* aa/bb      --> __site/aa/bb/index.html
+* /aa/bb/    --> __site/aa/bb/index.html
+
+"""
+function process_slug(
+            lc::LocalContext,
+            opath::String
+        )::String
+
+    slug     = strip(getvar(lc, :slug, ""), '/')
+    fpath    = path(lc, :folder) / lc.rpath
+    #
+    # FIXME: this is the kind of place where if we have some windows-style path
+    #       things can get messy as the slug is expected to be in unix format
+    #       yet we're doing file system operations here.
+    #       see also process_redirect
+    #
+    if !isempty(slug)
+        if !endswith(slug, ".html")
+            slug = noext(slug) / "index.html"
+        end
+        new_opath = path(lc, :site) / slug
+        mkpath(dirname(new_opath))
+
+        if new_opath != opath
+            set_meta_parameters(lc, fpath, new_opath)
+            opath = new_opath
+        end
+    end
+
+    return opath
 end

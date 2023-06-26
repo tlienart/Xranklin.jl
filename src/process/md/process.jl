@@ -21,17 +21,14 @@ function process_md_file(
     process_md_file_pass_i(lc)
     process_md_file_pass_2(lc, opath, final)
 
-    # check if the output path needs to be corrected to take a 'slug' into
-    # account, and *copy* that file over to an additional location matching
-    # that slug. The original output path is kept (this helps with skipping
-    # files easily).
-    opath2 = check_slug(lc, opath)
-
-    # adjust the meta parameters associated with that context so that if,
-    # for instance, a hfun requests the relative URL, it points to the
-    # one matching the slug.
-    if opath2 != opath
-        set_meta_parameters(lc, fpath, opath2)
+    process_redirect(lc, final)
+    opath2 = process_slug(lc, opath)
+    if (opath != opath2)
+        cp(opath, opath2, force=true)
+        rm(opath)
+        # NOTE: we don't leave the base path (i.e. just use the slug). 
+        #       this seems more coherent. If we decide to rever this then
+        #       it'll also need to be changed in the paginated processing
     end
 
     # process_file_from_trigger all pages that depend upon definitions from
@@ -103,3 +100,4 @@ function process_file_from_trigger(
         """
     return
 end
+

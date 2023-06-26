@@ -105,7 +105,7 @@ function hfun_insert(
     isempty(c) || return c
 
     np = length(p)
-    np == 1 && return _hfun_insert(lc, p[1], path(:layout); tohtml)
+    np == 1 && return _hfun_insert(lc, p[1], path(lc, :layout); tohtml)
     bsym = Symbol(p[2])
     base = path(bsym)
     return _hfun_insert(lc, p[1], base; bsym, tohtml)
@@ -153,11 +153,88 @@ function _hfun_insert(
     return read(fpath, String)
 end
 
+"""
+    {{insertmd ...}}
 
+Take MD file, process to HTML and inject in an (assumed) HTML context.
+"""
+function hfun_insertmd(
+            lc::LocalContext,
+            p::VS;
+            tohtml::Bool=true
+        )::String
+    c = _hfun_check_nargs(:insertmd, p; k=1)
+    isempty(c) || return c
+
+    fpath = path(lc, :folder) / p[1]
+    if !isfile(fpath)
+        @warn """
+            {{insertmd $(p[1])}}
+            Couldn't find a file '$(p[1])' in the base folder.
+            """
+        return hfun_failed(["insertmd", p, string(bsym)])
+    end
+    ihtml = convert_md(read(fpath, String), lc)
+    return html2(ihtml, lc; only_utils=true)
+end
+hfun_includemd(a...; kw...) = hfun_insertmd(a...; kw...)
+
+
+"""
+    {{page_content}}
+
+Returns the generated body html. See `process_md_file_pass_2`.
+"""
 function hfun_page_content(
             lc::LocalContext;
             tohtml::Bool=true
         )::String
+    return getvar(lc, :_generated_html, "")
+end
 
-    return html2(getvar(lc, :_generated_body), lc)
+
+"""
+    {{redirect ...}}
+
+H-Function of the form `{{redirect /adr/bla.html}}` or `{{redirect /adr/bla/}}`
+if the last part ends with `/` then `index.html` is appended.
+Note that the first `/` can be omitted.
+
+The impact of this command is that if a user navigates to the address indicated
+(eg `adr/bla.html` in the first example) they get redirected to the actual
+path of the present page.
+
+This is very useful when refactoring a website, changing the structure, getting
+new URLs as a result but not wanting old links to fail.
+
+See `_apply_slug_redirect`.
+"""
+function hfun_redirect(
+            lc::LocalContext,
+            p::VS;
+            tohtml::Bool=true
+        )::String
+    
+    c = _hfun_check_nargs(:redirect, p; k=1)
+    isempty(c) || return c
+    setvar!(lc, :redirect, p[1])
+    return ""
+end
+
+
+"""
+    {{slug ...}}
+
+...
+"""
+function hfun_slug(
+            lc::LocalContext,
+            p::VS;
+            tohtml::Bool=true
+        )::String
+    
+    c = _hfun_check_nargs(:slug, p; k=1)
+    isempty(c) || return c
+    setvar!(lc, :slug, p[1])
+    return ""
 end

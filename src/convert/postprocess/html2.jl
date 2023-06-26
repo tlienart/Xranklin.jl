@@ -14,10 +14,10 @@ double brace blocks).
 function html2(
             parts::Vector{Block},
             lc::LocalContext;
-            only_external::Bool=false
+            only_utils::Bool=false
         )::String
 
-    crumbs(@fname, ifelse(only_external, "only external dbb", "everything"))
+    crumbs(@fname, ifelse(only_utils, "only external dbb", "everything"))
 
     gc     = lc.glob
     io     = IOBuffer()
@@ -53,7 +53,7 @@ function html2(
 
         # DBB blocks
         else
-            idx = resolve_dbb(io, parts, idx, lc; only_external)
+            idx = resolve_dbb(io, parts, idx, lc; only_utils)
 
         end
     end # end while
@@ -66,10 +66,10 @@ end
 function html2(
             s::String,
             lc::LocalContext;
-            only_external::Bool=false,
+            only_utils::Bool=false,
             kw...           # kw for the partitioning
         )
 
     parts = FP.html_partition(s; kw...)
-    return html2(parts, lc; only_external)
+    return html2(parts, lc; only_utils)
 end
