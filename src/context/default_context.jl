@@ -39,8 +39,9 @@ const DefaultGlobalVars = Vars(
     :keep_path        => String[],
     # Robots/sitemap
     :robots_disallow  => String[],
-    :generate_robots  => true,
-    :generate_sitemap => true,
+    :generate_robots  => false,
+    :robots_file      => "robots",
+    :generate_sitemap => false,
     :sitemap_file     => "sitemap",
     :_sitemap_url     => "",
     # Headings
@@ -119,6 +120,7 @@ const DefaultLocalVars = Vars(
     :lang         => "julia",
     :tags         => String[],
     :slug         => "",
+    :redirect     => "",
     :ignore_cache => false,
     :project      => "",
     # toc
@@ -173,11 +175,11 @@ const DefaultLocalVars = Vars(
     :_applied_base_url_prefix => "",
     # Generated HTML (when skipping, allows to recover previously generated)
     :_generated_ihtml  => "",
+    :_generated_ihtml2 => "",
     :_generated_html   => "",
     :_rm_anchors       => Set{String}(),
     :_rm_tags          => Set{String}(),
     :_add_tags         => Vector{Pair{String}}(),
-    :_generated_html   => "",
     :_generated_latex  => "",
 )
 const DefaultLocalVarsAlias = Alias(

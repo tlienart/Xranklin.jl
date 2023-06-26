@@ -88,7 +88,7 @@ function full_pass(
         # to guarantee that they're process_file_from_triggered and consider
         # the latest dependent file.
         for rp in have_changed_deps(gc.deps_map)
-            pgh = path(:cache) / noext(rp) / "pg.hash"
+            pgh = path(gc, :cache) / noext(rp) / "pg.hash"
             rm(pgh, force=true)
         end
     end
@@ -137,15 +137,15 @@ function full_pass(
 
     # now we can skip utils/config (will happen in full_pass_other)
     append!(skip_files, [
-        path(:folder) => "config.md",
-        path(:folder) => "utils.jl"
+        path(gc, :folder) => "config.md",
+        path(gc, :folder) => "utils.jl"
         ]
     )
 
     # check that there's an index page (this is what the server will
     # expect to point to)
-    hasindex = isfile(path(:folder) / "index.md") ||
-               isfile(path(:folder) / "index.html")
+    hasindex = isfile(path(gc, :folder) / "index.md") ||
+               isfile(path(gc, :folder) / "index.html")
     if !hasindex
         @warn """
             Full pass
@@ -539,8 +539,8 @@ function full_pass_other(
     Threads.@threads for (fp, _) in dic2vec(watched)
         fpath = joinpath(fp...)
         if fp in skip_files ||
-           startswith(fpath, path(:layout)) ||
-           startswith(fpath, path(:rss))
+           startswith(fpath, path(gc, :layout)) ||
+           startswith(fpath, path(gc, :rss))
 
             continue
         end
