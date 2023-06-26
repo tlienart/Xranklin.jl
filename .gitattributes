@@ -1,20 +1,6 @@
-test/_demo/* linguist-vendored
-test/integration/* linguist-vendored
-test/integration/assets/* linguist-vendored
-
-test/abc/* linguist-vendored
-test/abc/_layout/* linguist-vendored
-
-test/abc_min/* linguist-vendored
-test/abc_min/_layout/* linguist-vendored
-
-test/abc_min_skel/* linguist-vendored
-test/abc_min_skel/_layout/* linguist-vendored
-
-test/abc_utils/* linguist-vendored
-test/abc_utils/_layout/* linguist-vendored
+test/_integration/* linguist-vendored
+test/_integration/assets/* linguist-vendored
 
 docs/* linguist-vendored
 docs/_layout/* linguist-vendored
 
-src/other/water.css linguist-vendored
