@@ -1,0 +1,1589 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A layout example with a side menu that hides on mobile, just like the Pure website.">
+
+    <link rel="stylesheet" href="/Xranklin.jl/previews/PR213/css/pure.min.css">
+
+    
+    
+        <link rel="stylesheet" href="/Xranklin.jl/previews/PR213/libs/highlight/github.min.css">
+    
+
+    
+
+</head>
+<body>
+
+
+<style>
+
+:root {
+    /* GEOMETRY */
+    --topbar-height:     50px;
+    --topbar-ph:         60px;
+    --menu-width:        225px;
+    --content-max-width: 800px;
+    --wide-leftpad:      calc(0.5 * (100% - 2*var(--menu-width) - var(--content-max-width)));
+
+
+    /* BG IMGS */
+    --x-square:      url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="floralWhite"><path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>');
+    --x-square-fill: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="floralWhite"><path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/></svg>');
+    --burger:        url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="floralwhite"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/></svg>');
+    --franklin:      url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 50"><path d="M15.1 2.8c-2.3 1.6-3 1.8-5.2 1.5-3.6-.5-4.9-.1-5.4 1.6-.3 1-.4 3.1-.3 6 0 1.6 0 2.5-.1 2.8-.1.2-.8.9-1.7 1.6-.8.6-1.7 1.3-1.8 1.5-.3.4-.3 1 .1 1 .1 0 7.1-1.3 15.4-2.9 16.5-3.2 15.8-3 15.6-3.8-.1-.4-.9-.9-1.6-.9-.3 0-1 0-1.5-.1-1.8-.1-2.7-.8-3.5-2.5-1.5-3.5-3.1-6.5-4-7.5-.3-.3-.7-.6-1-.7-1-.1-2.1.4-5 2.4z" fill="white"/><path d="M9.3 36.6V26.2c0-2.1-.7-3.2-2.2-3.2-.4 0-.7 0-.8.1-.5.1-.8.2-1.1.2-.4 0-.7-.1-.9-.4-.3-.3-.4-.6-.4-1 0-1 .6-1.5 1.8-1.5h.6l3 .3c1.1.1 2.4.2 3.7.2.7 0 2.3 0 4.8-.1l4.9-.2c.7 0 1.4-.1 2.3-.1.4-.1.8-.1 1.3-.1 1.5 0 2.3.7 2.3 2 0 .5-.1 1.3-.2 2.4-.1 1.1-.2 1.9-.2 2.4s0 1 .1 1.7.1 1.3.1 1.9c0 1.2-.5 1.8-1.5 1.8-1.1 0-1.6-.7-1.6-2 0-.4 0-1 .1-1.8s.1-1.4.1-1.8c0-1.5-.4-2.5-1.3-2.9-.9-.4-2.9-.6-6.1-.6-2.7 0-4.3.2-4.6.7-.3.4-.4 1.7-.4 3.9v3.2c0 .8.1 1.3.3 1.5s.8.3 1.8.3h1.4c1.9 0 2.8-.7 2.8-2.1 0-.3 0-.7-.1-1.3-.3-.7-.3-1.1-.3-1.4 0-1.1.5-1.6 1.5-1.6s1.5.6 1.5 1.9c0 .2 0 .5-.1 1l-.3 2.3c-.1 1-.2 1.8-.2 2.3 0 1.2.2 2.7.4 4.5.1.6.2 1.2.2 1.7 0 1.1-.5 1.7-1.5 1.7s-1.5-.6-1.5-1.8c0-.3 0-.7.1-1.3 0-.6.1-1 .1-1.3 0-.9-.2-1.5-.7-1.7-.3-.2-1-.3-2-.3h-1.3c-1 0-1.6.1-1.8.3-.2.2-.3.8-.3 1.9V43c0 1.3.1 2.2.4 2.7.3.5.9.7 1.7.7H17c1.3 0 2 .5 2 1.5 0 .4-.1.7-.4 1-.3.3-.7.4-1.1.4-.5 0-1.1-.1-2-.2-1.3-.2-2.7-.3-4.3-.3-1 0-2.1.1-3.3.3l-1.5.2h-.6c-1.3 0-1.9-.5-1.9-1.5 0-.9.4-1.4 1.3-1.4.1 0 .5 0 1.1.1.3.1.6.1.9.1.8 0 1.3-.2 1.6-.7.3-.5.5-1.3.5-2.5v-6.8z" fill="white"/></svg>');
+    --arrow-up:      url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 10a.5.5 0 0 0 .5-.5V3.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 3.707V9.5a.5.5 0 0 0 .5.5zm-7 2.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5z"/></svg>');
+    --github:        url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>');
+    --home:          url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"/></svg>');
+
+    /* FONTS etc */
+    --text-sm:     0.95em;
+    --text-lg:     1.2em;
+    --text-xl:     1.4em;
+	--text-h4: 		 1.2em;
+    --text-h3:     1.5em;
+    --text-h2:     2em;
+	--text-h1: 		 3em;
+    --text-col:    hsl(0, 0%, 20%);
+    --text-font:   system-ui,-apple-system,"Segoe UI",Roboto,
+                    "Helvetica Neue",Arial,"Noto Sans",
+                    "Liberation Sans",sans-serif,"Apple Color Emoji",
+                    "Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    --text-line-height:  1.5;
+
+    --code-font:   SFMono-Regular,Menlo,Monaco,Consolas,
+						     "Liberation Mono","Courier New",monospace;
+    --code-size:   .875em;
+	--code-col:    #d63384;
+
+    /* COLORS */
+    --col-cream:        #fffefc;
+    --col-chalk: 	    #c6cbd3;
+    --col-xlight:       #e7eaf6;
+    --col-light:        #a2a8d3;
+    --col-dark:         #38598b;
+    --col-xdark:        #113f67;
+    --col-lblue:        #03a7dd;
+
+    --block-background: hsl(0, 0%, 94%);
+    --output-background: hsl(0, 0%, 98%);
+
+    --col-gray:         gray;
+    --col-black: 	    #000;
+    --col-blue:		    #118cfd;
+    --col-graphite:     #4f5a66;
+    --col-green: 		#12ca93;
+    --col-ivory: 		#f0f0f0;
+    --col-lgray: 		#f8f8f8;
+    --col-purple:	    #8470be;
+    --col-red: 		    #e95f6a;
+    --col-shale: 		#939eae;
+    --col-slate: 	    #384248;
+    --col-yellow: 	    #f7c543;
+    --col-brown: 		#7a461c;
+    --col-coral: 		#ff758c;
+    --col-fuchsia: 	    #cf66c3;
+    --col-gold: 		#9d8714;
+    --col-indigo: 	    #6b7ede;
+    --col-lavender:     #abc3ff;
+    --col-lime: 		#9ace5a;
+    --col-olive: 		#837400;
+    --col-orange: 	    #fe8e4f;
+    --col-pink: 		#e15ca5;
+    --col-teal: 		#00b6e6;
+    --col-tiffany: 	    #00beaa;
+    --col-bluePastel:   #a8edff;
+    --col-greenPastel:  #9bfff6;
+    --col-orangePastel: #f5bc90;
+    --col-purplePastel: #e8d0ff;
+    --col-redPastel: 	#ffc4c9;
+    --col-yellowPastel: #ffffa7;
+
+    --blue0:   #002077;
+    --blue10:  #003290;
+    --blue20:  #0047aa;
+    --blue30:  #005dc5;
+    --blue40:  #0074e1;
+    --blue50:  #118cfd;
+    --blue60:  #619efe;
+    --blue70:  #8ab0ff;
+    --blue80:  #abc3ff;
+    --blue90:  #c8d7ff;
+    --blue100: #e4ebff;
+
+    --green0:   #002e02;
+    --green10:  #00491f;
+    --green20:  #00683a;
+    --green30:  #008756;
+    --green40:  #00a874;
+    --green50:  #12ca93;
+    --green60:  #59d4a4;
+    --green70:  #81ddb6;
+    --green80:  #a3e6c8;
+    --green90:  #c3efda;
+    --green100: #e1f7ec;
+
+    --gray0:   #12181b;
+    --gray10:  #242e34;
+    --gray20:  #384248;
+    --gray30:  #4f5a66;
+    --gray40:  #637288;
+    --gray50:  #7b889b;
+    --gray60:  #939eae;
+    --gray70:  #adb4c1;
+    --gray80:  #c6cbd3;
+    --gray90:  #f0f0f0;
+    --gray100: #f8f8f8;
+
+    --purple0:   #110e4d;
+    --purple10:  #2a1f63;
+    --purple20:  #403278;
+    --purple30:  #56468f;
+    --purple40:  #6d5ba6;
+    --purple50:  #8470be;
+    --purple60:  #9987c9;
+    --purple70:  #ae9ed4;
+    --purple80:  #c2b5df;
+    --purple90:  #d6cdea;
+    --purple100: #ebe6f4;
+
+    --red0:   #570000;
+    --red10:  #730014;
+    --red20:  #900027;
+    --red30:  #ad273c;
+    --red40:  #cb4452;
+    --red50:  #e95f6a;
+    --red60:  #f17c81;
+    --red70:  #f79799;
+    --red80:  #fcb1b2;
+    --red90:  #ffcbcb;
+    --red100: #ffe5e5;
+
+    --yellow0:   #3e1d00;
+    --yellow10:  #5a3c00;
+    --yellow20:  #7d5b00;
+    --yellow30:  #a57d00;
+    --yellow40:  #cda017;
+    --yellow50:  #f7c543;
+    --yellow60:  #fcce66;
+    --yellow70:  #ffd885;
+    --yellow80:  #ffe1a4;
+    --yellow90:  #ffebc2;
+    --yellow100: #fff5e0;
+}
+
+
+</style>
+<style>
+/*
+    Z-Index
+
+    #menuLink 500
+    #menu 500
+
+    Breakpoints:
+        48em (768px)  for narrow screens / handheld devices
+        79em (1264px) for large screens
+*/
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 4.5rem;
+}
+
+body {
+    width: 100%;
+    font-family: var(--text-font);
+    color: var(--text-col);
+    background-color: var(--col-cream);
+}
+
+a {
+    color: var(--blue30);
+    text-decoration: none;
+}
+
+:is(h1, h2, h3, h4) a {
+	text-decoration: none;
+	color: var(--col-dark);
+}
+:is(h1, h2, h3, h4) {
+	margin-top: 0;
+	margin-bottom: 0;
+    line-height: normal;
+}
+
+h1 {
+	font-size: var(--text-h1);
+	font-weight: 600;
+    padding-bottom: .25em;
+}
+    h1 a {
+        color: var(--col-xdark);
+    }
+
+h2 {
+	font-size:   var(--text-h2);
+	padding-top: 1em;
+	font-weight: 550;
+}
+
+h3 {
+	font-size:   var(--text-h3);
+	padding-top: 1em;
+	font-weight: 450;
+}
+
+h4 {
+	font-size: var(--text-h4);
+	padding-top: 1em;
+	font-weight: 350;
+}
+
+/*
+PAGE FOOT
+ */
+
+ #pg-foot {
+	width: 65%;
+	margin-top: 3em;
+	padding-top: 1em;
+	margin-bottom: 3em;
+	color: var(--col-gray);
+	font-size: var(--text-sm);
+}
+#pg-foot a {
+	color: inherit;
+}
+#pg-foot a:hover {
+	color: var(--col-lblue);
+}
+
+ol ul { padding-left: 1em; }
+
+ul ul { padding-left: 1em; }
+
+ul ol { padding-left: 1em; }
+
+/*  ====================================================================================
+    CODE AND HLJS 
+ ==================================================================================== */
+
+
+#fn-defs {
+	width: 75%;
+	margin-top: 5em;
+	padding-top: 1em;
+	border-top: 1px solid var(--col-gray);
+	padding-bottom: 3em;
+}
+.fn-title {
+	font-size: var(--text-h2);
+	width: 100%;
+	display: block;
+	margin-bottom: .5em;
+}
+
+a.fn-hook-btn {
+	color: var(--col-light);
+	text-decoration: none;
+}
+a.fn-hook-btn:hover {
+	color: var(--col-dark);
+}
+
+.lskip {
+  display: block;
+  height: 1em;
+}
+
+/*  ====================================================================================
+    CODE AND HLJS 
+ ==================================================================================== */
+
+code {
+	font-family: var(--code-font);
+	font-size:   var(--code-size);
+	color:       var(--code-col);
+	word-wrap:   break-word;
+}
+
+kbd {
+    background-color: #eee;
+    border-radius: 3px;
+    border: 1px solid #b4b4b4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 2px 0 0 rgba(255, 255, 255, .7) inset;
+    color: #333;
+    display: inline-block;
+    font-size: .85em;
+    font-weight: 600;
+    line-height: 1;
+    padding: 2px 4px;
+    white-space: nowrap;
+}
+
+pre {
+  line-height: 1.5;
+}
+
+pre code.hljs {
+	background-color: var(--block-background);
+	border-radius: 7px;
+	padding-left: 1.5em;
+}
+
+.hljs-string {
+    color: var(--green30);
+}
+
+
+/*  ====================================================================================
+    KATEX
+ ==================================================================================== */
+
+body { counter-reset: eqnum; }
+
+.katex { font-size: 1.1em !important; }
+
+.katex-display .katex {
+    display: inline-block;
+}
+
+.katex-display::after {
+    counter-increment: eqnum;
+    content: "(" counter(eqnum) ")";
+    position: relative;
+    float: right;
+    padding-right: 5px;
+}
+
+.nonumber .katex-display::after {
+  counter-increment: nothing;
+  content: "";
+}
+
+/*  ====================================================================================
+    Specific divs 
+ ==================================================================================== */
+
+.header {
+  margin-top: 1em;
+}
+
+/*
+≂̸ CommonMark
+ */
+ .cm-diff {
+    margin-top: 2em;
+    margin-bottom: 2em;
+    background-color: var(--yellow80);
+    border: 0px;
+    border-radius: 7px;
+    font-size: var(--text-sm);
+  }
+  .cm-diff-legend{
+    color: white;
+    background-color: var(--red30);
+    padding-left:  .5em;
+    padding-right: .5em;
+    padding-bottom: .1em;
+    border-radius: 5px;
+  
+    font-variant: small-caps;
+    font-size: var(--text-sm);
+  }
+  
+  /*
+  TIP
+  */
+  .tip {
+    margin-top: 1.25em;
+    margin-bottom: 2em;
+    background-color: var(--green90);
+    border: 0px;
+    border-radius: 7px;
+    font-size: var(--text-sm);
+  }
+  .tip-legend {
+    color: white;
+    background-color: var(--green20);
+    padding-left: .5em;
+    padding-right: .5em;
+    padding-bottom: .1em;
+    border-radius: 5px;
+    font-variant: small-caps;
+    font-size: var(--text-sm);
+  }
+  
+  /*
+  TO DO
+  */
+  .todo {
+    margin-top: 1.25em;
+    margin-bottom: 2em;
+    background-color: var(--red90);
+    border: 0px;
+    border-radius: 7px;
+    font-size: var(--text-sm);
+  }
+  .todo-legend {
+    color: white;
+    background-color: var(--red10);
+    padding-left: .5em;
+    padding-right: .5em;
+    padding-bottom: .1em;
+    border-radius: 5px;
+    font-variant: small-caps;
+    font-size: var(--text-sm);
+  }
+  
+  /*
+  NOTE
+  */
+  .note {
+    margin-top: 1.25em;
+    margin-bottom: 2em;
+    background-color: var(--yellow90);
+    border: 0px;
+    border-radius: 7px;
+    font-size: var(--text-sm);
+  }
+  .note-legend {
+    color: white;
+    background-color: var(--yellow0);
+    padding-left: .5em;
+    padding-right: .5em;
+    padding-bottom: .1em;
+    border-radius: 5px;
+    font-variant: small-caps;
+    font-size: var(--text-sm);
+  }
+  
+  /*
+  SHOW MD
+  */
+  
+  .md-input {
+    border-width: 0;
+    border-radius: 7px;
+    margin-bottom: 1em;
+    background-color: var(--block-background);
+    font-size: var(--text-sm);
+    line-height: 1.2em;
+  }
+  .md-input-legend {
+    background-color: var(--col-cream);
+    font-size: var(--text-sm);
+    font-variant: small-caps;
+    padding-left:  .5em;
+    padding-right: .5em;
+    padding-bottom: .1em;
+    border-radius: 5px;
+  }
+  .md-input .hljs {
+    background-color: transparent;
+  }
+  .md-input pre {
+    margin: 0;
+  }
+  .md-input code {
+    padding: 0;
+    padding-top: 5px;
+  }
+  
+  .md-result {
+    border-radius: 7px;
+    background-color: #e3edf2;
+    border: 1px solid #5bc0de;
+    margin-left: 1.5em;
+    padding-top: 1.25em;
+    padding-bottom: 1.25em;
+    padding-left: 1.5em;
+    font-size: var(--text-sm);
+    margin-bottom: 2em;
+  }
+  .md-result img {
+    width: 40%;
+    padding-left: 1em;
+  }
+  
+  .md-result-legend {
+    background-color: var(--col-cream);
+    border-radius: 5px;
+    padding-left:  .5em;
+    padding-right: .5em;
+    padding-bottom: .1em;
+    font-variant: small-caps;
+    font-size: var(--text-sm);
+    color: navy;
+  }
+  
+  .md-result pre {
+    margin: 0;
+  }
+  
+  .md-result pre {
+    max-width: 100%;
+  }
+  .md-result .code-output pre {
+    max-width: 100%;
+  }
+  
+  
+  .md-result h1 {padding: 0;}
+  .md-result h2 {padding: 0;}
+  .md-result h3 {padding: 0;}
+  .md-result h1 a {color: black;}
+  .md-result h2 a {color: black;}
+  .md-result h3 a {color: black;}
+  
+  .md-result blockquote {
+    background-color: var(--col-xlight);
+    padding: 0.5em 1em;
+    border-left: 5px solid var(--col-xdark);
+  }
+  
+  .md-result ul ul {padding-left: 1.5em;}
+  .md-result ol ul {padding-left: 1.5em;}
+  
+  
+  .center {text-align: center;}
+  .center img {
+    width: 75%;
+    min-width: 300px;}
+  
+
+    
+
+
+  .code-output {
+    margin-top: 1em;
+    margin-left: 1em;
+    border-left: 3px solid var(--purple70);
+    background-color: var(--output-background);
+        padding: .5em;
+  }
+  
+.code-output pre {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+  .code-output .code-figure {
+    padding-top: 1em;
+    padding-bottom: .75em;
+  }
+  
+  .code-output table {
+    border-collapse: collapse;
+}
+.code-output td, th {
+    border: 1px solid #999;
+    padding: 0.5rem;
+    }
+
+  .trim {
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-x: auto;
+  }
+  
+  .trim .md-result {
+    margin-bottom: 1.5em;
+  }
+
+
+.plotlib .code-stdout {
+  visibility: visible;
+}
+
+
+
+
+
+</style>
+
+<style>
+#topbar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	background-color: var(--col-dark);
+	height: var(--topbar-height);
+	min-width: 100%;
+    color: white;
+    z-index: 100;
+}
+    #topbar-nav {
+        height: var(--topbar-height);
+        padding-left: var(--topbar-ph);
+        padding-right: var(--topbar-ph);
+        width: 100%;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+        #topbar-nav a {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            margin-right: 20px;
+        }
+
+        #topbar-nav img {
+            padding-left: 40px;
+            /* padding-right: 20px; */
+            height: 65%;
+        }
+
+#layout {
+	position: relative;
+	left: 0;
+	padding-left: 0;
+	padding-bottom: 20px;
+}
+
+/* -- Responsive Styles (Media Queries) ----------------------------------- */
+
+@media (min-width: 768px) {
+    #layout {
+		padding-left: var(--menu-width); /* left col width "#menu" */
+		left: 0;
+	}
+
+    #layout.active {
+		position: relative;
+		left: var(--menu-width);
+	}
+}
+
+@media (min-width: 1265px) {
+    #layout {
+        padding-left: calc(var(--menu-width) + var(--wide-leftpad));
+    }
+}
+
+</style>
+
+
+
+<div id="topbar"></div>
+
+<div id="layout">
+    <style>
+    /*
+        html > body > #layout > #menu
+    
+        (hamburger)
+        #menu > .menu-link #menuLink
+    
+        (list in sidebar)
+        #menu > .pure-menu >
+            .pure-menu-heading
+            .pure-menu-list
+                .pure-menu-item etc.
+    */
+    
+    /*
+        The #menu <div> is the parent <div> that contains the .pure-menu that
+        appears on the left side of the page.
+    */
+    #menu {
+        margin-left: calc(-1 * var(--menu-width));
+        width: var(--menu-width);
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 500; 			/* so the menu or its navicon stays above all content */
+        background-color: var(--col-cream);
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-bottom: 5em; /* scroll a bit past the end */
+    }
+        #menu .pure-menu-list {
+            padding-left: .75em;
+        }
+
+        /* All anchors inside the menu should be styled like this. */
+        #menu .pure-menu-list a {
+            color: var(--col-gray);
+            border: none;
+            padding: 0.6em 0 0.6em 0.6em;
+        }
+    
+        /* Remove all background/borders, since we are applying them to #menu. */
+            #menu .pure-menu,
+            #menu .pure-menu ul {
+            border: none;
+            background: transparent;
+        }
+    
+            /* Change color of the anchor links on hover/focus.	*/
+            #menu .pure-menu li a {
+                border-radius: 8px;
+            }
+            #menu .pure-menu li li a {
+                padding-left: .75em;
+            }
+            #menu .pure-menu li li a:hover,
+            #menu .pure-menu li li a:focus {
+                background: var(--col-xlight);
+                max-width: 90%;
+            }
+            #menu .pure-menu li li a.selected {
+                background: var(--col-dark);
+                color: var(--col-cream);
+                max-width: 90%;
+            }
+    
+        /* This styles the menu heading. */
+        #menuTop {
+            position: sticky;
+            z-index: 100;
+            top: 0;
+            color: white;
+            height: var(--topbar-height);
+            background: var(--col-dark);
+            width: var(--menu-width);
+        }
+
+     
+    /*
+    Dynamic Button For Responsive Menu
+    
+    .menu-link represents the responsive menu toggle that shows/hides on
+    small screens.
+    */
+    #menuLink {
+        position: fixed;
+        top: 0;
+        width: var(--topbar-height);
+        height: var(--topbar-height);
+        display:block;
+        z-index: 500;
+    }
+        .v-spacer-menulink {
+            display:block;
+            height: calc(0.1*var(--topbar-height));
+        }
+    
+        #menuLinkIcon {
+            pointer-events: none;
+            height: calc(0.8*var(--topbar-height));
+            width: calc(0.8*var(--topbar-height));
+            margin-left: auto;
+            margin-right: auto;
+            background: var(--burger) no-repeat;
+            background-size: contain;
+            display: block;
+        }
+    
+    #lunrSearchForm {
+        /* visibility: hidden; */
+        padding-top: calc(0.18*var(--topbar-height));
+        padding-left: calc(0.09 * var(--menu-width));
+    }
+        #lunrSearchForm input {
+            line-height: 1.5em;
+        }
+    
+            #lunrSearchForm input.search-input {
+                width: calc(0.75 * var(--menu-width));
+                padding-left: 10px;
+            }
+    
+            #lunrSearchForm input[type=submit] {
+                visibility: hidden;
+                width: 0;
+                /* cursor: pointer; */
+            }
+    
+    #logo {
+        position: fixed;
+        display: block;
+        height: var(--topbar-height);
+        width: var(--topbar-height);
+        z-index: 500;
+        top: 0;
+        right: 0;
+    }
+        #logoLogo {
+            pointer-events:none;
+            height: calc(0.8*var(--topbar-height));
+            width: calc(0.8*var(--topbar-height));
+            margin-left: auto;
+            margin-right: auto;
+            background: var(--franklin) no-repeat;
+            background-size: contain;
+            display: block;
+        }
+    
+    #menuTopFill {
+        display: none;
+    }
+    
+    /* Add transition to containers so they can push in and out. */
+    #menu,
+    #menuLink {
+        -webkit-transition: all 0.2s ease-out;
+        -moz-transition: all 0.2s ease-out;
+        -ms-transition: all 0.2s ease-out;
+        -o-transition: all 0.2s ease-out;
+        transition: all 0.2s ease-out;
+    }
+    
+    .pure-menu-list .pure-menu-list {
+        padding-left: 1em;
+    }
+    
+    .menu-logos {
+        width: 85%;
+        height: 50px;
+        padding-left: 50px;
+        border-bottom: 1px solid var(--col-xlight);
+        margin-bottom: 1.5em;
+        padding-bottom: 5px;
+    }
+    
+        .menu-logos a {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+        }
+        .menu-logos a svg {
+            color: var(--col-gray);
+        }
+        .menu-logos a:hover svg {
+            color: #005dc5;
+        }
+    
+    .v-spacer-menulist {
+        width: 100%;
+        display: block;
+        height: 80px;
+    }
+    
+    /* -- When layout is active ----------------------------------------------- */
+    
+    #layout.active #menu {
+        left: var(--menu-width);
+        width: var(--menu-width);
+    }
+
+    #layout.active #menuLink {
+        display: none;
+    }
+    
+    /* -- Responsive Styles (Media Queries) ----------------------------------- */
+    
+    @media (min-width: 768px) {
+        #menu {
+            left: var(--menu-width);
+        }
+        #layout.active .menu-link {
+            left: var(--menu-width);
+        }
+        #menuLink {
+            display: none;
+        }
+    
+        .v-spacer-menulist {
+            height: 90px;
+        }
+        .menu-logos {
+            padding-bottom: 10px;
+        }
+    }
+    
+    @media (min-width: 1264px) {
+        #menu {
+            padding-left: var(--wide-leftpad);
+        }
+        #menuTopFill {
+            position: fixed;
+            top: 0;
+            display: block;
+            background-color: var(--col-dark);
+            z-index: -1;
+            width: 100%;
+            left: 0;
+            height: var(--topbar-height);
+        }
+        #logo {
+            right: calc(var(--wide-leftpad) + 10px);
+        }
+    }
+    
+    </style>
+    
+    
+    
+    <a href="#menu" id="menuLink" class="menu-link">
+        <div class="v-spacer-menulink"></div>
+        <div id="menuLinkIcon"></div>
+        <div class="v-spacer-menulink"></div>
+    </a>
+    
+    <a href="/Xranklin.jl/previews/PR213/" id="logo">
+        <div class="v-spacer-menulink"></div>
+        <div id="logoLogo"></div>
+        <div class="v-spacer-menulink"></div>
+    </a>
+    
+    <div id="menu">
+    
+        <div id="menuTopFill"></div>
+    
+        <div class="pure-menu">
+            <div id="menuTop">
+                <form id="lunrSearchForm" name="lunrSearchForm">
+                    <input class="search-input" name="q" placeholder="Search the docs..." type="text">
+                    <input type="submit" value="🔍" formaction="/Xranklin.jl/previews/PR213/search/index.html">
+                </form>
+            </div>
+    
+            <div class="v-spacer-menulist"></div>
+    
+            <div class="menu-logos">
+                <a href="/Xranklin.jl/previews/PR213/" id="tohome">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"/></svg>
+                </a> &nbsp;
+                <a href="#" id="totop">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 10a.5.5 0 0 0 .5-.5V3.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 3.707V9.5a.5.5 0 0 0 .5.5zm-7 2.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5z"/></svg>
+                </a> &nbsp;
+                <a href="https://github.com/tlienart/Franklin.jl" id="togithub">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                </a>
+            </div>
+    
+            <ul class="pure-menu-list">
+<li class="pure-menu-item">
+<a href="/Xranklin.jl/previews/PR213/workflow/getting_started/" class="pure-menu-link">
+    <strong>Workflow</strong>
+</a>
+<ul class="pure-menu-list">
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/previews/PR213/workflow/getting_started/" class="pure-menu-link ">
+        Getting Started
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/previews/PR213/workflow/folder_structure/" class="pure-menu-link selected">
+        Folder Structure
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/previews/PR213/workflow/adapting_layout/" class="pure-menu-link ">
+        Adapting a Layout
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/previews/PR213/workflow/deployment/" class="pure-menu-link ">
+        Deployment
+    </a>
+</li>
+</ul>
+</li>
+<li class="pure-menu-item">
+<a href="/Xranklin.jl/previews/PR213/syntax/basics/" class="pure-menu-link">
+    <strong>Syntax</strong>
+</a>
+<ul class="pure-menu-list">
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/previews/PR213/syntax/basics/" class="pure-menu-link ">
+        Basics
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/previews/PR213/syntax/extensions/" class="pure-menu-link ">
+        Extensions
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/previews/PR213/syntax/code_1/" class="pure-menu-link ">
+        Code Blocks (1)
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/previews/PR213/syntax/code_2/" class="pure-menu-link ">
+        Code Blocks (2)
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/previews/PR213/syntax/vars_1/" class="pure-menu-link ">
+        Page Variables (1)
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/previews/PR213/syntax/vars_2/" class="pure-menu-link ">
+        Page Variables (2)
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/previews/PR213/syntax/utils/" class="pure-menu-link ">
+        Utils
+    </a>
+</li>
+</ul>
+</li>
+<li class="pure-menu-item">
+<a href="/Xranklin.jl/previews/PR213/extras/plots/" class="pure-menu-link">
+    <strong>Extras</strong>
+</a>
+<ul class="pure-menu-list">
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/previews/PR213/extras/plots/" class="pure-menu-link ">
+        Plots
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/previews/PR213/extras/tags/" class="pure-menu-link ">
+        Tags
+    </a>
+</li>
+</ul>
+</li>
+<li class="pure-menu-item">
+<a href="/Xranklin.jl/previews/PR213/engine/build_passes/" class="pure-menu-link">
+    <strong>Engine</strong>
+</a>
+<ul class="pure-menu-list">
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/previews/PR213/engine/build_passes/" class="pure-menu-link ">
+        Build passes
+    </a>
+</li>
+<li class="pure-menu-item">
+    <a href="/Xranklin.jl/previews/PR213/engine/cache/" class="pure-menu-link ">
+        Cache
+    </a>
+</li>
+</ul>
+</li>
+</ul>
+
+    
+        </div>
+    </div>           
+    <style>
+#mainContainer {
+    padding-top: var(--topbar-height);
+}
+
+.content {
+    margin: 0 auto;
+    padding: 0 2em;
+    padding-top: 4em;
+    max-width: var(--content-max-width);
+    margin-bottom: 50px;
+    line-height: 1.6em;
+}
+
+.content li {
+  padding-top: .3em;
+}
+
+.sub-header {
+  font-size: 1.5em;
+  font-weight: 300;
+  line-height: 1.3em;
+}
+.flist p {
+  display:inline;
+}
+.flist ul {
+  list-style: none;
+  padding-left: 1em;
+}
+.flist a#goto {
+  padding-right: 10px;
+  margin-left: -15px;
+}
+.flist a#goto #arrow{
+  display:none;
+}
+.flist a#goto:hover #check {
+  display: none;
+}
+.flist a#goto:hover #arrow {
+  display: inline;
+}
+
+
+/* -- When layout is active ----------------------------------------------- */
+
+#layout.active #mainContainer {
+	width: 100%;
+}
+
+#layout.active #mainContainer:after {
+	content: " ";
+	z-index: 10;
+	display: block;
+	position: absolute;
+	height: max(100%, 100vh);
+	min-height: 100%;
+	top: 0;
+	left: 0;
+	margin-left: calc(-1 * var(--menu-width));
+	right: 0;
+	background: rgba(0, 0, 0, 0.3);
+}
+
+/* -- Responsive Styles (Media Queries) ----------------------------------- */
+
+@media (min-width: 768px) {
+    .header,
+	.content {
+		padding-left: 2em;
+		padding-right: 2em;
+	}
+}
+
+@media (min-width: 1264px) { /* (250 + 1000 + 200)
+    /* 1200px min */
+    #mainContainer {
+        width: calc(var(--content-max-width) + var(--menu-width));
+    }
+    #mainContainer1 {
+        width: var(--content-max-width);
+        float: left;
+    }
+}
+
+</style>
+
+
+<div id="mainContainer">
+    <div id="mainContainer1">
+
+        <div class="content">
+            
+              <h1><a href="#">Folder Structure</a></h1>
+            
+
+            <h2 id="basic_folder_structure" ><a href="#basic_folder_structure"> Basic folder structure</a></h2><p>A Franklin-compatible website folder will always have the following basic structure:</p>
+<pre><code class="plaintext">TestWebsite
+├── _layout
+│   ├── foot.html
+│   └── head.html
+├── config.md
+└── index.md       # or index.html</code></pre>
+<p>where <code>TestWebsite</code> is the name of the website folder.
+In the rest of this page we go over what the different files and folders do.</p>
+<fieldset class="tip"><legend class="tip-legend">🚀 Tip</legend>
+
+Paths on this page (and generally, in these docs) are all meant relative to the website folder.
+So for instance if we talk about <code>foo/bar.md</code>, it's located at <code>TestWebsite/foo/bar.md</code>.
+
+</fieldset><h3 id="how_franklin_looks_at_files" ><a href="#how_franklin_looks_at_files"> How Franklin looks at files</a></h3><p>When building the website, Franklin looks at all files in your source folder and applies the following general rules:</p>
+<ul>
+<li><code>.md</code> file: convert it to HTML and place the result in <code>__site</code> (with the exception of <code>config.md</code>)</li>
+<li><code>.html</code> file: convert it to HTML (process Franklin-specific <code>&lbrace;&lbrace;...&rbrace;&rbrace;</code>) and place the result in <code>__site</code></li>
+<li>other file: place it in <code>__site</code></li>
+</ul>
+<p>There are two "special" files which are treated differently:</p>
+<ul>
+<li><code>config.md</code> where you can make some global definitions available throughout your site,</li>
+<li><code>utils.jl</code> where you can define code that can be used throughout your site</li>
+</ul>
+<p>The first one is briefly covered further down, and the second one is covered in the <a href="/Xranklin.jl/previews/PR213/syntax/utils/">utils</a> page.</p>
+<p>The rest of the page will provide more details on special paths and how Franklin treats them.</p>
+<h4 id="ignoring_files" ><a href="#ignoring_files"> Ignoring files</a></h4><p>You can indicate to Franklin to ignore files by defining <code>ignore</code> in <code>config.md</code> like so:</p>
+<pre><code class="julia">ignore = [
+  &quot;foo/&quot;,             # ignore an entire directory
+  &quot;foo/bar.md&quot;,       # ignore a specific file
+  Regex(&quot;foo/*.jpg&quot;), # ignore files matching a pattern
+]</code></pre>
+<p>Frankin will also ignore <code>README.md</code>, <code>LICENSE.md</code>, and <code>.gitignore</code> by default (see also the global variable <code>:ignore_base</code>.) </p>
+<h3 id="index_file" ><a href="#index_file"> Index file</a></h3><p>The root <code>index.md</code> file is what Franklin will convert into your website's landing page.
+So, for instance, if the content of <code>index.md</code> is</p>
+<pre><code class="markdown"># Hello
+
+Some text.</code></pre>
+<p>and that you start the server, the page you will see when navigating to <code>localhost:8000/</code>
+will contain matching HTML close to:</p>
+<pre><code class="html">...
+  &lt;h1&gt;Hello&lt;/h1&gt;
+  &lt;p&gt;Some text.&lt;/p&gt;
+...</code></pre>
+<p>In some cases you might want to have full control over the landing page,
+and write it directly in HTML.
+To do so, simply remove the file <code>index.md</code> and write a file <code>index.html</code> instead.</p>
+<h3 id="config_file" ><a href="#config_file"> Config file</a></h3><p>The <code>config.md</code> file is where you can define global <a href="/Xranklin.jl/previews/PR213/syntax/vars+funs/">page variables</a>
+and <a href="/Xranklin.jl/previews/PR213/syntax/extensions/">commands</a>.
+As a quick idea of what the <code>config.md</code> file can be used to do, this is where you might
+specify who the author of the website is, or what the website is about:</p>
+<pre><code class="plaintext">+++
+author = &quot;Zenobia&quot;
+descr = &quot;&quot;&quot;
+  This website is dedicated to Zenobia, a famous queen of Syria.
+  &quot;&quot;&quot;
++++</code></pre>
+<p>It is also the place where you can define the <code>base_url_prefix</code> (or <code>prepath</code>)
+which is <strong>crucial</strong> to get your site to <a href="/Xranklin.jl/previews/PR213/workflow/deployment/">deploy properly</a>.
+In short, it is the prefix to use for your site landing page; for instance if your website
+is hosted on github, the website might be located at</p>
+<pre><code class="julia">https://username.github.io/theWebsite/</code></pre>
+<p>and the <code>base_url_prefix</code> is then <code>theWebsite</code>.</p>
+<fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+
+If you <strong>do</strong> want to have a page with relative URL <code>/config/</code>, you can do so by
+writing a file at <code>/config/index.md</code>.
+See also the section <a href="#paths_in_franklin">on paths</a>.
+
+</fieldset><h3 id="layout_files" ><a href="#layout_files"> Layout files</a></h3><p>The <code>_layout/</code> folder will usually contain a <code>head.html</code> and <code>foot.html</code> which are placed respectively at the top and bottom of each generated HTML page (cf. the <a href="/Xranklin.jl/previews/PR213/workflow/getting_started/#page_structure">page structure</a> diagram).</p>
+<p>These files are where you should indicate the base layout of your pages, and, for instance, where you might indicate what CSS or JS to load on pages.
+See <a href="/Xranklin.jl/previews/PR213/workflow/adapting_layout/">how to adapt a layout</a> for more details on how to specify these files if you want to write your own layout.</p>
+<p>It is often convenient to split the layout of your site into components, and each of these
+components may have its own layout file to complement the "head" and "foot" files.
+For instance you might define a menu in a file <code>menu.html</code> and refer to it in the <code>head.html</code>
+using <code>&lbrace;&lbrace;insert menu.html&rbrace;&rbrace;</code>.
+To understand how this works in details, you will need to be familiar with the section on
+<a href="/Xranklin.jl/previews/PR213/syntax/vars+funs/">page variables and HTML functions</a>).
+For now though, the point is just that there may be multiple files in <code>_layout/</code> depending on how you modularise your layout.</p>
+<h2 id="site_and_cache_folders" ><a href="#site_and_cache_folders"> Site and cache folders</a></h2><p>When Franklin generates HTML pages, it places them in a <code>__site/</code> folder.
+And when the server is interrupted, Franklin generates (or updates) a <code>__cache/</code> folder.</p>
+<p>So after running <code>serve</code> and interrupting the server in the basic folder discussed at the previous point, the folder structure would look like</p>
+<pre><code class="plaintext">TestWebsite
+├── __cache
+│   ├── gc.cache
+│   └── index
+│       └── lc.cache
+├── __site
+│   └── index.html
+├── _layout
+│   ├── foot.html
+│   └── head.html
+├── config.md
+└── index.md</code></pre>
+<p>These two folders are explained below along with a summary of how paths work in Franklin.</p>
+<h3 id="site_folder" ><a href="#site_folder"> Site folder</a></h3><p>The <code>__site/</code> folder is where all files that correspond to your actual website are placed.
+Deploying a Franklin website simply amounts to placing the content of this <code>__site/</code> folder
+on some server (see also <a href="/Xranklin.jl/previews/PR213/workflow/deployment/">the docs on deployment</a> for much more on this).</p>
+<p>In the example above, there is a single file in <code>__site</code>: the <code>index.html</code> which is the
+landing page of the website.
+Recall from <a href="/Xranklin.jl/previews/PR213/workflow/getting_started/#page_structure">the diagram on page structure</a>
+that this file <code>index.html</code> is generated out of assembling and processing</p>
+<ul>
+<li><code>_layout/head.html</code>,</li>
+<li>the conversion of <code>index.md</code> to HTML by Franklin, and</li>
+<li><code>_layout/foot.html</code>.</li>
+</ul>
+<p>If you had other <code>.md</code> files next to <code>index.md</code>, these would also be converted and placed in <code>__site/</code>.
+See also the point below <a href="#paths_in_franklin">on paths</a> for a summary of where files end up.</p>
+<h3 id="cache_folder" ><a href="#cache_folder"> Cache folder</a></h3><p>The cache folder keeps track of a serialised representation of the global and each
+of the local <strong>contexts</strong>.
+At a high level, the global context keeps track of global <a href="page%20vars">page variables</a> and the
+local contexts keep track of local page variables along with the representation of all code
+blocks evaluated on that page.</p>
+<p>These serialised representation will only exist under certain (fairly broad) conditions and will
+speed up re-building the website on subsequent sessions.
+If a context fails to serialise (e.g. because some of the page variables can't be easily serialised),
+the context will be re-built every time the server is re-started even if the page hasn't changed
+which can lead to a small overhead depending on what's on that page.</p>
+<p>If you're curious about the cache, you can read more about it <a href="/Xranklin.jl/previews/PR213/engine/cache/">here</a>.
+Generally you shouldn't have to think about the cache folder at all.</p>
+<h3 id="paths_in_franklin" ><a href="#paths_in_franklin"> Paths in Franklin</a></h3><p>The table below helps clarify how a file placed in the website folder ends up
+generating a file in the <code>__site/</code> folder and, ultimately, the corresponding URL.</p>
+<p>For URLs, recall that if we write <code>/foo/bar/</code> the browser resolves this as <code>/foo/bar/index.html</code> (so the source file is at <code>/foo/bar/index.html</code> but users can access the page at <code>/foo/bar/</code>).
+Also, if the <a href="/Xranklin.jl/previews/PR213/workflow/deployment/#setting_the_base_url_prefix"><code>base_url_prefix</code></a> is <code>&quot;PREFIX&quot;</code> then <code>/foo/bar/</code> will be <code>PREFIX/foo/bar/</code> online (in the table below we assume the prefix is <code>&quot;&quot;</code>).</p>
+<p>For <strong><code>.md</code></strong> and <strong><code>.html</code></strong> files:</p>
+<div class="lskip"> </div><table class="pure-table">
+<thead>
+<th > Source </th>
+<th > <code>__site/</code> folder </th>
+<th > URL </th>
+</thead>
+<tbody>
+<tr>
+<td > <code>index.md</code> </td>
+<td > <code>index.html</code>  </td>
+<td > <code>/</code> </td>
+</tr>
+<tr>
+<td > <code>foo.md</code> (or <code>foo/index.md</code>) </td>
+<td > <code>foo/index.html</code> </td>
+<td > <code>/foo/</code> </td>
+</tr>
+<tr>
+<td > <code>foo/bar.md</code> </td>
+<td > <code>foo/bar/index.html</code> </td>
+<td > <code>/foo/bar/</code> </td>
+</tr>
+<tr>
+<td > <code>index.html</code> </td>
+<td > <code>index.html</code> </td>
+<td > <code>/</code> </td>
+</tr>
+<tr>
+<td > <code>foo.html</code>   </td>
+<td > <code>foo/index.html</code> </td>
+<td > <code>/foo/</code> </td>
+</tr>
+<tr>
+<td > <code>foo/bar.html</code> </td>
+<td > <code>foo/bar/index.html</code> </td>
+<td > <code>/foo/bar/</code> </td>
+</tr>
+</tbody>
+</table>
+<div class="lskip"> </div><p>Observe that there is an ambiguity between a file placed at <code>foo.md</code> and <code>foo/index.md</code>.
+You should pick one of the two based on what makes most sense for your folder structure, but you should not use both simultaneously.</p>
+<p>For other files (images etc):</p>
+<div class="lskip"> </div><table class="pure-table">
+<thead>
+<th > Source </th>
+<th > <code>__site/</code> folder </th>
+<th > URL </th>
+</thead>
+<tbody>
+<tr>
+<td > <code>a/b.xyz</code> </td>
+<td > <code>a/b.xyz</code> </td>
+<td > <code>/a/b.xyz</code> </td>
+</tr>
+<tr>
+<td > <code>_assets/a/b.xyz</code> </td>
+<td > <code>assets/a/b.xyz</code> </td>
+<td > <code>/assets/a/b.xyz</code> </td>
+</tr>
+<tr>
+<td > <code>_css/a.css</code> </td>
+<td > <code>css/a.css</code> </td>
+<td > <code>/css/a.css</code> </td>
+</tr>
+<tr>
+<td > <code>_libs/a.js</code> </td>
+<td > <code>libs/a.js</code> </td>
+<td > <code>/libs/a.js</code> </td>
+</tr>
+</tbody>
+</table>
+<div class="lskip"> </div><h4 id="tweaks" ><a href="#tweaks"> Tweaks</a></h4><p>In some cases you will want some paths to be kept <em>as is</em> (without the automatic addition of <code>index.html</code>).
+This can be done with the global page variable <code>keep_path</code>.
+For instance with things like Google Analytics, you may have to prove ownership of your site by placing a custom HTML file in a given location (see <a href="https://support.google.com/webmasters/answer/9008080#html_verification">this tutorial</a>).
+For such cases you would indicate <code>keep_path=[&quot;the/path.html&quot;]</code> and Franklin would respect that:</p>
+<pre><code class="plaintext"># source
+the/path.html
+
+# in config.md
+keep_path = [&quot;the/path.html&quot;]
+
+# output in __site/
+the/path.html    # (instead of the/path/index.html)</code></pre>
+<p>Further to the global page variable <code>keep_path</code>, you can also use the page variable <code>slug</code> which
+offers you a way to indicate a secondary output path for a file thereby making it available at
+another URL. The table below should clarify this:</p>
+<div class="lskip"> </div><table class="pure-table">
+<thead>
+<th > Source </th>
+<th > Slug </th>
+<th > "<code>__site/</code>" folder </th>
+<th > URL </th>
+</thead>
+<tbody>
+<tr>
+<td > <code>foo/bar.md</code> </td>
+<td > <code>slug=&quot;biz/baz&quot;</code> </td>
+<td > {<code>foo/bar/index.html</code>, <code>biz/baz/index.html</code>} </td>
+<td > {<code>/foo/bar/</code>, <code>/biz/baz/</code>} </td>
+</tr>
+<tr>
+<td > <code>foo/bar.md</code> </td>
+<td > <code>slug=&quot;biz/baz.html&quot;</code> </td>
+<td > {<code>foo/bar/index.html</code>, <code>biz/baz.html</code>} </td>
+<td > {<code>/foo/bar/</code>, <code>/biz/baz.html</code>} </td>
+</tr>
+</tbody>
+</table>
+<div class="lskip"> </div><h2 id="css_and_js" ><a href="#css_and_js"> CSS and JS</a></h2><p>The files in the <code>_css/</code> and <code>_libs/</code> folder are copied over to <code>__site/css/</code> and
+<code>__site/libs/</code> respectively.
+For instance, let's say that you have</p>
+<ul>
+<li><code>_css/layout.css</code> and,</li>
+<li><code>_libs/ui/menu.min.js</code></li>
+</ul>
+<p>then these files will be copied over (as explained in the <a href="#paths_in_franklin">earlier point on paths</a>) to</p>
+<ul>
+<li><code>__site/css/layout.css</code> and,</li>
+<li><code>__site/libs/ui/menu.min.js</code>.</li>
+</ul>
+<p>You can refer to them in your layout e.g. as:</p>
+<pre><code class="html">&lt;link rel=&quot;stylesheet&quot; href=&quot;/css/layout.css&quot;&gt;
+&lt;script src=&quot;/libs/ui/menu.min.js&quot;&gt;&lt;/script&gt;</code></pre>
+<div class="lskip"> </div><fieldset class="tip"><legend class="tip-legend">🚀 Tip</legend>
+
+You should not specify the base url prefix anywhere else than in your <code>config.md</code> (or in the github action).
+Franklin will automatically fix paths for you to take it into account.
+In other words you should never have to write <code>href=&quot;/PREFIX/css/layout.css&quot;</code>,
+stick with <code>href=/Xranklin.jl/previews/PR213/css/layout.css</code>.
+
+</fieldset><h2 id="assets" ><a href="#assets"> Assets</a></h2><p>Everything you put in <code>_assets/</code> gets copied <em>as is</em> to <code>__site/assets</code> even if
+it's a <code>.md</code> or <code>.html</code> file.
+This is the location where you might want to place images, logos, etc.</p>
+<p>For instance, we have an image of a bike located at <code>_assets/eximg/bike.svg</code>, we can
+include it with</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">![Illustration of a road bike](/assets/eximg/bike.svg)</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><img src="/Xranklin.jl/previews/PR213/assets/eximg/bike.svg" alt="Illustration of a road bike"></fieldset>
+
+</div><p>This image was taken from Wikimedia Commons <a href="https://commons.wikimedia.org/wiki/File:Bike25.svg">here</a>.</p>
+<p>For more on the basic syntax to include images in Franklin, see <a href="http://localhost:8000/syntax/basics/#images">here</a>.</p>
+
+
+            
+
+            <div id="pg-foot">
+              Website built with <a href="https://franklinjl.org">Franklin.jl</a>
+              and the <a href="https://julialang.org">Julia programming language</a>.
+            </div>
+
+        </div>
+    </div>
+    <style>
+    #rightMargin{
+        display: none;
+    }
+    @media (min-width: 1264px) and (min-height: 500px){
+        #rightMargin {
+            position: fixed;
+            top: 140px;
+            padding-left: var(--content-max-width);
+            z-index: -1;
+            display: block;
+            width: var(--menu-width);
+            float: right;
+        }
+    
+        #marginToc {
+            font-size: var(--text-sm);
+            color: var(--col-gray);
+            border-left: 1px solid var(--col-xlight);
+            padding-left: 1em;
+            line-height: 1.2;
+        }
+            #marginToc a {
+                text-decoration: none;
+                color: inherit;
+            }
+            #marginToc a:hover {
+                color: var(--col-lblue);
+                text-decoration: none;
+            }
+            #marginToc ol {
+                list-style: none;
+                padding-left: 0em;
+            }
+            #marginToc li {
+                padding-top: 0.6em;
+                line-height: 1.2;
+            }
+            #marginToc li li {
+                padding-left: 1em;
+            }
+    
+            #marginTocLegend {
+                text-transform: uppercase;
+                font-weight:    650;
+                letter-spacing: 0.0375em;
+                /* padding-left: 	1.6em; */
+            }
+    }
+    </style>
+    
+    <div id="rightMargin">
+        <div id="marginToc">
+            
+              <div id="marginTocLegend"><a href="#">Contents</a></div>
+              <div class="toc"><ol><li><a href="#basic_folder_structure">Basic folder structure</a><ol><li><a href="#how_franklin_looks_at_files">How Franklin looks at files</a></li><li><a href="#index_file">Index file</a></li><li><a href="#config_file">Config file</a></li><li><a href="#layout_files">Layout files</a></li></ol></li><li><a href="#site_and_cache_folders">Site and cache folders</a><ol><li><a href="#site_folder">Site folder</a></li><li><a href="#cache_folder">Cache folder</a></li><li><a href="#paths_in_franklin">Paths in Franklin</a></li></ol></li><li><a href="#css_and_js">CSS and JS</a></li><li><a href="#assets">Assets</a></li></ol></div>
+            
+        </div>
+    </div>
+</div>  
+</div>
+
+
+<script>
+(function (window, document) {
+    function getElements() {
+        return {
+            layout: document.getElementById('layout'),
+            menu: document.getElementById('menu'),
+            menuLink: document.getElementById('menuLink')
+        };
+    }
+    function toggleClass(element, className) {
+        var classes = element.className.split(/\s+/);
+        var length = classes.length;
+        var i = 0;
+        for (; i < length; i++) {
+            if (classes[i] === className) {
+                classes.splice(i, 1);
+                break;
+            }
+        }
+        if (length === classes.length) {
+            classes.push(className);
+        }
+        element.className = classes.join(' ');
+    }
+
+    function toggleAll() {
+        var active = 'active';
+        var elements = getElements();
+
+        toggleClass(elements.layout, active);
+        toggleClass(elements.menu, active);
+        toggleClass(elements.menuLink, active);
+    }
+
+    function untoggleAll() {
+        var elements = getElements();
+
+        elements.layout.classList.remove('active');
+        elements.menu.classList.remove('active');
+        elements.menuLink.classList.remove('active');
+    }
+
+    var ignoreClick = document.getElementById('menu');
+
+    function handleEvent(e) {
+        shouldIgnore = ignoreClick.contains(e.target);
+        if (!shouldIgnore) {
+            var elements = getElements();
+            if (e.target.id === elements.menuLink.id) {
+                toggleAll();
+                e.preventDefault();
+            } else if (elements.menu.className.indexOf('active') !== -1) {
+                toggleAll();
+            }
+        }
+    }
+    document.addEventListener('click', handleEvent);
+    window.addEventListener('resize', untoggleAll);
+}(this, this.document));
+</script>
+
+
+
+
+    <script src="/Xranklin.jl/previews/PR213/libs/highlight/highlight.min.js"></script>
+    <script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+
+</body>
+</html>
