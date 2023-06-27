@@ -13,9 +13,10 @@ Acts as joinpath.
 """
     repr(o)
 
-Calls `repr` but strips away the `\"` for string-like objects.
+Calls `repr` but strips away the `\"` for string-like objects (+ spurious
+whitespace characters).
 """
-stripped_repr(s::AbstractString) = strip(repr(s), '\"')
+stripped_repr(s::AbstractString) = strip(repr(strip(s)), '"')
 stripped_repr(o) = repr(o)
 
  """

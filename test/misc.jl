@@ -127,3 +127,12 @@ end
     # actual string change
     @test !Xranklin.is_codestr_equal(s1, s3)
 end
+
+@testset "stripped_repr" begin
+    @test X.stripped_repr(5) == "5"
+    @test X.stripped_repr("foo") == "foo"
+    @test X.stripped_repr("foo\n") == "foo"
+    @test X.stripped_repr(1//2) == "1//2"
+    @test X.stripped_repr(true) == "true"
+    @test X.stripped_repr('a') == "'a'"
+end
