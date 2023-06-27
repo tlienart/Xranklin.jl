@@ -135,4 +135,5 @@ end
     @test X.stripped_repr(1//2) == "1//2"
     @test X.stripped_repr(true) == "true"
     @test X.stripped_repr('a') == "'a'"
+    @test X.stripped_repr("a\nb\nc\n") == "a b c"
 end

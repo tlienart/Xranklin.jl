@@ -16,7 +16,7 @@ Acts as joinpath.
 Calls `repr` but strips away the `\"` for string-like objects (+ spurious
 whitespace characters).
 """
-stripped_repr(s::AbstractString) = strip(repr(strip(s)), '"')
+stripped_repr(s::AbstractString) = strip(repr(strip(replace(s, r"\s"=>" "))), '"')
 stripped_repr(o) = repr(o)
 
  """
