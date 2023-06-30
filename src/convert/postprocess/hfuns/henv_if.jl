@@ -261,51 +261,52 @@ end
 "{{if ...}} or {{elseif ...}}"
 function _check_if(lc, args)
     flag, err = false, false
-    if length(args) != 1
-        @warn """
-            {{if ...}} / {{elseif ...}}
-            Found an {{if ...}} variant that didn't have exactly one argument.
-            It should, e.g. {{if x}} or {{elseif y}}.
-            """
-        err = true
-    else
-        arg = args[1]
-        if is_estr(arg)
-            res = eval_str(lc, arg)
-            if !res.success
-                err = true
-            elseif !(res.value isa Bool)
-                @warn """
-                    {{if ...}} / {{elseif ...}}
-                    Found and {{if ...}} variant with an e-string '$arg' that
-                    did not resolve to a boolean ('$(res.value)' of type
-                    '$(typeof(res.value))').
-                    """
-                err = true
-            else
-                flag = res.value
-            end
+    comb_args = prod(args)
+
+    if is_estr(comb_args)
+        res = eval_str(lc, comb_args)
+        if !res.success
+            err = true
+        elseif !(res.value isa Bool)
+            @warn """
+                {{if ...}} / {{elseif ...}}
+                Found and {{if ...}} variant with an e-string '$arg' that
+                did not resolve to a boolean ('$(res.value)' of type
+                '$(typeof(res.value))').
+                """
+            err = true
         else
-            v = getvar(lc, Symbol(arg))
-            if v === nothing
-                @warn """
-                    {{if ...}} / {{elseif ...}}
-                    Found and {{if ...}} variant with an arg '$arg' that
-                    couldn't be matched to a page variable.
-                    """
-                err = true
-            elseif !(v isa Bool)
-                @warn """
-                    {{if ...}} / {{elseif ...}}
-                    Found and {{if ...}} variant with an arg '$arg' that does
-                    not resolve to a boolean ('$v' of type '$(typeof(v))').
-                    """
-                err = true
-            else
-                flag = v
-            end
+            flag = res.value
         end
 
+    elseif length(args) == 1
+        arg = args[1]
+        v = getvar(lc, Symbol(arg))
+        if v === nothing
+            @warn """
+                {{if ...}} / {{elseif ...}}
+                Found and {{if ...}} variant with an arg '$arg' that
+                couldn't be matched to a page variable.
+                """
+            err = true
+        elseif !(v isa Bool)
+            @warn """
+                {{if ...}} / {{elseif ...}}
+                Found and {{if ...}} variant with an arg '$arg' that does
+                not resolve to a boolean ('$v' of type '$(typeof(v))').
+                """
+            err = true
+        else
+            flag = v
+        end
+        
+    else
+        @warn """
+            {{if ...}} / {{elseif ...}}
+            Found an {{if ...}} variant that didn't have exactly one argument or
+            an e-string. It be should, e.g. {{if x}} or {{elseif y}}.
+            """
+        err = true
     end
     return (flag, err)
 end

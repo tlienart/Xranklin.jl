@@ -187,7 +187,7 @@ function process_utils(gc::GlobalContext)
 end
 
 
-utils_hfun_names(gc)   = getvar(gc, :_utils_hfun_names)::Vector{Symbol}
-utils_lxfun_names(gc)  = getvar(gc, :_utils_lxfun_names)::Vector{Symbol}
-utils_envfun_names(gc) = getvar(gc, :_utils_envfun_names)::Vector{Symbol}
-utils_var_names(gc)    = getvar(gc, :_utils_var_names)::Vector{Symbol}
+utils_hfun_names(gc)   = getvar(gc, :_utils_hfun_names, Vector{Symbol}())
+utils_lxfun_names(gc)  = getvar(gc, :_utils_lxfun_names, Vector{Symbol}())
+utils_envfun_names(gc) = getvar(gc, :_utils_envfun_names, Vector{Symbol}())
+utils_var_names(gc)    = getvar(gc, :_utils_var_names, Vector{Symbol}())

@@ -94,3 +94,31 @@ end
         @test contains(h, "FAILED")
     end "error was caught when attempting to run code ('__estr__')"
 end
+
+
+@testset "for with julia" begin
+    s = """{{for x in !> [1,2,3,4]}}{{x}}{{end}}""" |> html
+    @test s == "1234"
+    s = """
+        {{if > 5 > 7}}
+        no
+        {{else}}
+        yes
+        {{end}}
+        """ |> html
+    @test contains(s, "yes")
+
+    s = """
+        +++
+        flag = false
+        +++
+        {{if flag}}
+        no
+        {{elseif > true}}
+          {{isempty > []}}
+            yes
+          {{end}}
+        {{end}}
+        """ |> html
+    @test contains(s, "yes")
+end

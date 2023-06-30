@@ -77,7 +77,7 @@ function resolve_dbb(
             write(io, hfun_failed(split_cb))
 
         # B | independent e-string (outside of henv)
-        elseif is_estr(cb; allow_short = true)
+        elseif is_estr(cb)
             _dbb_fill_estr(lc, io, cb)
 
         # C | utils or internal function, utils have priority

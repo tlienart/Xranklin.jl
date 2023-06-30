@@ -1,12 +1,17 @@
 """
-    is_estr(s; allow_short)
+    is_estr(s)
 
-Check if a candidate string looks like an e-string (starts with `e"`).
-If `allow_short` is `true`, also allow an e-string to start with `>`.
+Check if a candidate string looks like an e-string:
+* starts with `e"`
+* starts with `>`
+* starts with `!>`
 """
-function is_estr(s; allow_short::Bool=false)
-    return startswith(s, "e\"") || (allow_short && startswith(s, ">"))
+function is_estr(s)
+    startswith(s, "e\"") && return true
+    startswith(s, r"!?>") && return true
+    return false
 end
+
 
 """
     eval_str(lc, estr)
@@ -30,7 +35,7 @@ function eval_str(
     if startswith(estr, "e")
         estr = strip(strip(lstrip(estr, 'e'), '\"'))
     else
-        estr = strip(lstrip(estr, '>'))
+        estr = strip(replace(estr, r"^\!?\>" => ""))
     end
     code = _eval_str(lc, estr)
     code = replace(code, "⁰" => "\"")
