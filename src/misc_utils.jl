@@ -16,7 +16,13 @@ Acts as joinpath.
 Calls `repr` but strips away the `\"` for string-like objects (+ spurious
 whitespace characters).
 """
-stripped_repr(s::AbstractString) = strip(repr(strip(replace(s, r"\s"=>" "))), '"')
+function stripped_repr(s::AbstractString)
+    wsp_nrm   = replace(s, r"\s"=>" ")
+    wsp_strip = strip(wsp_nrm)
+    r = repr(wsp_strip)
+    r = replace(wsp_strip, r"\\\\\\\"" => "\"")
+    return strip(r, '"')
+end
 stripped_repr(o) = repr(o)
 
  """
