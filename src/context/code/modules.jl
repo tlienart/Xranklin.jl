@@ -118,7 +118,7 @@ const UTILS_UTILS = [
     # from module
     "cur_gc", "html", "latex", "html2",
     # others
-    "__gc", "__lc",
+    "__gc", "__lc", "attach",
     "cur_lc", "path", "folderpath", "sitepath",
     "getlvar", "getgvar", "getvarfrom",
     "setlvar!", "setgvar!",
@@ -205,6 +205,8 @@ modules_setup(c::Context) = begin
             get_page_tags(rp) = $F.get_page_tags(rp)
             get_all_tags()    = $F.get_all_tags(__gc)
             get_rpath()       = $F.get_rpath(__lc)
+
+            attach(rp)        = $F.attach(__lc, rp)
 
             setproject!(p::AbstractString) = $F.setproject!(__lc, p)
             """

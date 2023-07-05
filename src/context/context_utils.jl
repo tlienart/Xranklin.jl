@@ -222,5 +222,6 @@ DEV:
     - context/deps_map.jl
     - convert/markdown/lxfuns/literate.jl (_process_literate_file)
 """
-attach(lc::LocalContext, dep_rpath::String) =
+function attach(lc::LocalContext, dep_rpath::String)
     push!(lc.glob.deps_map, lc.rpath, dep_rpath)
+end

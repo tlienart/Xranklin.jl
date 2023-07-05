@@ -52,10 +52,8 @@ function toy_example(;
 
     write(parent / "config.md", raw"""
         +++
-        using Dates
-
         author = "Kathleen Booth"
-        thedate = Date(1947, 9, 19)
+        thedate = Dates.Date(1947, 9, 19)
 
         +++
 
