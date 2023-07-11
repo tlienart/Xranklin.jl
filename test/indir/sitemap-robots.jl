@@ -48,8 +48,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         Sitemap: https://foo.com/sitemap.xml
         """)
 
-    smap = read(sitemap, String)
-    println(smap)
+    smap  = read(sitemap, String)
     today = Dates.today()
     for e in [
         "https://foo.com/norobots/abc/index.html",
