@@ -29,7 +29,13 @@ logall()
     @testset "LaTeX" begin
         p = "convert/"
         include(p/"md_latex_newobj.jl")
-        include(p/"md_latex_obj.jl")
+        include(p/"md_latex_obj.jl")       
+    end
+
+    @testset "Convert Misc" begin
+        p = "convert/"
+        include(p/"regex.jl")
+        include(p/"repl_mode.jl")
     end
 
     @testset "MD2x" begin

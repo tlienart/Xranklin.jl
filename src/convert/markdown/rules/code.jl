@@ -126,10 +126,15 @@ The different cases are:
 * lang!   | lang:    - executed, auto-named, explicit language (†)
 * lang!ex | lang:ex  - executed, named, explicit language (with colon is for
                         legacy) (†)
+* > ; ] ?            - executed, auto-named, repl mode (††)
+* >ex ;ex ]ex ?ex    - executed, named, julia-repl mode
 
 (†) a whitespace can be inserted after the language and before the execution
 symbol to allow for syntax highlighting in markdown to work properly (this
 is required in VSCode for instance).
+
+(††) each of the four symbol is allowed in repl mode for respectively the
+standard REPL (`>`), shell mode (`;`), pkg mode (`]`) and help mode (`?`).
 
 Return a CodeInfo.
 
@@ -163,6 +168,15 @@ function _code_info(
     end
     if !isnothing(e)
         exec = true
+        if e == ">"
+            lang = "repl-repl"
+        elseif e == ";"
+            lang = "repl-shell"
+        elseif e == "?"
+            lang = "repl-help"
+        elseif e == "]"
+            lang = "repl-pkg"
+        end
     end
 
     if exec
@@ -239,6 +253,9 @@ function html_code_block(
 
     hascode!(lc)
     ci = _code_info(b, lc)
+    if ci.exec && startswith(ci.lang, "repl-")
+        return html_repl_code(ci, lc)
+    end
     # placeholder for output string if has to be added directly after code
     # might remain empty if result is nothing or if it's not an auto-cell
     post = ""
@@ -279,6 +296,9 @@ function latex_code_block(
         )::String
 
     ci = _code_info(b, lc)
+    if ci.exec && startswith(ci.lang, "repl-")
+        return latex_repl_code(ci, lc)
+    end
     if ci.exec
         if ci.lang == "julia"
             eval_code_cell!(lc, ci.code, ci.name; force=ci.force)
@@ -294,3 +314,111 @@ function latex_code_block(
         \\begin{lstlisting}\n$code\n\\end{lstlisting}
         """) * post
 end
+
+#
+# REPL MODE
+#
+
+function _eval_repl_code(
+        io::IOBuffer,
+        ci::CodeInfo,
+        lc::LocalContext;
+        tohtml::Bool=true
+    )::Nothing
+    if !tohtml
+        println(io, "!X! repl code latex !X!")
+    else
+        print(io, "<pre><code class=\"julia-repl\">")
+
+        #
+        # REPL-REPL mode
+        # NOTE: for now assumption of non-incomplete expressions
+        #
+        if ci.lang == "repl-repl"
+            chunk = ""
+            counter = 1
+            for line in split(ci.code, r"\r?\n", keepempty=false)
+                # add to the chunk until we have a complete AST
+                chunk *= line * "\n"
+                ast = Base.parse_input_line(chunk)
+                if (isa(ast, Expr) && ast.head === :incomplete)
+                    continue
+                else
+                    # here 'chunk' corresponds to a complete ast
+                    chunk_name = ci.name * "_$counter"
+                    eval_code_cell!(
+                        lc, SubString(chunk), chunk_name
+                    )
+                    idx = findfirst(==(chunk_name), lc.nb_code.code_names)::Int
+                    rep = lc.nb_code.code_pairs[idx].repr.raw
+
+                    # add empty line between prompts but not after last
+                    counter > 1 && println(io, "")
+                    println(io, "julia> $(strip(chunk))")
+                    println(io, rep)
+
+                    chunk    = ""
+                    counter += 1
+                end
+
+            end
+
+        #
+        # REPL-PKG mode
+        #
+        elseif ci.lang == "repl-pkg"
+            println(io, "!X! repl pkg code !X!")
+        
+        #
+        # REPL-SHELL mode
+        #
+        elseif ci.lang == "repl-shell"
+            println(io, "!X! repl shell code !X!")
+        
+        #
+        # REPL-HELP mode
+        #
+        else
+            # help mode
+            println(io, "!X! repl help code !X!")
+            println(io, "</code></pre>")
+        end
+
+        if ci.lang != "repl-help"
+            println(io, "</code></pre>")
+        end
+    end
+end
+
+
+"""
+    html
+
+INCOMPLETE
+"""
+function html_repl_code(
+            ci::CodeInfo,
+            lc::LocalContext
+        )::String
+
+    io = IOBuffer()
+    _eval_repl_code(io, ci, lc; tohtml=true)
+    return String(take!(io))
+end
+
+"""
+    latex_repl_code
+
+INCOMPLETE
+"""
+function latex_repl_code(
+            ci::CodeInfo,
+            lc::LocalContext
+        )::String
+
+    io = IOBuffer()
+    _eval_repl_code(io, ci, lc; tohtml=false)
+    return String(take!(io))
+end
+
+
