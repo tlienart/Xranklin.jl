@@ -49,10 +49,12 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         """)
 
     smap = read(sitemap, String)
+    println(smap)
+    today = Dates.today()
     for e in [
         "https://foo.com/norobots/abc/index.html",
         "https://foo.com/index.html",
-        string(Dates.today()),
+        "$(year(today))-$(lpad(month(today), 2, '0'))-", # if testing around midnight, day might be off...
     ]
         @test contains(smap, e)
     end

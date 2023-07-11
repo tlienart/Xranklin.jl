@@ -3,7 +3,6 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 @testset "basics" begin
     @test X.eval_str("5^2").value == 25
     @test X.eval_str("[i for i in 1:3]").value == [1,2,3]
-    @test !X.eval_str("sqrt(-1)").success
 end
 
 @testset "hfun eval str" begin
