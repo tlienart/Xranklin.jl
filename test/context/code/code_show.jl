@@ -61,11 +61,11 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
             """
         h = html(s, nop=true)
         @test occursin("""<pre><code class="julia">sqrt(-1)</code></pre>""", h)
-        @test occursin("""<pre><code class="code-stderr language-plaintext">LoadError: DomainError with -1.0:""", h)
+        @test occursin("""<pre><code class="code-stderr language-plaintext">ERROR: DomainError with -1.0:""", h)
         @test occursin("""sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).""", h)
         @test occursin("""Stacktrace:""", h)
         @test occursin("""throw_complex_domainerror""", h)
-    end "An error was caught when attempting to run code ('ex')"
+    end "The error below was caught when attempting to run code ('ex')."
 end
 
 @testset "figure" begin

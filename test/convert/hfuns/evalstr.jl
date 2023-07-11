@@ -92,7 +92,7 @@ end
             {{else}}bar{{end}}
             """ |> html
         @test contains(h, "FAILED")
-    end "error was caught when attempting to run code ('__estr__')"
+    end "error below was caught when attempting to run code ('__estr__')"
 end
 
 

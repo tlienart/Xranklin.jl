@@ -347,7 +347,7 @@ function _eval_repl_code(
                     # here 'chunk' corresponds to a complete ast
                     chunk_name = ci.name * "_$counter"
                     eval_code_cell!(
-                        lc, SubString(chunk), chunk_name
+                        lc, SubString(chunk), chunk_name; repl_mode=true
                     )
                     idx = findfirst(==(chunk_name), lc.nb_code.code_names)::Int
                     rep = lc.nb_code.code_pairs[idx].repr.raw
