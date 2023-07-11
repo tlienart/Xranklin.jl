@@ -106,8 +106,9 @@ function hfun_insert(
 
     np = length(p)
     np == 1 && return _hfun_insert(lc, p[1], path(lc, :layout); tohtml)
-    bsym = Symbol(p[2])
-    base = path(bsym)
+    bsym  = Symbol(p[2])
+    base  = path(lc, bsym)
+    attach(lc, get_rpath(lc.glob, base / p[1]))
     return _hfun_insert(lc, p[1], base; bsym, tohtml)
 end
 hfun_include(a...; kw...) = hfun_insert(a...; kw...)
@@ -174,6 +175,7 @@ function hfun_insertmd(
             """
         return hfun_failed(["insertmd", p, string(bsym)])
     end
+    attach(lc, get_rpath(lc.glob, fpath))
     ihtml = convert_md(read(fpath, String), lc)
     return html2(ihtml, lc; only_utils=true)
 end

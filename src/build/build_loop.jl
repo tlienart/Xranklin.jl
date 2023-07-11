@@ -81,6 +81,7 @@ function build_loop(
     else
         for (case, d) in watched_files, (fp, t) in d
             fpath = joinpath(fp...)
+
             # the file may just have been deleted, it will be picked up by the
             # 'removed file' part above but in the meantime we just skip it
             isfile(fpath) || continue
@@ -127,7 +128,6 @@ function build_loop(
             # ======================
             # NONFULLPASS TRIGGERS =
             # ======================
-            
             # if it's a dependent file
             elseif rpath in gc.deps_map.bwd_keys
                 # trigger all pages that require this dependency
