@@ -116,7 +116,7 @@ function hfun_cite(
 
     # no check needed as generated
     id       = p[1]
-    bibrefs_ = bibrefs()
+    bibrefs_ = bibrefs(lc)
     id ∈ keys(bibrefs_) || return "<b>??</b>"
     text  = bibrefs_[id]
     class = getvar(lc.glob, :bibref_class, "bibref")

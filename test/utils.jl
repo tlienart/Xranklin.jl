@@ -24,6 +24,12 @@ logall() = (
     ENV["JULIA_DEBUG"] = "all";
 )
 
+function toy_context()
+    gc = X.DefaultGlobalContext()
+    lc = X.DefaultLocalContext(gc; rpath="_toy_")
+    return gc, lc
+end
+
 # ----------------------- #
 # String comparison utils #
 # ----------------------- #

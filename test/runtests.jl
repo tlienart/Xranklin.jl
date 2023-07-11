@@ -55,6 +55,7 @@ logall()
     @testset "LxFuns" begin
         p = "convert/lxfuns"
         include(p/"utils.jl")
+        include(p/"hyperrefs.jl")
     end
 
     @testset "EnvFuns" begin

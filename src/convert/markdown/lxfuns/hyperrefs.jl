@@ -90,7 +90,7 @@ function lx_biblabel(
     if tohtml
         id  = string_to_anchor(p[1])
         txt = replace(p[2], r"^<p>|</p>\n?$" => "")
-        bibrefs()[id] = txt
+        bibrefs(lc)[id] = txt
         class = getvar(lc.glob, lc, :anchor_class, "anchor") * " " *
                 getvar(lc.glob, lc, :anchor_bib_class, "anchor-bib")
         return html_a(; id, class)
