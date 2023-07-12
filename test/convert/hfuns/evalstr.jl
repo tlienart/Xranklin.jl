@@ -26,7 +26,6 @@ end
     nowarn()
     es = raw""" e"2*$b" """
     @test !Xranklin.eval_str(lc, es).success
-    logall()
     es = raw""" e"$b" """
     @test isnothing(Xranklin.eval_str(lc, es).value)
     es = raw""" e"$c2 || $c1" """
@@ -83,7 +82,11 @@ end
     @test isapproxstr(h, """
         <p>bar</p>
         """)
+end
 
+logall()
+
+@testset "with err" begin
     @test_warn_with begin
         h = raw"""
             {{isempty e"sqrt(-1)"}}
@@ -94,6 +97,7 @@ end
     end "error below was caught when attempting to run code ('__estr__')"
 end
 
+nowarn()
 
 @testset "for with julia" begin
     s = """{{for x in !> [1,2,3,4]}}{{x}}{{end}}""" |> html

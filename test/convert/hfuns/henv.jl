@@ -176,6 +176,7 @@ end
         """)
 end
 
+logall()
 @testset "for over non-iterable" begin
     @test_warn_with begin
         s = raw"""
@@ -190,3 +191,4 @@ end
         html(s)
     end "The object corresponding to 'f' is not iterable"
 end
+nowarn()

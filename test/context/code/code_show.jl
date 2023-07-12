@@ -50,7 +50,11 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
     @test isapproxstr(h, """
         <pre><code class="julia">true;</code></pre>
         """)
+end
 
+logall()
+
+@testset "basic outputs err" begin
     # basic stderr
     @test_warn_with begin
         s = raw"""
@@ -67,6 +71,8 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
         @test occursin("""throw_complex_domainerror""", h)
     end "The error below was caught when attempting to run code ('ex')."
 end
+
+nowarn()
 
 @testset "figure" begin
     d, gc = testdir()

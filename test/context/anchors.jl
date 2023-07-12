@@ -42,5 +42,3 @@ nowarn()
     gc = cur_gc()
     @test length(gc.anchors["anchor_a.a"].locs) == 1
 end
-
-logall()

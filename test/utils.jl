@@ -19,11 +19,11 @@ MDL = X.env(:module_name)
 ggc = X.DefaultGlobalContext()
 X.setvar!(ggc, :skiplatex, false)
 
-nowarn() = Logging.disable_logging(Logging.Warn)
-logall() = (
-    Logging.disable_logging(Logging.Debug - 100);
-    ENV["JULIA_DEBUG"] = "all";
-)
+nowarn() = nothing # Logging.disable_logging(Logging.Warn)
+logall() = nothing # (
+#     Logging.disable_logging(Logging.Debug - 100);
+#     ENV["JULIA_DEBUG"] = "all";
+# )
 
 function toy_context()
     gc = X.DefaultGlobalContext()

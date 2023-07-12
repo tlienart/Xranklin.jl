@@ -10,7 +10,6 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     @test contains(s, "2020-01-15")
 
     # next one will fail because `Dates` is imported not used.
-    nowarn()
     s = """
         +++
         a = Date(2020,1,15)
@@ -18,5 +17,4 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         {{a}}
         """ |> html
     @test contains(s, "[FAILED:]")
-    logall()
 end

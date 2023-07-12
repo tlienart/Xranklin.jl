@@ -102,5 +102,4 @@ end
     @test h // raw"""
         <p><span style="color:red;">[FAILED:]&gt;\newcommand{\bar}&lt;</span> 2{hello}</p>
         """
-    logall()
 end

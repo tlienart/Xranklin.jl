@@ -22,7 +22,6 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
 
     # setting generate_rss to true BUT not setting rss_website_url
     # --> force-setting to false (we hide the warning)
-    nowarn()
     write(d/"config.md", """
         +++
         a = 5
@@ -34,7 +33,6 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     @test X.getvar(gc, :website_url, "abc") == ""
     X.process_config(gc)
     @test X.getvar(gc, :generate_rss, true) == false
-    logall()
 end
 
 
