@@ -325,69 +325,103 @@ function _eval_repl_code(
         lc::LocalContext;
         tohtml::Bool=true
     )::Nothing
+   
     if !tohtml
-        println(io, "!X! repl code latex !X!")
+        println(io, raw"\begin{lstlisting}")
     else
         print(io, "<pre><code class=\"julia-repl\">")
-
-        #
-        # REPL-REPL mode
-        # NOTE: for now assumption of non-incomplete expressions
-        #
-        if ci.lang == "repl-repl"
-            chunk = ""
-            counter = 1
-            for line in split(ci.code, r"\r?\n", keepempty=false)
-                # add to the chunk until we have a complete AST
-                chunk *= line * "\n"
-                ast = Base.parse_input_line(chunk)
-                if (isa(ast, Expr) && ast.head === :incomplete)
-                    continue
-                else
-                    # here 'chunk' corresponds to a complete ast
-                    chunk_name = ci.name * "_$counter"
-                    eval_code_cell!(
-                        lc, SubString(chunk), chunk_name; repl_mode=true
-                    )
-                    idx = findfirst(==(chunk_name), lc.nb_code.code_names)::Int
-                    rep = lc.nb_code.code_pairs[idx].repr.raw
-
-                    # add empty line between prompts but not after last
-                    counter > 1 && println(io, "")
-                    println(io, "julia> $(strip(chunk))")
-                    println(io, rep)
-
-                    chunk    = ""
-                    counter += 1
-                end
-
-            end
-
-        #
-        # REPL-PKG mode
-        #
-        elseif ci.lang == "repl-pkg"
-            println(io, "!X! repl pkg code !X!")
-        
-        #
-        # REPL-SHELL mode
-        #
-        elseif ci.lang == "repl-shell"
-            println(io, "!X! repl shell code !X!")
-        
-        #
-        # REPL-HELP mode
-        #
-        else
-            # help mode
-            println(io, "!X! repl help code !X!")
-            println(io, "</code></pre>")
-        end
-
-        if ci.lang != "repl-help"
-            println(io, "</code></pre>")
-        end
     end
+
+    pre = ifelse(tohtml, _hescape, _lescape) ∘ SubString
+
+    #
+    # REPL-REPL mode
+    # NOTE: for now assumption of non-incomplete expressions
+    #
+    if ci.lang == "repl-repl"
+        chunk = ""
+        counter = 1
+        # if that cell has not been seen or has changed, force eval
+        prev_hash = get(lc.nb_code.repl_code_hash, ci.name * "_0", UInt64(0))
+        cur_hash  = hash(ci.code)
+        force = prev_hash != cur_hash
+
+        for line in split(ci.code, r"\r?\n", keepempty=false)
+            # add to the chunk until we have a complete AST
+            chunk *= line * "\n"
+            ast = Base.parse_input_line(chunk)
+            if (isa(ast, Expr) && ast.head === :incomplete)
+                continue
+            else
+                # here 'chunk' corresponds to a complete ast
+                chunk_name = ci.name * "_$counter"
+                eval_code_cell!(
+                    lc, SubString(chunk), chunk_name; repl_mode=true, force
+                )
+                idx = findfirst(==(chunk_name), lc.nb_code.code_names)::Int
+                rep = strip(lc.nb_code.code_pairs[idx].repr.raw)
+
+                # add empty line between prompts but not after last
+                counter > 1 && println(io, "")
+                println(io, pre("julia> $(strip(chunk))"))
+                isempty(rep) || println(io, pre(rep))
+
+                chunk    = ""
+                counter += 1
+            end
+        end
+        lc.nb_code.repl_code_hash[ci.name * "_0"] = cur_hash
+
+    #
+    # REPL-SHELL mode
+    #
+    elseif ci.lang == "repl-shell"
+        counter = 1
+        for line in split(ci.code, r"\r?\n", keepempty=false)
+            a = tempname()
+            open(a, "w") do outf
+                redirect_stdout(outf) do
+                    redirect_stderr(outf) do
+                        Base.repl_cmd(Cmd(string.(split(line))), nothing)
+                    end
+                end
+            end
+            counter > 1 && println(io, "")
+            println(io, pre("shell> $(strip(line))"))
+            println(io, pre(String(strip(read(a, String)))))
+
+            counter += 1
+        end
+    
+    #
+    # REPL-PKG mode
+    #
+    elseif ci.lang == "repl-pkg"
+        println(io, "!X! repl shell code !X!")
+    
+    #
+    # REPL-HELP mode
+    #
+    else
+        # help mode
+        println(io, "!X! repl help code !X!")
+        # close code first, then print result
+        if !tohtml
+            println(io, raw"\end{lstlisting}")
+        else
+            println(io, "</code></pre>")
+        end
+        println(io, "!X! repl help output !X!")
+    end
+
+    if ci.lang != "repl-help"
+        if !tohtml
+            println(io, raw"\end{lstlisting}")
+        else
+            println(io, "</code></pre>")
+        end
+    end    
+    return
 end
 
 

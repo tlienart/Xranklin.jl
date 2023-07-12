@@ -9,13 +9,13 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         ```
         """ |> html
     @test isapproxstr(s, """
-        <pre><code class="julia-repl">julia> x = 5
+        <pre><code class="julia-repl">julia&gt; x = 5
         5
         
-        julia> y = 7
+        julia&gt; y = 7
         7
         
-        julia> z = x+y
+        julia&gt; z = x+y
         12
         </code></pre>
         """)
@@ -27,22 +27,39 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         ````
         """ |> html
     @test isapproxstr(
-        # in case lines changes
+        # in case lines changes in Julia
         replace(s, r"\.\/math\.jl\:\d+" => "./math.jl:xx"),
         """
-        <pre><code class="julia-repl">julia> sqrt(-1)
+        <pre><code class="julia-repl">julia&gt; sqrt(-1)
         ERROR: DomainError with -1.0:
         sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).
         Stacktrace:
-        [1] throw_complex_domainerror(f::Symbol, x::Float64)
+          [1] throw_complex_domainerror(f::Symbol, x::Float64)
             @ Base.Math ./math.jl:xx
-        [2] sqrt
+          [2] sqrt
             @ ./math.jl:xx [inlined]
-        [3] sqrt(x::Int64)
+          [3] sqrt(x::Int64)
             @ Base.Math ./math.jl:xx
         
-        julia> 2+2
+        julia&gt; 2+2
         4
+        </code></pre>
+        """)
+end
+
+@testset "repl-shell" begin
+    s = """
+        ```;
+        echo abc
+        echo def
+        ```
+        """ |> html
+    @test isapproxstr(s, """
+        <pre><code class="julia-repl">shell&gt; echo abc
+        abc
+        
+        shell&gt; echo def
+        def
         </code></pre>
         """)
 end

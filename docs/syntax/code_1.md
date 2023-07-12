@@ -247,6 +247,25 @@ The marker for independence should be placed at the top of your code:
   in the sense mentioned above, marking it explicitly will help make page reloads faster.
 }
 
+## REPL mode
+
+Instead of `!` or `:` above, you can also use one of `>`, `;`, `]` and `?` to
+mimick the corresponding REPL mode.
+In the case of the `?` one, only a single line of input is allowed (other lines,
+if provided, will be ignored).
+
+### Basic REPL mode
+
+\showmd{
+  ```>
+  a = 5
+  b = 2;
+  c = a + 3b
+  println(c^2)
+  ```
+}
+
+
 ## Understanding how things work
 
 Each page can be seen as one "notebook".
@@ -467,6 +486,7 @@ Here's another example with PyPlot (and you could use any other plotting library
 [Plots](https://github.com/JuliaPlots/Plots.jl), [PlotlyJS](https://github.com/JuliaPlots/PlotlyJS.jl), etc.,
 you can also check out the [page dedicated to plots with Franklin](/extras/plots/))
 
+<!--
 ```!
 # name: pyplot
 # indep
@@ -477,6 +497,7 @@ figure(figsize=(6, 4))
 plot(x, y)
 gcf()
 ```
+-->
 
 Note that it's the figure object that is showable as SVG in PyPlot and so we must do
 `gcf()` here to have it be the effective result of the cell and have the plot shown.

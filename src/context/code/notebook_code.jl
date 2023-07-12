@@ -84,7 +84,7 @@ function eval_code_cell!(
             _eval_code_cell(
                 nb.mdl,
                 nb.code_pairs[tmp_idx].code,
-                nb.code_names[tmp_idx];
+                nb.code_names[tmp_idx],
                 repl_mode
             )
         end

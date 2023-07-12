@@ -196,12 +196,12 @@ function serve(
         loop = (cntr, watcher) -> build_loop(cntr, watcher, wf)
         # start LiveServer
         LiveServer.serve(
-            port           = port,
-            coreloopfun    = loop,
-            dir            = path(gc, :site),
-            host           = host,
-            launch_browser = launch
-        )
+                port           = port,
+                coreloopfun    = loop,
+                dir            = path(gc, :site),
+                host           = host,
+                launch_browser = launch
+            )
         println("") # skip a line to pass the '^C' character
     end
 

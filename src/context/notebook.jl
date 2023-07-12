@@ -75,11 +75,13 @@ struct CodeNotebook <: Notebook
     code_names::Vector{String}
     is_stale::Ref{Bool}
     indep_code::Dict{String, CodeRepr}
+    repl_code_hash::Dict{String, UInt64}
 end
 CodeNotebook(mdl::Module) =
     CodeNotebook(mdl, Ref(1), CodeCodePairs(),
-                 String[], Ref(false), Dict{String,CodeRepr}())
-
+                 String[], Ref(false),
+                 Dict{String, CodeRepr}(),
+                 Dict{String, UInt64}())
 
 is_stale(nb::Notebook)        = nb.is_stale[]
 stale_notebook!(nb::Notebook) = (nb.is_stale[] = true;)
