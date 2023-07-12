@@ -61,7 +61,7 @@ function update_files_to_watch!(
                 if rpath ∉ FRANKLIN_ENV[:skipped_files]
                     union!(FRANKLIN_ENV[:skipped_files], [rpath])
                     startswith(fpath, path(:site)) || @debug """
-                        🔺 skipping $(hl(str_fmt(rp), :cyan))
+                        🔺 skipping $(hl(str_fmt(rpath), :cyan))
                         """
                 end
                 continue
