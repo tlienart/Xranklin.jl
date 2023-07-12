@@ -179,7 +179,7 @@ function serve(
     # scrape the folder to collect all files that should be watched for
     # changes; this set will be updated in the loop if new files get
     # added that should be watched
-    wf = find_files_to_watch(gc, folder)
+    wf = find_files_to_watch(gc)
 
     gc = full_pass(
         gc, wf;

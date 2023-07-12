@@ -24,9 +24,10 @@ function build_loop(
     # might have been deleted and don't need to be watched anymore
     # ---------------------------------------------------------------
     if mod(cycle_counter, 30) == 0
-        # check if some files have been deleted; if so remove the ref
-        # to that file from the watched files and the gc children if
-        # it's one of the child page.
+        #
+        # 1. check if some files that were watched have been deleted
+        #    --> if so remove the ref to that file from the watched files and
+        #    the gc children if it's one of the child page.
         redo_fullpass = false
         for d ∈ values(watched_files)
             rm_from_d = Pair{String,String}[]
@@ -58,9 +59,11 @@ function build_loop(
                 delete!(d, fp)
             end
         end
-        # scan the directory and add the new files to the watched_files
+        #
+        # 2. scan the directory and add new files to the watched_files
+        #    if there are any new files to add
         _, newpg = update_files_to_watch!(
-                        watched_files, gc, path(gc, :folder);
+                        watched_files, gc;
                         in_loop=true
                     )
         # if files were deleted from the children contexts, we must
