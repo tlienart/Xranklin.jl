@@ -63,3 +63,28 @@ end
         </code></pre>
         """)
 end
+
+@testset "repl-pkg" begin
+    cur_proj = Pkg.project().path
+    s = """
+        ```]
+        activate --temp
+        add Colors
+        ```
+        then
+        ```!
+        using Colors
+        colorant"red"
+        ```
+        """ |> html
+    Pkg.activate(cur_proj)
+
+    for q in (
+            "($(splitpath(cur_proj)[end-1])) pkg&gt; activate --temp",
+            "pkg&gt; add Colors\nResolving package versions...",
+            """<pre><code class=\"julia\">using Colors\ncolorant&quot;red&quot;</code></pre>""",
+            """<div class=\"code-output\"><img class=\"code-figure\""""
+        )
+        @test occursin(q, s)
+    end
+end

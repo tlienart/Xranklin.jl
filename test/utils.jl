@@ -1,6 +1,7 @@
 using Xranklin
 using Xranklin: (/)
 using Test
+using Pkg
 using Logging
 using Dates
 using Logging

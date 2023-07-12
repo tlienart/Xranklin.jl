@@ -328,24 +328,26 @@ function _eval_repl_code(
    
     if !tohtml
         println(io, raw"\begin{lstlisting}")
+        pre = _lescape ∘ SubString
     else
         print(io, "<pre><code class=\"julia-repl\">")
+        pre = _hescape ∘ SubString
     end
-
-    pre = ifelse(tohtml, _hescape, _lescape) ∘ SubString
 
     #
     # REPL-REPL mode
     # NOTE: for now assumption of non-incomplete expressions
     #
     if ci.lang == "repl-repl"
-        chunk = ""
-        counter = 1
-        # if that cell has not been seen or has changed, force eval
+
+        # if that code has not been seen yet or, if it has and has changed,
+        # force eval so that all lines get re-executed 
         prev_hash = get(lc.nb_code.repl_code_hash, ci.name * "_0", UInt64(0))
         cur_hash  = hash(ci.code)
-        force = prev_hash != cur_hash
+        force     = prev_hash != cur_hash
 
+        chunk   = ""
+        counter = 1
         for line in split(ci.code, r"\r?\n", keepempty=false)
             # add to the chunk until we have a complete AST
             chunk *= line * "\n"
@@ -353,7 +355,7 @@ function _eval_repl_code(
             if (isa(ast, Expr) && ast.head === :incomplete)
                 continue
             else
-                # here 'chunk' corresponds to a complete ast
+                # now 'chunk' corresponds to a complete ast
                 chunk_name = ci.name * "_$counter"
                 eval_code_cell!(
                     lc, SubString(chunk), chunk_name; repl_mode=true, force
@@ -378,8 +380,8 @@ function _eval_repl_code(
     elseif ci.lang == "repl-shell"
         counter = 1
         for line in split(ci.code, r"\r?\n", keepempty=false)
-            a = tempname()
-            open(a, "w") do outf
+            tmp = tempname()
+            open(tmp, "w") do outf
                 redirect_stdout(outf) do
                     redirect_stderr(outf) do
                         Base.repl_cmd(Cmd(string.(split(line))), nothing)
@@ -388,7 +390,7 @@ function _eval_repl_code(
             end
             counter > 1 && println(io, "")
             println(io, pre("shell> $(strip(line))"))
-            println(io, pre(String(strip(read(a, String)))))
+            println(io, pre(strip(read(tmp, String))))
 
             counter += 1
         end
@@ -397,7 +399,21 @@ function _eval_repl_code(
     # REPL-PKG mode
     #
     elseif ci.lang == "repl-pkg"
-        println(io, "!X! repl shell code !X!")
+        counter = 1
+        for line in split(ci.code, r"\r?\n", keepempty=false)
+            tmp = tempname()
+            project_name = splitpath(Pkg.project().path)[end-1]
+            open(tmp, "w") do outf
+                redirect_stdout(outf) do
+                    redirect_stderr(outf) do
+                        Pkg.REPLMode.pkgstr(string(line))
+                    end
+                end
+            end
+            counter > 1 && println(io, "")
+            println(io, pre("($(project_name)) pkg> $(strip(line))"))
+            println(io, pre(strip(read(tmp, String))))
+        end
     
     #
     # REPL-HELP mode
