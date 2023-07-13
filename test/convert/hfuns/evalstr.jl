@@ -23,10 +23,12 @@ end
     html(s, lc)
     es = raw""" e"$a" """
     @test Xranklin.eval_str(lc, es).value == 5
-    @test_warn_with begin
+    tl = TestLogger(min_level=Warn)
+    with_logger(tl) do
         es = raw""" e"2*$b" """
         @test !Xranklin.eval_str(lc, es).success
-    end "error below was caught when attempting to run code"
+    end
+    @test contains(tl.logs[1].message, "error below was caught when attempting to run code")
     es = raw""" e"$b" """
     @test isnothing(Xranklin.eval_str(lc, es).value)
     es = raw""" e"$c2 || $c1" """
@@ -86,14 +88,12 @@ end
 end
 
 @testset "with err" begin
-    @test_warn_with begin
-        h = raw"""
-            {{isempty e"sqrt(-1)"}}
-            foo
-            {{else}}bar{{end}}
-            """ |> html
-        @test contains(h, "FAILED")
-    end "error below was caught when attempting to run code ('__estr__')"
+    s = raw"""
+    {{isempty e"sqrt(-1)"}}
+    foo
+    {{else}}bar{{end}}
+    """
+    h = html_warn(s; warn="error below was caught when attempting to run code")
 end
 
 @testset "for with julia" begin
