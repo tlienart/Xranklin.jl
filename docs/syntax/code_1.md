@@ -287,6 +287,12 @@ REPL pkg mode, note that this will affect the environment the subsequent cells
 are run in (only on that page, it won't affect the other pages which will
 keep being run in the website environment unless otherwise specified):
 
+```!
+#hideall
+using Pkg
+pkg_path = Pkg.project().path;
+```
+
 \showmd{
   ```]
   activate --temp
@@ -299,6 +305,11 @@ keep being run in the website environment unless otherwise specified):
   rand(StableRNG(1))
   ```
 }
+
+```!
+#hideall
+Pkg.activate(pkg_path, io=IOBuffer());
+```
 
 #### REPL help mode
 
