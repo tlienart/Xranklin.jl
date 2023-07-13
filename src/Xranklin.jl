@@ -13,6 +13,7 @@ import Logging
 import TOML
 import CRC32c: crc32c
 import Base: push!, delete!, merge!
+import Markdown
 
 # ------------------------------------------------------------------------
 # external dependencies part of the Franklin universe

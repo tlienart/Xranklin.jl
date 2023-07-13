@@ -204,6 +204,7 @@ function hfun_footnotes(
             lc::LocalContext;
             tohtml=true
         )::String
+    tohtml || return ""
 
     refs  = refrefs(lc)
     fns   = [k for k in keys(refs) if first(k) == '^']

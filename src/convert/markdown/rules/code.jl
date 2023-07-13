@@ -315,10 +315,40 @@ function latex_code_block(
         """) * post
 end
 
+
+# ============================================================================
 #
 # REPL MODE
 #
+# ============================================================================
 
+
+function html_repl_code(
+    ci::CodeInfo,
+    lc::LocalContext
+)::String
+
+io = IOBuffer()
+_eval_repl_code(io, ci, lc; tohtml=true)
+return String(take!(io))
+end
+
+function latex_repl_code(
+    ci::CodeInfo,
+    lc::LocalContext
+)::String
+
+io = IOBuffer()
+_eval_repl_code(io, ci, lc; tohtml=false)
+return String(take!(io))
+end
+
+"""
+    _eval_repl_code
+
+Evaluate the repl-mode code appropriately and output the formatted result in
+the iostream so it can be recuperated.
+"""
 function _eval_repl_code(
         io::IOBuffer,
         ci::CodeInfo,
@@ -336,7 +366,7 @@ function _eval_repl_code(
 
     #
     # REPL-REPL mode
-    # NOTE: for now assumption of non-incomplete expressions
+    # HACK: for now assumption of non-incomplete AST expressions
     #
     if ci.lang == "repl-repl"
 
@@ -419,15 +449,29 @@ function _eval_repl_code(
     # REPL-HELP mode
     #
     else
-        # help mode
-        println(io, "!X! repl help code !X!")
+        # only the first line is considered, rest ignored
+        line = first(split(ci.code, r"\r?\n", limit=2))
+        r    = eval(Meta.parse("@doc $line"))
+
+        println(io, pre("help?> $(strip(line))"))        
         # close code first, then print result
         if !tohtml
             println(io, raw"\end{lstlisting}")
+            println(io, strip(Markdown.latex(r)))
         else
+            # We use the Markdown html processor here so that the output
+            # is similar to the REPL, for instance so that we don't have
+            # to fiddle with footnotes which are processed differently.
             println(io, "</code></pre>")
+            println(io, "<div class=\"julia-repl repl-help\">")
+            println(io, strip(replace(
+                Markdown.html(r),
+                r"<a href=\"@ref\">(.*?)</a>" => s"\1",
+                "class=\"jldoctest\"" => "class=\"julia-repl\"",
+                r"(?:\&\#36\;)+((.|\n)*?)(?:\&\#36\;)+" => s"\\(\1\\)"
+            )))
+            println(io, "</div>")
         end
-        println(io, "!X! repl help output !X!")
     end
 
     if ci.lang != "repl-help"
@@ -439,36 +483,3 @@ function _eval_repl_code(
     end    
     return
 end
-
-
-"""
-    html
-
-INCOMPLETE
-"""
-function html_repl_code(
-            ci::CodeInfo,
-            lc::LocalContext
-        )::String
-
-    io = IOBuffer()
-    _eval_repl_code(io, ci, lc; tohtml=true)
-    return String(take!(io))
-end
-
-"""
-    latex_repl_code
-
-INCOMPLETE
-"""
-function latex_repl_code(
-            ci::CodeInfo,
-            lc::LocalContext
-        )::String
-
-    io = IOBuffer()
-    _eval_repl_code(io, ci, lc; tohtml=false)
-    return String(take!(io))
-end
-
-

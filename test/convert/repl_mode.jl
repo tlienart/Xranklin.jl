@@ -89,3 +89,18 @@ end
         @test occursin(q, s)
     end
 end
+
+@testset "repl-help" begin
+    s = """
+        ```?
+        im
+        ```
+        """ |> html
+
+    for q in (
+        """<pre><code class="julia-repl">help?&gt; im""",
+        """<div class=\"julia-repl repl-help\">\n<pre><code>im</code></pre>""",
+        )
+        @test occursin(q, s)
+    end
+end
