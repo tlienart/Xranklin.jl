@@ -1325,7 +1325,7 @@ randstring(5)
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">randstring(5)</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">"0mJ26"</code></pre></div></fieldset>
+<div class="code-output"><pre><code class="code-result language-plaintext">"rFOsJ"</code></pre></div></fieldset>
 
 </div><div class="trim">
 
@@ -1464,7 +1464,9 @@ in the sense mentioned above, marking it explicitly will help make page reloads 
 mimick the corresponding REPL mode.
 In the case of the <code>?</code> one, only a single line of input is allowed (other lines,
 if provided, will be ignored).</p>
-<h3 id="basic_repl_mode" ><a href="#basic_repl_mode"> Basic REPL mode</a></h3><div class="trim">
+<h3 id="repl_common_mode" ><a href="#repl_common_mode"> REPL common mode</a></h3><p>With the <code>&gt;</code>, you indicate that the code cell should be split in the same way
+as it would in the REPL:</p>
+<div class="trim">
 
 <fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```&gt;
 a = 5
@@ -1484,6 +1486,167 @@ println(c^2)
 b = 2;
 c = a + 3b
 println(c^2)</code></pre>
+</fieldset>
+
+</div><h3 id="repl_shell_mode" ><a href="#repl_shell_mode"> REPL shell mode</a></h3><p>With the <code>;</code>, you indicate that the code cell should be executed as in the 
+REPL shell mode:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```;
+echo abc
+date
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class=";">echo abc
+date</code></pre>
+</fieldset>
+
+</div><h3 id="repl_pkg_mode" ><a href="#repl_pkg_mode"> REPL pkg mode</a></h3><p>With the <code>]</code>, you indicate that the code cell should be executed as in the
+REPL pkg mode, note that this will affect the environment the subsequent cells
+are run in (only on that page, it won't affect the other pages which will
+keep being run in the website environment unless otherwise specified):</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```]
+activate --temp
+add StableRNGs
+st
+```
+then
+```!
+using StableRNGs
+rand(StableRNG(1))
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="]">activate --temp
+add StableRNGs
+st</code></pre>
+then<pre><code class="julia">using StableRNGs
+rand(StableRNG(1))</code></pre>
+<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: ArgumentError: Package StableRNGs not found in current path.
+- Run `import Pkg; Pkg.add("StableRNGs")` to install the StableRNGs package.
+Stacktrace:
+  [1] macro expansion
+    @ ./loading.jl:1630 [inlined]
+  [2] macro expansion
+    @ ./lock.jl:267 [inlined]
+  [3] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1611
+  [4] eval
+    @ ./boot.jl:370 [inlined]
+  [5] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
+    @ Base ./loading.jl:1903
+  [6] include_string
+    @ ./loading.jl:1887 [inlined]
+  [7] #64
+    @ ~/.julia/packages/Xranklin/r0N71/src/context/code/eval.jl:90 [inlined]
+  [8] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#64#65"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
+    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:119
+  [9] with_logstate(f::Function, logstate::Any)
+    @ Base.CoreLogging ./logging.jl:514
+ [10] with_logger
+    @ ./logging.jl:626 [inlined]
+ [11] capture(f::Xranklin.var"#64#65"{Module, String}; rethrow::Type, color::Bool)
+    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:116
+ [12] capture
+    @ ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:72 [inlined]
+ [13] _attempt_eval
+    @ ~/.julia/packages/Xranklin/r0N71/src/context/code/eval.jl:89 [inlined]
+ [14] eval_nb_cell(mdl::Module, code::String; cell_name::String)
+    @ Xranklin ~/.julia/packages/Xranklin/r0N71/src/context/code/eval.jl:72
+ [15] eval_nb_cell
+    @ ~/.julia/packages/Xranklin/r0N71/src/context/code/eval.jl:45 [inlined]
+ [16] _eval_code_cell(mdl::Module, code::String, cell_name::String)
+    @ Xranklin ~/.julia/packages/Xranklin/r0N71/src/context/code/notebook_code.jl:156
+ [17] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/r0N71/src/context/code/notebook_code.jl:114
+ [18] eval_code_cell!
+    @ ~/.julia/packages/Xranklin/r0N71/src/context/code/notebook_code.jl:18 [inlined]
+ [19] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
+    @ Xranklin ~/.julia/packages/Xranklin/r0N71/src/convert/markdown/rules/code.jl:250</code></pre></div></fieldset>
+
+</div><h3 id="repl_help_mode" ><a href="#repl_help_mode"> REPL help mode</a></h3><p>With the <code>?</code>, you indicate that the code cell should be executed as in the
+REPL help mode. Note that only the first line of the cell will be considered
+as the output will be displayed in a separate <code>div</code> with class <code>repl-help</code>
+(which you should style).</p>
+<p>The basic styling used here is:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">~~~
+&lt;style&gt;
+.repl-help &lbrace;
+  margin-top: 1em;
+  margin-left: 1em;
+  padding: 1em;
+  background-color: #fefee8;
+  border: 1px solid yellow;
+  border-radius: 10px;
+  font-style: italic;
+&rbrace;
+.repl-help h1 &lbrace;
+  font-size: 1.1em;
+  padding-bottom: .5em;
+&rbrace;
+.repl-help pre code.hljs &lbrace;
+  background-color: transparent;
+&rbrace;
+&lt;/style&gt;
+~~~</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><style>
+.repl-help {
+  margin-top: 1em;
+  margin-left: 1em;
+  padding: 1em;
+  background-color: #fefee8;
+  border: 1px solid yellow;
+  border-radius: 10px;
+  font-style: italic;
+}
+.repl-help h1 {
+  font-size: 1.1em;
+  padding-bottom: .5em;
+}
+.repl-help pre code.hljs {
+  background-color: transparent;
+}
+</style></fieldset>
+
+</div><div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```?
+im
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="?">im</code></pre>
 </fieldset>
 
 </div><h2 id="understanding_how_things_work" ><a href="#understanding_how_things_work"> Understanding how things work</a></h2><p>Each page can be seen as one "notebook".
@@ -1994,7 +2157,7 @@ as your base path and use <code>joinpath</code> to point to the specific locatio
         <div id="marginToc">
             
               <div id="marginTocLegend"><a href="#">Contents</a></div>
-              <div class="toc"><ol><li><a href="#overview">Overview</a></li><li><a href="#syntax_for_executable_code_blocks">Syntax for executable code blocks</a><ol><li><a href="#hiding_lines_of_code">Hiding lines of code</a></li><li><a href="#mock_lines">Mock lines</a></li><li><a href="#providing_name_hints">Providing name hints</a></li><li><a href="#marking_a_cell_as_independent">Marking a cell as independent</a></li></ol></li><li><a href="#repl_mode">REPL mode</a><ol><li><a href="#basic_repl_mode">Basic REPL mode</a></li></ol></li><li><a href="#understanding_how_things_work">Understanding how things work</a><ol><li><a href="#what_to_do_when_things_go_wrong">What to do when things go wrong</a></li></ol></li><li><a href="#output_of_executable_code_blocks">Output of executable code blocks</a><ol><li><a href="#nothing_to_show">Nothing to show</a></li><li><a href="#default_show">Default show</a></li><li><a href="#showable_as_svg_or_png">Showable as SVG or PNG</a></li><li><a href="#html_show">HTML show</a></li><li><a href="#custom_show">Custom show</a></li><li><a href="#showing_the_output_as_markdown/html">Showing the output as Markdown/HTML</a></li><li><a href="#what_if_the_code_errors?">What if the code errors?</a></li><li><a href="#in_what_path_does_the_code_run?">In what path does the code run?</a></li></ol></li></ol></div>
+              <div class="toc"><ol><li><a href="#overview">Overview</a></li><li><a href="#syntax_for_executable_code_blocks">Syntax for executable code blocks</a><ol><li><a href="#hiding_lines_of_code">Hiding lines of code</a></li><li><a href="#mock_lines">Mock lines</a></li><li><a href="#providing_name_hints">Providing name hints</a></li><li><a href="#marking_a_cell_as_independent">Marking a cell as independent</a></li></ol></li><li><a href="#repl_mode">REPL mode</a><ol><li><a href="#repl_common_mode">REPL common mode</a></li><li><a href="#repl_shell_mode">REPL shell mode</a></li><li><a href="#repl_pkg_mode">REPL pkg mode</a></li><li><a href="#repl_help_mode">REPL help mode</a></li></ol></li><li><a href="#understanding_how_things_work">Understanding how things work</a><ol><li><a href="#what_to_do_when_things_go_wrong">What to do when things go wrong</a></li></ol></li><li><a href="#output_of_executable_code_blocks">Output of executable code blocks</a><ol><li><a href="#nothing_to_show">Nothing to show</a></li><li><a href="#default_show">Default show</a></li><li><a href="#showable_as_svg_or_png">Showable as SVG or PNG</a></li><li><a href="#html_show">HTML show</a></li><li><a href="#custom_show">Custom show</a></li><li><a href="#showing_the_output_as_markdown/html">Showing the output as Markdown/HTML</a></li><li><a href="#what_if_the_code_errors?">What if the code errors?</a></li><li><a href="#in_what_path_does_the_code_run?">In what path does the code run?</a></li></ol></li></ol></div>
             
         </div>
     </div>
