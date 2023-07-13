@@ -75,12 +75,15 @@ end
 
 
 @testset "new* issues" begin
-    nowarn()
     # not enough braces
+    warn_msg = "Not enough braces found after a \\newcommand or \\newenvironment."
+
     s = raw"""
         a \newcommand{foo}
         """
-    c = X.LocalContext(;rpath="l"); h = html(s, c)
+    c = X.LocalContext(;rpath="l");
+    
+    h = html_warn(s, c; warn=warn_msg)
     @test isempty(c.lxdefs)
     @test h // raw"""
         <p>a <span style="color:red;">[FAILED:]&gt;\newcommand{foo}&lt;</span></p>
@@ -89,7 +92,8 @@ end
     s = raw"""
         a \newenvironment{foo}{bar} b
         """
-    c = X.LocalContext(;rpath="l"); h = html(s, c)
+    c = X.LocalContext(;rpath="l")
+    h = html_warn(s, c; warn=warn_msg)
     @test isempty(c.lxdefs)
     @test h // raw"""
         <p>a <span style="color:red;">[FAILED:]&gt;\newenvironment{foo}{bar}&lt;</span> b</p>
@@ -97,7 +101,8 @@ end
 
     # nargs block incorrect
     s = raw"""\newcommand{\bar} 2{hello}"""
-    c = X.LocalContext(;rpath="l"); h = html(s, c)
+    c = X.LocalContext(;rpath="l")
+    h = html_warn(s, c; warn=r".*following the naming brace.*")
     @test isempty(c.lxdefs)
     @test h // raw"""
         <p><span style="color:red;">[FAILED:]&gt;\newcommand{\bar}&lt;</span> 2{hello}</p>

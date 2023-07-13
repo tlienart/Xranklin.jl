@@ -19,12 +19,6 @@ MDL = X.env(:module_name)
 ggc = X.DefaultGlobalContext()
 X.setvar!(ggc, :skiplatex, false)
 
-nowarn() = nothing # Logging.disable_logging(Logging.Warn)
-logall() = nothing # (
-#     Logging.disable_logging(Logging.Debug - 100);
-#     ENV["JULIA_DEBUG"] = "all";
-# )
-
 function toy_context()
     gc = X.DefaultGlobalContext()
     lc = X.DefaultLocalContext(gc; rpath="_toy_")
@@ -111,11 +105,25 @@ end
 
 # @test_warn_with something() "partial msg"
 macro test_warn_with(body, msg)
-    test_logger = TestLogger()
+    test_logger = TestLogger(; min_level=Warn)
     with_logger(test_logger) do
         eval(:($body))
     end
     w = first(e for e in test_logger.logs if e.level == Logging.Warn)
-    w.message
-    :(@test $(esc(contains(w.message, msg))))
+    :(@test $(esc(contains(w.message, eval(:($msg))))))
+end
+
+function html_warn(s, lc=nothing; warn="")
+    test_logger = TestLogger(; min_level=Warn)
+    h = ""
+    with_logger(test_logger) do
+        if isnothing(lc)
+            h = html(s)
+        else
+            h = html(s, lc)
+        end
+    end
+    w = first(e for e in test_logger.logs if e.level == Logging.Warn)
+    @test contains(w.message, warn)
+    return h
 end

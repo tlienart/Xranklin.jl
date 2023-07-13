@@ -1,5 +1,4 @@
 include("utils.jl")
-nowarn()
 
 @testset "all" begin
 
@@ -28,19 +27,19 @@ end
 end
 
 @testset "LaTeX" begin
-    p = "convert/"
+    p = "convert"
     include(p/"md_latex_newobj.jl")
     include(p/"md_latex_obj.jl")       
 end
 
 @testset "Convert Misc" begin
-    p = "convert/"
+    p = "convert"
     include(p/"regex.jl")
     include(p/"repl_mode.jl")
 end
 
 @testset "MD2x" begin
-    p = "convert/md2x"
+    p = "convert"/"md2x"
     # rules
     include(p/"rules_text.jl")
     include(p/"rules_header.jl")
@@ -52,28 +51,28 @@ end
 end
 
 @testset "HFuns" begin
-    p = "convert/hfuns"
+    p = "convert"/"hfuns"
     include(p/"evalstr.jl")
     include(p/"henv.jl")
-    # include(p/"integrated.jl") see indirs further below
+    include(p/"integrated.jl") # see indirs further
     include(p/"misc.jl")
 end
 
 @testset "LxFuns" begin
-    p = "convert/lxfuns"
+    p = "convert"/"lxfuns"
     include(p/"utils.jl")
     include(p/"hyperrefs.jl")
 end
 
 @testset "EnvFuns" begin
-    p = "convert/envfuns"
+    p = "convert"/"envfuns"
     include(p/"math.jl")
     include(p/"utils.jl")
 end
 
 # bug fixes etc
 @testset "Extras" begin
-    p = "convert/extras"
+    p = "convert"/"extras"
     include(p/"refs.jl")
 end
 
@@ -114,7 +113,6 @@ end
 
 spurious_assets = dirname(dirname(pathof(Xranklin))) / "assets"
 rm(spurious_assets, recursive=true, force=true)
-
 
 #
 # Integration tests in folder

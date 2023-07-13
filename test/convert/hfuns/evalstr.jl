@@ -23,9 +23,10 @@ end
     html(s, lc)
     es = raw""" e"$a" """
     @test Xranklin.eval_str(lc, es).value == 5
-    nowarn()
-    es = raw""" e"2*$b" """
-    @test !Xranklin.eval_str(lc, es).success
+    @test_warn_with begin
+        es = raw""" e"2*$b" """
+        @test !Xranklin.eval_str(lc, es).success
+    end "error below was caught when attempting to run code"
     es = raw""" e"$b" """
     @test isnothing(Xranklin.eval_str(lc, es).value)
     es = raw""" e"$c2 || $c1" """
@@ -84,8 +85,6 @@ end
         """)
 end
 
-logall()
-
 @testset "with err" begin
     @test_warn_with begin
         h = raw"""
@@ -96,8 +95,6 @@ logall()
         @test contains(h, "FAILED")
     end "error below was caught when attempting to run code ('__estr__')"
 end
-
-nowarn()
 
 @testset "for with julia" begin
     s = """{{for x in !> [1,2,3,4]}}{{x}}{{end}}""" |> html

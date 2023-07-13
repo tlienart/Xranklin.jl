@@ -31,7 +31,12 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     gc = X.DefaultGlobalContext()
     X.set_paths!(gc, d)
     @test X.getvar(gc, :website_url, "abc") == ""
-    X.process_config(gc)
+    tl = TestLogger(min_level=Warn)
+    with_logger(tl) do
+        X.process_config(gc)
+    end
+    @test tl.logs[1].level == Warn
+    @test contains(tl.logs[1].message, "must point to existing files.")
     @test X.getvar(gc, :generate_rss, true) == false
 end
 
