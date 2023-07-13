@@ -1325,7 +1325,7 @@ randstring(5)
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">randstring(5)</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">"ngC5X"</code></pre></div></fieldset>
+<div class="code-output"><pre><code class="code-result language-plaintext">"XVWep"</code></pre></div></fieldset>
 
 </div><div class="trim">
 
@@ -1460,7 +1460,202 @@ If all your code blocks are fast-running, you can ignore the <code>indep</code> 
 However if a block takes time to run, and you know that it is independent
 in the sense mentioned above, marking it explicitly will help make page reloads faster.
 
-</fieldset><h2 id="understanding_how_things_work" ><a href="#understanding_how_things_work"> Understanding how things work</a></h2><p>Each page can be seen as one "notebook".
+</fieldset><h2 id="repl_mode" ><a href="#repl_mode"> REPL mode</a></h2><p>Instead of <code>!</code> or <code>:</code> above, you can also use one of <code>&gt;</code>, <code>;</code>, <code>]</code> and <code>?</code> to
+mimick the corresponding REPL mode.
+In the case of the <code>?</code> one, only a single line of input is allowed (other lines,
+if provided, will be ignored).</p>
+<h3 id="repl_common_mode" ><a href="#repl_common_mode"> REPL common mode</a></h3><p>With the <code>&gt;</code>, you indicate that the code cell should be split in the same way
+as it would in the REPL:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```&gt;
+a = 5
+b = 2;
+c = a + 3b
+println(c^2)
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia-repl">julia&gt; a = 5
+5
+
+julia&gt; b = 2;
+
+julia&gt; c = a + 3b
+11
+
+julia&gt; println(c^2)
+121
+</code></pre>
+</fieldset>
+
+</div><h3 id="repl_shell_mode" ><a href="#repl_shell_mode"> REPL shell mode</a></h3><p>With the <code>;</code>, you indicate that the code cell should be executed as in the 
+REPL shell mode:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```;
+echo abc
+date
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia-repl">shell&gt; echo abc
+abc
+
+shell&gt; date
+Thu Jul 13 09:30:54 UTC 2023
+</code></pre>
+</fieldset>
+
+</div><h3 id="repl_pkg_mode" ><a href="#repl_pkg_mode"> REPL pkg mode</a></h3><p>With the <code>]</code>, you indicate that the code cell should be executed as in the
+REPL pkg mode, note that this will affect the environment the subsequent cells
+are run in (only on that page, it won't affect the other pages which will
+keep being run in the website environment unless otherwise specified):</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```]
+activate --temp
+add StableRNGs
+st
+```
+then
+```!
+using StableRNGs
+rand(StableRNG(1))
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia-repl">(docs) pkg&gt; activate --temp
+┌ Warning: The Pkg REPL mode is intended for interactive use only, and should not be used from scripts. It is recommended to use the functional API instead.
+└ @ Pkg.REPLMode /opt/hostedtoolcache/julia/1.9.2/x64/share/julia/stdlib/v1.9/Pkg/src/REPLMode/REPLMode.jl:382
+  Activating new project at `/tmp/jl_GJW2ig`
+(jl_GJW2ig) pkg&gt; add StableRNGs
+Resolving package versions...
+   Installed StableRNGs ─ v1.0.0
+    Updating `/tmp/jl_GJW2ig/Project.toml`
+  [860ef19b] + StableRNGs v1.0.0
+    Updating `/tmp/jl_GJW2ig/Manifest.toml`
+  [860ef19b] + StableRNGs v1.0.0
+  [2a0f44e3] + Base64
+  [b77e0a4c] + InteractiveUtils
+  [56ddb016] + Logging
+  [d6f4376e] + Markdown
+  [9a3f8284] + Random
+  [ea8e919c] + SHA v0.7.0
+  [9e88b42a] + Serialization
+  [8dfed614] + Test
+Precompiling project...
+[32m  ✓ [39mStableRNGs
+  1 dependency successfully precompiled in 1 seconds
+(jl_GJW2ig) pkg&gt; st
+Status `/tmp/jl_GJW2ig/Project.toml`
+  [860ef19b] StableRNGs v1.0.0
+</code></pre>
+then<pre><code class="julia">using StableRNGs
+rand(StableRNG(1))</code></pre>
+<div class="code-output"><pre><code class="code-result language-plaintext">0.5851946422124186</code></pre></div></fieldset>
+
+</div><h3 id="repl_help_mode" ><a href="#repl_help_mode"> REPL help mode</a></h3><p>With the <code>?</code>, you indicate that the code cell should be executed as in the
+REPL help mode. Note that only the first line of the cell will be considered
+as the output will be displayed in a separate <code>div</code> with class <code>repl-help</code>
+(which you should style).</p>
+<p>The basic styling used here is:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">~~~
+&lt;style&gt;
+.repl-help &lbrace;
+  margin-top: 1em;
+  margin-left: 1em;
+  padding: 1em;
+  background-color: #fefee8;
+  border: 1px solid yellow;
+  border-radius: 10px;
+  font-style: italic;
+&rbrace;
+.repl-help h1 &lbrace;
+  font-size: 1.1em;
+  padding-bottom: .5em;
+&rbrace;
+.repl-help pre code.hljs &lbrace;
+  background-color: transparent;
+&rbrace;
+&lt;/style&gt;
+~~~</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><style>
+.repl-help {
+  margin-top: 1em;
+  margin-left: 1em;
+  padding: 1em;
+  background-color: #fefee8;
+  border: 1px solid yellow;
+  border-radius: 10px;
+  font-style: italic;
+}
+.repl-help h1 {
+  font-size: 1.1em;
+  padding-bottom: .5em;
+}
+.repl-help pre code.hljs {
+  background-color: transparent;
+}
+</style></fieldset>
+
+</div><div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```?
+im
+```</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia-repl">help?&gt; im
+</code></pre>
+<div class="repl-help">
+<pre><code>im</code></pre>
+<p>The imaginary unit.</p>
+<p>See also: <code>imag</code>, <code>angle</code>, <code>complex</code>.</p>
+<h1>Examples</h1>
+<pre><code class="language-julia-repl">julia&gt; im * im
+-1 &#43; 0im
+
+julia&gt; &#40;2.0 &#43; 3im&#41;^2
+-5.0 &#43; 12.0im</code></pre>
+</div>
+</fieldset>
+
+</div><h2 id="understanding_how_things_work" ><a href="#understanding_how_things_work"> Understanding how things work</a></h2><p>Each page can be seen as one "notebook".
 All executed code blocks on the page are executed in one sandbox module
 attached to that page and <strong>share the same scope</strong>.
 That sandbox module also loads the content of <code>utils.jl</code> as a <code>Utils</code> module
@@ -1701,9 +1896,47 @@ using Luxor
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">using Luxor
 @drawsvg juliacircles()</code></pre>
-<div class="code-output"><pre class="fig-stdout"><code class="code-stdout language-plaintext">[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mSnoopPrecompile is analyzing Luxor.jl code...
-</code></pre><img class="code-figure" src="/Xranklin.jl/assets/syntax/code_1/figs-html/__autofig_10012904553771893789.svg">
-</div></fieldset>
+<div class="code-output"><pre><code class="code-stderr language-plaintext">ERROR: ArgumentError: Package Luxor not found in current path.
+- Run `import Pkg; Pkg.add("Luxor")` to install the Luxor package.
+Stacktrace:
+  [1] macro expansion
+    @ ./loading.jl:1630 [inlined]
+  [2] macro expansion
+    @ ./lock.jl:267 [inlined]
+  [3] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1611
+  [4] eval
+    @ ./boot.jl:370 [inlined]
+  [5] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
+    @ Base ./loading.jl:1903
+  [6] include_string
+    @ ./loading.jl:1887 [inlined]
+  [7] #64
+    @ ~/.julia/packages/Xranklin/YsV4l/src/context/code/eval.jl:91 [inlined]
+  [8] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#64#65"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
+    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:119
+  [9] with_logstate(f::Function, logstate::Any)
+    @ Base.CoreLogging ./logging.jl:514
+ [10] with_logger
+    @ ./logging.jl:626 [inlined]
+ [11] capture(f::Xranklin.var"#64#65"{Module, String}; rethrow::Type, color::Bool)
+    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:116
+ [12] capture
+    @ ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:72 [inlined]
+ [13] _attempt_eval
+    @ ~/.julia/packages/Xranklin/YsV4l/src/context/code/eval.jl:90 [inlined]
+ [14] eval_nb_cell(mdl::Module, code::String; cell_name::String, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/YsV4l/src/context/code/eval.jl:73
+ [15] eval_nb_cell
+    @ ~/.julia/packages/Xranklin/YsV4l/src/context/code/eval.jl:45 [inlined]
+ [16] _eval_code_cell(mdl::Module, code::String, cell_name::String, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/YsV4l/src/context/code/notebook_code.jl:162
+ [17] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/YsV4l/src/context/code/notebook_code.jl:119
+ [18] eval_code_cell!
+    @ ~/.julia/packages/Xranklin/YsV4l/src/context/code/notebook_code.jl:21 [inlined]
+ [19] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
+    @ Xranklin ~/.julia/packages/Xranklin/YsV4l/src/convert/markdown/rules/code.jl:267</code></pre></div></fieldset>
 
 </div><p>If you inspect the HTML, you will see that the image displayed corresponds to a generated path that looks like</p>
 <pre><code class="plaintext">/assets/syntax/code/figs-html/__autofig_10012904553771893789.svg</code></pre>
@@ -1719,14 +1952,7 @@ using Luxor
 <div class="code-output"><pre><code class="code-result language-plaintext">"10012904553771893789"</code></pre></div><p>Here's another example with PyPlot (and you could use any other plotting library such as
 <a href="https://github.com/JuliaPlots/Plots.jl">Plots</a>, <a href="https://github.com/JuliaPlots/PlotlyJS.jl">PlotlyJS</a>, etc.,
 you can also check out the <a href="/Xranklin.jl/extras/plots/">page dedicated to plots with Franklin</a>)</p>
-<pre><code class="julia">using PyPlot
-x = range(0, pi, length=500)
-y = @. sin(exp(x)) * sinc(x)
-figure(figsize=(6, 4))
-plot(x, y)
-gcf()</code></pre>
-<div class="code-output"><img class="code-figure" src="/Xranklin.jl/assets/syntax/code_1/figs-html/__autofig_1458796918183576839.svg">
-</div><p>Note that it's the figure object that is showable as SVG in PyPlot and so we must do
+<p>Note that it's the figure object that is showable as SVG in PyPlot and so we must do
 <code>gcf()</code> here to have it be the effective result of the cell and have the plot shown.</p>
 <h3 id="html_show" ><a href="#html_show"> HTML show</a></h3><p>Some packages define objects which indicate how to show objects with a <code>MIME&quot;text/html&quot;</code>,
 in that case the corresponding <code>show</code> method is called and the HTML shown.
@@ -1739,7 +1965,47 @@ df = DataFrame(
     gender = [&quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;]
   )
 )</code></pre>
-<div class="code-output"><div><div style = "float: left;"><span>4×3 DataFrame</span></div><div style = "clear: both;"></div></div><div class = "data-frame" style = "overflow-x: scroll;"><table class = "data-frame" style = "margin-bottom: 6px;"><thead><tr class = "header"><th class = "rowNumber" style = "font-weight: bold; text-align: right;">Row</th><th style = "text-align: left;">names</th><th style = "text-align: left;">age</th><th style = "text-align: left;">gender</th></tr><tr class = "subheader headerLastRow"><th class = "rowNumber" style = "font-weight: bold; text-align: right;"></th><th title = "String" style = "text-align: left;">String</th><th title = "Int64" style = "text-align: left;">Int64</th><th title = "String" style = "text-align: left;">String</th></tr></thead><tbody><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">1</td><td style = "text-align: left;">Vlad</td><td style = "text-align: right;">50</td><td style = "text-align: left;">M</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">2</td><td style = "text-align: left;">Martha</td><td style = "text-align: right;">34</td><td style = "text-align: left;">F</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">3</td><td style = "text-align: left;">Hasan</td><td style = "text-align: right;">23</td><td style = "text-align: left;">M</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">4</td><td style = "text-align: left;">Carl</td><td style = "text-align: right;">42</td><td style = "text-align: left;">M</td></tr></tbody></table></div></div><div class="lskip"> </div><h3 id="custom_show" ><a href="#custom_show"> Custom show</a></h3><p>If you have defined a custom <code>html_show(r)</code> in your <code>Utils</code> that accepts an object of the type
+<div class="code-output"><pre><code class="code-stderr language-plaintext">ERROR: ArgumentError: Package DataFrames not found in current path.
+- Run `import Pkg; Pkg.add("DataFrames")` to install the DataFrames package.
+Stacktrace:
+  [1] macro expansion
+    @ ./loading.jl:1630 [inlined]
+  [2] macro expansion
+    @ ./lock.jl:267 [inlined]
+  [3] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1611
+  [4] eval
+    @ ./boot.jl:370 [inlined]
+  [5] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
+    @ Base ./loading.jl:1903
+  [6] include_string
+    @ ./loading.jl:1887 [inlined]
+  [7] #64
+    @ ~/.julia/packages/Xranklin/YsV4l/src/context/code/eval.jl:91 [inlined]
+  [8] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#64#65"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
+    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:119
+  [9] with_logstate(f::Function, logstate::Any)
+    @ Base.CoreLogging ./logging.jl:514
+ [10] with_logger
+    @ ./logging.jl:626 [inlined]
+ [11] capture(f::Xranklin.var"#64#65"{Module, String}; rethrow::Type, color::Bool)
+    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:116
+ [12] capture
+    @ ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:72 [inlined]
+ [13] _attempt_eval
+    @ ~/.julia/packages/Xranklin/YsV4l/src/context/code/eval.jl:90 [inlined]
+ [14] eval_nb_cell(mdl::Module, code::String; cell_name::String, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/YsV4l/src/context/code/eval.jl:73
+ [15] eval_nb_cell
+    @ ~/.julia/packages/Xranklin/YsV4l/src/context/code/eval.jl:45 [inlined]
+ [16] _eval_code_cell(mdl::Module, code::String, cell_name::String, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/YsV4l/src/context/code/notebook_code.jl:162
+ [17] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/YsV4l/src/context/code/notebook_code.jl:119
+ [18] eval_code_cell!
+    @ ~/.julia/packages/Xranklin/YsV4l/src/context/code/notebook_code.jl:21 [inlined]
+ [19] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
+    @ Xranklin ~/.julia/packages/Xranklin/YsV4l/src/convert/markdown/rules/code.jl:267</code></pre></div><div class="lskip"> </div><h3 id="custom_show" ><a href="#custom_show"> Custom show</a></h3><p>If you have defined a custom <code>html_show(r)</code> in your <code>Utils</code> that accepts an object of the type
 of the result of a code block and returns a string, then that will be used to represent the
 result on the page.</p>
 <p>For instance in the <code>utils.jl</code> for the present website, we've defined</p>
@@ -1845,7 +2111,7 @@ sqrt(-1)
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">sqrt(-1)</code></pre>
-<div class="code-output"><pre><code class="code-stderr language-plaintext">LoadError: DomainError with -1.0:
+<div class="code-output"><pre><code class="code-stderr language-plaintext">ERROR: DomainError with -1.0:
 sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).
 Stacktrace:
   [1] throw_complex_domainerror(f::Symbol, x::Float64)
@@ -1876,7 +2142,47 @@ build_dir  = Utils.path(:site)
 target_dir = mkpath(joinpath(build_dir, &quot;assets&quot;, &quot;data&quot;))
 df = DataFrame(A=1:4, B=[&quot;M&quot;, &quot;F&quot;, &quot;F&quot;, &quot;M&quot;])
 CSV.write(joinpath(target_dir, &quot;data1.csv&quot;), df);</code></pre>
-<p>this outputs nothing but it does save <code>data1.csv</code> in the build folder at location
+<div class="code-output"><pre><code class="code-stderr language-plaintext">ERROR: ArgumentError: Package DataFrames not found in current path.
+- Run `import Pkg; Pkg.add("DataFrames")` to install the DataFrames package.
+Stacktrace:
+  [1] macro expansion
+    @ ./loading.jl:1630 [inlined]
+  [2] macro expansion
+    @ ./lock.jl:267 [inlined]
+  [3] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1611
+  [4] eval
+    @ ./boot.jl:370 [inlined]
+  [5] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
+    @ Base ./loading.jl:1903
+  [6] include_string
+    @ ./loading.jl:1887 [inlined]
+  [7] #64
+    @ ~/.julia/packages/Xranklin/YsV4l/src/context/code/eval.jl:91 [inlined]
+  [8] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#64#65"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
+    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:119
+  [9] with_logstate(f::Function, logstate::Any)
+    @ Base.CoreLogging ./logging.jl:514
+ [10] with_logger
+    @ ./logging.jl:626 [inlined]
+ [11] capture(f::Xranklin.var"#64#65"{Module, String}; rethrow::Type, color::Bool)
+    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:116
+ [12] capture
+    @ ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:72 [inlined]
+ [13] _attempt_eval
+    @ ~/.julia/packages/Xranklin/YsV4l/src/context/code/eval.jl:90 [inlined]
+ [14] eval_nb_cell(mdl::Module, code::String; cell_name::String, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/YsV4l/src/context/code/eval.jl:73
+ [15] eval_nb_cell
+    @ ~/.julia/packages/Xranklin/YsV4l/src/context/code/eval.jl:45 [inlined]
+ [16] _eval_code_cell(mdl::Module, code::String, cell_name::String, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/YsV4l/src/context/code/notebook_code.jl:162
+ [17] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/YsV4l/src/context/code/notebook_code.jl:119
+ [18] eval_code_cell!
+    @ ~/.julia/packages/Xranklin/YsV4l/src/context/code/notebook_code.jl:21 [inlined]
+ [19] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
+    @ Xranklin ~/.julia/packages/Xranklin/YsV4l/src/convert/markdown/rules/code.jl:267</code></pre></div><p>this outputs nothing but it does save <code>data1.csv</code> in the build folder at location
 <code>/assets/data/</code> so that you could then link to it explicitly:</p>
 <div class="trim">
 
@@ -1975,7 +2281,7 @@ as your base path and use <code>joinpath</code> to point to the specific locatio
         <div id="marginToc">
             
               <div id="marginTocLegend"><a href="#">Contents</a></div>
-              <div class="toc"><ol><li><a href="#overview">Overview</a></li><li><a href="#syntax_for_executable_code_blocks">Syntax for executable code blocks</a><ol><li><a href="#hiding_lines_of_code">Hiding lines of code</a></li><li><a href="#mock_lines">Mock lines</a></li><li><a href="#providing_name_hints">Providing name hints</a></li><li><a href="#marking_a_cell_as_independent">Marking a cell as independent</a></li></ol></li><li><a href="#understanding_how_things_work">Understanding how things work</a><ol><li><a href="#what_to_do_when_things_go_wrong">What to do when things go wrong</a></li></ol></li><li><a href="#output_of_executable_code_blocks">Output of executable code blocks</a><ol><li><a href="#nothing_to_show">Nothing to show</a></li><li><a href="#default_show">Default show</a></li><li><a href="#showable_as_svg_or_png">Showable as SVG or PNG</a></li><li><a href="#html_show">HTML show</a></li><li><a href="#custom_show">Custom show</a></li><li><a href="#showing_the_output_as_markdown/html">Showing the output as Markdown/HTML</a></li><li><a href="#what_if_the_code_errors?">What if the code errors?</a></li><li><a href="#in_what_path_does_the_code_run?">In what path does the code run?</a></li></ol></li></ol></div>
+              <div class="toc"><ol><li><a href="#overview">Overview</a></li><li><a href="#syntax_for_executable_code_blocks">Syntax for executable code blocks</a><ol><li><a href="#hiding_lines_of_code">Hiding lines of code</a></li><li><a href="#mock_lines">Mock lines</a></li><li><a href="#providing_name_hints">Providing name hints</a></li><li><a href="#marking_a_cell_as_independent">Marking a cell as independent</a></li></ol></li><li><a href="#repl_mode">REPL mode</a><ol><li><a href="#repl_common_mode">REPL common mode</a></li><li><a href="#repl_shell_mode">REPL shell mode</a></li><li><a href="#repl_pkg_mode">REPL pkg mode</a></li><li><a href="#repl_help_mode">REPL help mode</a></li></ol></li><li><a href="#understanding_how_things_work">Understanding how things work</a><ol><li><a href="#what_to_do_when_things_go_wrong">What to do when things go wrong</a></li></ol></li><li><a href="#output_of_executable_code_blocks">Output of executable code blocks</a><ol><li><a href="#nothing_to_show">Nothing to show</a></li><li><a href="#default_show">Default show</a></li><li><a href="#showable_as_svg_or_png">Showable as SVG or PNG</a></li><li><a href="#html_show">HTML show</a></li><li><a href="#custom_show">Custom show</a></li><li><a href="#showing_the_output_as_markdown/html">Showing the output as Markdown/HTML</a></li><li><a href="#what_if_the_code_errors?">What if the code errors?</a></li><li><a href="#in_what_path_does_the_code_run?">In what path does the code run?</a></li></ol></li></ol></div>
             
         </div>
     </div>
