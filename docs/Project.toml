@@ -2,7 +2,7 @@
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
+Gaston = "4b11ee91-296f-5714-9832-002c20994614"
 Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
 Luxor = "ae8d54c2-7ccd-5906-9d76-62fc9837b5bc"
 PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
-PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"

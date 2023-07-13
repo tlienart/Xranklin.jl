@@ -254,7 +254,7 @@ mimick the corresponding REPL mode.
 In the case of the `?` one, only a single line of input is allowed (other lines,
 if provided, will be ignored).
 
-### REPL common mode
+#### REPL common mode
 
 With the `>`, you indicate that the code cell should be split in the same way
 as it would in the REPL:
@@ -268,7 +268,7 @@ as it would in the REPL:
   ```
 }
 
-### REPL shell mode
+#### REPL shell mode
 
 With the `;`, you indicate that the code cell should be executed as in the 
 REPL shell mode:
@@ -280,7 +280,7 @@ REPL shell mode:
   ```
 }
 
-### REPL pkg mode
+#### REPL pkg mode
 
 With the `]`, you indicate that the code cell should be executed as in the
 REPL pkg mode, note that this will affect the environment the subsequent cells
@@ -300,7 +300,7 @@ keep being run in the website environment unless otherwise specified):
   ```
 }
 
-### REPL help mode
+#### REPL help mode
 
 With the `?`, you indicate that the code cell should be executed as in the
 REPL help mode. Note that only the first line of the cell will be considered
@@ -554,25 +554,27 @@ hash("""
 ```
 
 
-Here's another example with PyPlot (and you could use any other plotting library such as
-[Plots](https://github.com/JuliaPlots/Plots.jl), [PlotlyJS](https://github.com/JuliaPlots/PlotlyJS.jl), etc.,
-you can also check out the [page dedicated to plots with Franklin](/extras/plots/))
+Here's another example with Gaston (and you could use any other plotting library such as
+[Plots](https://github.com/JuliaPlots/Plots.jl), [PlotlyJS](https://github.com/JuliaPlots/PlotlyJS.jl), etc., though you'll have to be careful about setting dependencies properly.
+Check out the [page dedicated to plots with Franklin](/extras/plots/) for more informations.
 
-<!--
 ```!
-# name: pyplot
+# name: gaston
 # indep
-using PyPlot
-x = range(0, pi, length=500)
-y = @. sin(exp(x)) * sinc(x)
-figure(figsize=(6, 4))
+using Gaston
+set(term="svg")
+x = range(0, pi, length=350)
+z = 0.2 * randn(length(x))
+y = @. sin(exp(x)) * sinc(x) + z
 plot(x, y)
-gcf()
 ```
--->
 
-Note that it's the figure object that is showable as SVG in PyPlot and so we must do
-`gcf()` here to have it be the effective result of the cell and have the plot shown.
+\note{
+  In order to show properly, the last object needs to be showable. With some
+  libraries such as PyPlot this requires an additional command to retrieve the
+  showable object (`gcf()` for PyPlot will return the figure which is showable).
+}
+
 
 ### HTML show
 
