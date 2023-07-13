@@ -531,6 +531,14 @@ generated and the image is inserted with
 <img class="code-figure" src="...generated_path_to_img...">
 ```
 
+~~~
+<!-- Avoiding snoopcompile stuff -->
+<style>
+.fig-stdout {height:0; visibility: hidden}
+</style>
+~~~
+
+
 For instance:
 
 \showmd{
