@@ -16,7 +16,7 @@ const MATH_LABEL_PAT = r"\\label{(.*?)}"
 const CODE_INFO_PAT = r"^\`+([^\n]+)?"
 
 "Language getter (allow space after language for highlighting in VSCode)"
-const CODE_LANG_PAT = r"([^\!\:\s]+)?\s*([\!\:]{1,2})?(\S+)?"
+const CODE_LANG_PAT = r"([^\!\:\>\;\]\?\s]+)?\s*([\!\:]{1,2}|[\>\;\]\?])?(\S+)?"
 
 "Trim the non-relevant part of a stacktrace when evaluating code."
 const STACKTRACE_TRIM_PAT = r"\[\d+\]\stop-level\sscope"

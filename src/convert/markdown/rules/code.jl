@@ -126,10 +126,15 @@ The different cases are:
 * lang!   | lang:    - executed, auto-named, explicit language (†)
 * lang!ex | lang:ex  - executed, named, explicit language (with colon is for
                         legacy) (†)
+* > ; ] ?            - executed, auto-named, repl mode (††)
+* >ex ;ex ]ex ?ex    - executed, named, julia-repl mode
 
 (†) a whitespace can be inserted after the language and before the execution
 symbol to allow for syntax highlighting in markdown to work properly (this
 is required in VSCode for instance).
+
+(††) each of the four symbol is allowed in repl mode for respectively the
+standard REPL (`>`), shell mode (`;`), pkg mode (`]`) and help mode (`?`).
 
 Return a CodeInfo.
 
@@ -163,6 +168,15 @@ function _code_info(
     end
     if !isnothing(e)
         exec = true
+        if e == ">"
+            lang = "repl-repl"
+        elseif e == ";"
+            lang = "repl-shell"
+        elseif e == "?"
+            lang = "repl-help"
+        elseif e == "]"
+            lang = "repl-pkg"
+        end
     end
 
     if exec
@@ -239,6 +253,9 @@ function html_code_block(
 
     hascode!(lc)
     ci = _code_info(b, lc)
+    if ci.exec && startswith(ci.lang, "repl-")
+        return html_repl_code(ci, lc)
+    end
     # placeholder for output string if has to be added directly after code
     # might remain empty if result is nothing or if it's not an auto-cell
     post = ""
@@ -279,6 +296,9 @@ function latex_code_block(
         )::String
 
     ci = _code_info(b, lc)
+    if ci.exec && startswith(ci.lang, "repl-")
+        return latex_repl_code(ci, lc)
+    end
     if ci.exec
         if ci.lang == "julia"
             eval_code_cell!(lc, ci.code, ci.name; force=ci.force)
@@ -293,4 +313,173 @@ function latex_code_block(
     return ifelse(isempty(code), "", """
         \\begin{lstlisting}\n$code\n\\end{lstlisting}
         """) * post
+end
+
+
+# ============================================================================
+#
+# REPL MODE
+#
+# ============================================================================
+
+
+function html_repl_code(
+    ci::CodeInfo,
+    lc::LocalContext
+)::String
+
+io = IOBuffer()
+_eval_repl_code(io, ci, lc; tohtml=true)
+return String(take!(io))
+end
+
+function latex_repl_code(
+    ci::CodeInfo,
+    lc::LocalContext
+)::String
+
+io = IOBuffer()
+_eval_repl_code(io, ci, lc; tohtml=false)
+return String(take!(io))
+end
+
+"""
+    _eval_repl_code
+
+Evaluate the repl-mode code appropriately and output the formatted result in
+the iostream so it can be recuperated.
+"""
+function _eval_repl_code(
+        io::IOBuffer,
+        ci::CodeInfo,
+        lc::LocalContext;
+        tohtml::Bool=true
+    )::Nothing
+   
+    if !tohtml
+        println(io, raw"\begin{lstlisting}")
+        pre = _lescape ∘ SubString
+    else
+        print(io, "<pre><code class=\"julia-repl\">")
+        pre = _hescape ∘ SubString
+    end
+
+    #
+    # REPL-REPL mode
+    # HACK: for now assumption of non-incomplete AST expressions
+    #
+    if ci.lang == "repl-repl"
+
+        # if that code has not been seen yet or, if it has and has changed,
+        # force eval so that all lines get re-executed 
+        prev_hash = get(lc.nb_code.repl_code_hash, ci.name * "_0", UInt64(0))
+        cur_hash  = hash(ci.code)
+        force     = prev_hash != cur_hash
+
+        chunk   = ""
+        counter = 1
+        for line in split(ci.code, r"\r?\n", keepempty=false)
+            # add to the chunk until we have a complete AST
+            chunk *= line * "\n"
+            ast = Base.parse_input_line(chunk)
+            if (isa(ast, Expr) && ast.head === :incomplete)
+                continue
+            else
+                # now 'chunk' corresponds to a complete ast
+                chunk_name = ci.name * "_$counter"
+                eval_code_cell!(
+                    lc, SubString(chunk), chunk_name; repl_mode=true, force
+                )
+                idx = findfirst(==(chunk_name), lc.nb_code.code_names)::Int
+                rep = strip(lc.nb_code.code_pairs[idx].repr.raw)
+
+                # add empty line between prompts but not after last
+                counter > 1 && println(io, "")
+                println(io, pre("julia> $(strip(chunk))"))
+                isempty(rep) || println(io, pre(rep))
+
+                chunk    = ""
+                counter += 1
+            end
+        end
+        lc.nb_code.repl_code_hash[ci.name * "_0"] = cur_hash
+
+    #
+    # REPL-SHELL mode
+    #
+    elseif ci.lang == "repl-shell"
+        counter = 1
+        for line in split(ci.code, r"\r?\n", keepempty=false)
+            tmp = tempname()
+            open(tmp, "w") do outf
+                redirect_stdout(outf) do
+                    redirect_stderr(outf) do
+                        Base.repl_cmd(Cmd(string.(split(line))), nothing)
+                    end
+                end
+            end
+            counter > 1 && println(io, "")
+            println(io, pre("shell> $(strip(line))"))
+            println(io, pre(strip(read(tmp, String))))
+
+            counter += 1
+        end
+    
+    #
+    # REPL-PKG mode
+    #
+    elseif ci.lang == "repl-pkg"
+        counter = 1
+        for line in split(ci.code, r"\r?\n", keepempty=false)
+            tmp = tempname()
+            project_name = splitpath(Pkg.project().path)[end-1]
+            open(tmp, "w") do outf
+                redirect_stdout(outf) do
+                    redirect_stderr(outf) do
+                        Pkg.REPLMode.pkgstr(string(line))
+                    end
+                end
+            end
+            counter > 1 && println(io, "")
+            println(io, pre("($(project_name)) pkg> $(strip(line))"))
+            println(io, pre(strip(read(tmp, String))))
+        end
+    
+    #
+    # REPL-HELP mode
+    #
+    else
+        # only the first line is considered, rest ignored
+        line = first(split(ci.code, r"\r?\n", limit=2))
+        r    = eval(Meta.parse("@doc $line"))
+
+        println(io, pre("help?> $(strip(line))"))        
+        # close code first, then print result
+        if !tohtml
+            println(io, raw"\end{lstlisting}")
+            println(io, strip(Markdown.latex(r)))
+        else
+            # We use the Markdown html processor here so that the output
+            # is similar to the REPL, for instance so that we don't have
+            # to fiddle with footnotes which are processed differently.
+            println(io, "</code></pre>")
+            println(io, "<div class=\"repl-help\">")
+            println(io, strip(replace(
+                Markdown.html(r),
+                r"<a href=\"@ref\">(.*?)</a>" => s"\1",
+                "class=\"language-jldoctest\"" => "class=\"language-julia-repl\"",
+                r"(?:\&\#36\;)+((.|\n)*?)(?:\&\#36\;)+" => s"\\(\1\\)"
+            )))
+            println(io, "</div>")
+        end
+    end
+
+    if ci.lang != "repl-help"
+        if !tohtml
+            println(io, raw"\end{lstlisting}")
+        else
+            println(io, "</code></pre>")
+        end
+    end    
+    return
 end

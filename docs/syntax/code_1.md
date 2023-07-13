@@ -247,6 +247,97 @@ The marker for independence should be placed at the top of your code:
   in the sense mentioned above, marking it explicitly will help make page reloads faster.
 }
 
+## REPL mode
+
+Instead of `!` or `:` above, you can also use one of `>`, `;`, `]` and `?` to
+mimick the corresponding REPL mode.
+In the case of the `?` one, only a single line of input is allowed (other lines,
+if provided, will be ignored).
+
+### REPL common mode
+
+With the `>`, you indicate that the code cell should be split in the same way
+as it would in the REPL:
+
+\showmd{
+  ```>
+  a = 5
+  b = 2;
+  c = a + 3b
+  println(c^2)
+  ```
+}
+
+### REPL shell mode
+
+With the `;`, you indicate that the code cell should be executed as in the 
+REPL shell mode:
+
+\showmd{
+  ```;
+  echo abc
+  date
+  ```
+}
+
+### REPL pkg mode
+
+With the `]`, you indicate that the code cell should be executed as in the
+REPL pkg mode, note that this will affect the environment the subsequent cells
+are run in (only on that page, it won't affect the other pages which will
+keep being run in the website environment unless otherwise specified):
+
+\showmd{
+  ```]
+  activate --temp
+  add StableRNGs
+  st
+  ```
+  then
+  ```!
+  using StableRNGs
+  rand(StableRNG(1))
+  ```
+}
+
+### REPL help mode
+
+With the `?`, you indicate that the code cell should be executed as in the
+REPL help mode. Note that only the first line of the cell will be considered
+as the output will be displayed in a separate `div` with class `repl-help`
+(which you should style).
+
+The basic styling used here is:
+
+\showmd{
+  ~~~
+  <style>
+  .repl-help {
+    margin-top: 1em;
+    margin-left: 1em;
+    padding: 1em;
+    background-color: #fefee8;
+    border: 1px solid yellow;
+    border-radius: 10px;
+    font-style: italic;
+  }
+  .repl-help h1 {
+    font-size: 1.1em;
+    padding-bottom: .5em;
+  }
+  .repl-help pre code.hljs {
+    background-color: transparent;
+  }
+  </style>
+  ~~~
+}
+
+\showmd{
+  ```?
+  im
+  ```
+}
+
 ## Understanding how things work
 
 Each page can be seen as one "notebook".
@@ -467,6 +558,7 @@ Here's another example with PyPlot (and you could use any other plotting library
 [Plots](https://github.com/JuliaPlots/Plots.jl), [PlotlyJS](https://github.com/JuliaPlots/PlotlyJS.jl), etc.,
 you can also check out the [page dedicated to plots with Franklin](/extras/plots/))
 
+<!--
 ```!
 # name: pyplot
 # indep
@@ -477,6 +569,7 @@ figure(figsize=(6, 4))
 plot(x, y)
 gcf()
 ```
+-->
 
 Note that it's the figure object that is showable as SVG in PyPlot and so we must do
 `gcf()` here to have it be the effective result of the cell and have the plot shown.

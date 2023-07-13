@@ -48,11 +48,12 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         Sitemap: https://foo.com/sitemap.xml
         """)
 
-    smap = read(sitemap, String)
+    smap  = read(sitemap, String)
+    today = Dates.today()
     for e in [
         "https://foo.com/norobots/abc/index.html",
         "https://foo.com/index.html",
-        string(Dates.today()),
+        "$(year(today))-$(lpad(month(today), 2, '0'))-", # if testing around midnight, day might be off...
     ]
         @test contains(smap, e)
     end

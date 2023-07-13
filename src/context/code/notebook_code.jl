@@ -13,6 +13,9 @@ Evaluate the content of a cell we know runs some code.
 
     imgdir_html:   the directory used to save images for HTML output
     imgdir_latex:  the directory used to save images for LaTeX output
+    force:         force re-eval even if there's a seemingly good cached result
+    indep:         whether the code is independent of the surrounding cells
+    repl_mode:     whether an error should be shown as output
 
 """
 function eval_code_cell!(
@@ -22,7 +25,8 @@ function eval_code_cell!(
             imgdir_html::String=tempdir(),
             imgdir_latex::String=tempdir(),
             force::Bool=false,
-            indep::Bool=false
+            indep::Bool=false,
+            repl_mode::Bool=false
             )::Nothing
 
     # stop early if there's no code to evaluate
@@ -80,7 +84,8 @@ function eval_code_cell!(
             _eval_code_cell(
                 nb.mdl,
                 nb.code_pairs[tmp_idx].code,
-                nb.code_names[tmp_idx]
+                nb.code_names[tmp_idx],
+                repl_mode
             )
         end
         δt = time() - start; @info """
@@ -111,7 +116,7 @@ function eval_code_cell!(
     @info "  ⏯️  evaluating cell $(hl(cell_name, :yellow))" *
           ifelse(indep, " 🌴 ...", "...")
 
-    code_outp = _eval_code_cell(nb.mdl, cell_code, cell_name)
+    code_outp = _eval_code_cell(nb.mdl, cell_code, cell_name, repl_mode)
     code_repr = _form_code_repr(ctx, code_outp, fig_html, fig_latex, skiplatex)
     code_pair = CodeCodePair((cell_code, code_repr))
 
@@ -124,7 +129,7 @@ end
 
 
 """
-    _eval_code_cell(mdl, code, cell_name)
+    _eval_code_cell(mdl, code, cell_name; repl_mode)
 
 Helper function to `eval_code_cell!`. Returns the output string corresponding
 to the captured stdout+stderr and the value (or nothing if nothing is to be
@@ -139,7 +144,8 @@ shown).
 function _eval_code_cell(
                 mdl::Module,
                 code::String,
-                cell_name::String
+                cell_name::String,
+                repl_mode::Bool = false
                 )::Tuple
 
     # trim mock lines
@@ -153,7 +159,7 @@ function _eval_code_cell(
     code = String(take!(io))
 
     # evaluate code 
-    res = eval_nb_cell(mdl, code; cell_name)
+    res = eval_nb_cell(mdl, code; cell_name, repl_mode)
 
     # the return value may be suppressed so we extract it and check
     result = res.value
@@ -189,7 +195,7 @@ function trim_stacktrace(s::String)
     try
         first_match_start = first(findfirst(STACKTRACE_TRIM_PAT, s))
         # Keep only everything before the regex match.
-        return s[1:first_match_start-3]
+        return replace(s[1:first_match_start-3], "LoadError:" => "ERROR:")
     catch err
         @debug """
                Unrecognized stack trace:\n$s
@@ -250,7 +256,9 @@ function _form_code_repr(
             err,
             "</code></pre>"
         )
-        write(io_latex, out)
+        write(io_latex, err)
+        write(io_raw, strip(err))
+
     end
 
     # (3) Representation of the result

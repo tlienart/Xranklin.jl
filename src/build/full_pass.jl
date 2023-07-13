@@ -177,6 +177,27 @@ function full_pass(
         skip_files
     )
 
+    # HACK: attached-but-ignored
+    # flatten watched files rpath
+    watched_rpaths = String[]
+    for (_, d) in watched_files
+        for (fp, _) in d
+            push!(watched_rpaths, get_rpath(gc, joinpath(fp...)))
+        end
+    end
+    attached_but_not_watched = setdiff(gc.deps_map.bwd_keys, watched_rpaths)
+    # shove them all in :other (it doesn't matter)
+    folder = path(gc, :folder)
+    for rp in attached_but_not_watched
+        @info """
+            👀 adding attached file $(hl(str_fmt(rp), :cyan)) to be tracked
+            """
+        fp = folder => rp
+        watched_files[:other][fp] = mtime(joinpath(fp...))
+    end
+
+
+
     #
     # RSS, Sitemap, Robots generation
     #
@@ -325,7 +346,7 @@ end
 """
     _md_loop_2(gc, fp, skip_dict)
 
-[internal,threads] go from iHTML to HTML and correct prepath.
+[internal,threads] go from iHTML to HTML and correct prepath and write to file.
 """
 function _md_loop_2(gc, fp, skip_dict, final)
     skip_dict[fp] && return
@@ -337,7 +358,6 @@ function _md_loop_2(gc, fp, skip_dict, final)
 
     process_md_file_pass_2(lc, opath, final)
     adjust_base_url(gc, rpath, opath; final)
-
     return
 end
 

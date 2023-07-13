@@ -22,7 +22,7 @@ new_wf() = Dict{Symbol, TrackedFiles}(
 
 
 """
-    update_files_to_watch!(wf, folder; in_loop)
+    update_files_to_watch!(wf, gc; in_loop)
 
 Walk through `folder` and look for files to track sorting them by type.
 
@@ -33,47 +33,45 @@ Walk through `folder` and look for files to track sorting them by type.
 """
 function update_files_to_watch!(
             wf::Dict{Symbol, TrackedFiles},
-            gc::GlobalContext,
-            folder::String;
+            gc::GlobalContext;
             in_loop::Bool=false
         )::Tuple{Dict{Symbol, TrackedFiles}, Bool}
 
-    newpg    = false
-    f2i, d2i = files_and_dirs_to_ignore(gc)
+    newpg = false
+    files_and_dirs_to_ignore(gc)
 
     # go over all files in the folder and add them to watched_files
-    for (root, _, files) in walkdir(path(:folder))
+    for (root, _, files) in walkdir(path(gc, :folder))
         for file in files
             # assemble full path
             fpair = root => file
             fpath = joinpath(fpair...)
             fext  = splitext(file)[2]
+            rpath = get_rpath(gc, fpath)
 
             # early skip of irrelevant fpaths
             skip = !isfile(fpath) ||
-                   startswith(fpath, path(:site)) ||
-                   startswith(fpath, path(:pdf)) ||
-                   startswith(fpath, path(:cache)) ||
-                   startswith(fpath, path(:folder) / ".git") ||
-                   should_ignore(gc, fpath, f2i, d2i)
+                   startswith(fpath, path(gc, :site)) ||
+                   startswith(fpath, path(gc, :pdf)) ||
+                   startswith(fpath, path(gc, :cache)) ||
+                   startswith(fpath, path(gc, :folder) / ".git") ||
+                   should_ignore(gc, fpath)
 
             if skip
-                rp = get_rpath(gc, fpath)
-                if rp ∉ FRANKLIN_ENV[:skipped_files]
-                    union!(FRANKLIN_ENV[:skipped_files], [rp])
+                if rpath ∉ FRANKLIN_ENV[:skipped_files]
+                    union!(FRANKLIN_ENV[:skipped_files], [rpath])
                     startswith(fpath, path(:site)) || @debug """
-                        🔺 skipping $(hl(str_fmt(rp), :cyan))
+                        🔺 skipping $(hl(str_fmt(rpath), :cyan))
                         """
                 end
                 continue
             end
 
-            if startswith(fpath, path(:css))    ||
-               startswith(fpath, path(:layout)) ||
-               startswith(fpath, path(:libs))   ||
-               startswith(fpath, path(:rss))    ||
-               file == "config.md"              ||
-               file == "utils.jl"
+            if startswith(fpath, path(gc, :css))    ||
+               startswith(fpath, path(gc, :layout)) ||
+               startswith(fpath, path(gc, :libs))   ||
+               startswith(fpath, path(gc, :rss))    ||
+               file == "config.md" || file == "utils.jl"
                 # files that, when they get changed, might change the aspect of
                 # the full website
                 add_if_new_file!(wf[:infra], fpair, in_loop)
@@ -101,16 +99,13 @@ end
 
 
 """
-    find_files_to_watch(gc, folder)
+    find_files_to_watch(gc)
 
 Sets up a new dictionary of watched files and updates it with the function
 `update_files_to_watch!`.
 """
-function find_files_to_watch(
-            gc::GlobalContext,
-            folder::String
-        )
-    wf, _ = update_files_to_watch!(new_wf(), gc, folder)
+function find_files_to_watch(gc::GlobalContext)
+    wf, _ = update_files_to_watch!(new_wf(), gc)
     return wf
 end
 
@@ -147,6 +142,7 @@ _endswith(p, c)      = endswith(_access(p), c)
 _check(f, p::Regex)  = match(p, f) !== nothing
 _check(f, p::String) = (f == p)
 
+
 """
     files_and_dirs_to_ignore(gc)
 
@@ -154,21 +150,25 @@ Form the list of files to ignore and dirs to ignore. These lists have element
 type `Union{String,Regex}` and so either indicate an exact match or a pattern.
 """
 function files_and_dirs_to_ignore(gc::GlobalContext)
-    SoR = StringOrRegex
-    f2i = SoR[]  # files
-    d2i = SoR[]  # dirs
-    ignore = getvar(gc, :ignore_base, SoR[]) ∪ getvar(gc, :ignore, SoR[])
+    f2i = StringOrRegex[]  # files
+    d2i = StringOrRegex[]  # dirs
+    ignore = union(
+        getvar(gc, :ignore_base, StringOrRegex[]),
+        getvar(gc, :ignore, StringOrRegex[])
+    )
     for p in ignore
         (_isempty(p) || p == "/" || p == r"\/") && continue
         _endswith(p, '/') && push!(d2i, p)
         push!(f2i, p)
     end
-    return f2i, d2i
+    # used in _md_loop_2
+    setvar!(gc, :_files_and_dirs_to_ignore, (f2i, d2i))
+    return
 end
 
 
 """
-    should_ignore(gc, fpath, f2i, d2i)
+    should_ignore(gc, fpath)
 
 Check if a file path should be ignored based on pre-computed `f2i` (files to
 ignore) and `d2i` (directories to ignore). nore` global variable
@@ -178,12 +178,12 @@ regex patterns for either like `r"READ*"` or `r"node_*/"`.
 """
 function should_ignore(
             gc::GlobalContext,
-            fpath::String,
-            f2i,
-            d2i
+            fpath::String
         )::Bool
 
-    rpath = get_rpath(gc, fpath)
+    f2i, d2i = getvar(gc, :_files_and_dirs_to_ignore, (StringOrRegex[], StringOrRegex[]))
+    rpath    = get_rpath(gc, fpath)
+
     return any(p -> startswith(rpath, p), d2i) ||   # dir match
            any(p -> _check(rpath, p), f2i)          # file match
 end

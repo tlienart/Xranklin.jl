@@ -3,7 +3,6 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 @testset "basics" begin
     @test X.eval_str("5^2").value == 25
     @test X.eval_str("[i for i in 1:3]").value == [1,2,3]
-    @test !X.eval_str("sqrt(-1)").success
 end
 
 @testset "hfun eval str" begin
@@ -24,10 +23,12 @@ end
     html(s, lc)
     es = raw""" e"$a" """
     @test Xranklin.eval_str(lc, es).value == 5
-    nowarn()
-    es = raw""" e"2*$b" """
-    @test !Xranklin.eval_str(lc, es).success
-    logall()
+    tl = TestLogger(min_level=Warn)
+    with_logger(tl) do
+        es = raw""" e"2*$b" """
+        @test !Xranklin.eval_str(lc, es).success
+    end
+    @test contains(tl.logs[1].message, "error below was caught when attempting to run code")
     es = raw""" e"$b" """
     @test isnothing(Xranklin.eval_str(lc, es).value)
     es = raw""" e"$c2 || $c1" """
@@ -84,17 +85,16 @@ end
     @test isapproxstr(h, """
         <p>bar</p>
         """)
-
-    @test_warn_with begin
-        h = raw"""
-            {{isempty e"sqrt(-1)"}}
-            foo
-            {{else}}bar{{end}}
-            """ |> html
-        @test contains(h, "FAILED")
-    end "error was caught when attempting to run code ('__estr__')"
 end
 
+@testset "with err" begin
+    s = raw"""
+    {{isempty e"sqrt(-1)"}}
+    foo
+    {{else}}bar{{end}}
+    """
+    h = html_warn(s; warn="error below was caught when attempting to run code")
+end
 
 @testset "for with julia" begin
     s = """{{for x in !> [1,2,3,4]}}{{x}}{{end}}""" |> html

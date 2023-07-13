@@ -45,7 +45,8 @@ assignment cells don't have a name).
 function eval_nb_cell(
             mdl::Module,
             code::String;
-            cell_name::String=""
+            cell_name::String="",
+            repl_mode::Bool=false
         )::EvalResult
 
     lock(env(:lock))
@@ -75,7 +76,7 @@ function eval_nb_cell(
             ... [$(hl("cell", :blue)): $(hl(cn, :light_green))] ✔ $(hl(time_fmt(δt)))
             """
     catch
-        err = _process_eval_error(; cell_name)
+        err = _process_eval_error(; cell_name, repl_mode)
     finally
         set_loglevel(loglevel)
         unlock(env(:lock))
@@ -93,7 +94,7 @@ function _attempt_eval(mdl::Module, code::String)
 end
 
 
-function _process_eval_error(; cell_name::String="")
+function _process_eval_error(; cell_name::String="", repl_mode::Bool=false)
     # also write to REPL so the user is doubly aware
     # if we're in 'strict_parsing' mode then this will throw
     # and interrupt the server
@@ -110,11 +111,13 @@ function _process_eval_error(; cell_name::String="")
     cname = ifelse(isvar, "", "('$cell_name')") 
     msg   = """
         <$head evaluation>
-        An error was caught when attempting to run code $cname
-        Details:
+        The error below was caught when attempting to run code $cname.
+
         $stacktrace
         """
-    env(:strict_parsing) && throw(msg)
-    @warn msg
+    if !repl_mode
+        env(:strict_parsing) && throw(msg)
+        @warn msg
+    end
     return stacktrace
 end

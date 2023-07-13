@@ -12,7 +12,8 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     X.set_paths!(lc.glob, pwd())
     X.setvar!(lc.glob, :ignore, Xranklin.StringOrRegex[r"abc/def.*/", r"foo*", "def", "/", r"\/", ""])
 
-    f2i, d2i = X.files_and_dirs_to_ignore(lc.glob)
+    X.files_and_dirs_to_ignore(lc.glob)
+    f2i, d2i = lc.glob.vars[:_files_and_dirs_to_ignore]
     for c in ("README.md", "def", r"foo*")
         @test c in f2i
     end
@@ -24,15 +25,15 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     @test all(!X._isempty, f2i)
     @test all(!X._isempty, d2i)
 
-    @test X.should_ignore(lc.glob, abspath("README.md"), f2i, d2i)
-    @test !X.should_ignore(lc.glob, abspath("index.md"), f2i, d2i)
-    @test X.should_ignore(lc.glob, abspath("node_modules/"), f2i, d2i)
-    @test X.should_ignore(lc.glob, abspath("abc/defghi/"), f2i, d2i)
-    @test X.should_ignore(lc.glob, abspath("foobar.md"), f2i, d2i)
-    @test X.should_ignore(lc.glob, abspath(".DS_Store"), f2i, d2i)
-    @test !X.should_ignore(lc.glob, abspath("DS_Store"), f2i, d2i)
-    @test !X.should_ignore(lc.glob, abspath("fff/index.md"), f2i, d2i)
-    @test X.should_ignore(lc.glob, abspath("fff/.DS_Store"), f2i, d2i)
+    @test X.should_ignore(lc.glob, abspath("README.md"))
+    @test !X.should_ignore(lc.glob, abspath("index.md"))
+    @test X.should_ignore(lc.glob, abspath("node_modules/"))
+    @test X.should_ignore(lc.glob, abspath("abc/defghi/"))
+    @test X.should_ignore(lc.glob, abspath("foobar.md"))
+    @test X.should_ignore(lc.glob, abspath(".DS_Store"))
+    @test !X.should_ignore(lc.glob, abspath("DS_Store"))
+    @test !X.should_ignore(lc.glob, abspath("fff/index.md"))
+    @test X.should_ignore(lc.glob, abspath("fff/.DS_Store"))
 end
 
 @testset "addnewfile" begin
@@ -67,7 +68,7 @@ end
     gc = X.DefaultGlobalContext()
     X.set_paths!(gc, d)
 
-    wf = X.find_files_to_watch(gc, d)
+    wf = X.find_files_to_watch(gc)
     @test (d/"d1" => "a.md")    in keys(wf[:md])
     @test (d/"d1" => "a.html")  in keys(wf[:html])
     @test (d/"d1" => "a.png")   in keys(wf[:other])
