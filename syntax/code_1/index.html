@@ -1325,7 +1325,7 @@ randstring(5)
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">randstring(5)</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">"an3hb"</code></pre></div></fieldset>
+<div class="code-output"><pre><code class="code-result language-plaintext">"pVxYx"</code></pre></div></fieldset>
 
 </div><div class="trim">
 
@@ -1515,7 +1515,7 @@ date
 abc
 
 shell&gt; date
-Thu Jul 13 10:03:09 UTC 2023
+Thu Jul 13 10:17:35 UTC 2023
 </code></pre>
 </fieldset>
 
@@ -1546,13 +1546,13 @@ rand(StableRNG(1))
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia-repl">(docs) pkg&gt; activate --temp
 ┌ Warning: The Pkg REPL mode is intended for interactive use only, and should not be used from scripts. It is recommended to use the functional API instead.
 └ @ Pkg.REPLMode /opt/hostedtoolcache/julia/1.9.2/x64/share/julia/stdlib/v1.9/Pkg/src/REPLMode/REPLMode.jl:382
-  Activating new project at `/tmp/jl_ztvbmt`
-(jl_ztvbmt) pkg&gt; add StableRNGs
+  Activating new project at `/tmp/jl_EEjoUD`
+(jl_EEjoUD) pkg&gt; add StableRNGs
 Resolving package versions...
    Installed StableRNGs ─ v1.0.0
-    Updating `/tmp/jl_ztvbmt/Project.toml`
+    Updating `/tmp/jl_EEjoUD/Project.toml`
   [860ef19b] + StableRNGs v1.0.0
-    Updating `/tmp/jl_ztvbmt/Manifest.toml`
+    Updating `/tmp/jl_EEjoUD/Manifest.toml`
   [860ef19b] + StableRNGs v1.0.0
   [2a0f44e3] + Base64
   [b77e0a4c] + InteractiveUtils
@@ -1565,8 +1565,8 @@ Resolving package versions...
 Precompiling project...
 [32m  ✓ [39mStableRNGs
   1 dependency successfully precompiled in 1 seconds
-(jl_ztvbmt) pkg&gt; st
-Status `/tmp/jl_ztvbmt/Project.toml`
+(jl_EEjoUD) pkg&gt; st
+Status `/tmp/jl_EEjoUD/Project.toml`
   [860ef19b] StableRNGs v1.0.0
 </code></pre>
 then<pre><code class="julia">using StableRNGs
@@ -1896,47 +1896,9 @@ using Luxor
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">using Luxor
 @drawsvg juliacircles()</code></pre>
-<div class="code-output"><pre><code class="code-stderr language-plaintext">ERROR: ArgumentError: Package Luxor not found in current path.
-- Run `import Pkg; Pkg.add("Luxor")` to install the Luxor package.
-Stacktrace:
-  [1] macro expansion
-    @ ./loading.jl:1630 [inlined]
-  [2] macro expansion
-    @ ./lock.jl:267 [inlined]
-  [3] require(into::Module, mod::Symbol)
-    @ Base ./loading.jl:1611
-  [4] eval
-    @ ./boot.jl:370 [inlined]
-  [5] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
-    @ Base ./loading.jl:1903
-  [6] include_string
-    @ ./loading.jl:1887 [inlined]
-  [7] #64
-    @ ~/.julia/packages/Xranklin/36Jln/src/context/code/eval.jl:91 [inlined]
-  [8] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#64#65"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
-    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:119
-  [9] with_logstate(f::Function, logstate::Any)
-    @ Base.CoreLogging ./logging.jl:514
- [10] with_logger
-    @ ./logging.jl:626 [inlined]
- [11] capture(f::Xranklin.var"#64#65"{Module, String}; rethrow::Type, color::Bool)
-    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:116
- [12] capture
-    @ ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:72 [inlined]
- [13] _attempt_eval
-    @ ~/.julia/packages/Xranklin/36Jln/src/context/code/eval.jl:90 [inlined]
- [14] eval_nb_cell(mdl::Module, code::String; cell_name::String, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/36Jln/src/context/code/eval.jl:73
- [15] eval_nb_cell
-    @ ~/.julia/packages/Xranklin/36Jln/src/context/code/eval.jl:45 [inlined]
- [16] _eval_code_cell(mdl::Module, code::String, cell_name::String, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/36Jln/src/context/code/notebook_code.jl:162
- [17] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/36Jln/src/context/code/notebook_code.jl:119
- [18] eval_code_cell!
-    @ ~/.julia/packages/Xranklin/36Jln/src/context/code/notebook_code.jl:21 [inlined]
- [19] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
-    @ Xranklin ~/.julia/packages/Xranklin/36Jln/src/convert/markdown/rules/code.jl:267</code></pre></div></fieldset>
+<div class="code-output"><pre class="fig-stdout"><code class="code-stdout language-plaintext">[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mSnoopPrecompile is analyzing Luxor.jl code...
+</code></pre><img class="code-figure" src="/Xranklin.jl/assets/syntax/code_1/figs-html/__autofig_10012904553771893789.svg">
+</div></fieldset>
 
 </div><p>If you inspect the HTML, you will see that the image displayed corresponds to a generated path that looks like</p>
 <pre><code class="plaintext">/assets/syntax/code/figs-html/__autofig_10012904553771893789.svg</code></pre>
@@ -1958,47 +1920,8 @@ x = range(0, pi, length=350)
 z = 0.2 * randn(length(x))
 y = @. sin(exp(x)) * sinc(x) + z
 plot(x, y)</code></pre>
-<div class="code-output"><pre><code class="code-stderr language-plaintext">ERROR: ArgumentError: Package Gaston not found in current path.
-- Run `import Pkg; Pkg.add("Gaston")` to install the Gaston package.
-Stacktrace:
-  [1] macro expansion
-    @ ./loading.jl:1630 [inlined]
-  [2] macro expansion
-    @ ./lock.jl:267 [inlined]
-  [3] require(into::Module, mod::Symbol)
-    @ Base ./loading.jl:1611
-  [4] eval
-    @ ./boot.jl:370 [inlined]
-  [5] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
-    @ Base ./loading.jl:1903
-  [6] include_string
-    @ ./loading.jl:1887 [inlined]
-  [7] #64
-    @ ~/.julia/packages/Xranklin/36Jln/src/context/code/eval.jl:91 [inlined]
-  [8] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#64#65"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
-    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:119
-  [9] with_logstate(f::Function, logstate::Any)
-    @ Base.CoreLogging ./logging.jl:514
- [10] with_logger
-    @ ./logging.jl:626 [inlined]
- [11] capture(f::Xranklin.var"#64#65"{Module, String}; rethrow::Type, color::Bool)
-    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:116
- [12] capture
-    @ ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:72 [inlined]
- [13] _attempt_eval
-    @ ~/.julia/packages/Xranklin/36Jln/src/context/code/eval.jl:90 [inlined]
- [14] eval_nb_cell(mdl::Module, code::String; cell_name::String, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/36Jln/src/context/code/eval.jl:73
- [15] eval_nb_cell
-    @ ~/.julia/packages/Xranklin/36Jln/src/context/code/eval.jl:45 [inlined]
- [16] _eval_code_cell(mdl::Module, code::String, cell_name::String, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/36Jln/src/context/code/notebook_code.jl:162
- [17] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/36Jln/src/context/code/notebook_code.jl:119
- [18] eval_code_cell!
-    @ ~/.julia/packages/Xranklin/36Jln/src/context/code/notebook_code.jl:21 [inlined]
- [19] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
-    @ Xranklin ~/.julia/packages/Xranklin/36Jln/src/convert/markdown/rules/code.jl:267</code></pre></div><fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/assets/syntax/code_1/figs-html/__autofig_11451626263744098032.svg">
+</div><fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
 
 In order to show properly, the last object needs to be showable. With some
 libraries such as PyPlot this requires an additional command to retrieve the
@@ -2015,47 +1938,7 @@ df = DataFrame(
     gender = [&quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;]
   )
 )</code></pre>
-<div class="code-output"><pre><code class="code-stderr language-plaintext">ERROR: ArgumentError: Package DataFrames not found in current path.
-- Run `import Pkg; Pkg.add("DataFrames")` to install the DataFrames package.
-Stacktrace:
-  [1] macro expansion
-    @ ./loading.jl:1630 [inlined]
-  [2] macro expansion
-    @ ./lock.jl:267 [inlined]
-  [3] require(into::Module, mod::Symbol)
-    @ Base ./loading.jl:1611
-  [4] eval
-    @ ./boot.jl:370 [inlined]
-  [5] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
-    @ Base ./loading.jl:1903
-  [6] include_string
-    @ ./loading.jl:1887 [inlined]
-  [7] #64
-    @ ~/.julia/packages/Xranklin/36Jln/src/context/code/eval.jl:91 [inlined]
-  [8] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#64#65"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
-    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:119
-  [9] with_logstate(f::Function, logstate::Any)
-    @ Base.CoreLogging ./logging.jl:514
- [10] with_logger
-    @ ./logging.jl:626 [inlined]
- [11] capture(f::Xranklin.var"#64#65"{Module, String}; rethrow::Type, color::Bool)
-    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:116
- [12] capture
-    @ ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:72 [inlined]
- [13] _attempt_eval
-    @ ~/.julia/packages/Xranklin/36Jln/src/context/code/eval.jl:90 [inlined]
- [14] eval_nb_cell(mdl::Module, code::String; cell_name::String, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/36Jln/src/context/code/eval.jl:73
- [15] eval_nb_cell
-    @ ~/.julia/packages/Xranklin/36Jln/src/context/code/eval.jl:45 [inlined]
- [16] _eval_code_cell(mdl::Module, code::String, cell_name::String, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/36Jln/src/context/code/notebook_code.jl:162
- [17] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/36Jln/src/context/code/notebook_code.jl:119
- [18] eval_code_cell!
-    @ ~/.julia/packages/Xranklin/36Jln/src/context/code/notebook_code.jl:21 [inlined]
- [19] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
-    @ Xranklin ~/.julia/packages/Xranklin/36Jln/src/convert/markdown/rules/code.jl:267</code></pre></div><div class="lskip"> </div><h3 id="custom_show" ><a href="#custom_show"> Custom show</a></h3><p>If you have defined a custom <code>html_show(r)</code> in your <code>Utils</code> that accepts an object of the type
+<div class="code-output"><div><div style = "float: left;"><span>4×3 DataFrame</span></div><div style = "clear: both;"></div></div><div class = "data-frame" style = "overflow-x: scroll;"><table class = "data-frame" style = "margin-bottom: 6px;"><thead><tr class = "header"><th class = "rowNumber" style = "font-weight: bold; text-align: right;">Row</th><th style = "text-align: left;">names</th><th style = "text-align: left;">age</th><th style = "text-align: left;">gender</th></tr><tr class = "subheader headerLastRow"><th class = "rowNumber" style = "font-weight: bold; text-align: right;"></th><th title = "String" style = "text-align: left;">String</th><th title = "Int64" style = "text-align: left;">Int64</th><th title = "String" style = "text-align: left;">String</th></tr></thead><tbody><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">1</td><td style = "text-align: left;">Vlad</td><td style = "text-align: right;">50</td><td style = "text-align: left;">M</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">2</td><td style = "text-align: left;">Martha</td><td style = "text-align: right;">34</td><td style = "text-align: left;">F</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">3</td><td style = "text-align: left;">Hasan</td><td style = "text-align: right;">23</td><td style = "text-align: left;">M</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">4</td><td style = "text-align: left;">Carl</td><td style = "text-align: right;">42</td><td style = "text-align: left;">M</td></tr></tbody></table></div></div><div class="lskip"> </div><h3 id="custom_show" ><a href="#custom_show"> Custom show</a></h3><p>If you have defined a custom <code>html_show(r)</code> in your <code>Utils</code> that accepts an object of the type
 of the result of a code block and returns a string, then that will be used to represent the
 result on the page.</p>
 <p>For instance in the <code>utils.jl</code> for the present website, we've defined</p>
@@ -2192,47 +2075,7 @@ build_dir  = Utils.path(:site)
 target_dir = mkpath(joinpath(build_dir, &quot;assets&quot;, &quot;data&quot;))
 df = DataFrame(A=1:4, B=[&quot;M&quot;, &quot;F&quot;, &quot;F&quot;, &quot;M&quot;])
 CSV.write(joinpath(target_dir, &quot;data1.csv&quot;), df);</code></pre>
-<div class="code-output"><pre><code class="code-stderr language-plaintext">ERROR: ArgumentError: Package DataFrames not found in current path.
-- Run `import Pkg; Pkg.add("DataFrames")` to install the DataFrames package.
-Stacktrace:
-  [1] macro expansion
-    @ ./loading.jl:1630 [inlined]
-  [2] macro expansion
-    @ ./lock.jl:267 [inlined]
-  [3] require(into::Module, mod::Symbol)
-    @ Base ./loading.jl:1611
-  [4] eval
-    @ ./boot.jl:370 [inlined]
-  [5] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
-    @ Base ./loading.jl:1903
-  [6] include_string
-    @ ./loading.jl:1887 [inlined]
-  [7] #64
-    @ ~/.julia/packages/Xranklin/36Jln/src/context/code/eval.jl:91 [inlined]
-  [8] (::IOCapture.var"#3#5"{DataType, Xranklin.var"#64#65"{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
-    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:119
-  [9] with_logstate(f::Function, logstate::Any)
-    @ Base.CoreLogging ./logging.jl:514
- [10] with_logger
-    @ ./logging.jl:626 [inlined]
- [11] capture(f::Xranklin.var"#64#65"{Module, String}; rethrow::Type, color::Bool)
-    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:116
- [12] capture
-    @ ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:72 [inlined]
- [13] _attempt_eval
-    @ ~/.julia/packages/Xranklin/36Jln/src/context/code/eval.jl:90 [inlined]
- [14] eval_nb_cell(mdl::Module, code::String; cell_name::String, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/36Jln/src/context/code/eval.jl:73
- [15] eval_nb_cell
-    @ ~/.julia/packages/Xranklin/36Jln/src/context/code/eval.jl:45 [inlined]
- [16] _eval_code_cell(mdl::Module, code::String, cell_name::String, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/36Jln/src/context/code/notebook_code.jl:162
- [17] eval_code_cell!(ctx::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/36Jln/src/context/code/notebook_code.jl:119
- [18] eval_code_cell!
-    @ ~/.julia/packages/Xranklin/36Jln/src/context/code/notebook_code.jl:21 [inlined]
- [19] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
-    @ Xranklin ~/.julia/packages/Xranklin/36Jln/src/convert/markdown/rules/code.jl:267</code></pre></div><p>this outputs nothing but it does save <code>data1.csv</code> in the build folder at location
+<p>this outputs nothing but it does save <code>data1.csv</code> in the build folder at location
 <code>/assets/data/</code> so that you could then link to it explicitly:</p>
 <div class="trim">
 
