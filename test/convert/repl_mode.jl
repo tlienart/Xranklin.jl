@@ -81,7 +81,8 @@ end
 
     for q in (
             "($(splitpath(cur_proj)[end-1])) pkg&gt; activate --temp",
-            "pkg&gt; add Colors\nResolving package versions...",
+            "pkg&gt; add Colors",
+            "Resolving package versions...",
             """<pre><code class=\"julia\">using Colors\ncolorant&quot;red&quot;</code></pre>""",
             """<div class=\"code-output\"><img class=\"code-figure\""""
         )
