@@ -99,7 +99,7 @@ end
 
     for q in (
         """<pre><code class="julia-repl">help?&gt; im""",
-        """<div class=\"julia-repl repl-help\">\n<pre><code>im</code></pre>""",
+        """<div class=\"repl-help\">\n<pre><code>im</code></pre>""",
         )
         @test occursin(q, s)
     end

@@ -463,11 +463,11 @@ function _eval_repl_code(
             # is similar to the REPL, for instance so that we don't have
             # to fiddle with footnotes which are processed differently.
             println(io, "</code></pre>")
-            println(io, "<div class=\"julia-repl repl-help\">")
+            println(io, "<div class=\"repl-help\">")
             println(io, strip(replace(
                 Markdown.html(r),
                 r"<a href=\"@ref\">(.*?)</a>" => s"\1",
-                "class=\"jldoctest\"" => "class=\"julia-repl\"",
+                "class=\"language-jldoctest\"" => "class=\"language-julia-repl\"",
                 r"(?:\&\#36\;)+((.|\n)*?)(?:\&\#36\;)+" => s"\\(\1\\)"
             )))
             println(io, "</div>")
