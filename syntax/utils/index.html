@@ -1211,6 +1211,89 @@ This allows you to essentially have arbitrary logic executed at page-build time.
 <li><code>hfun*</code> functions will be resolved on <strong>second pass</strong>, as such they have access to the full page context, and are expected to produce "final" HTML.</li>
 </ul>
 <p>In many cases, the differences are irrelevant, and users can use whichever they prefer.</p>
+<h3 id="custom_hfuns" ><a href="#custom_hfuns"> Custom hfuns</a></h3><p>The signature of a valid "hfun" is:</p>
+<pre><code class="julia">function hfun_fname(p::Vector&lbrace;String&rbrace;)::String
+    # logic
+    return &quot;...&quot;
+end</code></pre>
+<p>Of course you don't <em>have</em> to add the explicit typing, but we added it here to
+indicate that these functions map a vector of strings (arguments) to a string
+output to be inserted.</p>
+<p>Once such a function is defined, it can be called on any page (including layout
+pages) with <code>&lbrace;&lbrace;fname ...&rbrace;&rbrace;</code>.</p>
+<p>Here are three simple examples:</p>
+<pre><code class="julia">function hfun_ex_hfun_1()
+    return &quot;&lt;span style=\&quot;color:red; font-weight: 500;\&quot;&gt;Hello!&lt;/span&gt;&quot;
+end
+
+function hfun_ex_hfun_2(p)
+    return &quot;&lt;span style=\&quot;color:red; font-weight: 500;\&quot;&gt;$(strip(p[1], '\&quot;'))&lt;/span&gt;&quot;
+end
+
+function hfun_ex_hfun_args(p)
+    io = IOBuffer()
+    for (i, p_i) in p
+        println(io, &quot;* argument $i: \&quot;$(p_i)\&quot;&quot;)
+    end
+    return html(String(take!(io)))
+end</code></pre>
+<p>The first one (<code>hfun_ex_hfun_1</code>) doesn't have arguments and just prints a coloured span:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">Called like: &lbrace;&lbrace; ex_hfun_1 &rbrace;&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Called like: <span style="color:red; font-weight: 500;">Hello!</span></fieldset>
+
+</div><p>The second one (<code>hfun_ex_hfun_2</code>) assumes there's one argument and prints it:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">Called like: &lbrace;&lbrace; ex_hfun_2 &quot;Hello World!&quot;&rbrace;&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Called like: <span style="color:red; font-weight: 500;">Hello World!</span></fieldset>
+
+</div><fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+
+You might want to add logic in these <code>hfun</code> to check that the input arguments match some constraints. This may not be very useful if you're the only one defining and using these functions, but it might become so if you start collaborating on the website with others.
+
+</fieldset><p>The last one (<code>hfun_ex_hfun_args</code>) is meant to illustrate how the argument splitting works:</p>
+<div class="trim">
+
+<fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">Hopefully this is intuitive: &lbrace;&lbrace;ex_hfun_args abc &quot;def ghi&quot; 123&rbrace;&rbrace;</code></pre>
+</fieldset>
+
+</div>
+
+
+
+<div class="trim">
+
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend>Hopefully this is intuitive: <ul>
+<li>argument 1: <strong>abc</strong></li>
+<li>argument 2: <strong>"def ghi"</strong></li>
+<li>argument 3: <strong>123</strong></li>
+</ul>
+</fieldset>
+
+</div><p>At this point you probably already have the intution for the argument splitting: the arguments
+are assumed to be separated by one or more spaces unless they are grouped with quotes.
+Any quotes are passed to the function and, depending on your use case, you may want to strip them
+with <code>strip(p[k], '\&quot;')</code> as we did in <code>hfun_ex_hfun_2</code>.</p>
+<p>When defining a "hfun", you can interact with the state of the website through a few
+functions that are available in the Utils module, see <a href="#utils_tools">Utils tools</a>.</p>
 <h3 id="custom_lxfuns" ><a href="#custom_lxfuns"> Custom lxfuns</a></h3><p>The signature of a valid "lxfun" is</p>
 <pre><code class="julia">function lx_fname(p::Vector&lbrace;String&rbrace;)::String
     # logic
@@ -1230,14 +1313,15 @@ end</code></pre>
     return &quot;&lt;s&gt;hello&lt;/s&gt;&quot;
 end</code></pre>
 <p>and if we call <code>\exlx2</code> we get: <s>hello</s>.</p>
-<p>As indicated earlier, the output of an lxfun gets process<em>file</em>from_triggered at the second pass, so
+<p>As indicated earlier, the output of an lxfun gets <code>process_file_from_triggered</code> at the second pass, so
 for instance:</p>
 <pre><code class="julia">function lx_exlx3()
     # fill the local variable header
     return &quot;&lt;span style='color:blue'&gt;&lbrace;&lbrace;header&rbrace;&rbrace;&lt;/span&gt;&quot;
 end</code></pre>
 <p>and if we call <code>\exlx3</code> we get: <span style='color:blue'>hello from a global variable!</span>.</p>
-<h3 id="custom_envfuns" ><a href="#custom_envfuns"> Custom envfuns</a></h3><h3 id="custom_hfuns" ><a href="#custom_hfuns"> Custom hfuns</a></h3><h2 id="utils_tools" ><a href="#utils_tools"> Utils tools</a></h2><p>When defining any function in utils, you can make use of a set of useful functions available by default:</p>
+<h3 id="custom_envfuns" ><a href="#custom_envfuns"> Custom envfuns</a></h3><h2 id="utils_tools" ><a href="#utils_tools"> Utils tools</a></h2><p>When defining any function in utils, you can make use of a set of useful functions available by default,
+and which allow you to interact with the state of the website generation process.</p>
 <table class="pure-table-striped">
 <thead>
 <th style="text-align:left;"> function </th>
@@ -1251,6 +1335,12 @@ end</code></pre>
 <td style="text-align:left;"> convert a markdown string <code>s</code> (optionally specifying the <code>LocalContext</code> object in which this should happen) </td>
 </tr>
 <tr>
+<td style="text-align:left;"> <code>html2(s)</code>, 
+<br>
+<code>html2(s, lc)</code> </td>
+<td style="text-align:left;"> convert an intermediate HTML string (essentially: finds and processes <code>&lbrace;&lbrace;...&rbrace;&rbrace;</code>) </td>
+</tr>
+<tr>
 <td style="text-align:left;"> <code>cur_gc()</code> </td>
 <td style="text-align:left;"> return the current <code>GlobalContext</code> object </td>
 </tr>
@@ -1260,7 +1350,7 @@ end</code></pre>
 </tr>
 <tr>
 <td style="text-align:left;"> <code>path(s)</code> </td>
-<td style="text-align:left;"> return the path associated with symbol <code>s</code> for instance <code>path(:folder)</code> will return the path to the website folder, <code>path(:site)</code> the path to the output folder. </td>
+<td style="text-align:left;"> return the absolute path associated with symbol <code>s</code> for instance <code>path(:folder)</code> will return the path to the website folder, <code>path(:site)</code> the path to the output folder. </td>
 </tr>
 <tr>
 <td style="text-align:left;"> <code>getlvar(s)</code> </td>
@@ -1291,11 +1381,17 @@ end</code></pre>
 <td style="text-align:left;"> get the dictionary of all tags on all pages </td>
 </tr>
 <tr>
-<td style="text-align:left;"> <code>get_rpath</code> </td>
+<td style="text-align:left;"> <code>get_rpath()</code> </td>
 <td style="text-align:left;"> get the relative path to the current page </td>
+</tr>
+<tr>
+<td style="text-align:left;"> <code>attach(rp)</code> </td>
+<td style="text-align:left;"> attach a file at <code>rp</code> to the current page (see <a href="#attaching_a_file">below</a>) </td>
 </tr>
 </tbody>
 </table>
+<h3 id="attaching_a_file" ><a href="#attaching_a_file"> Attaching a file</a></h3><p>The <code>attach</code> tool is necessary to indicate that a page <strong>depends</strong> on another file (e.g. a script, data, ...) which, if changed, should trigger a re-build of the page.</p>
+<p>To give a concrete example: this is used for the built-in handling of Literate files. If a page depends on a Literate file, then any change on that Literate file should trigger a re-build of that page.</p>
 
 
             
@@ -1362,7 +1458,7 @@ end</code></pre>
         <div id="marginToc">
             
               <div id="marginTocLegend"><a href="#">Contents</a></div>
-              <div class="toc"><ol><li><a href="#overview">Overview</a><ol><li><a href="#definining_objects_and_functions_in_the_utils_module">Definining objects and functions in the <code>Utils</code> module</a></li><li><a href="#custom_show_method">Custom show method</a></li></ol></li><li><a href="#custom_functions">Custom functions</a><ol><li><a href="#custom_lxfuns">Custom lxfuns</a></li><li><a href="#custom_envfuns">Custom envfuns</a></li><li><a href="#custom_hfuns">Custom hfuns</a></li></ol></li><li><a href="#utils_tools">Utils tools</a></li></ol></div>
+              <div class="toc"><ol><li><a href="#overview">Overview</a><ol><li><a href="#definining_objects_and_functions_in_the_utils_module">Definining objects and functions in the <code>Utils</code> module</a></li><li><a href="#custom_show_method">Custom show method</a></li></ol></li><li><a href="#custom_functions">Custom functions</a><ol><li><a href="#custom_hfuns">Custom hfuns</a></li><li><a href="#custom_lxfuns">Custom lxfuns</a></li><li><a href="#custom_envfuns">Custom envfuns</a></li></ol></li><li><a href="#utils_tools">Utils tools</a><ol><li><a href="#attaching_a_file">Attaching a file</a></li></ol></li></ol></div>
             
         </div>
     </div>

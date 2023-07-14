@@ -1681,6 +1681,8 @@ to see the footnotes.</p>
 <p>The list of footnotes will be placed wherever you put a <code>&lbrace;&lbrace;footnotes&rbrace;&rbrace;</code>.
 Typically (like here), this is part of the layout in <code>_layout/foot.html</code>,
 but you could choose to place it manually.</p>
+<p>You can also use <code>&lbrace;&lbrace;footnotes 1 2 &quot;note abc&quot;&rbrace;&rbrace;</code> to list only a few notes in a
+given spot.</p>
 <h2 id="div_blocks" ><a href="#div_blocks"> Div blocks</a></h2><p>It can sometimes be nice to use a specific CSS styling for a part of a page.
 For instance you might want to have some text that's in a different font, or a different colour,
 or that is centred.
@@ -1908,7 +1910,7 @@ For those,  use <code>??? ... ???</code>:</p>
 
 </div>
 
-            <div id="fn-defs">
+            <div class="fn-defs">
 <a id="fn-defs"></a>
 <div class="fn-title">Notes</div>
 <ol><li>
