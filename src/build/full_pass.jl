@@ -122,8 +122,10 @@ function full_pass(
             setvar!(gc, :project, Pkg.project().path)
         end
 
-        utils_changed  && process_utils(gc)
-        config_changed && process_config(gc)
+        # always re-process config
+        process_config(gc)
+        # maybe re-process utils
+        utils_changed && process_utils(gc)
 
         # reinstate independent code from backup
         for rp in keys(bk_indep_code)

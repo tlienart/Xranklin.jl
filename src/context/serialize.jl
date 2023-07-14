@@ -35,6 +35,12 @@ is_easily_serializable(x::AA) where AA <: AbstractArray{Any} =
 is_easily_serializable(x::AD) where AD <: AbstractDict{K, Any} where {K} =
     all(is_easily_serializable, (K, AD, values(x)...))
 
+# Special case for LittleDict given that order-aware refs should be in LD
+is_easily_serializable(::LD) where LD <: LittleDict{K, V} where {K, V} =
+    all(is_easily_serializable, (K, V))
+is_easily_serializable(x::LD) where LD <: LittleDict{K, Any} where {K} = 
+    all(is_easily_serializable, (K, values(x)...))
+
 # other objects are not serialisable
 is_easily_serializable(::Function) = false
 is_easily_serializable(::Module)   = false

@@ -19,7 +19,6 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
 
     # X.yprint("\n\n" * "="^50 * "\n\n")
     serve(FOLDER, single=true)
-
     @test output_contains(FOLDER, "abc", "0/555")
     @test read(FOLDER / "counter", Int) == 1
 
@@ -30,8 +29,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         +++
         # Hello, abc
         """)
-    # X.yprint("\n\n" * "="^50 * "\n\n")
-    serve(FOLDER, single=true)
+    serve(FOLDER, debug=true, single=true)
 
     @test output_contains(FOLDER, "abc", "0/555")
     @test read(FOLDER / "counter", Int) == 1

@@ -54,6 +54,7 @@ end
     p = "convert"/"hfuns"
     include(p/"evalstr.jl")
     include(p/"henv.jl")
+    include(p/"hyperrefs.jl")
     include(p/"integrated.jl") # see indirs further
     include(p/"misc.jl")
 end
