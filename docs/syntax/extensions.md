@@ -295,6 +295,9 @@ The list of footnotes will be placed wherever you put a `{{footnotes}}`.
 Typically (like here), this is part of the layout in `_layout/foot.html`,
 but you could choose to place it manually.
 
+You can also use `{{footnotes 1 2 "note abc"}}` to list only a few notes in a
+given spot.
+
 
 ## Div blocks
 
