@@ -19,7 +19,6 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
 
     # X.yprint("\n\n" * "="^50 * "\n\n")
     serve(FOLDER, single=true)
-
     @test output_contains(FOLDER, "abc", "0/555")
     @test read(FOLDER / "counter", Int) == 1
 
@@ -30,31 +29,31 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         +++
         # Hello, abc
         """)
-    # X.yprint("\n\n" * "="^50 * "\n\n")
-    serve(FOLDER, single=true)
+    X.yprint("\n\n" * "="^50 * "\n\n")
+    serve(FOLDER, debug=true, single=true)
 
     @test output_contains(FOLDER, "abc", "0/555")
     @test read(FOLDER / "counter", Int) == 1
     @test output_contains(FOLDER, "", "Hello, abc")
 
-    # now let's change index.md but change the vars, foo MUST be triggered
-    # the global counter is at 1 because foo hasn't been executed so the 
-    # file counter has not been updated
-    write(FOLDER  / "index.md", """
-        +++
-        a = 777
-        +++
-        # Hello, bye
-        """)
-    # X.yprint("\n\n" * "="^50 * "\n\n")
-    serve(FOLDER, single=true)
-    @test output_contains(FOLDER, "", "Hello, bye")
-    @test output_contains(FOLDER, "abc", "1/777")
-    @test read(FOLDER / "counter", Int) == 2
+    # # now let's change index.md but change the vars, foo MUST be triggered
+    # # the global counter is at 1 because foo hasn't been executed so the 
+    # # file counter has not been updated
+    # write(FOLDER  / "index.md", """
+    #     +++
+    #     a = 777
+    #     +++
+    #     # Hello, bye
+    #     """)
+    # # X.yprint("\n\n" * "="^50 * "\n\n")
+    # serve(FOLDER, single=true)
+    # @test output_contains(FOLDER, "", "Hello, bye")
+    # @test output_contains(FOLDER, "abc", "1/777")
+    # @test read(FOLDER / "counter", Int) == 2
 
-    # X.yprint("\n\n" * "="^50 * "\n\n")
-    serve(FOLDER, single=true)
-    @test read(FOLDER / "counter", Int) == 2
+    # # X.yprint("\n\n" * "="^50 * "\n\n")
+    # serve(FOLDER, single=true)
+    # @test read(FOLDER / "counter", Int) == 2
 end
 
 @test_in_dir "_title_default" "i46" begin

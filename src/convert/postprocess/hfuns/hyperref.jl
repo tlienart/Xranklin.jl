@@ -201,17 +201,28 @@ end
     {{footnotes}}
 """
 function hfun_footnotes(
-            lc::LocalContext;
+            lc::LocalContext,
+            p::VS = String[];
             tohtml=true
         )::String
     tohtml || return ""
 
     refs  = refrefs(lc)
     fns   = [k for k in keys(refs) if first(k) == '^']
+
+    # only show a subset of the footnotes if required
+    if !isempty(p)
+        p_ids = [string_to_anchor(strip(p_i, '\"')) for p_i in p]
+        filter!(
+            fn -> chop(fn, head=1, tail=0) in p_ids,
+            fns
+        )
+    end
+    
     fn_io = IOBuffer()
     if !isempty(fns)
         write(fn_io, """
-            <div id=\"fn-defs\">
+            <div class=\"fn-defs\">
             """)
         write(fn_io, """
               <a id="fn-defs"></a>

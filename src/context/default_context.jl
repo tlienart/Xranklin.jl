@@ -93,8 +93,8 @@ const DefaultGlobalVars = Vars(
     :_utils_envfun_names => Symbol[],
     :_utils_var_names    => Symbol[],
     # Hyperrefs
-    :_refrefs => Dict{String, String}(),  # id => location
-    :_bibrefs => Dict{String, String}(),  # id => location
+    :_refrefs => LittleDict{String, String}(),  # id => location (ordering may matter!)
+    :_bibrefs => LittleDict{String, String}(),  # id => location (ordering may matter!)
     # Is it the final build (prepath application)
     :_final => false,
 )
@@ -162,10 +162,10 @@ const DefaultLocalVars = Vars(
     # set of anchor ids defined on the page (used to check removals)
     :_anchors => Set{String}(),
     # references (note: headings are part of context, see ctx.headings)
-    :_refrefs => Dict{String, String}(),
-    :_fnrefs  => Dict{String, Int}("__cntr__" => 0),
-    :_eqrefs  => Dict{String, Int}("__cntr__" => 0),
-    :_bibrefs => Dict{String, String}(),
+    :_refrefs => LittleDict{String, String}(),
+    :_fnrefs  => LittleDict{String, Int}("__cntr__" => 0),
+    :_eqrefs  => LittleDict{String, Int}("__cntr__" => 0),
+    :_bibrefs => LittleDict{String, String}(),
     # cell counter
     :_auto_cell_counter => 0,
     # pagination
@@ -233,7 +233,7 @@ ToyLocalContext(rpath="_toy_") = LocalContext(GlobalContext(); rpath)
 # in place operations, we don't want a copy! and they're guaranteed to exist if
 # LocalContext comes from DefaultLocalContext.
 
-eqrefs(c::LocalContext)  = c.vars[:_eqrefs]::Dict{String, Int}
-bibrefs(c::LocalContext) = c.vars[:_bibrefs]::Dict{String, String}
-fnrefs(c::LocalContext)  = c.vars[:_fnrefs]::Dict{String, Int}
-refrefs(c::Context)      = c.vars[:_refrefs]::Dict{String,String}
+eqrefs(c::LocalContext)  = c.vars[:_eqrefs]::LittleDict{String, Int}
+bibrefs(c::LocalContext) = c.vars[:_bibrefs]::LittleDict{String, String}
+fnrefs(c::LocalContext)  = c.vars[:_fnrefs]::LittleDict{String, Int}
+refrefs(c::Context)      = c.vars[:_refrefs]::LittleDict{String,String}

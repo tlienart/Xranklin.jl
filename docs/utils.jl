@@ -142,6 +142,27 @@ end
 # end
 
 
+function hfun_ex_hfun_1()
+    return "<span style=\"color:red; font-weight: 500;\">Hello!</span>"
+end
+
+function hfun_ex_hfun_2(p)
+    return "<span style=\"color:red; font-weight: 500;\">$(strip(p[1], '\"'))</span>"
+end
+
+function hfun_ex_hfun_args(p)
+    io = IOBuffer()
+    for (i, p_i) in enumerate(p)
+        println(io, "* argument $i: **$(p_i)**")
+    end
+    return html(String(take!(io)))
+end
+
+function hfun_ex_hfun_3(p)
+    v = getlvar(Symbol(p[1]), default=p[1])
+    return "<strong>$v</strong>"
+end
+
 # =============================================================================
 # =============================================================================
 # =============================================================================
