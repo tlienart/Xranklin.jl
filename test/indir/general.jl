@@ -29,7 +29,6 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         +++
         # Hello, abc
         """)
-    X.yprint("\n\n" * "="^50 * "\n\n")
     serve(FOLDER, debug=true, single=true)
 
     @test output_contains(FOLDER, "abc", "0/555")
