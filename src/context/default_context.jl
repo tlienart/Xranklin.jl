@@ -188,6 +188,7 @@ const DefaultLocalVarsAlias = Alias(
     :fd_ctime        => :_creation_time,
     :fd_mtime        => :_modification_time,
     :reeval          => :ignore_cache,
+    :force_eval_all  => :ignore_cache,
     :hasmath         => :_hasmath,
     :hascode         => :_hascode,
     :rss_description => :rss_descr,

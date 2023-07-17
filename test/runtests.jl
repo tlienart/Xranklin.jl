@@ -132,6 +132,7 @@ end
     include(p/"hfuns.jl")
     include(p/"rss.jl")
     include(p/"sitemap-robots.jl")
+    include(p/"eval_order.jl")
 end 
 
 end

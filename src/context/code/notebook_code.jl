@@ -40,13 +40,15 @@ function eval_code_cell!(
     cell_code  = string(cell_code)
     cell_hash  = hash(cell_code) |> string
 
+    ignore_cache = getvar(ctx, :ignore_cache, false)
+
     # if the cell_index is within the range of cell indexes, we replace the
     # name with the current cell name to guarantee we're using the latest name.
     if cell_index <= length(nb.code_names)
         nb.code_names[cell_index] = cell_name
         # skip cell if previously seen and unchanged
-        if isunchanged(nb, cell_index, cell_code) && !force
-            @info "  ⏩  skipping cell $cell_name (unchanged)"
+        if !(ignore_cache | force) && isunchanged(nb, cell_index, cell_code)
+            @info "  ⏩  skipping cell $(hl(cell_name, :yellow)) (unchanged)"
             increment!(nb)
             return
         end
@@ -58,7 +60,7 @@ function eval_code_cell!(
     # happen to already have a mapping for it
     if indep
         if cell_code in keys(nb.indep_code)
-            @info "  ⏩  skipping cell $cell_name (independent 🌴)"
+            @info "  ⏩  skipping cell $(hl(cell_name, :yellow)) (independent 🌴)"
             code_pair = CodeCodePair((cell_code, nb.indep_code[cell_code]))
             return finish_cell_eval!(nb, code_pair, indep)
         end
@@ -80,7 +82,7 @@ function eval_code_cell!(
         # keep track of vars assignments or whatever as they
         # can't have changed
         for tmp_idx = 1:cell_index-1
-            @info "  💦  refreshing cell $(nb.code_names[tmp_idx])..."
+            @info "  💦  refreshing cell $(hl(nb.code_names[tmp_idx], :yellow))..."
             _eval_code_cell(
                 nb.mdl,
                 nb.code_pairs[tmp_idx].code,

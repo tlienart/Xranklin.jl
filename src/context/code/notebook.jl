@@ -7,7 +7,7 @@ increment!(nb::Notebook)     = (nb.cntr_ref[] += 1)
 reset_counter!(nb::Notebook) = (nb.cntr_ref[] = 1)
 
 """
-    reset_code_notebook!(nb)
+    reset_notebook!(nb)
 
 Clear code notebooks so that it can be re-evaluated from scratch in case the
 page variable `ignore_cache` is used for instance.
