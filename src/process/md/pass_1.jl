@@ -138,8 +138,8 @@ function reset_page_context!(
     setvar!(lc, :_hasmath, false)
     setvar!(lc, :_hascode, false)
 
-    # in the context of "ignore_cache", reset the notebook
-    reset_notebook && reset_code_notebook!(lc)
+    # in the context of "ignore_cache", reset both notebooks
+    reset_notebook && reset_both_notebooks!(lc)
 
     return state
 end
