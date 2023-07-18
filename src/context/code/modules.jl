@@ -116,7 +116,7 @@ associated with the page to which the notebooks are attached.
 """
 const UTILS_UTILS = [
     # from module
-    "cur_gc", "html", "latex", "html2",
+    "cur_gc", "html", "latex", "html2", "@lx_str",
     # others
     "__gc", "__lc", "attach",
     "cur_lc", "path", "folderpath", "sitepath",
@@ -179,6 +179,14 @@ modules_setup(c::Context) = begin
             path(s::Symbol)  = $F.path(__gc, s)
             folderpath(p...) = joinpath(path(:folder), p...)
             sitepath(p...)   = joinpath(path(:site), p...)
+
+            macro lx_str(s)
+                esc(
+                    quote
+                        html(\$s, cur_gc())
+                    end
+                )
+            end
 
             getlvar(n::Symbol, d=nothing; default=d) =
                 $F.getvar(__lc, __lc, n, default)

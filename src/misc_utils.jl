@@ -235,7 +235,7 @@ is_codestr_equal(s1, s2) = is_code_equal(Meta.parseall.((s1, s2))...)
     _trim(e)
 
 Internal function to trim the args of an Expr to discard toplevel docstring
-lines and line number node lines.
+lines and line number node lines. Used in `is_code_equal`.
 """
 function _trim(e::Expr)
     if e.head != :toplevel

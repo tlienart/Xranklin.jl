@@ -114,7 +114,7 @@ function build_loop(
                 full_pass(gc, watched_files; skip_files)
 
             # config changed
-            elseif fpath == path(gc, :folder) / "config.md"
+            elseif fpath == getvar(gc, :config_path, "")
                 msg *= " → triggering full pass [config changed]"; @info msg
                 full_pass(gc, watched_files; config_changed=true)
 

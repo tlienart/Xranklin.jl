@@ -21,7 +21,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     write(FOLDER/"index.md", txt)
 
     task = @async serve(FOLDER, launch=false)
-    sleep(2)
+    sleep(1)
 
     for e in ("A 5", "B 10", "C 7")
         @test output_contains(FOLDER, "", e)
@@ -34,7 +34,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     # is used (see #227)
     txt = replace(txt, "b = a + 5" => "b = a + 1")
     write(FOLDER/"index.md", txt)
-    sleep(1)
+    sleep(.5)
 
     for e in ("A 5", "B 8", "C 7")
         @test output_contains(FOLDER, "", e)
@@ -50,7 +50,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         $txt
         """
     write(FOLDER/"index.md", txt)
-    sleep(1)
+    sleep(.5)
     for e in ("A 5", "B 6", "C 7")
         @test output_contains(FOLDER, "", e)
     end
@@ -58,6 +58,3 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     schedule(task, InterruptException(), error=true)
     sleep(1)
 end
-
-# XXX stopping here for now, need to continue this
-

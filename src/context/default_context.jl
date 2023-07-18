@@ -9,6 +9,7 @@ const DefaultGlobalVars = Vars(
     :author          => "The Author",
     :base_url_prefix => "",
     :website_url     => "",     # necessary for generate_{rss,sitemap}
+    :config_path     => "",
     # Layout
     :content_tag         => "div",
     :content_class       => "franklin-content",

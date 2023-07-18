@@ -118,15 +118,20 @@ function serve(
 
     # if there is a utils.jl that was cached, check if it has changed,
     # if it has, we clear even if clear is false
-    cached_config  = path(gc, :cache)  / "config.md"
-    current_config = path(gc, :folder) / "config.md"
-    cached_utils   = path(gc, :cache)  / "utils.jl"
-    current_utils  = path(gc, :folder) / "utils.jl"
+    cached_utils    = path(gc, :cache)  / "utils.jl"
+    current_utils   = path(gc, :folder) / "utils.jl"
+    utils_unchanged = !any(isfile, (cached_utils, current_utils)) ||
+                      utilscmp(cached_utils, current_utils)
 
-    config_unchanged = !any(isfile, (cached_config, current_config)) ||
-                        filecmp(cached_config, current_config)
-    utils_unchanged  = !any(isfile, (cached_utils, current_utils)) ||
-                        utilscmp(cached_utils, current_utils)
+    # same for config except the cached version may be from a .jl or .md
+    config_unchanged = false
+    for case in ("config.jl", "config.md")
+        cached_config    = path(gc, :cache) / case
+        current_config   = path(gc, :folder) / case
+        config_unchanged = !any(isfile, (cached_config, current_config)) ||
+                           filecmp(cached_config, current_config)
+        config_unchanged || break
+    end
 
     deserialized_gc = false
 
@@ -164,6 +169,7 @@ function serve(
             rm(odir; force=true, recursive=true)
         end
 
+        @debug "clear: $clear / utils: $utils_unchanged; reprocess config/utils"
         process_config(gc)
         process_utils(gc)
     end
@@ -256,12 +262,16 @@ function serialize_contexts(gc::GlobalContext)::Nothing
     mkpath(path(gc, :cache))
     serialize_gc(gc)
 
-    for fn in ("config.md", "utils.jl")
-        futils = path(gc, :folder) / fn
-        if isfile(futils)
-            @info "📓 keep copy of $(hl(fn, :cyan))..."
-            cp(futils, path(gc, :cache) / fn, force=true)
-        end
+    fpaths = [
+        getvar(gc, :config_path, ""),
+        path(gc, :folder) / "utils.jl"
+    ]
+    filter!(isfile, fpaths)
+
+    for fp in fpaths
+        fn = splitpath(fp)[end]
+        @info "📓 keeping a copy of $(hl(fn, :cyan))..."
+        cp(fp, path(gc, :cache) / fn, force=true)
     end
 
     δt = time() - start; @info """

@@ -140,6 +140,7 @@ function full_pass(
     # now we can skip utils/config (will happen in full_pass_other)
     append!(skip_files, [
         path(gc, :folder) => "config.md",
+        path(gc, :folder) => "config.jl",
         path(gc, :folder) => "utils.jl"
         ]
     )
