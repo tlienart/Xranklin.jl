@@ -9,6 +9,37 @@
 # PROCESS CONFIG #
 # -------------- #
 
+
+function process_config(gc::GlobalContext)
+    config_path = path(:folder) / "config"
+    config_path_jl = config_path * ".jl"
+    config_path_md = config_path * ".md"
+
+    if isfile(config_path_jl)
+        process_config(gc, """
+            +++
+            $(read(config_path_jl, String))
+            +++
+            """
+        )
+        setvar!(gc, :config_path, config_path_jl)
+
+    elseif isfile(config_path_md)
+        process_config(gc,
+            read(config_path_md, String)
+        )
+        setvar!(gc, :config_path, config_path_md)
+
+    else
+        @warn """
+            Process config
+            No config file (either `config.md` or `config.jl` found).
+            """
+    end
+    return
+end
+
+
 """
     process_config(config, gc)
 
@@ -33,27 +64,14 @@ function process_config(
     # we ignore the resulting HTML; we just use that to populate fields such as
     # lxdefs etc
     start = time(); @info """
-        ⌛ processing config.md
+        ⌛ processing config file
         """    
     html(config, gc)
     δt = time() - start; @info """
-        ... [config.md] ✔ $(hl(time_fmt(δt)))
+        ... [config file] ✔ $(hl(time_fmt(δt)))
         """
 
     _config_checks(gc)
-    return
-end
-
-function process_config(gc::GlobalContext)
-    config_path = path(:folder) / "config.md"
-    if isfile(config_path)
-        process_config(gc, read(config_path, String))
-    else
-        @warn """
-            Process config
-            Config file $config_path not found.
-            """
-    end
     return
 end
 
@@ -122,7 +140,7 @@ end
 # PROCESS UTILS #
 # ------------- #
 
-"""
+"""""
     process_utils(utils, gc)
 
 Process a utils string into a given global context object.

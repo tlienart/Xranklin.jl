@@ -133,6 +133,7 @@ end
     include(p/"rss.jl")
     include(p/"sitemap-robots.jl")
     include(p/"eval_order.jl")
+    include(p/"config.jl")
 end 
 
 end

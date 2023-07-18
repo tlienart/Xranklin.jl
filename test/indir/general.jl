@@ -17,11 +17,11 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         {{counter}}/{{fill a index.md}}
         """)
 
-    # X.yprint("\n\n" * "="^50 * "\n\n")
     serve(FOLDER, single=true)
     @test output_contains(FOLDER, "abc", "0/555")
     @test read(FOLDER / "counter", Int) == 1
 
+    # X.yprint("\n\n" * "="^50 * "\n\n")
     # we change index.md but not the vars; foo must NOT triggered
     write(FOLDER / "index.md", """
         +++
