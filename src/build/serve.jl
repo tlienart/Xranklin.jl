@@ -200,7 +200,6 @@ function serve(
     # or in final build mode (final).
     if !any((single, final))
         loop = (cntr, watcher) -> build_loop(cntr, watcher, wf)
-        # start LiveServer
         LiveServer.serve(
                 port           = port,
                 coreloopfun    = loop,
@@ -208,7 +207,7 @@ function serve(
                 host           = host,
                 launch_browser = launch
             )
-        println("") # skip a line to pass the '^C' character
+        println()
     end
 
     # ---------------------------------------------------------------
