@@ -14,6 +14,11 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         {{b}}
         """)
     write(FOLDER/"errbad.md",raw"""
+        This is before the error, yada yada, it's all **fine**! and then
+        it's maybe much later that there are issues... 
+
+        ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
         A ``` B
         """)
     
@@ -36,5 +41,11 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         @test occursin(e, infos)
     end
 
+    @test output_contains(FOLDER, "errbad", """
+        <p>This is before the error, yada yada, it's all <strong>fine</strong>! and then
+        it's maybe much later that there are issues... </p>
+        <p>ABCDEFGHIJ</p>
+        <span style="color:red">... truncated content, a parsing error occurred at some point after this ...</span>
+        """)
 end
 #

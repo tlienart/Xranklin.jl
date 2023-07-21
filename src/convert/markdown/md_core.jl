@@ -23,6 +23,7 @@ function convert_md(
             # kwargs
             tohtml::Bool = true,
             nop::Bool    = false,
+            error_backtracking_iteration::Int = 0,
             kw...
         )::String
 
@@ -43,18 +44,37 @@ function convert_md(
         groups = FP.md_partition(md; kw...) |> FP.md_grouper
     catch e
         if isa(e, FP.FranklinParserException)
-            msg = e.msg
-            if c isa LocalContext && isfile(path(c.glob, :folder)/c.rpath)
+            # if it comes directly from the first pass processing a file
+            if c isa LocalContext && !is_recursive(c) && isfile(path(c.glob, :folder)/c.rpath)
                 rge = findfirst(e.context, md)
                 la  = count('\n', md[begin:rge[1]]) + 1
                 lb  = la + count('\n', subs(md, rge))
-                msg *= """
+                msg = e.msg * """
 
                     Check file '$(c.rpath)' around lines L$la-L$lb.
                     """
                 setvar!(c, :_has_parser_error, true)
+                @error msg
+
+                # try some backtracking
+                if error_backtracking_iteration < 3
+                    sub_md = subs(md, firstindex(md), prevind(md, rge[1]))
+                    error_backtracking_iteration += 1
+                    attempt = convert_md(sub_md, c;
+                        tohtml, nop, error_backtracking_iteration, kw...
+                    )
+                    trunc = "truncated content, a parsing error occurred at " *
+                            "some point after this"
+                    return attempt * (tohtml ?
+                        "<span style=\"color:red\">... $trunc ...</span>" :
+                        "\\\\\\\\\\textbf{... $trunc ...}"
+                    )
+                end
+
+            # comes from processing a string, or recursive processing
+            else
+                @error e.msg
             end
-            @error msg
             return ""
         end
         rethrow(e)
