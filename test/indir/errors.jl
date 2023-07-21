@@ -1,7 +1,7 @@
 include(joinpath(@__DIR__, "..", "utils.jl"))
 
 
-@test_in_dir "_order" "i228" begin
+@test_in_dir "_errors" "parsing/basic" begin
     isfile(FOLDER/"config.md") && rm(FOLDER/"config.md")
     isfile(FOLDER/"utils.jl") && rm(FOLDER/"utils.jl")
     write(FOLDER/"config.jl", raw"""
@@ -48,4 +48,23 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         <span style="color:red">... truncated content, a parsing error occurred at some point after this ...</span>
         """)
 end
-#
+
+
+@test_in_dir "_errors" "noindex" begin
+    isfile(FOLDER/"config.md") && rm(FOLDER/"config.md")
+    isfile(FOLDER/"utils.jl") && rm(FOLDER/"utils.jl")
+    isfile(FOLDER/"index.md") && rm(FOLDER/"index.md")
+    write(FOLDER/"foo.md", "Hello!")
+    try
+        build(FOLDER)
+    catch e
+       @test occursin(
+            "No 'index.md' or 'index.html' found in the base folder.",
+            e.msg
+        )
+    end
+    @test !isdir(FOLDER/"__site")
+
+    build(FOLDER, allow_no_index=true)
+    @test isdir(FOLDER/"__site")
+end

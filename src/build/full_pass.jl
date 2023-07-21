@@ -71,6 +71,7 @@ function full_pass(
             initial_pass::Bool   = false,
             config_changed::Bool = false,
             utils_changed::Bool  = false,
+            allow_no_index::Bool = false,
             final::Bool          = false
         )::GlobalContext
 
@@ -149,12 +150,16 @@ function full_pass(
     # expect to point to)
     hasindex = isfile(path(gc, :folder) / "index.md") ||
                isfile(path(gc, :folder) / "index.html")
-    if !hasindex
-        @warn """
-            Full pass
-            No 'index.md' or 'index.html' found in the base folder.
-            There should be one though this won't block the build.
+    if !hasindex && !allow_no_index
+        error(
             """
+            [Full pass]
+            No 'index.md' or 'index.html' found in the base folder.
+            You may have called `serve` in the wrong directory, please check.
+            If this is intentional, then please call `serve` passing the
+            keyword argument `allow_no_index=true`.
+            """
+        )
     end
 
     # ---------------------------------------------

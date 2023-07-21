@@ -261,7 +261,7 @@ function html_code_block(
     post = ""
     if ci.exec
         if ci.lang == "julia"
-            imgdir_base  = mkpath(path(:site) / "assets" / noext(lc.rpath))
+            imgdir_base  = mkpath(path(lc.glob, :site) / "assets" / noext(lc.rpath))
             imgdir_html  = mkpath(imgdir_base / "figs-html")
             imgdir_latex = mkpath(imgdir_base / "figs-latex")
             eval_code_cell!(

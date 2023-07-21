@@ -74,6 +74,7 @@ function serve(
             prefix::String  = "",
             base_url_prefix::String = ifelse(isempty(prepath),
                                              prefix, prepath),
+            allow_no_index::Bool = false,
 
             # Debugging options
             debug::Bool          = false,
@@ -193,6 +194,7 @@ function serve(
         config_changed  = !config_unchanged,
         utils_changed   = !utils_unchanged,
         final,
+        allow_no_index
     )
 
     # ---------------------------------------------------------------
