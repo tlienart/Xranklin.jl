@@ -74,6 +74,7 @@ function resolve_dbb(
                 ---------
                 A block '{{$fname$dots}}' was found out of a relevant context.
                 """
+            setvar!(lc, :_has_failed_blocks, true)
             write(io, hfun_failed(split_cb))
 
         # B | independent e-string (outside of henv)
@@ -117,6 +118,7 @@ function _dbb_fill_estr(
         end
     else
         # warning / throw handled by eval
+        setvar!(lc, :_has_failed_blocks, true)
         write(io, hfun_failed([string(cb)]))
     end
     return
@@ -173,6 +175,7 @@ function _dbb_fill(
           correspond to a built-in block or hfun nor does it match anything
           defined in `utils.jl`. It might have been misspelled.
           """
+        setvar!(lc, :_has_failed_blocks, true)
         res = hfun_failed([string(fname), args...])
     end
     res = ifelse(isempty(res), EMPTY_DBB, res)

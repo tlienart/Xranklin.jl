@@ -127,6 +127,7 @@ function _hfun_insert(
             {{insert $p $bsym}}
             There's no base path corresponding to '$bsym'.
             """
+        setvar!(lc, :_has_failed_blocks, true)
         return hfun_failed(["insert", p, string(bsym)])
     end
 
@@ -136,6 +137,7 @@ function _hfun_insert(
             {{insert $p $bsym}}
             Couldn't find a file '$p' in the folder '$bsym'.
             """
+        setvar!(lc, :_has_failed_blocks, true)
         return hfun_failed(["insert", p, string(bsym)])
     end
 
@@ -147,6 +149,7 @@ function _hfun_insert(
             {{insert $p $bsym}}
             Insertion of a markdown file is not yet supported.
             """
+        setvar!(lc, :_has_failed_blocks, true)
         return hfun_failed(["insert", p, string(bsym)])
     end
     # for anything else, just dump the file as is
@@ -173,6 +176,7 @@ function hfun_insertmd(
             {{insertmd $(p[1])}}
             Couldn't find a file '$(p[1])' in the base folder.
             """
+        setvar!(lc, :_has_failed_blocks, true)
         return hfun_failed(["insertmd", p, string(bsym)])
     end
     attach(lc, get_rpath(lc.glob, fpath))

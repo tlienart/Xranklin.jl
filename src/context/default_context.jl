@@ -182,6 +182,9 @@ const DefaultLocalVars = Vars(
     :_rm_tags          => Set{String}(),
     :_add_tags         => Vector{Pair{String}}(),
     :_generated_latex  => "",
+    #
+    :_has_parser_error  => false,   # page is not rendered
+    :_has_failed_blocks => false,   # page may be rendered but with stuff to fix
 )
 const DefaultLocalVarsAlias = Alias(
     :fd_rpath        => :_relative_path,

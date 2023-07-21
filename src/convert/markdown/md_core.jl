@@ -38,7 +38,27 @@ function convert_md(
     end
 
     # partition the markdown and form groups (paragraphs)
-    groups = FP.md_partition(md; kw...) |> FP.md_grouper
+    groups = nothing
+    try
+        groups = FP.md_partition(md; kw...) |> FP.md_grouper
+    catch e
+        if isa(e, FP.FranklinParserException)
+            msg = e.msg
+            if c isa LocalContext && isfile(path(c.glob, :folder)/c.rpath)
+                rge = findfirst(e.context, md)
+                la  = count('\n', md[begin:rge[1]]) + 1
+                lb  = la + count('\n', subs(md, rge))
+                msg *= """
+
+                    Check file '$(c.rpath)' around lines L$la-L$lb.
+                    """
+                setvar!(c, :_has_parser_error, true)
+            end
+            @error msg
+            return ""
+        end
+        rethrow(e)
+    end
 
     convert    = html
     before_par = "<p>"

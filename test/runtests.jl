@@ -134,6 +134,7 @@ end
     include(p/"sitemap-robots.jl")
     include(p/"eval_order.jl")
     include(p/"config.jl")
+    include(p/"errors.jl")
 end 
 
 end

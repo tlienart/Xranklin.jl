@@ -212,6 +212,49 @@ function serve(
 
     # ---------------------------------------------------------------
     # Finalise by caching notebooks etc
+    with_parser_error = String[]
+    with_failed_block = String[]
+    for (rp, lc) in gc.children_contexts
+        if getvar(lc, :_has_parser_error, false)
+            push!(with_parser_error, rp)
+        elseif getvar(lc, :_has_failed_blocks, false)
+            push!(with_failed_block, rp)
+        end
+    end
+    fin   = "."
+    noerr = all(isempty, (with_failed_block, with_parser_error))
+    if noerr
+        fin = " (💯)."
+    end
+    msg = """
+        Processed $(length(gc.children_contexts)) pages$fin
+        """
+    if !isempty(with_parser_error)
+        n = length(with_parser_error)
+        msg *= """
+            \n⚠ the following page(s) failed to be parsed properly:\n
+            """
+        for rp in with_parser_error
+            msg *= """
+                    * $rp
+                """
+        end
+    end
+    if !isempty(with_failed_block)
+        msg *= """
+            \n⚠ the following page(s) have blocks that couldn't be resolved:\n
+            """
+        for rp in with_failed_block
+            msg *= """
+                    * $rp
+                """
+        end
+    end
+    @info msg * "\n"^(!noerr)
+    println()
+    @info "Starting caching process & cleanup"
+
+    # cache
     serialize_contexts(gc)
 
     # ---------------------------------------------------------------

@@ -30,7 +30,8 @@ function hfun_toc(
             {{toc ...}}
             Toc should get two integers, couldn't parse the args to int.
             """
-        return hfun_failed("toc", p)
+        setvar!(lc, :_has_failed_blocks, true)
+        return hfun_failed("toc", p)        
     end
 
     # trim the headings corresponding to min/max, each header is (id => (nocc, lvl))
