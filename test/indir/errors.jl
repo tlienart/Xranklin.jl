@@ -32,7 +32,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
     infos = read(a, String)
 
     for e in (
-        "Info: Processed 3 pages.",
+        "Warning: Processed 3 pages but some had issues...",
         "⚠ the following page(s) failed to be parsed properly:",
         "* errbad.md",
         "⚠ the following page(s) have blocks that couldn't be resolved:",

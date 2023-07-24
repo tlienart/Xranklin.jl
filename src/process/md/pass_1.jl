@@ -56,6 +56,10 @@ function process_md_file_pass_1(
         reset_counter!(lc.nb_code)
         reset_counter!(lc.nb_vars)
 
+        # reset whether there's parsing / block errors
+        setvar!(lc, :_has_parser_error, false)
+        setvar!(lc, :_has_failed_blocks, false)
+
         # evaluate
         ihtml = convert_md(page_content_md, lc)
         setvar!(lc, :_generated_ihtml, ihtml)

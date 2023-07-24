@@ -150,3 +150,17 @@ will not make things fail (since we'll capture the `\n`) but it's not tested.
 * hyperrefs
 * booktabs (for tables)
 * csquotes (for blockquotes)
+
+
+## Search
+
+```
+brew install stork-search/stork-tap/stork
+# brew info stork
+```
+
+JS lib: 
+
+```
+<script src="https://files.stork-search.net/releases/v1.6.0/stork.js"></script>
+```

@@ -35,7 +35,7 @@ function env_equation(
             nonumber::Bool=false
         )::String
 
-    c = _env_check_nargs(:equation, p, 0)
+    c = _env_check_nargs(lc, :equation, p, 0)
     isempty(c) || return c
     return _env_dmath(lc, p; tohtml, nonumber)
 end
@@ -54,7 +54,7 @@ function env_aligned(
             nonumber::Bool=false
         )::String
 
-    c = _env_check_nargs(:equation, p, 0)
+    c = _env_check_nargs(lc, :equation, p, 0)
     isempty(c) || return c
     return _env_dmath(lc, p; tohtml, nonumber,
                       pre="\\begin{aligned}", post="\\end{aligned}")
@@ -77,7 +77,7 @@ function env_eqnarray(
             nonumber::Bool=false
         )::String
 
-    c = _env_check_nargs(:equation, p, 0)
+    c = _env_check_nargs(lc, :equation, p, 0)
     isempty(c) || return c
     return _env_dmath(lc, p; tohtml, nonumber,
                       pre="\\begin{array}{rcl}", post="\\end{array}")

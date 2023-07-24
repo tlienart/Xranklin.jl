@@ -66,7 +66,7 @@ function hfun_paginate(
         )::String
 
     # check parameters
-    c = _hfun_check_nargs(:paginate, p; k=2)
+    c = _hfun_check_nargs(lc, :paginate, p; k=2)
     isempty(c) || return c
     tohtml     || return
 

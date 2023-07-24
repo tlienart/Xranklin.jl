@@ -227,6 +227,8 @@ function serve(
     noerr = all(isempty, (with_failed_block, with_parser_error))
     if noerr
         fin = " (💯)."
+    else
+        fin = " but some had issues..."
     end
     msg = """
         Processed $(length(gc.children_contexts)) pages$fin
@@ -252,7 +254,11 @@ function serve(
                 """
         end
     end
-    @info msg * "\n"^(!noerr)
+    if noerr
+        @info msg
+    else
+        @warn msg * "\n"
+    end
     println()
     @info "Starting caching process & cleanup"
 

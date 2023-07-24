@@ -11,7 +11,7 @@ function hfun_toc(
         )::String
 
     # check parameters
-    c = _hfun_check_nargs(:toc, p; k=2)
+    c = _hfun_check_nargs(lc, :toc, p; k=2)
     isempty(c) || return c
 
     # retrieve the headings of the local context
@@ -30,8 +30,7 @@ function hfun_toc(
             {{toc ...}}
             Toc should get two integers, couldn't parse the args to int.
             """
-        setvar!(lc, :_has_failed_blocks, true)
-        return hfun_failed("toc", p)        
+        return hfun_failed(lc, "toc", p)        
     end
 
     # trim the headings corresponding to min/max, each header is (id => (nocc, lvl))
@@ -139,7 +138,7 @@ function hfun_reflink(
         )::String
 
     # should not really need to check but anyway
-    c = _hfun_check_nargs(:reflink, p; k=1)
+    c = _hfun_check_nargs(lc, :reflink, p; k=1)
     isempty(c) || return c
 
     target = get_anchor(lc.glob, p[1], lc.rpath)

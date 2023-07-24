@@ -46,8 +46,7 @@ function resolve_henv_if(
         p.name == :end && continue
         flag, err = _check_cond(lc, p)
         if err
-            write(io, hfun_failed([string.(env_name)]))
-            setvar!(lc, :_has_failed_blocks, true)
+            write(io, hfun_failed(lc, [string.(env_name)]))
             break
         elseif flag
             b_cur = p.block

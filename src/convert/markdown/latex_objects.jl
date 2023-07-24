@@ -45,7 +45,7 @@ end
 
 
 """
-    failed_block(b::Block, m::String)
+    failed_block(c::Context, bs::Vector{Block}, m::String)
 
 In the case of an issue, e.g. a command with not enough braces, either an error
 is thrown (if strict parsing is on) or a warning along with a "failed block"
@@ -53,21 +53,17 @@ which will make the object appear in red on the document without crashing the
 server.
 """
 function failed_block(
-            b::Block,
+            c::Context,
+            bs::Vector{Block},
             m::String
-            )::Block
-
-    env(:strict_parsing) && throw(m)
-    @warn m
-    # form a "failedblock"
-    return Block(:FAILED, b.ss)
-end
-function failed_block(bs::Vector{Block}, m::String)::Block
+        )::Block
+    isa(c, LocalContext) && setvar!(c, :_has_failed_blocks, true)
     env(:strict_parsing) && throw(m)
     @warn m
     s = parent_string(bs[1].ss)
     return Block(:FAILED, subs(s, from(bs[1]), to(bs[end])))
 end
+failed_block(c, b::Block, m) = failed_block(c, [b], m)
 
 
 """
@@ -107,7 +103,7 @@ function try_form_lxdef(
         m = """
             Not enough braces found after a \\newcommand or \\newenvironment.
             """
-        return failed_block(berr, m), maxi
+        return failed_block(ctx, berr, m), maxi
     end
     naming_idx = i + braces_idx[1]
     naming     = blocks[naming_idx]
@@ -142,7 +138,7 @@ function try_form_lxdef(
             nextb     = blocks[next_idx]
             pre_space = true
         else
-            return failed_block(berr, next_bad), maxi
+            return failed_block(ctx, berr, next_bad), maxi
         end
     end
 
@@ -152,7 +148,7 @@ function try_form_lxdef(
     if nextb.name == :LINK_A
         # try parse it as [ . d . ]
         m = match(LX_NARGS_PAT, nextb.ss)
-        m === nothing && return failed_block(block, next_bad), 0
+        m === nothing && return failed_block(ctx, block, next_bad), 0
         has_nargs = true
         nargs     = parse(Int, m.captures[1])
         # there's necessarily another brace block so can increment
@@ -167,13 +163,13 @@ function try_form_lxdef(
             nextb      = blocks[next_idx]
             post_space = true
         else
-            return failed_block(berr, next_bad), maxi
+            return failed_block(ctx, berr, next_bad), maxi
         end
     end
 
     # Now the next brace must be a brace otherwise fail
     if nextb.name != :CU_BRACKETS
-        return failed_block(berr, next_bad), maxi
+        return failed_block(ctx, berr, next_bad), maxi
     end
     def = content(nextb) |> dedent |> sstrip
 
@@ -195,10 +191,10 @@ function try_form_lxdef(
     if next_idx + 1 <= n_blocks
         nextb = blocks[next_idx + 1]
     else
-        return failed_block(berr, next_bad), maxi
+        return failed_block(ctx, berr, next_bad), maxi
     end
     if nextb.name != :CU_BRACKETS
-        return failed_block(berr, next_bad), maxi
+        return failed_block(ctx, berr, next_bad), maxi
     end
     pre  = def
     post = content(nextb) |> dedent |> strip |> String
@@ -267,7 +263,7 @@ function try_resolve_lxcom(
         end
 
         m = "Command '$(cand.ss)' used before it was defined."
-        return failed_block(cand, m), 0
+        return failed_block(lc, cand, m), 0
     end
     lxdef = getdef(lc, name)
 
@@ -278,7 +274,7 @@ function try_resolve_lxcom(
             There is a clashing definition of an environment with name '$name'.
             This is not allowed; use unique names for environments and commands.
             """
-        return failed_block(cand, m), 0
+        return failed_block(lc, cand, m), 0
     end
 
     #
@@ -290,7 +286,7 @@ function try_resolve_lxcom(
         )
 
         m = "Not enough braces to resolve '$(cand.ss)'."
-        return failed_block(cand, m), 0
+        return failed_block(lc, cand, m), 0
     end
 
     #
@@ -490,6 +486,7 @@ function try_resolve_lxenv(
     # name doesn't look good
     if !isascii(name)
         return failed_block(
+            lc,
             blocks,
             "Incorrect environment name $oname, use only ascii characters."
         )
@@ -513,7 +510,7 @@ function try_resolve_lxenv(
         end
 
         m = "Environment '$(name)' used before it was defined."
-        return failed_block(blocks, m)
+        return failed_block(lc, blocks, m)
     end
 
     # recover the def
@@ -526,7 +523,7 @@ function try_resolve_lxenv(
             There is a clashing definition of a command with name '$name'.
             This is not allowed; use unique names for environments and commands.
             """
-        failed_block(blocks, m)
+        failed_block(lc, blocks, m)
     end
 
     #
@@ -536,7 +533,7 @@ function try_resolve_lxenv(
     if length(brackets) < nargs + 2
 
         m = "Not enough braces to resolve environment '$env_name'."
-        return failed_block(blocks, m)
+        return failed_block(lc, blocks, m)
     end
 
     # 3 -- assemble into string and process

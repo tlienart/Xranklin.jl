@@ -43,8 +43,7 @@ function resolve_henv_for(
     if is_estr(istr)
         res = eval_str(lc, istr)
         if !res.success
-            write(io, hfun_failed("for", henv[1].args))
-            setvar!(lc, :_has_failed_blocks, true)
+            write(io, hfun_failed(lc, "for", henv[1].args))
             return
         else
             iter = res.value
@@ -59,8 +58,7 @@ function resolve_henv_for(
             -----------
             The object corresponding to '$istr' is not iterable.
             """
-        write(io, hfun_failed("for", henv[1].args))
-        setvar!(lc, :_has_failed_blocks, true)
+        write(io, hfun_failed(lc, "for", henv[1].args))
         return
     end
 

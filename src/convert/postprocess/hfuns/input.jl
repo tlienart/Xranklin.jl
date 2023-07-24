@@ -21,7 +21,7 @@ function hfun_fill(
             tohtml=true
         )::String
 
-    c = _hfun_check_nargs(:fill, p; kmin=1, kmax=2)
+    c = _hfun_check_nargs(lc, :fill, p; kmin=1, kmax=2)
     isempty(c) || return c
 
     np  = length(p)
@@ -101,7 +101,7 @@ function hfun_insert(
             tohtml::Bool=true
         )::String
 
-    c = _hfun_check_nargs(:insert, p; kmin=1, kmax=2)
+    c = _hfun_check_nargs(lc, :insert, p; kmin=1, kmax=2)
     isempty(c) || return c
 
     np = length(p)
@@ -127,8 +127,7 @@ function _hfun_insert(
             {{insert $p $bsym}}
             There's no base path corresponding to '$bsym'.
             """
-        setvar!(lc, :_has_failed_blocks, true)
-        return hfun_failed(["insert", p, string(bsym)])
+        return hfun_failed(lc, ["insert", p, string(bsym)])
     end
 
     fpath = base / p
@@ -138,7 +137,7 @@ function _hfun_insert(
             Couldn't find a file '$p' in the folder '$bsym'.
             """
         setvar!(lc, :_has_failed_blocks, true)
-        return hfun_failed(["insert", p, string(bsym)])
+        return hfun_failed(lc, ["insert", p, string(bsym)])
     end
 
     if tohtml && endswith(p, ".html")
@@ -150,7 +149,7 @@ function _hfun_insert(
             Insertion of a markdown file is not yet supported.
             """
         setvar!(lc, :_has_failed_blocks, true)
-        return hfun_failed(["insert", p, string(bsym)])
+        return hfun_failed(lc, ["insert", p, string(bsym)])
     end
     # for anything else, just dump the file as is
     # (and it's on the user to check that's fine)
@@ -167,7 +166,7 @@ function hfun_insertmd(
             p::VS;
             tohtml::Bool=true
         )::String
-    c = _hfun_check_nargs(:insertmd, p; k=1)
+    c = _hfun_check_nargs(lc, :insertmd, p; k=1)
     isempty(c) || return c
 
     fpath = path(lc, :folder) / p[1]
@@ -177,7 +176,7 @@ function hfun_insertmd(
             Couldn't find a file '$(p[1])' in the base folder.
             """
         setvar!(lc, :_has_failed_blocks, true)
-        return hfun_failed(["insertmd", p, string(bsym)])
+        return hfun_failed(lc, ["insertmd", p, string(bsym)])
     end
     attach(lc, get_rpath(lc.glob, fpath))
     ihtml = convert_md(read(fpath, String), lc)
@@ -221,7 +220,7 @@ function hfun_redirect(
             tohtml::Bool=true
         )::String
     
-    c = _hfun_check_nargs(:redirect, p; k=1)
+    c = _hfun_check_nargs(lc, :redirect, p; k=1)
     isempty(c) || return c
     setvar!(lc, :redirect, p[1])
     return ""
@@ -239,7 +238,7 @@ function hfun_slug(
             tohtml::Bool=true
         )::String
     
-    c = _hfun_check_nargs(:slug, p; k=1)
+    c = _hfun_check_nargs(lc, :slug, p; k=1)
     isempty(c) || return c
     setvar!(lc, :slug, p[1])
     return ""

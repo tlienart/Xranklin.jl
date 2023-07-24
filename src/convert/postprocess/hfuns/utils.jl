@@ -61,11 +61,12 @@ const INTERNAL_HFUNS = [
 
 Hfun used for when other hfuns fail.
 """
-function hfun_failed(p::VS; tohtml::Bool=true)::String
+function hfun_failed(lc::LocalContext, p::VS; tohtml::Bool=true)::String
+    setvar!(lc, :_has_failed_blocks, true)
     tohtml && return _hfun_failed_html(p)
     return _hfun_failed_latex(p)
 end
-hfun_failed(s::String, p::VS; kw...) = hfun_failed([s, p...]; kw...)
+hfun_failed(lc, s::String, p::VS; kw...) = hfun_failed(lc, [s, p...]; kw...)
 
 _hfun_failed_html(p::VS) = html_failed(
     "&lbrace;&lbrace; " * join(p, " ") * "&rbrace;&rbrace;"
@@ -82,7 +83,7 @@ Helper function to check the number of arguments in a hfun `n` with a vector
 of parameters `p` and an expected number of arguments between `kmin` and
 `kmax`. If only `kmin` is set then exactly that many arguments are expected.
 """
-function _hfun_check_nargs(n::Symbol, p::VS; k::Int=0, kmin::Int=k, kmax::Int=k)
+function _hfun_check_nargs(lc, n::Symbol, p::VS; k::Int=0, kmin::Int=k, kmax::Int=k)
     np = length(p)
     if !(kmin ≤ np ≤ kmax)
         rge = ifelse(kmin == kmax, "$kmin", "[$kmin, $kmax]")
@@ -90,7 +91,7 @@ function _hfun_check_nargs(n::Symbol, p::VS; k::Int=0, kmin::Int=k, kmax::Int=k)
             {{$n ...}}
             $n expects $rge arg(s), $np given.
             """
-        return hfun_failed(n |> string, p)
+        return hfun_failed(lc, n |> string, p)
     end
     return ""
 end
@@ -107,7 +108,7 @@ function hfun_html(
             p::VS;
             tohtml=true
         )::String
-    c = _hfun_check_nargs(:html, p; k=1)
+    c = _hfun_check_nargs(lc, :html, p; k=1)
     isempty(c) || return c
 
     src = getvar(lc, Symbol(p[1]))

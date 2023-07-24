@@ -60,7 +60,7 @@ function resolve_dbb(
                     ---------
                     An environment '{{$fname$dots}}' was not closed properly.
                     """
-                write(io, hfun_failed(split_cb))
+                write(io, hfun_failed(lc, split_cb))
             else
                 resolve_henv(lc, henv, io)
             end
@@ -74,8 +74,7 @@ function resolve_dbb(
                 ---------
                 A block '{{$fname$dots}}' was found out of a relevant context.
                 """
-            setvar!(lc, :_has_failed_blocks, true)
-            write(io, hfun_failed(split_cb))
+            write(io, hfun_failed(lc, split_cb))
 
         # B | independent e-string (outside of henv)
         elseif is_estr(cb)
@@ -117,9 +116,7 @@ function _dbb_fill_estr(
             write(io, r)
         end
     else
-        # warning / throw handled by eval
-        setvar!(lc, :_has_failed_blocks, true)
-        write(io, hfun_failed([string(cb)]))
+        write(io, hfun_failed(lc, [string(cb)]))
     end
     return
 end
@@ -175,8 +172,7 @@ function _dbb_fill(
           correspond to a built-in block or hfun nor does it match anything
           defined in `utils.jl`. It might have been misspelled.
           """
-        setvar!(lc, :_has_failed_blocks, true)
-        res = hfun_failed([string(fname), args...])
+        res = hfun_failed(lc, [string(fname), args...])
     end
     res = ifelse(isempty(res), EMPTY_DBB, res)
     write(io, res)
