@@ -112,6 +112,7 @@ end
         ignore = ["foo/"]
         +++
         """)
+    write(FOLDER/"index.md", "")
     write(FOLDER / "index.html", "<main>{{insertmd foo/bar.md}}</main>")
     mkpath(FOLDER / "foo")
     write(FOLDER / "foo" / "bar.md", """

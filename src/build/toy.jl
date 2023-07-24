@@ -72,7 +72,7 @@ function toy_example(;
         ## References
 
         - Reference to local variable: '{{somevar}}'
-        - Reference to global variagble: '{{author}}'
+        - Reference to global variable: '{{author}}'
 
         ## Simple code
 

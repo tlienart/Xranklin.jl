@@ -135,16 +135,14 @@ function GlobalContext(
     # vars notebook
     mdl     = submodule(
                 modulename("__global_vars", true);
-                wipe=true,
-                rpath
+                wipe=true
               )
     nb_vars = VarsNotebook(mdl)
 
     # utils notebook
     mdl     = submodule(
                 modulename("__global_utils", true);
-                wipe=true,
-                rpath
+                wipe=true
               )
     nb_code = CodeNotebook(mdl)
 
@@ -189,18 +187,14 @@ function LocalContext(glob, vars, defs, headings, rpath, alias=Alias())
     # vars notebook
     mdl = submodule(
             modulename("$(rpath)_vars", true);
-            wipe=true,
-            # utils=true,
-            rpath
+            wipe=true
     )
     nb_vars  = VarsNotebook(mdl)
 
     # code notebook
     mdl = submodule(
             modulename("$(rpath)_code", true);
-            wipe=true,
-            # utils=true,
-            rpath
+            wipe=true
     )
     nb_code  = CodeNotebook(mdl)
 

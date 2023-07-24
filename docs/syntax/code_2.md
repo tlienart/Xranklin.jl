@@ -50,7 +50,7 @@ the page variable `ignore_cache` to `true` and restart the server,
 
 It can be convenient to activate a specific environment for the code to be executed on a page.
 The `\activate{some/path/}` command allows you to specify a (unix-style) relative path to the website folder where a specific `Project.toml` file resides.
-Effectvely this will have the same effect as calling `Pkg.activate(...)` inside a code-cell.
+Effectively this will have the same effect as calling `Pkg.activate(...)` inside a code-cell.
 
 If you leave the path empty or just use a single `.` (`\activate{}` or `\activate{.}`), Franklin will try to activate the directory that contains the page being currently built.
 

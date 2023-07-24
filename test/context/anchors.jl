@@ -28,7 +28,10 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
 
         # anchor a.a
         """)
-    serve(FOLDER, single=true, cleanup=false, clear=true)
+    captured = IOCapture.capture() do
+        serve(FOLDER, single=true, cleanup=false, clear=true)
+    end
+    @test contains(captured.output, "Warning: Anchor target")
     gc = cur_gc()
     # defined in two places    
     @test length(gc.anchors["anchor_a.a"].locs) == 2

@@ -167,7 +167,7 @@ function process_utils(
     for m in (gc.nb_vars.mdl, gc.nb_code.mdl)
         include_string(
             m.Utils,
-            utils_code(gc, m, crop=true)
+            utils_code(gc; crop=true)
         )
     end
     Base.CoreLogging._min_enabled_level[] = pre_log_level

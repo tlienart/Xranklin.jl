@@ -1,3 +1,30 @@
+#
+# General structure (replicated for vars / code)
+#
+#   module Page
+#       module FranklinCore
+#           using Reexport
+#           export cur_gc, ...
+#           cur_gc = ...
+#       end
+#
+#       module Utils
+#           using Reexport
+#           using ..FranklinCore
+#       end
+#
+#       using .FranklinCore
+#       using .Utils
+#   end
+#
+# if a user wants to make a module available in a 'using' way to all cells
+# they should just do `@reexport using Dates` in `utils.jl`.
+#
+#   See test/indir/utils.jl
+#
+#
+
+
 """
     modulename(id, h)
 
@@ -75,8 +102,7 @@ parent module or create a new one and return it.
 """
 function submodule(
             n::Symbol;
-            wipe::Bool=false,
-            rpath::String=""
+            wipe::Bool=false
         )::Module
 
     p = parent_module()
@@ -128,12 +154,13 @@ const UTILS_UTILS = [
     "setproject!"
 ]
 
-"""
-    utils_code(gc, m; crop)
 
-Utils module within the default code imported in all nb_vars and nb_code
+"""
+    utils_code(gc; crop)
+
+Utils module within the default code imported in all `nb_vars` and `nb_code`
 modules.
-The code in the Utils module is that of `gc.vars[:_utils_code]` which is
+The code in the `Utils` module is that of `gc.vars[:_utils_code]` which is
 set by `process_utils` via reading the `utils.jl` file.
 
 The important bit here is to note that if a function in `utils.jl` calls
@@ -141,22 +168,25 @@ something like `getvarfrom`, it is the `getvarfrom` of the specific
 module (with a specific `__lc`) that will be called in that function so
 that the page requesting the variable can be adequately tracked.
 """
-function utils_code(gc::GlobalContext, m::Module; crop=false)
-    funs = join((u for u in UTILS_UTILS if u ∉ ("__gc", "__lc")), ",")
+function utils_code(gc::GlobalContext; glob=false, crop=false)
     body = """
-        using ..$(nameof(m)): $funs
+        using ..$(env(:core_module_name))
         $(get(gc.vars, :_utils_code, ""))
         """
+    # useful for process_utils
     crop && return body
+    # otherwise
     return """
     module Utils
-        $body
+        using Reexport
+        $(ifelse(glob, "", body))
     end
+    using .Utils
     """
 end
 
 """
-    modules_setup(m)
+    modules_setup(c)
 
 Setup the module with getvar etc.
 """
@@ -166,11 +196,20 @@ modules_setup(c::Context) = begin
     gc    = get_glob(c)
     glob  = (c === gc)
 
+    exp_names = join((u for u in UTILS_UTILS if u ∉ ("__gc", "__lc")), ",")
+
+
     for m in (c.nb_vars.mdl, c.nb_code.mdl)
         base_code = """
+            module $(env(:core_module_name))
+
+            export $exp_names
+
             using $F
-            import Pkg
-            import Dates
+            using Reexport
+
+            @reexport import Pkg
+            @reexport import Dates
 
             const __gc = cur_gc()
             const __lc = get(__gc.children_contexts, "$rpath", nothing)
@@ -217,14 +256,17 @@ modules_setup(c::Context) = begin
             attach(rp)        = $F.attach(__lc, rp)
 
             setproject!(p::AbstractString) = $F.setproject!(__lc, p)
+
+            end # core module
+            """
+        
+        # make all the core names that are exported available in the
+        # notebook module
+        base_code *= """
+            using .$(env(:core_module_name))
             """
 
-        # Utils module
-        if glob
-            include_string(m, base_code * "\nmodule Utils; end\n")
-        else
-            include_string(m, base_code * utils_code(gc, m))
-        end
+        include_string(m, base_code * utils_code(gc; glob))
     end
     return
 end

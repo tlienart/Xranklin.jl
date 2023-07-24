@@ -26,3 +26,24 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         @test output_contains(FOLDER, "", e) 
     end
 end
+
+
+@test_in_dir "_order" "multiline lxstr" begin
+    dirset(FOLDER)
+    write(FOLDER/"config.jl", """
+        lx\"\"\"
+        \\newcommand{\\c1}{c1}
+        \\newcommand{\\c2}[1]{c2:#1}
+        \"\"\"
+        """)
+    write(FOLDER/"index.md", """
+        \\c1 \\c2{hello}
+        """)
+    build(FOLDER)
+
+    for e in (
+        "c1 c2:hello"
+    )
+        @test output_contains(FOLDER, "", e)
+    end
+end

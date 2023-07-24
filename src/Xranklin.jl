@@ -54,6 +54,7 @@ export notebook
 
 const FRANKLIN_ENV = Dict{Symbol, Any}(
     :module_name       => "Xranklin",     # TODO: remove when merging into Franklin
+    :core_module_name  => "XranklinCore", # TODO: same stuff
     :module_path       => Base.find_package("Xranklin"),
     :strict_parsing    => false,          # if true, fail on any parsing issue
     :offset_lxdefs     => -typemax(Int),  # helps keep track of order in lxcoms/envs

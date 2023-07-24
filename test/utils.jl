@@ -8,6 +8,7 @@ using Logging
 using Colors
 import Base: (//)
 using Base.Threads
+using IOCapture
 
 import LiveServer
 X = Xranklin;
@@ -80,6 +81,7 @@ cdir(n) = isdir(n) && rm(n, recursive=true)
 
 
 macro test_in_dir(dn, tn, body)
+    printstyled(">> in dir: $dn / $tn\n", color=:yellow)
     FOLDER = tdir(dn)
     try
         eval(:(
@@ -104,6 +106,15 @@ function output_contains(folder, p, s; show=false)
     return contains(c, s)
 end
 
+function test_contains(folder, p, s::Vector{String})
+    for es in s
+        @test output_contains(folder, p, es)
+    end
+end
+test_contains(folder, p, s::String) = test_contains(folder, p, [s])
+
+
+
 # @test_warn_with something() "partial msg"
 macro test_warn_with(body, msg)
     test_logger = TestLogger(; min_level=Warn)
@@ -127,4 +138,20 @@ function html_warn(s, lc=nothing; warn="")
     w = first(e for e in test_logger.logs if e.level == Logging.Warn)
     @test contains(w.message, warn)
     return h
+end
+
+
+function dirset(
+        folder;
+        scratch=false
+    )
+    if scratch
+        for f in (
+                folder/"config.md",
+                folder/"utils.jl"
+            )
+            isfile(f) && rm(f)
+        end
+    end
+    return
 end
