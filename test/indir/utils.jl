@@ -51,6 +51,13 @@ end
         ```!
         Date(2023,02,10+4)
         ```
+        """,
+        # in page var module it should also work
+        """
+        +++
+        thedate = Date(2023,02,10+5)
+        +++
+        {{thedate}}
         """
     ))
         write(FOLDER/"index.md", case)
