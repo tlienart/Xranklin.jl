@@ -4,6 +4,7 @@ authors = ["Thibaut Lienart <tlienart@me.com>"]
 version = "0.1.0"
 
 [deps]
+ANSIColoredPrinters = "a4c015fc-c6ff-483c-b24f-f7ea428134e9"
 CRC32c = "8bf52ea8-c179-5cab-976a-9e18b702a9bc"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 FranklinParser = "796511e7-1510-466f-ad0c-1823c64bcafa"

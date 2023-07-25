@@ -1,6 +1,5 @@
 include("utils.jl")
 
-
 @testset "Context" begin
     p = "context"
     include(p/"types.jl")

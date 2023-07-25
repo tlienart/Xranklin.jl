@@ -21,8 +21,10 @@ A CodeNotebook essentially wraps around a Vector of CodeCodePair, each
 element is a (code_string => code_representation) where the code_representation
 is a (;html="...", latex="...", raw="...") representation of the code output.
 =#
-const CodeRepr      = NamedTuple{(:html, :latex, :raw), Tuple{String, String, String}}
-const CodeCodePair  = NamedTuple{(:code, :repr),        Tuple{String, CodeRepr}}
+const CodeRepr      = NamedTuple{(:html, :latex, :raw, :ansi),
+                            Tuple{String, String, String, String}}
+const CodeCodePair  = NamedTuple{(:code, :repr),
+                            Tuple{String, CodeRepr}}
 const CodeCodePairs = Vector{CodeCodePair}
 
 

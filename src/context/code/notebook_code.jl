@@ -207,6 +207,17 @@ function trim_stacktrace(s::String)
 end
 
 
+reformat_stderr(s)         = replace(s, r"Main\.__FRANKLIN_\d+\sstring" => "[Franklin]")
+has_ansi_escape_codes(s)   = occursin(r"\e\[[^m]*m", s)    
+strip_ansi_escape_codes(s) = replace(s, r"\e\[[^m]*m" => "")
+function ansi(s)
+    io = IOBuffer()
+    print(io, s)
+    printer = HTMLPrinter(io)
+    return replace(strip(repr("text/html", printer)), r"^\<pre\>" => "", r"\<\/pre\>" => "")
+end
+
+
 """
     _form_code_repr(...)
 
@@ -240,26 +251,38 @@ function _form_code_repr(
     out, err, result = code_output
     io_html, io_latex, io_raw = IOBuffer(), IOBuffer(), IOBuffer()
 
+    ansi_out = ""
+
     # (1) Representation of STDOUT (printout in a div)
     if !isempty(out)
+        # recall that stderr and stdout are a bit mixed up with IOCapture
+        # in particular calls to @info, @warn, @error etc get captured as stdout
+        out = reformat_stderr(out)
+        col_stdout = ansi(out)
+        ansi_out  *= col_stdout
         write(io_html,
             "<pre><code class=\"code-stdout language-plaintext\">",
-            out,
+            col_stdout,
             "</code></pre>"
         )
-        write(io_latex, out)
-        write(io_raw,   out, "\n")
+        nocol_out = strip_ansi_escape_codes(out)
+        write(io_latex, nocol_out)
+        write(io_raw,   nocol_out, "\n")
     end
 
     # (2) Representation of STDERR (printout in a div)
     if !isempty(err)
+        err = reformat_stderr(err)
+        col_stderr = ansi(err)
+        ansi_out  *= col_stderr
         write(io_html,
             "<pre><code class=\"code-stderr language-plaintext\">",
-            err,
+            col_stderr,
             "</code></pre>"
         )
-        write(io_latex, err)
-        write(io_raw, strip(err))
+        nocol_err = strip_ansi_escape_codes(err)
+        write(io_latex, nocol_err)
+        write(io_raw, strip(nocol_err))
 
     end
 
@@ -271,6 +294,7 @@ function _form_code_repr(
             io_raw,
             stripped_repr(result)
         )
+        ansi_out *= ansi(stripped_repr(result))
         # Check if there's a dedicated show or a custom show available
         figshow = append_result_html!(ctx, io_html, result, fig_html)
         skiplatex || append_result_latex!(ctx, io_latex, result, fig_latex)
@@ -290,7 +314,7 @@ function _form_code_repr(
                     "<pre class=\"fig-stdout\"><code class=\"code-stdout")
     end
 
-    return CodeRepr((hrepr, lrepr, rrepr))
+    return CodeRepr((hrepr, lrepr, rrepr, ansi_out))
 end
 
 

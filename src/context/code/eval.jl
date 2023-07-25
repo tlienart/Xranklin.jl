@@ -87,7 +87,7 @@ end
 
 
 function _attempt_eval(mdl::Module, code::String)
-    captured = IOCapture.capture() do
+    captured = IOCapture.capture(color=true) do
         include_string(softscope, mdl, code)
     end
     return captured.output, captured.value

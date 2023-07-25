@@ -1,5 +1,9 @@
 include(joinpath(@__DIR__, "..", "utils.jl"))
 
+JULIA = "<span class=\"sgr32\"><span class=\"sgr1\">julia&gt;</span></span>"
+SHELL = "<span class=\"sgr31\"><span class=\"sgr1\">shell&gt;</span></span>"
+HELP  = "<span class=\"sgr33\"><span class=\"sgr1\">help?&gt;</span></span>"
+
 @testset "repl-repl" begin
     s = """
         ```>
@@ -9,13 +13,13 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         ```
         """ |> html
     @test isapproxstr(s, """
-        <pre><code class="julia-repl">julia&gt; x = 5
+        <pre><code class="julia-repl">$JULIA x = 5
         5
         
-        julia&gt; y = 7
+        $JULIA y = 7
         7
         
-        julia&gt; z = x+y
+        $JULIA z = x+y
         12
         </code></pre>
         """)
@@ -30,7 +34,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         # in case lines changes in Julia
         replace(s, r"\.\/math\.jl\:\d+" => "./math.jl:xx"),
         """
-        <pre><code class="julia-repl">julia&gt; sqrt(-1)
+        <pre><code class="julia-repl">$JULIA sqrt(-1)
         ERROR: DomainError with -1.0:
         sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).
         Stacktrace:
@@ -41,7 +45,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
           [3] sqrt(x::Int64)
             @ Base.Math ./math.jl:xx
         
-        julia&gt; 2+2
+        $JULIA 2+2
         4
         </code></pre>
         """)
@@ -55,10 +59,10 @@ end
         ```
         """ |> html
     @test isapproxstr(s, """
-        <pre><code class="julia-repl">shell&gt; echo abc
+        <pre><code class="julia-repl">$SHELL echo abc
         abc
         
-        shell&gt; echo def
+        $SHELL echo def
         def
         </code></pre>
         """)
@@ -80,9 +84,9 @@ end
     Pkg.activate(cur_proj)
 
     for q in (
-            "($(splitpath(cur_proj)[end-1])) pkg&gt; activate --temp",
-            "pkg&gt; add Colors",
-            "Resolving package versions...",
+            "<span class=\"sgr34\"><span class=\"sgr1\">($(splitpath(cur_proj)[end-1])) pkg&gt;</span></span> activate --temp",
+            "pkg&gt;</span></span> add Colors",
+            "Resolving</span></span> package versions...",
             """<pre><code class=\"julia\">using Colors\ncolorant&quot;red&quot;</code></pre>""",
             """<div class=\"code-output\"><img class=\"code-figure\""""
         )
@@ -98,7 +102,7 @@ end
         """ |> html
 
     for q in (
-        """<pre><code class="julia-repl">help?&gt; im""",
+        """<pre><code class="julia-repl">$HELP im""",
         """<div class=\"repl-help\">\n<pre><code>im</code></pre>""",
         )
         @test occursin(q, s)

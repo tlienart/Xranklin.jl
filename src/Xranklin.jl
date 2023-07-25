@@ -31,6 +31,7 @@ const FP = FranklinParser
 
 import URIs
 import IOCapture
+import ANSIColoredPrinters: HTMLPrinter
 import OrderedCollections: LittleDict
 
 # copied from CommonMark.jl, used in dealing with autolink

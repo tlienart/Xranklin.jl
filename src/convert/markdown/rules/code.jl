@@ -328,9 +328,9 @@ function html_repl_code(
     lc::LocalContext
 )::String
 
-io = IOBuffer()
-_eval_repl_code(io, ci, lc; tohtml=true)
-return String(take!(io))
+    io = IOBuffer()
+    _eval_repl_code(io, ci, lc; tohtml=true)
+    return String(take!(io))
 end
 
 function latex_repl_code(
@@ -338,9 +338,9 @@ function latex_repl_code(
     lc::LocalContext
 )::String
 
-io = IOBuffer()
-_eval_repl_code(io, ci, lc; tohtml=false)
-return String(take!(io))
+    io = IOBuffer()
+    _eval_repl_code(io, ci, lc; tohtml=false)
+    return String(take!(io))
 end
 
 """
@@ -358,10 +358,8 @@ function _eval_repl_code(
    
     if !tohtml
         println(io, raw"\begin{lstlisting}")
-        pre = _lescape ∘ SubString
     else
         print(io, "<pre><code class=\"julia-repl\">")
-        pre = _hescape ∘ SubString
     end
 
     #
@@ -391,12 +389,16 @@ function _eval_repl_code(
                     lc, SubString(chunk), chunk_name; repl_mode=true, force
                 )
                 idx = findfirst(==(chunk_name), lc.nb_code.code_names)::Int
-                rep = strip(lc.nb_code.code_pairs[idx].repr.raw)
 
-                # add empty line between prompts but not after last
                 counter > 1 && println(io, "")
-                println(io, pre("julia> $(strip(chunk))"))
-                isempty(rep) || println(io, pre(rep))
+                if tohtml
+                    println(io, ansi("\e[1m\e[32mjulia>\e[0m $(strip(chunk))"))
+                    rep = strip(lc.nb_code.code_pairs[idx].repr.ansi)
+                else
+                    println(io, "julia> $(strip(chunk))")
+                    rep = strip(lc.nb_code.code_pairs[idx].repr.raw)
+                end
+                isempty(rep) || println(io, strip(rep))
 
                 chunk    = ""
                 counter += 1
@@ -410,18 +412,17 @@ function _eval_repl_code(
     elseif ci.lang == "repl-shell"
         counter = 1
         for line in split(ci.code, r"\r?\n", keepempty=false)
-            tmp = tempname()
-            open(tmp, "w") do outf
-                redirect_stdout(outf) do
-                    redirect_stderr(outf) do
-                        Base.repl_cmd(Cmd(string.(split(line))), nothing)
-                    end
-                end
+            captured = IOCapture.capture(color=true) do
+                Base.repl_cmd(Cmd(string.(split(line))), nothing)
             end
             counter > 1 && println(io, "")
-            println(io, pre("shell> $(strip(line))"))
-            println(io, pre(strip(read(tmp, String))))
-
+            if tohtml
+                println(io, ansi("\e[1m\e[31mshell>\e[0m $(strip(line))"))
+                isempty(captured.output) || println(io, ansi(strip(captured.output)))
+            else
+                println(io, "shell> $(strip(line))")
+                isempty(captured.output) || println(io, strip(captured.output))
+            end
             counter += 1
         end
     
@@ -433,16 +434,17 @@ function _eval_repl_code(
         for line in split(ci.code, r"\r?\n", keepempty=false)
             tmp = tempname()
             project_name = splitpath(Pkg.project().path)[end-1]
-            open(tmp, "w") do outf
-                redirect_stdout(outf) do
-                    redirect_stderr(outf) do
-                        Pkg.REPLMode.pkgstr(string(line))
-                    end
-                end
+            captured = IOCapture.capture(color=true) do
+                Pkg.REPLMode.pkgstr(string(line))
             end
             counter > 1 && println(io, "")
-            println(io, pre("($(project_name)) pkg> $(strip(line))"))
-            println(io, pre(strip(read(tmp, String))))
+            if tohtml
+                println(io, ansi("\e[1m\e[34m($(project_name)) pkg>\e[0m $(strip(line))"))
+                isempty(captured.output) || println(io, ansi(strip(captured.output)))
+            else
+                println(io, "($(project_name)) pkg> $(strip(line))")
+                isempty(captured.output) || println(io, strip(captured.output))
+            end
         end
     
     #
@@ -453,12 +455,13 @@ function _eval_repl_code(
         line = first(split(ci.code, r"\r?\n", limit=2))
         r    = eval(Meta.parse("@doc $line"))
 
-        println(io, pre("help?> $(strip(line))"))        
         # close code first, then print result
         if !tohtml
+            println(io, "help?> $(strip(line))")
             println(io, raw"\end{lstlisting}")
             println(io, strip(Markdown.latex(r)))
         else
+            println(io, ansi("\e[1m\e[33mhelp?>\e[0m $(strip(line))"))
             # We use the Markdown html processor here so that the output
             # is similar to the REPL, for instance so that we don't have
             # to fiddle with footnotes which are processed differently.
