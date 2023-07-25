@@ -1325,7 +1325,7 @@ randstring(5)
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">randstring(5)</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">"fOnam"</code></pre></div></fieldset>
+<div class="code-output"><pre><code class="code-result language-plaintext">"QZgfs"</code></pre></div></fieldset>
 
 </div><div class="trim">
 
@@ -1482,15 +1482,15 @@ println(c^2)
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia-repl">julia&gt; a = 5
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> a = 5
 5
 
-julia&gt; b = 2;
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> b = 2;
 
-julia&gt; c = a + 3b
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> c = a + 3b
 11
 
-julia&gt; println(c^2)
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> println(c^2)
 121
 </code></pre>
 </fieldset>
@@ -1511,11 +1511,11 @@ date
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia-repl">shell&gt; echo abc
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia-repl"><span class="sgr31"><span class="sgr1">shell&gt;</span></span> echo abc
 abc
 
-shell&gt; date
-Mon Jul 24 11:08:26 UTC 2023
+<span class="sgr31"><span class="sgr1">shell&gt;</span></span> date
+Tue Jul 25 11:11:13 UTC 2023
 </code></pre>
 </fieldset>
 
@@ -1543,31 +1543,31 @@ rand(StableRNG(1))
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia-repl">(docs) pkg&gt; activate --temp
-┌ Warning: The Pkg REPL mode is intended for interactive use only, and should not be used from scripts. It is recommended to use the functional API instead.
-└ @ Pkg.REPLMode /opt/hostedtoolcache/julia/1.9.2/x64/share/julia/stdlib/v1.9/Pkg/src/REPLMode/REPLMode.jl:382
-  Activating new project at `/tmp/jl_U8T0Js`
-(jl_U8T0Js) pkg&gt; add StableRNGs
-Resolving package versions...
-   Installed StableRNGs ─ v1.0.0
-    Updating `/tmp/jl_U8T0Js/Project.toml`
-  [860ef19b] + StableRNGs v1.0.0
-    Updating `/tmp/jl_U8T0Js/Manifest.toml`
-  [860ef19b] + StableRNGs v1.0.0
-  [2a0f44e3] + Base64
-  [b77e0a4c] + InteractiveUtils
-  [56ddb016] + Logging
-  [d6f4376e] + Markdown
-  [9a3f8284] + Random
-  [ea8e919c] + SHA v0.7.0
-  [9e88b42a] + Serialization
-  [8dfed614] + Test
-Precompiling project...
-[32m  ✓ [39mStableRNGs
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia-repl"><span class="sgr34"><span class="sgr1">(docs) pkg&gt;</span></span> activate --temp
+<span class="sgr33"><span class="sgr1">┌ Warning: </span></span>The Pkg REPL mode is intended for interactive use only, and should not be used from scripts. It is recommended to use the functional API instead.
+<span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ Pkg.REPLMode /opt/hostedtoolcache/julia/1.9.2/x64/share/julia/stdlib/v1.9/Pkg/src/REPLMode/REPLMode.jl:382</span>
+<span class="sgr32"><span class="sgr1">  Activating</span></span> new project at `/tmp/jl_P4Ym3e`
+<span class="sgr34"><span class="sgr1">(jl_P4Ym3e) pkg&gt;</span></span> add StableRNGs
+<span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
+<span class="sgr32"><span class="sgr1">   Installed</span></span> StableRNGs ─ v1.0.0
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `/tmp/jl_P4Ym3e/Project.toml`
+  <span class="sgr90">[860ef19b] </span><span class="sgr92">+ StableRNGs v1.0.0</span>
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `/tmp/jl_P4Ym3e/Manifest.toml`
+  <span class="sgr90">[860ef19b] </span><span class="sgr92">+ StableRNGs v1.0.0</span>
+  <span class="sgr90">[2a0f44e3] </span><span class="sgr92">+ Base64</span>
+  <span class="sgr90">[b77e0a4c] </span><span class="sgr92">+ InteractiveUtils</span>
+  <span class="sgr90">[56ddb016] </span><span class="sgr92">+ Logging</span>
+  <span class="sgr90">[d6f4376e] </span><span class="sgr92">+ Markdown</span>
+  <span class="sgr90">[9a3f8284] </span><span class="sgr92">+ Random</span>
+  <span class="sgr90">[ea8e919c] </span><span class="sgr92">+ SHA v0.7.0</span>
+  <span class="sgr90">[9e88b42a] </span><span class="sgr92">+ Serialization</span>
+  <span class="sgr90">[8dfed614] </span><span class="sgr92">+ Test</span>
+<span class="sgr32"><span class="sgr1">Precompiling</span></span> project...
+<span class="sgr32">  ✓ </span>StableRNGs
   1 dependency successfully precompiled in 1 seconds
-(jl_U8T0Js) pkg&gt; st
-Status `/tmp/jl_U8T0Js/Project.toml`
-  [860ef19b] StableRNGs v1.0.0
+<span class="sgr34"><span class="sgr1">(jl_P4Ym3e) pkg&gt;</span></span> st
+<span class="sgr32"><span class="sgr1">Status</span></span> `/tmp/jl_P4Ym3e/Project.toml`
+  <span class="sgr90">[860ef19b] </span>StableRNGs v1.0.0
 </code></pre>
 then<pre><code class="julia">using StableRNGs
 rand(StableRNG(1))</code></pre>
@@ -1640,7 +1640,7 @@ im
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia-repl">help?&gt; im
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia-repl"><span class="sgr33"><span class="sgr1">help?&gt;</span></span> im
 </code></pre>
 <div class="repl-help">
 <pre><code>im</code></pre>
@@ -1886,8 +1886,8 @@ generated and the image is inserted with</p>
 
 <fieldset class="md-input"><legend class="md-input-legend">markdown</legend><pre><code class="plaintext">```!
 # indep
-using Luxor
-@drawsvg juliacircles()
+using Colors
+colorant&quot;cornflowerblue&quot;
 ```</code></pre>
 </fieldset>
 
@@ -1897,24 +1897,23 @@ using Luxor
 
 <div class="trim">
 
-  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">using Luxor
-@drawsvg juliacircles()</code></pre>
-<div class="code-output"><pre class="fig-stdout"><code class="code-stdout language-plaintext">[36m[1m[ [22m[39m[36m[1mInfo: [22m[39mSnoopPrecompile is analyzing Luxor.jl code...
-</code></pre><img class="code-figure" src="/Xranklin.jl/assets/syntax/code_1/figs-html/__autofig_10012904553771893789.svg">
+  <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">using Colors
+colorant&quot;cornflowerblue&quot;</code></pre>
+<div class="code-output"><img class="code-figure" src="/Xranklin.jl/assets/syntax/code_1/figs-html/__autofig_1682931969501726440.svg">
 </div></fieldset>
 
 </div><p>If you inspect the HTML, you will see that the image displayed corresponds to a generated path that looks like</p>
-<pre><code class="plaintext">/assets/syntax/code/figs-html/__autofig_10012904553771893789.svg</code></pre>
+<pre><code class="plaintext">/assets/syntax/code/figs-html/__autofig_1682931969501726440.svg</code></pre>
 <p>The generated path is built as</p>
 <pre><code class="plaintext">/assets/[relative-path]/figs-html/[gen]</code></pre>
 <p>where <code>relative-path</code> is the relative path to the page with the code and
 <code>gen</code> is built out of the hash of the code that generated the image:</p>
 <pre><code class="julia">hash(&quot;&quot;&quot;
-  using Luxor
-  @drawsvg juliacircles()
+  using Colors
+  colorant&quot;cornflowerblue&quot;
   &quot;&quot;&quot; |&gt; strip
   ) |&gt; string</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">"10012904553771893789"</code></pre></div><p>Here's another example with Gaston (and you could use any other plotting library such as
+<div class="code-output"><pre><code class="code-result language-plaintext">"1682931969501726440"</code></pre></div><p>Here's another example with Gaston (and you could use any other plotting library such as
 <a href="https://github.com/JuliaPlots/Plots.jl">Plots</a>, <a href="https://github.com/JuliaPlots/PlotlyJS.jl">PlotlyJS</a>, etc., though you'll have to be careful about setting dependencies properly.
 Check out the <a href="/Xranklin.jl/extras/plots/">page dedicated to plots with Franklin</a> for more informations.</p>
 <pre><code class="julia">using Gaston

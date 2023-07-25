@@ -1190,7 +1190,7 @@ the page variable <code>ignore_cache</code> to <code>true</code> and restart the
 </ul>
 <h2 id="environments" ><a href="#environments"> Environments</a></h2><p>It can be convenient to activate a specific environment for the code to be executed on a page.
 The <code>\activate&lbrace;some/path/&rbrace;</code> command allows you to specify a (unix-style) relative path to the website folder where a specific <code>Project.toml</code> file resides.
-Effectvely this will have the same effect as calling <code>Pkg.activate(...)</code> inside a code-cell.</p>
+Effectively this will have the same effect as calling <code>Pkg.activate(...)</code> inside a code-cell.</p>
 <p>If you leave the path empty or just use a single <code>.</code> (<code>\activate&lbrace;&rbrace;</code> or <code>\activate&lbrace;.&rbrace;</code>), Franklin will try to activate the directory that contains the page being currently built.</p>
 <p>All evaluated code cells following the <code>activate</code> command will be executed in the relevant environment.
 Whenever a page build is finished, the "parent" environment is re-activated (this would correspond to the website folder environment if there's a <code>Project.toml</code> file there, or just the Main environment otherwise).</p>
