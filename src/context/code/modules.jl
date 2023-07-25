@@ -176,9 +176,10 @@ function utils_code(gc::GlobalContext; glob=false, crop=false)
     # useful for process_utils
     crop && return body
     # otherwise
+    F = env(:module_name)
     return """
     module Utils
-        using Reexport
+        using $F: @reexport
         $(ifelse(glob, "", body))
     end
     using .Utils
@@ -206,7 +207,7 @@ modules_setup(c::Context) = begin
             export $exp_names
 
             using $F
-            using Reexport
+            using $F: @reexport
 
             @reexport import Pkg
             @reexport import Dates

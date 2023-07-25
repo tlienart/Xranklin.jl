@@ -33,6 +33,7 @@ import URIs
 import IOCapture
 import ANSIColoredPrinters: HTMLPrinter
 import OrderedCollections: LittleDict
+import Reexport: @reexport
 
 # copied from CommonMark.jl, used in dealing with autolink
 @inline issafe(c::Char) = c in "?:/,-+@._()#=*&%" ||
