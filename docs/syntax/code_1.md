@@ -544,15 +544,15 @@ For instance:
 \showmd{
   ```!
   # indep
-  using Luxor
-  @drawsvg juliacircles()
+  using Colors
+  colorant"cornflowerblue"
   ```
 }
 
 If you inspect the HTML, you will see that the image displayed corresponds to a generated path that looks like
 
 ```plaintext
-/assets/syntax/code/figs-html/__autofig_10012904553771893789.svg
+/assets/syntax/code/figs-html/__autofig_1682931969501726440.svg
 ```
 
 The generated path is built as
@@ -566,8 +566,8 @@ where `relative-path` is the relative path to the page with the code and
 
 ```!
 hash("""
-  using Luxor
-  @drawsvg juliacircles()
+  using Colors
+  colorant"cornflowerblue"
   """ |> strip
   ) |> string
 ```
