@@ -25,10 +25,20 @@ function process_md_file_pass_2(
     #   4. ... a final pass which will hunt for any remaining dbb and resolve.
     #   5. ... pagination token processing
     #
-    ihtml2 = html2(ihtml, lc; only_utils=true)
+    body_html = ihtml2 = ""
+    if getvar(lc, :_has_parser_error, false)
+        # just doing damage control here
+        try
+            ihtml2    = html2(ihtml, lc; only_utils=true)
+            body_html = html2(ihtml2, lc)
+        catch
+            body_html = ihtml2 = ihtml
+        end
+    else
+        ihtml2    = html2(ihtml, lc; only_utils=true)
+        body_html = html2(ihtml2, lc)
+    end
     setvar!(lc, :_generated_ihtml2, ihtml2)
-
-    body_html = html2(ihtml2, lc)
     setvar!(lc, :_generated_html, body_html)
 
     skeleton_path = path(lc.glob, :layout) / getvar(lc, :layout_skeleton, "")
@@ -76,7 +86,18 @@ function process_md_file_pass_2(
     # itself, will call html2 on :_generated_ihtml2 before it gets
     # injected in converted_html.
     #
-    converted_html = html2(full_page, lc)
+    converted_html = ""
+    if !getvar(lc, :_has_parser_error, false)
+        converted_html = html2(full_page, lc)
+    else
+        try
+            converted_html = html2(full_page, lc)
+        catch
+            # damage control (this would be quite an extreme and unexpected path
+            # given that things should have been limited in the earlier t/c)
+            converted_html = full_page
+        end
+    end
 
     process_redirect(lc, final)
     opath2 = process_slug(lc, opath)

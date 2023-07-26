@@ -114,7 +114,7 @@ function full_pass(
         set_paths!(gc, folder)
         merge!(gc.vars, bk_vars)
 
-        activate = isfile(folder / "Project.toml") &&
+        activate = exists_rpath(gc, "Project.toml") &&
                    (Pkg.project().path != getvar(gc, :project, ""))
 
         if activate
@@ -148,8 +148,8 @@ function full_pass(
 
     # check that there's an index page (this is what the server will
     # expect to point to)
-    hasindex = isfile(path(gc, :folder) / "index.md") ||
-               isfile(path(gc, :folder) / "index.html")
+    hasindex = exists_rpath(gc, "index.md") ||
+               exists_rpath(gc, "index.html")
     if !hasindex && !allow_no_index
         error(
             """

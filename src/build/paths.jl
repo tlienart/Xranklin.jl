@@ -55,7 +55,7 @@ get_rpath(gc::GlobalContext, fpath::String) =
 Check if a relative path `rpath` corresponds to an actual file.
 """
 exists_rpath(gc::GlobalContext, rpath::String) =
-    isfile(paths(gc)[:folder] / rpath)
+    isfile(path(gc, :folder) / rpath)
 
 """
     get_ropath(gc, opath)

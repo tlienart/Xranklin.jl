@@ -159,13 +159,14 @@ See anchors.jl, eltype of one of the fields of GC.
               that gets used.
     * reqs : set of rpaths that require the anchor.
 """
-struct Anchor
+mutable struct Anchor
     id::String
-    locs::Vector{String}
+    locs::Set{String}
+    cur_loc::String
     reqs::Set{String}
 end
 
-Anchor(id::String, loc::String) = Anchor(id, [loc], Set{String}())
+Anchor(id::String, loc::String) = Anchor(id, Set([loc]), loc, Set{String}())
 
 
 """

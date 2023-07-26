@@ -64,7 +64,11 @@ Return a processed version of `heading_text` which can identify the heading
 (id) and add an entry in the context's headings.
 Also add it to the global set of anchors (see `lx_reflink`).
 """
-function heading_id(c::LocalContext, heading_text::String, hk::Symbol)::String
+function heading_id(
+            c::LocalContext,
+            heading_text::String,
+            hk::Symbol
+        )::String
     ht  = strip(heading_text)
     id  = string_to_anchor(ht)
     lvl = parse(Int, String(hk)[2])

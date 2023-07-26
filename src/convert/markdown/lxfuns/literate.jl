@@ -67,7 +67,7 @@ function lx_literate(
     end
 
     # try to form the full path to the literate file and check it's there
-    fpath = path(:folder) / rpath
+    fpath = path(lc.glob, :folder) / rpath
     if !isfile(fpath)
         @warn """
             \\literate{...}

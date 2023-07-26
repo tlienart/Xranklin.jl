@@ -45,7 +45,10 @@ function convert_md(
     catch e
         if isa(e, FP.FranklinParserException)
             # if it comes directly from the first pass processing a file
-            if c isa LocalContext && !is_recursive(c) && isfile(path(c.glob, :folder)/c.rpath)
+            lc_file = path(c.glob, :folder)/c.rpath
+            if c isa LocalContext && !is_recursive(c) && isfile(lc_file)
+                # overwrite md to make sure we're using the original stuff
+                md  = read(lc_file, String)
                 rge = findfirst(e.context, md)
                 la  = count('\n', md[begin:rge[1]]) + 1
                 lb  = la + count('\n', subs(md, rge))

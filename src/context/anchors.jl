@@ -35,31 +35,24 @@ Note: in this page the 'rpath' is that of the page defining the anchor.
 """
 function add_anchor(
             gc::GlobalContext,
-            id::String,
-            rpath::String
+            id::String,         # anchor id
+            rpath::String       # place where the anchor is defined
         )::Nothing
 
     crumbs(@fname, "$id (from $rpath)")
 
-    # add the id to the local context's anchors
-    union!(gc.children_contexts[rpath].anchors, [id])
+    # add the id to the local context's anchors (if it's not there already)
+    union!(
+        gc.children_contexts[rpath].anchors,
+        [id]
+    )
 
     # add the id to the gc anchors
     if id in keys(gc.anchors)
-        # these are usually small vectors so it's fine to reconstruct them
-        # each time and it makes the logic easier
-        # the end result should be that locs = [existing_loc, ..., rpath]
-        # i.e.: a vector of existing rpaths with the last one being the most
-        # recent one (the one that will be used)
-        locs = gc.anchors[id].locs
-        prev = copy(locs)
-        empty!(locs)
-        for loc in prev
-            if (loc != rpath) && exists_rpath(gc, loc)
-                push!(locs, loc)
-            end
-            # final one should be rpath
-            push!(locs, rpath)
+        anchor = gc.anchors[id]
+        if anchor.cur_loc != rpath
+            anchor.cur_loc = rpath
+            union!(anchor.locs, [rpath])
         end
     else
         gc.anchors[id] = Anchor(id, rpath)
@@ -94,24 +87,26 @@ function get_anchor(
     crumbs(@fname, "$id (from $rpath)")
 
     if id in keys(gc.anchors)
-        a = gc.anchors[id]
-        union!(a.reqs, [rpath])
+        anchor = gc.anchors[id]
+        union!(anchor.reqs, [rpath])
         # Return the target link e.g. 'foo/bar/#anchor_id'. The last loc is
         # always used. This is why it's recommended to only have unique global
         # ids; if there's more than one loc for one id, it's ambiguous which
         # target will be obtained where.
-        if length(a.locs) > 1
+        if length(anchor.locs) > 1
             @warn """
                 Anchor target
-                There is more than one page with an anchor '$(a.id)'.
-                The last seen page defining it is: $(last(a.locs)).
+                There is more than one page with an anchor '$(anchor.id)'.
+                The last seen page defining it is: $(anchor.cur_loc).
+                To avoid this being ambiguous, consider adding an explicit
+                label to the desired target with `\\label{name of target}`.
                 """
         end
         # form the target
         # 1. start with a `/` so it's not appended to the current path
         # 2. use the unixified relative path to the source
         # 3. add the anchor on that page
-        target = '/' * unixify(noext(last(a.locs))) * "#$(a.id)"
+        target = '/' * unixify(noext(anchor.cur_loc)) * "#$(anchor.id)"
         return target
     end
     # this is only used in FP and otherwise has no effect
@@ -142,16 +137,25 @@ function rm_anchor(
 
     # this check should be superfluous
     id in keys(gc.anchors) || return
-    # recover the locs and the last relevant loc
-    locs = gc.anchors[id].locs
-    cloc = last(locs)
-    reqs = copy(gc.anchors[id].reqs)
-    prev = copy(locs)
-    empty!(locs)
-    append!(locs, [l for l in prev if l != rpath])
-    if isempty(locs)
-        delete!(gc.anchors, id)
+
+    anchor = gc.anchors[id]
+    reqs   = copy(anchor.reqs)
+
+    # remove rpath from the anchor locs
+    if rpath in anchor.locs
+        pop!(anchor.locs, rpath)
     end
+    # if it was the cur_loc, check if there's another candidate available,
+    # if there isn't, remove the anchor altogether
+    if anchor.cur_loc == rpath
+        if isempty(anchor.locs)
+            delete!(gc.anchors, id)
+        else
+            anchor.cur_loc = pop!(anchor.locs)
+        end
+    end
+
+    # trigger pages that might have dependended on that anchor
     for rp in reqs
         process_file_from_trigger(rp, gc; msg="(depends on updated anchor)")
     end
