@@ -212,7 +212,8 @@ function row_partition(row::SS)
     # but there isn't a closing | because it gets stripped in the split
     cells = SS[]
     curp  = first(pipes)
-    for i in 2:length(pipes)
+    for i in eachindex(pipes)
+        i == 1 && continue
         nextp = pipes[i]
         push!(cells, subs(ps, next_index(curp), prev_index(nextp)))
         curp  = nextp

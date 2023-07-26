@@ -122,7 +122,7 @@ function write_tag_page(
     end
 
     # convert tag layout and write to file (we don't care about retrieving it from GC)
-    lc = DefaultLocalContext(gc; rpath="__tag__")
+    lc = SimpleLocalContext(gc; rpath="__tag__")
     setvar!(lc, :tag_id, id)
     setvar!(lc, :tag_name, gc.tags[id].name)
     setvar!(lc, :_relative_path, trp)

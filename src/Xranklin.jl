@@ -80,6 +80,7 @@ const FRANKLIN_ENV = Dict{Symbol, Any}(
 env(s::Symbol)        = FRANKLIN_ENV[s]
 setenv!(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
 
+const DUMMY_MODULE = Module() # for contexts which don't need notebooks
 
 const TIMER  = Dict{Float64,Pair{String, Float64}}()
 const TIMERN = Ref(0)

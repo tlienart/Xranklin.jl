@@ -373,7 +373,8 @@ function from_utils(
         # ---> args above is {foo}{bar}{baz}
         # ---> args after is ["...", "bar", "baz"]
         first_non_adjacent = 0
-        for i = 2:length(brackets)
+        for i = eachindex(brackets)
+            i == 1 && continue
             if prev_index(brackets[i]) != to(brackets[i-1])
                 first_non_adjacent = i
                 break

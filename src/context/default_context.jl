@@ -224,8 +224,12 @@ DefaultLocalContext(; kw...) = DefaultLocalContext(env(:cur_global_ctx); kw...)
 DefaultLocalContext(::Nothing; kw...) = DefaultLocalContext(DefaultGlobalContext(); kw...)
 
 # for html pages
-SimpleLocalContext(gc::GlobalContext; rpath::String="") =
+function SimpleLocalContext(
+        gc::GlobalContext;
+        rpath::String=""
+    )
     LocalContext(gc; rpath)
+end
 
 # Detached context for simple eval str
 ToyLocalContext(rpath="_toy_") = LocalContext(GlobalContext(); rpath)

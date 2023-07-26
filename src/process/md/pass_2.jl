@@ -77,7 +77,6 @@ function process_md_file_pass_2(
         full_page *= isfile(foot_path) ? read(foot_path, String) : ""
 
     end
-
     # ---------------------------------------------------------------------
     # process at least once, if there's a pagination token here
     # the page will be re-processed (see process_paginated)

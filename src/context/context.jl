@@ -178,7 +178,9 @@ end
 
 # Note that when a local context is created it is automatically
 # attached to its global context via the children_contexts
-function LocalContext(glob, vars, defs, headings, rpath, alias=Alias())
+function LocalContext(
+            glob, vars, defs, headings, rpath, alias=Alias()
+        )
 
     if isempty(rpath)
         error("LocalContext should be created with a non-empty rpath.")
@@ -190,11 +192,10 @@ function LocalContext(glob, vars, defs, headings, rpath, alias=Alias())
             wipe=true
     )
     nb_vars  = VarsNotebook(mdl)
-
     # code notebook
     mdl = submodule(
-            modulename("$(rpath)_code", true);
-            wipe=true
+        modulename("$(rpath)_code", true);
+        wipe=true
     )
     nb_code  = CodeNotebook(mdl)
 
@@ -235,7 +236,9 @@ function LocalContext(
             rpath="",
             alias=Alias()
         )
-    return LocalContext(g, v, d, PageHeadings(), rpath, alias)
+    return LocalContext(
+        g, v, d, PageHeadings(), rpath, alias
+    )
 end
 
 

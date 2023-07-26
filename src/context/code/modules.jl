@@ -22,8 +22,6 @@
 #
 #   See test/indir/utils.jl
 #
-#
-
 
 """
     modulename(id, h)

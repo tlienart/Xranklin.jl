@@ -47,9 +47,8 @@ struct VarsNotebook <: Notebook
     code_pairs::VarsCodePairs
     is_stale::Ref{Bool}
 end
-VarsNotebook(mdl::Module) =
+VarsNotebook(mdl::Module=DUMMY_MODULE) =
     VarsNotebook(mdl, Ref(1), VarsCodePairs(), Ref(false))
-
 
 """
     CodeNotebook
@@ -79,7 +78,7 @@ struct CodeNotebook <: Notebook
     indep_code::Dict{String, CodeRepr}
     repl_code_hash::Dict{String, UInt64}
 end
-CodeNotebook(mdl::Module) =
+CodeNotebook(mdl::Module=DUMMY_MODULE) =
     CodeNotebook(mdl, Ref(1), CodeCodePairs(),
                  String[], Ref(false),
                  Dict{String, CodeRepr}(),

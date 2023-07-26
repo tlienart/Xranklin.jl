@@ -212,7 +212,10 @@ function hfun_footnotes(
 
     # only show a subset of the footnotes if required
     if !isempty(p)
-        p_ids = [string_to_anchor(strip(p_i, '\"')) for p_i in p]
+        p_ids = [
+            string_to_anchor(strip(p_i, '\"'))
+            for p_i in p
+        ]
         filter!(
             fn -> chop(fn, head=1, tail=0) in p_ids,
             fns
