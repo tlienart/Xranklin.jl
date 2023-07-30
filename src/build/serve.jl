@@ -87,6 +87,8 @@ function serve(
             launch::Bool = true,
         )::Nothing
 
+        yprint("start of serve call $(Base.get_world_counter())")
+
     if debug
         Logging.disable_logging(Logging.Debug - 100)
         ENV["JULIA_DEBUG"] = "all"
@@ -188,6 +190,8 @@ function serve(
     # changes; this set will be updated in the loop if new files get
     # added that should be watched
     wf = find_files_to_watch(gc)
+
+    yprint("pre full-pass $(Base.get_world_counter())")
 
     gc = full_pass(
         gc, wf;

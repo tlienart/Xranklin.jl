@@ -6,14 +6,14 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
         """
     lcu = lc_with_utils(u)
     begin # precomp
-        (X.utils_module(lcu)).foo()
+        (X.get_utils_module(lcu)).foo()
     end
     @time begin
-        f = getproperty(X.utils_module(lcu), :foo)
+        f = getproperty(X.get_utils_module(lcu), :foo)
         @test Base.@invokelatest f() == Dict{String,String}()
     end
     @time begin
-        @test (X.utils_module(lcu)).foo() == Dict{String,String}()
+        @test (X.get_utils_module(lcu)).foo() == Dict{String,String}()
     end
     @time begin
         @test X.outputof(:foo, String[], lcu; internal=false) == "Dict{String, String}()"
@@ -30,7 +30,7 @@ end
     end
 end
 
-# TODO: removing Base.@invokelatest will make this fail. See tjd/xr/xrt3
+# TODO: removing Base.@invokelatest in outputof will make this fail.
 @test_in_dir "_worldage" "worldage" begin
     write(FOLDER/"index.md", """
         ABC {{foo}}
@@ -39,6 +39,6 @@ end
         hfun_foo() = :bar
         """)
     write(FOLDER/"skeleton.html", "")
+    X.yprint("pre build $(Base.get_world_counter())")
     build(FOLDER)
-    # @test_throws MethodError build(FOLDER)
 end

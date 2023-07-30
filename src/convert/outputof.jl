@@ -18,6 +18,7 @@ function outputof(
                 f(lc; tohtml) :
                 f(lc, args; tohtml)
     else
+        yprint("in outputof external $(Base.get_world_counter())")
         f = getproperty(get_utils_module(lc), fsymb)
         res = hasmethod(f, Tuple{Vector{String}}, (:tohtml,)) ?
                    ( # there is a method with a ;tohtml
