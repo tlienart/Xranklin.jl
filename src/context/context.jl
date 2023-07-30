@@ -18,7 +18,8 @@ track of what needs to be updated upon modification.
     lxdefs            : the lx definitions accessible in the global context
     vars_aliases      : other accepted names for default variables
     nb_vars           : notebook associated with markdown defs in config file
-    nb_code           : notebook associated with utils file
+                        it's also the notebook that contains FranklinCore and
+                        Utils that other pages can call upon.
     anchors           : dictionary of all anchors {id => Anchor}
     tags              : dictionary of all tags {id => Tag}
     paginated         : set of pages `{rpath}` which are paginated
@@ -34,7 +35,6 @@ struct GlobalContext{LC<:Context} <: Context
     lxdefs::LxDefs
     vars_aliases::Alias
     nb_vars::VarsNotebook
-    nb_code::CodeNotebook
     anchors::Dict{String, Anchor}
     tags::Dict{String, Tag}
     paginated::Set{String}
@@ -131,20 +131,12 @@ function GlobalContext(
         )
 
     parent_module(wipe=true)
-    rpath = "__global__"
     # vars notebook
-    mdl     = submodule(
-                modulename("__global_vars", true);
-                wipe=true
-              )
+    mdl = submodule(
+        modulename("__global_vars", true);
+        wipe=true
+    )
     nb_vars = VarsNotebook(mdl)
-
-    # utils notebook
-    mdl     = submodule(
-                modulename("__global_utils", true);
-                wipe=true
-              )
-    nb_code = CodeNotebook(mdl)
 
     # rest
     anchors      = Dict{String, Anchor}()
@@ -160,7 +152,6 @@ function GlobalContext(
         defs,
         alias,
         nb_vars,
-        nb_code,
         anchors,
         tags,
         paginated,
@@ -171,7 +162,7 @@ function GlobalContext(
     )
 
     set_current_global_context(gc)
-    modules_setup(gc)
+    setup_var_module(gc)
     return gc
 end
 
@@ -192,12 +183,10 @@ function LocalContext(
             wipe=true
     )
     nb_vars  = VarsNotebook(mdl)
-    # code notebook
-    mdl = submodule(
-        modulename("$(rpath)_code", true);
-        wipe=true
-    )
-    nb_code  = CodeNotebook(mdl)
+    # code notebook (initialise with dummy module until some code-to-execute
+    # is encountered in which case `setup_code_module` is called
+    # (see code/modules.jl)
+    nb_code  = CodeNotebook()
 
     # req vars (keep track of what is requested from this page)
     req_vars   = Dict{String, Set{Symbol}}()
@@ -225,7 +214,10 @@ function LocalContext(
     # attach it to global
     glob.children_contexts[rpath] = lc
     # *must* be done after attachment as depends on children context
-    modules_setup(lc)
+    # for the setup of the code module, see comment earlier at instantiation
+    # of nb_code.
+    set_current_local_context(lc)
+    setup_var_module(lc)
     return lc
 end
 

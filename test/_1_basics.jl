@@ -6,6 +6,7 @@ include("utils.jl")
     include(p/"context.jl")
     include(p/"default_context.jl")
     include(p/"serialize.jl")
+    include(p/"order.jl")
 end
 
 @testset "Context/Code" begin

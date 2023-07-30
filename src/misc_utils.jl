@@ -63,12 +63,6 @@ function str_fmt(s::AbstractString, l=65)
     return "[...]$ss"
 end
 
-
-function info_thread(n::Int)
-    @info "🧵 loop (n=$(Threads.nthreads())) over $n items"
-end
-
-
 """
     change_ext(fname, new_extension)
 

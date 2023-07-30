@@ -41,7 +41,7 @@ function eval_str(
     code = replace(code, "⁰" => "\"")
 
     res = eval_nb_cell(
-        utils_module(lc),
+        get_utils_module(lc),
         code,
         cell_name = "__estr__"
     )
