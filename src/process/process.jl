@@ -62,6 +62,8 @@ function process_file(
                     gc.children_contexts[rpath]     :
                     DefaultLocalContext(gc; rpath)
 
+        set_current_local_context(lc)
+
         # to check nesting of re-processing + the *context* has changed and so
         # as a result all cells (apart from indep ones potentially) must be
         # re-evaluated.

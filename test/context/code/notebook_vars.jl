@@ -4,9 +4,9 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
     lc = X.DefaultLocalContext(rpath="foo")
     @test isa(lc.nb_vars, X.VarsNotebook)
     @test nameof(lc.nb_vars.mdl) == X.modulename("foo_vars", true)
-    @test nameof(lc.nb_code.mdl) == X.modulename("foo_code", true)
-    @test length(lc.nb_vars) == 0
-    @test X.counter(lc.nb_vars) == 1
+
+    # by default, lc code is not active
+    @test X.is_dummy(lc.nb_code)
 
     v = """
         a = 5

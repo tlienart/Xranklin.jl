@@ -134,8 +134,7 @@ function serve(
         config_unchanged || break
     end
 
-    deserialized_gc = false
-
+    deserialized_gc_success = false
     if !clear && isfile(gc_cache_path())
         start = time()
         # try to load previously-serialised contexts if any, the process config
@@ -146,7 +145,7 @@ function serve(
             δt = time() - start; @info """
                 🏁 ... done $(hl(time_fmt(δt), :red))
                 """
-            deserialized_gc = true
+            deserialized_gc_success = true
         catch
             @info """
                 ❌ failed to deserialize cache, maybe the previous session crashed.
@@ -159,7 +158,9 @@ function serve(
     end
 
     if clear || !utils_unchanged
-        if deserialized_gc
+        # if there was a successfully deserialised gc, we discard it
+        # if there wasn't, then the gc is currently a fresh one
+        if deserialized_gc_success
             # changed_layout_hashes -> restart from scratch
             folder = path(gc, :folder)
             gc     = DefaultGlobalContext()

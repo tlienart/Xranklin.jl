@@ -27,7 +27,7 @@ include(joinpath(@__DIR__, "..", "utils.jl"))
 
     # Misc
     @test isempty(gc.children_contexts)
-    @test X.utils_module(gc) === gc.nb_code.mdl.Utils
+    @test X.get_utils_module(gc) === gc.nb_vars.mdl.Utils
     @test X.get_rpath(nothing) === ""
 end
 
@@ -91,11 +91,16 @@ end
 
     @test X.getvar(nothing, lc, :la) === nothing
 
+    @test X.cur_lc().rpath == "local"
+
+    # create another local context, this also switches
+    # the current one
     lc2 = X.DefaultLocalContext(gc; rpath="local2")
     X.setvar!(lc2, :lb, 4)
 
     @test X.getvar(lc2, lc, :lb) == 4
     @test :lb in lc2.req_vars[lc.rpath]
+    @test X.cur_lc().rpath == "local2"
 
     # in module
     include_string(gc.nb_vars.mdl, """
@@ -111,8 +116,19 @@ end
     @test X.getvar(gc, :bar) == 1
     @test X.getvar(gc, :baz) == 2
     @test X.getvar(gc, :bat) == 4
+    @test X.hasvar(lc2, :foo)
 
     X.setvar!(lc2, :lc, 10)
+
+    # let's go back to lc
+    X.set_current_local_context(lc)
+    @test X.cur_lc().rpath == "local"
+
+    # let's setup its code module
+    @test X.is_dummy(lc.nb_code)
+    X.setup_code_module(lc)
+    @test !X.is_dummy(lc.nb_code)
+
     include_string(lc.nb_code.mdl, """
         setlvar!(:foo, 0)
         setgvar!(:bar, -1)

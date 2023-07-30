@@ -47,8 +47,11 @@ struct VarsNotebook <: Notebook
     code_pairs::VarsCodePairs
     is_stale::Ref{Bool}
 end
-VarsNotebook(mdl::Module=DUMMY_MODULE) =
+VarsNotebook(mdl::Module) =
     VarsNotebook(mdl, Ref(1), VarsCodePairs(), Ref(false))
+
+
+const DUMMY_CODE_MODULE = Module(:dummy_code_module, false, false)
 
 """
     CodeNotebook
@@ -66,8 +69,10 @@ Same as VarsNotebook with additionally
     indep_code: keeps track of mapping {code_string => code_repr} for code
                  blocks explicitly marked as 'indep' so that their result
                  is "frozen" and the cell can be skipped.
+    repl_code_hash: list of repl blocks and their hash (so that if they change
+                    they get reevaluated).
 """
-struct CodeNotebook <: Notebook
+mutable struct CodeNotebook <: Notebook
     # see VarsNotebook
     mdl::Module
     cntr_ref::Ref{Int}
@@ -78,7 +83,7 @@ struct CodeNotebook <: Notebook
     indep_code::Dict{String, CodeRepr}
     repl_code_hash::Dict{String, UInt64}
 end
-CodeNotebook(mdl::Module=DUMMY_MODULE) =
+CodeNotebook(mdl::Module=DUMMY_CODE_MODULE) =
     CodeNotebook(mdl, Ref(1), CodeCodePairs(),
                  String[], Ref(false),
                  Dict{String, CodeRepr}(),
@@ -87,3 +92,5 @@ CodeNotebook(mdl::Module=DUMMY_MODULE) =
 is_stale(nb::Notebook)        = nb.is_stale[]
 stale_notebook!(nb::Notebook) = (nb.is_stale[] = true;)
 fresh_notebook!(nb::Notebook) = (nb.is_stale[] = false;)
+
+is_dummy(nb::CodeNotebook) = (nb.mdl === DUMMY_CODE_MODULE)

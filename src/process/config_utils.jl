@@ -57,7 +57,6 @@ function process_config(
     # ensure we're in the relevant gc
     set_current_global_context(gc)
     # set the notebook counters at the top
-    reset_counter!(gc.nb_code)
     reset_counter!(gc.nb_vars)
 
     # Effective config processing: run html as usual for a .md file except that
@@ -143,7 +142,8 @@ end
 """""
     process_utils(utils, gc)
 
-Process a utils string into a given global context object.
+Process a utils string into a given global context object. This is always called
+in a "fresh" GC context (i.e. one where no code has been executed yet).
 """
 function process_utils(
             gc::GlobalContext,
@@ -155,31 +155,22 @@ function process_utils(
     # ensure we're in the relevant gc
     set_current_global_context(gc)
     # set the notebooks at the top
-    reset_counter!(gc.nb_code)
     reset_counter!(gc.nb_vars)
     # keep track of utils code
     setvar!(gc, :_utils_code, utils)
-    # update the gc modules to use the utils
-    # we disable warnings here as docstrings update might
-    # show warnings and we don't care.
-    pre_log_level = Base.CoreLogging._min_enabled_level[]
-    Logging.disable_logging(Logging.Warn)
-    for m in (gc.nb_vars.mdl, gc.nb_code.mdl)
-        include_string(
-            m.Utils,
-            utils_code(gc; crop=true)
-        )
-    end
-    Base.CoreLogging._min_enabled_level[] = pre_log_level
+    
+    utils_mdl = get_utils_module(gc)
+    include_string(
+        utils_mdl,
+        utils
+    )
 
-    # check names of hfun, lx and vars; since we wiped the module before the
-    # include_string, all the proper names recuperated here are 'fresh'.
-    mdl = utils_module(gc)
-    ns  = String.(names(mdl, all=true))
-
+    # check names of hfun, lx and vars; since we're working with an initially
+    # fresh GC (see docstring), all the proper names recuperated here are 'fresh'.
+    ns  = String.(names(utils_mdl, all=true))
     filter!(
         n -> n[1] != '#' &&
-             n ∉ ("eval", "include", string(nameof(mdl))),
+             n ∉ ("eval", "include", string(nameof(utils_mdl))),
         ns
     )
     setvar!(gc, :_utils_hfun_names,
@@ -190,7 +181,12 @@ function process_utils(
         Symbol.(n[5:end] for n in ns if startswith(n, "env_")))
     setvar!(gc, :_utils_var_names,
         Symbol.(n for n in ns if
-            !(startswith(n, r"lx_|hfun_|env_") | (n ∈ UTILS_UTILS))))
+            !(
+                startswith(n, r"lx_|hfun_|env_") |
+                (n ∈ CORE_UTILS) |
+                (n ∈ ["Pkg", "Dates"])
+            )
+        ))
     return
 end
 
@@ -203,7 +199,6 @@ function process_utils(gc::GlobalContext)
     end
     return
 end
-
 
 utils_hfun_names(gc)   = getvar(gc, :_utils_hfun_names, Vector{Symbol}())
 utils_lxfun_names(gc)  = getvar(gc, :_utils_lxfun_names, Vector{Symbol}())

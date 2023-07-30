@@ -1,11 +1,11 @@
 """
-    eval_code_cell!(ctx, cell_code, cell_name; kw...)
+    eval_code_cell!(lc, cell_code, cell_name; kw...)
 
 Evaluate the content of a cell we know runs some code.
 
 ## Args
 
-    ctx:       context in which the code is evaluated
+    lc:       context in which the code is evaluated
     cell_code: the code to evaluate
     cell_name: the name of the cell (possibly generated)
 
@@ -19,7 +19,7 @@ Evaluate the content of a cell we know runs some code.
 
 """
 function eval_code_cell!(
-            ctx::Context,
+            lc::LocalContext,
             cell_code::SS,
             cell_name::String;
             imgdir_html::String=tempdir(),
@@ -35,12 +35,17 @@ function eval_code_cell!(
 
     # recover the notebook context, the cell index we're looking at
     # and the hash of the code (used for autofigs)
-    nb         = ctx.nb_code
+    nb         = lc.nb_code
+
+    if is_dummy(nb)
+        setup_code_module(lc)
+    end
+
     cell_index = counter(nb)
     cell_code  = string(cell_code)
     cell_hash  = hash(cell_code) |> string
 
-    ignore_cache = getvar(ctx, :ignore_cache, false)
+    ignore_cache = getvar(lc, :ignore_cache, false)
 
     # if the cell_index is within the range of cell indexes, we replace the
     # name with the current cell name to guarantee we're using the latest name.
@@ -97,9 +102,9 @@ function eval_code_cell!(
     end
 
     # Form autofigs paths
-    autosavefigs = getvar(ctx, :autosavefigs, true)
-    autoshowfigs = getvar(ctx, :autoshowfigs, true)
-    skiplatex    = getvar(ctx, :skiplatex,    false)
+    autosavefigs = getvar(lc, :autosavefigs, true)
+    autoshowfigs = getvar(lc, :autoshowfigs, true)
+    skiplatex    = getvar(lc, :skiplatex,    false)
     fig_id       = "__autofig_$(cell_hash)"
     fpath_html   = imgdir_html  / fig_id
     fpath_latex  = imgdir_latex / fig_id
@@ -119,7 +124,7 @@ function eval_code_cell!(
           ifelse(indep, " 🌴 ...", "...")
 
     code_outp = _eval_code_cell(nb.mdl, cell_code, cell_name, repl_mode)
-    code_repr = _form_code_repr(ctx, code_outp, fig_html, fig_latex, skiplatex)
+    code_repr = _form_code_repr(lc, code_outp, fig_html, fig_latex, skiplatex)
     code_pair = CodeCodePair((cell_code, code_repr))
 
     if indep
@@ -240,7 +245,7 @@ representation and add a class "fig-stdout" which can more readily be
 suppressed or enabled by the user via CSS (and will be suppressed by default).
 """
 function _form_code_repr(
-            ctx::Context,
+            lc::LocalContext,
             code_output::Tuple{String,String,<:Any},
             fig_html::NamedTuple,
             fig_latex::NamedTuple,
@@ -296,15 +301,15 @@ function _form_code_repr(
         )
         ansi_out *= ansi(stripped_repr(result))
         # Check if there's a dedicated show or a custom show available
-        figshow = append_result_html!(ctx, io_html, result, fig_html)
-        skiplatex || append_result_latex!(ctx, io_latex, result, fig_latex)
+        figshow = append_result_html!(lc, io_html, result, fig_html)
+        skiplatex || append_result_latex!(lc, io_latex, result, fig_latex)
     end
 
     # retrieve the string representations and discard any occurrence of the
     # explicit sandbox name e.g. Main.__FRANKLIN_0123456.Foo -> Foo
     hrepr, lrepr, rrepr = replace.(
         String.(take!.((io_html, io_latex, io_raw))),
-        "$(ctx.nb_code.mdl)." => ""
+        "$(lc.nb_code.mdl)." => ""
     )
 
     # see note
@@ -330,14 +335,14 @@ Users can also overwrite this default saving of files by overloading the
 HTML mime show or writing their own code in the cell.
 """
 function append_result_html!(
-            ctx::Context,
+            lc::LocalContext,
             io::IOBuffer,
             result::R,
             fig::NamedTuple
         ) where R
 
     figshow = false
-    Utils   = ctx.nb_code.mdl.Utils
+    Utils   = get_utils_module(lc)
 
     if isdefined(Utils, :html_show) && hasmethod(Utils.html_show, (R,))
         write(io, Utils.html_show(result))
@@ -380,13 +385,13 @@ Same as the one for HTML but for LaTeX.
 Note: SVG support in LaTeX is not straightforward (depends on other tools).
 """
 function append_result_latex!(
-            ctx::Context,
+            lc::LocalContext,
             io::IOBuffer,
             result::R,
             fig::NamedTuple
         ) where R
 
-    Utils = ctx.nb_code.mdl.Utils
+    Utils = get_utils_module(lc)
 
     if isdefined(Utils, :latex_show) && hasmethod(Utils.latex_show, (R,))
         write(io, Utils.latex_show(result))
