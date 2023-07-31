@@ -122,14 +122,9 @@ function write_tag_page(
     end
 
     # convert tag layout and write to file (we don't care about retrieving it from GC)
-    # we recycle a single tag context page in which we overwrite a few local vars
-    lc = "__tag__" in keys(gc.children_contexts) ?
-                gc.children_contexts[rpath]      :
-                TagLocalContext(gc; rpath="__tag__")
-
+    lc = TagLocalContext(gc; rpath=trp)
     setvar!(lc, :tag_id, id)
     setvar!(lc, :tag_name, gc.tags[id].name)
-    setvar!(lc, :_relative_path, trp)
     open(tp, "w") do f
         write(f, html2(ct, lc))
     end

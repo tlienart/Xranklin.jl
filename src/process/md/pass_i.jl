@@ -38,6 +38,5 @@ function process_md_file_pass_i(
         add_tag(gc, id, name, rpath)
     end
     setvar!(lc, :_add_tags, default)
-
     return
 end
