@@ -47,7 +47,7 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
         {{curpagetags}}
         """)
-    build(FOLDER, cleanup=false)
+    build(FOLDER)
 
     for f in [
         "__site"/"tags"/"t$i"/"index.html"
@@ -89,4 +89,23 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
     c = read(FOLDER/"__site"/"index.html", String)
     @test occursin("n-tags: 4", c)
+end
+
+
+@test_in_dir "_tags" "tag env" begin
+    write(FOLDER/"config.md", "")
+    write(FOLDER/"utils.jl", "")
+    write(FOLDER/"_layout"/"tag.html", """
+        {{fill tag_name}}
+        """)
+    write(FOLDER/"index.md", """
+        +++
+        tags = ["A TaG", "B TaG 2"]
+        +++
+        ABC
+        """)
+    build(FOLDER)
+
+    @test output_contains(FOLDER, "tags"/"a_tag", "A TaG")
+    @test output_contains(FOLDER, "tags"/"b_tag_2", "B TaG 2")
 end

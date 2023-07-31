@@ -230,7 +230,7 @@ function TagLocalContext(
         gc::GlobalContext;
         rpath::String=""
     )
-    LocalContext(gc; rpath, keep_current_lc=true)
+    LocalContext(gc; rpath)
 end
 
 # Detached context for simple eval str
