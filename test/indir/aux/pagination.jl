@@ -1,4 +1,4 @@
-include(joinpath(@__DIR__, "..", "utils.jl"))
+include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
 @test_in_dir "_pagination" "i198" begin
     write(FOLDER / "config.md", "")

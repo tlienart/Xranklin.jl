@@ -25,6 +25,10 @@ function process_md_file_pass_1(
 
     crumbs(@fname)
 
+    # Note: this is called from process_md_file which is
+    # called from process_file which sets the cur_lc so
+    # necessarily we have lc === cur_lc() here.
+
     prev_hash     = lc.page_hash[]
     from_cache    = !iszero(prev_hash)
     ignore_cache  = from_cache & getvar(lc, :ignore_cache, false)

@@ -6,11 +6,15 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
     lc = X.DefaultLocalContext(gc; rpath="foo")
     nb = lc.nb_code
     @test isa(nb, X.CodeNotebook)
+    
+    @test X.is_dummy(nb)
     c = """
         a = 5
         a^2
         """
     X.eval_code_cell!(lc, X.subs(c), "abc")
+    @test !X.is_dummy(nb)
+
     @test X.counter(nb) == 2
     @test length(nb) == 1
     @test nb.code_pairs[1].repr.html // """

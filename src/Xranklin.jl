@@ -43,7 +43,7 @@ normalize_uri(s) = URIs.escapeuri(s, issafe)
 # ------------------------------------------------------------------------
 # Main functions
 export serve, build, html, html2, latex
-export attach, cur_gc
+export attach, cur_gc, cur_lc
 
 export toy_example
 export notebook
@@ -79,8 +79,6 @@ const FRANKLIN_ENV = Dict{Symbol, Any}(
 )
 env(s::Symbol)        = FRANKLIN_ENV[s]
 setenv!(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
-
-const DUMMY_MODULE = Module() # for contexts which don't need notebooks
 
 const TIMER  = Dict{Float64,Pair{String, Float64}}()
 const TIMERN = Ref(0)

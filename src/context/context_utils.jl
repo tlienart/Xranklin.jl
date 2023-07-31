@@ -18,10 +18,10 @@ set_recursive!(c::LocalContext)  = (c.is_recursive[] = true; c)
 is_math(c::GlobalContext) = false
 is_math(c::LocalContext)  = c.is_math[]
 
-
-function hasvar(gc::GlobalContext, n::Symbol)
-    return n in keys(gc.vars) || n in keys(gc.vars_aliases)
+function hasvar(c::Context, n::Symbol)
+    return n in keys(c.vars) || n in keys(c.vars_aliases)
 end
+
 
 """
     req_var!(src, req, req_var, default)
@@ -201,8 +201,14 @@ function set_current_global_context(gc::GlobalContext)::GlobalContext
     gc
 end
 
+function set_current_local_context(lc::LocalContext)::LocalContext
+    setenv!(:cur_local_ctx, lc)
+    lc
+end
+
 # helper functions to retrieve current local/global context
 cur_gc() = env(:cur_global_ctx)::GlobalContext
+cur_lc() = env(:cur_local_ctx)::Union{Nothing,LocalContext}
 
 
 # ---------------- #

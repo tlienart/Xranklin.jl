@@ -1,4 +1,4 @@
-include(joinpath(@__DIR__, "..", "utils.jl"))
+include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
 RSS_HEAD = """
   <?xml version="1.0" encoding="UTF-8"?>

@@ -29,3 +29,16 @@ end
         @test X.outputof(:hfun_foo, String[], lcu; internal=false) == "bar"
     end
 end
+
+# TODO: removing Base.@invokelatest will make this fail. See tjd/xr/xrt3
+@test_in_dir "_worldage" "worldage" begin
+    write(FOLDER/"index.md", """
+        ABC {{foo}}
+        """)
+    write(FOLDER/"utils.jl", """
+        hfun_foo() = :bar
+        """)
+    write(FOLDER/"skeleton.html", "")
+    build(FOLDER)
+    # @test_throws MethodError build(FOLDER)
+end

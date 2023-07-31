@@ -11,6 +11,11 @@ function process_md_file_pass_2(
 
     crumbs(@fname)
 
+    # Note that here we must ensure that cur_lc is set
+    # properly as this is called in a second phase so it's
+    # not guaranteed that lc === cur_lc
+    set_current_local_context(lc)
+
     ihtml = getvar(lc, :_generated_ihtml, "")
     odir  = dirname(opath)
     cleanup_paginated(odir)

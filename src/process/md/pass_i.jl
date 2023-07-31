@@ -9,6 +9,13 @@ function process_md_file_pass_i(
 
     crumbs(@fname)
 
+    # Note that here lc is not necessarily equal to cur_lc
+    # unlike in pass_1 where this is guaranteed by the fact
+    # that the pass 1 is called directly after process_file
+    # which makes sure of it.
+    # For the intermediate file though we don't care because
+    # there's no Utils-style processing.
+
     gc    = lc.glob
     rpath = lc.rpath
 
@@ -26,7 +33,8 @@ function process_md_file_pass_i(
     setvar!(lc, :_rm_tags, default)
 
     # Tags to add
-    for (id, name) in getvar(lc, :_add_tags)
+    default = Pair{String}[]
+    for (id, name) in getvar(lc, :_add_tags, default)
         add_tag(gc, id, name, rpath)
     end
     setvar!(lc, :_add_tags, default)

@@ -55,10 +55,12 @@ end
     newmodule(n, p)
 
 Create a new module with name `n` and parent `p`. If the module exists, it is
-wiped.
+wiped. The reason for using `n = Module(:n)` is so that we don't get the msg
+"WARNING: replacing module __XXX".
 """
-newmodule(n::Symbol, p::Module=parent_module())::Module =
-    include_string(p, "$n = Module(:$n); $n")
+newmodule(n::Symbol, p::Module)::Module =
+    include_string(p, "$n = Module(:$n)")
+newmodule(n::Symbol) = newmodule(n, parent_module())
 
 
 """
@@ -88,6 +90,7 @@ function parent_module(;
     if !wipe && ismodule(n)
         return getfield(Main, n)
     end
+    # we don't use newmodule here to avoid the WARNING: replacing module
     return newmodule(n, Main)
 end
 
@@ -131,143 +134,142 @@ function parse_code(code::String)
 end
 
 
-"""
-    UTILS_UTILS
-
-Names of core functionalities imported in all nb_vars and nb_code modules.
-These are specific to the environment, so for instance the `__lc` is
-associated with the page to which the notebooks are attached.
-"""
-const UTILS_UTILS = [
-    # from module
-    "cur_gc", "html", "latex", "html2", "@lx_str",
-    # others
-    "__gc", "__lc", "attach",
-    "cur_lc", "path", "folderpath", "sitepath",
-    "getlvar", "getgvar", "getvarfrom",
-    "setlvar!", "setgvar!",
+const CORE_UTILS = [
+    # reexports
+    "cur_gc", "html", "html2", "latex",
+    # base
+    "cur_lc", "@lx_str", "path", "folderpath", "sitepath",
+    "getlvar", "getgvar", "getvarfrom", "setlvar!", "setgvar!",
+    # legacy access
     "locvar", "globvar", "pagevar",
+    # tags, rpath
     "get_page_tags", "get_all_tags", "get_rpath",
-    # project
-    "setproject!"
+    # attach, setproject
+    "attach", "setproject!",
 ]
 
 
-"""
-    utils_code(gc; crop)
+# DEV
+function setup_var_module(gc::GlobalContext)
+    F = env(:module_name) # Franklin/Xranklin
 
-Utils module within the default code imported in all `nb_vars` and `nb_code`
-modules.
-The code in the `Utils` module is that of `gc.vars[:_utils_code]` which is
-set by `process_utils` via reading the `utils.jl` file.
+    #
+    # Core module defines tools that can be used in Utils and which should
+    # not be touched by the user.
+    #
+    core = """
+        module $(env(:core_module_name))
 
-The important bit here is to note that if a function in `utils.jl` calls
-something like `getvarfrom`, it is the `getvarfrom` of the specific
-module (with a specific `__lc`) that will be called in that function so
-that the page requesting the variable can be adequately tracked.
-"""
-function utils_code(gc::GlobalContext; glob=false, crop=false)
-    body = """
-        using ..$(env(:core_module_name))
-        $(get(gc.vars, :_utils_code, ""))
-        """
-    # useful for process_utils
-    crop && return body
-    # otherwise
-    F = env(:module_name)
-    return """
-    module Utils
-        using $F: @reexport
-        $(ifelse(glob, "", body))
-    end
-    using .Utils
-    """
-end
+        using $F
+        export $(join(CORE_UTILS, ", "))
 
-"""
-    modules_setup(c)
-
-Setup the module with getvar etc.
-"""
-modules_setup(c::Context) = begin
-    F     = env(:module_name)
-    rpath = get_rpath(c)
-    gc    = get_glob(c)
-    glob  = (c === gc)
-
-    exp_names = join((u for u in UTILS_UTILS if u ∉ ("__gc", "__lc")), ",")
-
-
-    for m in (c.nb_vars.mdl, c.nb_code.mdl)
-        base_code = """
-            module $(env(:core_module_name))
-
-            export $exp_names
-
-            using $F
-            using $F: @reexport
-
-            @reexport import Pkg
-            @reexport import Dates
-
-            const __gc = cur_gc()
-            const __lc = get(__gc.children_contexts, "$rpath", nothing)
-
-            cur_lc()         = __lc
-            path(s::Symbol)  = $F.path(__gc, s)
-            folderpath(p...) = joinpath(path(:folder), p...)
-            sitepath(p...)   = joinpath(path(:site), p...)
-
-            macro lx_str(s)
-                esc(
-                    quote
-                        html(\$s, cur_gc())
-                    end
-                )
-            end
-
-            getlvar(n::Symbol, d=nothing; default=d) =
-                $F.getvar(__lc, __lc, n, default)
-            getgvar(n::Symbol, d=nothing; default=d) =
-                $F.getvar(__gc, __lc, n, default)
-            getvarfrom(n::Symbol, rpath::AbstractString, d=nothing; default=d) = begin
-                rp = string(rpath)
-                ks = keys(__gc.children_contexts)
-                if (rp ∉ ks) && (rp * ".md" in ks)
-                    rp *= ".md"
+        macro lx_str(s)
+            esc(
+                quote
+                    html(\$s, cur_gc())
                 end
-                return $F.getvar(__gc.children_contexts[rp], __lc, n, default)
+            )
+        end
+
+        path(s::Symbol)  = $F.path(cur_gc(), s)
+        folderpath(p...) = joinpath(path(:folder), p...)
+        sitepath(p...)   = joinpath(path(:site), p...)
+
+        getlvar(n::Symbol, d=nothing; default=d) =
+            $F.getvar(cur_lc(), cur_lc(), n, default)
+        getgvar(n::Symbol, d=nothing; default=d) =
+            $F.getvar(cur_gc(), cur_lc(), n, default)
+        getvarfrom(n::Symbol, rpath::AbstractString, d=nothing; default=d) = begin
+            rp = string(rpath)
+            ks = keys(cur_gc().children_contexts)
+            if (rp ∉ ks) && (rp * ".md" in ks)
+                rp *= ".md"
             end
+            return $F.getvar(
+                cur_gc().children_contexts[rp], cur_lc(),
+                n, default
+            )
+        end
 
-            setlvar!(n::Symbol, v) = $F.setvar!(__lc, n, v)
-            setgvar!(n::Symbol, v) = $F.setvar!(__gc, n, v)
+        setlvar!(n::Symbol, v) = $F.setvar!(cur_lc(), n, v)
+        setgvar!(n::Symbol, v) = $F.setvar!(cur_gc(), n, v)
 
-            # legacy commands
-            locvar(n, d=nothing; default=d)     = getlvar(Symbol(n); default)
-            globvar(n, d=nothing; default=d)    = getgvar(Symbol(n); default)
-            pagevar(s, n, d=nothing; default=d) = getvarfrom(Symbol(n), s; default)
+        # legacy
+        locvar(n, d=nothing; default=d)     = getlvar(Symbol(n); default)
+        globvar(n, d=nothing; default=d)    = getgvar(Symbol(n); default)
+        pagevar(s, n, d=nothing; default=d) = getvarfrom(Symbol(n), s; default)
 
-            get_page_tags()   = $F.get_page_tags(__lc)
-            get_page_tags(rp) = $F.get_page_tags(rp)
-            get_all_tags()    = $F.get_all_tags(__gc)
-            get_rpath()       = $F.get_rpath(__lc)
+        get_page_tags()   = $F.get_page_tags(cur_lc())
+        get_page_tags(rp) = $F.get_page_tags(rp)
+        get_all_tags()    = $F.get_all_tags(cur_gc())
+        get_rpath()       = $F.get_rpath(cur_lc())
 
-            attach(rp)        = $F.attach(__lc, rp)
+        attach(rp)        = $F.attach(cur_lc(), rp)
 
-            setproject!(p::AbstractString) = $F.setproject!(__lc, p)
+        setproject!(p::AbstractString) = $F.setproject!(cur_lc(), p)
 
-            end # core module
-            """
-        
-        # make all the core names that are exported available in the
-        # notebook module
-        base_code *= """
-            using .$(env(:core_module_name))
-            """
+        end # core module
+        """
 
-        include_string(m, base_code * utils_code(gc; glob))
-    end
+    utils = """
+        module Utils
+
+        using $F: @reexport
+        @reexport import $F.Pkg
+        @reexport import $F.Dates
+
+        using ..$(env(:core_module_name))
+
+        end
+
+        using .Utils
+        using .$(env(:core_module_name))
+        """
+
+    include_string(
+        gc.nb_vars.mdl,
+        core * utils
+    )
+end # setup_var_module(gc)
+
+function get_utils_module(gc::GlobalContext)
+    return gc.nb_vars.mdl.Utils
+end
+get_utils_module(lc::LocalContext) = get_utils_module(lc.glob)
+
+
+function setup_var_module(lc::LocalContext)
+    _setup_local_module(lc, lc.nb_vars.mdl)
     return
 end
 
-utils_module(c::Context) = c.nb_code.mdl.Utils
+function setup_code_module(lc::LocalContext)
+    mdl = submodule(
+        modulename("$(lc.rpath)_code", true);
+        wipe = true
+    )
+    _setup_local_module(lc, mdl)
+    lc.nb_code.mdl = mdl
+    return
+end
+
+function _setup_local_module(lc::LocalContext, mdl)
+    # the reason for doing this weird path thing is because we're
+    # instantiating modules as per `newmodule` which, for some reason, seems
+    # to lose one level of nesting (but avoids the annoying "WARNING" message)
+    utils_path = join([
+        "$(parent_module())",
+        replace(string(lc.glob.nb_vars.mdl), "Main." => ""),
+        "Utils"],
+        "."
+    )
+    core_path = replace(
+        utils_path,
+        r"\.Utils$" => ".$(env(:core_module_name))"
+    )
+    include_string(mdl, """
+        using $core_path    # get_rpath, setlvar! etc
+        using $utils_path   # user-defined utils
+        """)
+    return
+end

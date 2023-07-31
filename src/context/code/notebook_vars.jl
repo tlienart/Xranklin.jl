@@ -16,6 +16,10 @@ function eval_vars_cell!(
         )::Nothing
     isempty(cell_code) && return
 
+    if ctx isa LocalContext && ctx !== cur_lc()
+        set_current_local_context(ctx)
+    end
+
     nb   = ctx.nb_vars
     cntr = counter(nb)
     lnb  = length(nb)

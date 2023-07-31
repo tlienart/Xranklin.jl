@@ -157,7 +157,7 @@ function _dbb_fill(
 
     # try fill from Utils
     elseif !fail && (fname in utils_var_names(lc.glob))
-        mdl = utils_module(lc)
+        mdl = get_utils_module(lc)
         res = string(getproperty(mdl, fname))
 
     else

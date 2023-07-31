@@ -384,14 +384,6 @@ function full_pass_markdown(
     iszero(n_watched) && return
     allocate_children_contexts(gc, watched)
 
-    use_threads = env(:use_threads)
-    entries     = nothing
-    n_entries   = 0
-    if use_threads
-        entries   = dic2vec(watched)
-        n_entries = length(entries)
-    end
-
     # keep track of files to skip (either because marked as such
     # or because their hash hasn't changed) so that they can also
     # be skipped in pass 2.
@@ -409,29 +401,16 @@ function full_pass_markdown(
     end
 
     # ----------------------------------------------------------------------
-    threaded = ifelse(
-        use_threads,
-        "using $(Threads.nthreads()) threads",
-        "threading disabled"
-    )
-    @info "> Full Pass [MD/1] ($threaded)"
+    @info "> Full Pass [MD/1]"
     rp(fp) = get_rpath(gc, joinpath(fp...))
     msg(fp, n="1️⃣") = " $n ⟨$(hl(str_fmt(rp(fp))))⟩"
-    if use_threads
-        info_thread(n_entries)
-        Threads.@threads for (fp, _) in entries
-            @info msg(fp)
-            skip = _md_loop_1(gc, fp, skip_dict, allow_init_skip)
-            skip && @info " ... ($(hl("skipped '$(rp(fp))'", :yellow)))"
-        end
-    else
-        for (fp, _) in watched
-            @info msg(fp)
-            skip = _md_loop_1(gc, fp, skip_dict, allow_init_skip)
-            skip && @info " ... ($(hl("skipped '$(rp(fp))'", :yellow)))"
-        end
+    for (fp, _) in watched
+        @info msg(fp)
+        skip = _md_loop_1(gc, fp, skip_dict, allow_init_skip)
+        skip && @info " ... ($(hl("skipped '$(rp(fp))'", :yellow)))"
     end
 
+    # ----------------------------------------------------------------------
     # Some pages may have been skipped from cache but should in fact be
     # done anyway because they depend upon a page that changed
     all_to_trigger = Set{String}()
@@ -443,21 +422,11 @@ function full_pass_markdown(
         for (fp, _) in watched
     )
     if any(values(check_trigger))
-        @info "> Full Pass [MD/1/reprocess] ($threaded)"
-        if use_threads
-            info_thread(n_entries)
-            Threads.@threads for (fp, _) in entries
-                if check_trigger[fp]
-                    @info " ... $(hl("♻ '$(get_rpath(gc, joinpath(fp...)))'", :green))"
-                    _md_loop_1(gc, fp; reproc=true)
-                end
-            end
-        else
-            for (fp, _) in watched
-                if check_trigger[fp]
-                    @info " ... $(hl("♻ '$(get_rpath(gc, joinpath(fp...)))'", :green))"
-                    _md_loop_1(gc, fp; reproc=true)
-                end
+        @info "> Full Pass [MD/1/reprocess]"
+        for (fp, _) in watched
+            if check_trigger[fp]
+                @info " ... $(hl("♻ '$(get_rpath(gc, joinpath(fp...)))'", :green))"
+                _md_loop_1(gc, fp; reproc=true)
             end
         end
     end
@@ -471,26 +440,15 @@ function full_pass_markdown(
             skip_dict[fp] = false
         end
     end
-
     # ----------------------------------------------------------------------
+
     @info "> Full Pass [MD/I] (sequential)"
     _md_loop_i(gc)
 
-    # ----------------------------------------------------------------------
-    @info "> Full Pass [MD/2] ($threaded)"
-    # now all page variables are uncovered and hfuns can be resolved
-    # without ambiguities. Assemble layout and iHTML, call html2 and write
-    if use_threads
-        info_thread(n_entries)
-        Threads.@threads for (fp, _) in entries
-            @info msg(fp, "2️⃣")
-            _md_loop_2(gc, fp, skip_dict, final)
-        end
-    else
-        for (fp, _) in watched
-            @info msg(fp, "2️⃣")
-            _md_loop_2(gc, fp, skip_dict, final)
-        end
+    @info "> Full Pass [MD/2]"
+    for (fp, _) in watched
+        @info msg(fp, "2️⃣")
+        _md_loop_2(gc, fp, skip_dict, final)
     end
 
     return
@@ -512,7 +470,7 @@ function _html_loop(
     fpath = joinpath(fp...)
     opath = get_opath(gc, fpath)
     rpath = get_rpath(gc, fpath)
-    lc = gc.children_contexts[rpath]
+    lc    = gc.children_contexts[rpath]
 
     process_html_file(lc, fpath, opath, final)
     return
@@ -531,22 +489,9 @@ function full_pass_html(
     iszero(n_watched) && return
     allocate_children_contexts(gc, watched)
 
-    threaded = ifelse(
-        use_threads,
-        "using $(Threads.nthreads()) threads",
-        "threading disabled"
-    )
-    @info "> Full Pass [HTML] ($threaded)"
-    if use_threads
-        entries = dic2vec(watched)
-        info_thread(length(entries))
-        Threads.@threads for (fp, _) in entries
-            _html_loop(gc, fp, skip_files, final)
-        end
-    else
-        for (fp, _) in watched
-            _html_loop(gc, fp, skip_files, final)
-        end
+    @info "> Full Pass [HTML]"
+    for (fp, _) in watched
+        _html_loop(gc, fp, skip_files, final)
     end
     return
 end
@@ -561,16 +506,16 @@ function full_pass_other(
     n_watched = length(watched)
     iszero(n_watched) && return
 
-    @info "> Full Pass [O] (always threaded)"
+    @info "> Full Pass [O]"
     entries = dic2vec(watched)
-    info_thread(length(entries))
+    @info "🧵 loop (n=$(Threads.nthreads())) over $(length(entries)) items"
     Threads.@threads for (fp, _) in dic2vec(watched)
         fpath = joinpath(fp...)
         if fp in skip_files ||
            startswith(fpath, path(gc, :layout)) ||
            startswith(fpath, path(gc, :rss))
 
-            continue
+           continue
         end
 
         # copy the file over if it's not there in the current form
