@@ -208,7 +208,7 @@ function DefaultGlobalContext()
         alias=copy(DefaultGlobalVarsAlias)
     )
     setvar!(gc, :project, Pkg.project().path)
-    set_current_global_context(gc)
+    return gc
 end
 
 function DefaultLocalContext(gc::GlobalContext; rpath::String="")
@@ -220,15 +220,17 @@ function DefaultLocalContext(gc::GlobalContext; rpath::String="")
         rpath
     )
 end
-DefaultLocalContext(; kw...) = DefaultLocalContext(env(:cur_global_ctx); kw...)
-DefaultLocalContext(::Nothing; kw...) = DefaultLocalContext(DefaultGlobalContext(); kw...)
+DefaultLocalContext(; kw...) =
+    DefaultLocalContext(env(:cur_global_ctx); kw...)
+DefaultLocalContext(::Nothing; kw...) =
+    DefaultLocalContext(DefaultGlobalContext(); kw...)
 
-# for html pages
-function SimpleLocalContext(
+# for tag pages
+function TagLocalContext(
         gc::GlobalContext;
         rpath::String=""
     )
-    LocalContext(gc; rpath)
+    LocalContext(gc; rpath, keep_current_lc=true)
 end
 
 # Detached context for simple eval str

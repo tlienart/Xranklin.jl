@@ -470,7 +470,7 @@ function _html_loop(
     fpath = joinpath(fp...)
     opath = get_opath(gc, fpath)
     rpath = get_rpath(gc, fpath)
-    lc = gc.children_contexts[rpath]
+    lc    = gc.children_contexts[rpath]
 
     process_html_file(lc, fpath, opath, final)
     return

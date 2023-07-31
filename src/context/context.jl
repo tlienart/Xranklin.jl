@@ -170,7 +170,8 @@ end
 # Note that when a local context is created it is automatically
 # attached to its global context via the children_contexts
 function LocalContext(
-            glob, vars, defs, headings, rpath, alias=Alias()
+            glob, vars, defs, headings, rpath;
+            alias=Alias(), keep_current_lc::Bool=false
         )
 
     if isempty(rpath)
@@ -216,7 +217,7 @@ function LocalContext(
     # *must* be done after attachment as depends on children context
     # for the setup of the code module, see comment earlier at instantiation
     # of nb_code.
-    set_current_local_context(lc)
+    keep_current_lc || set_current_local_context(lc)
     setup_var_module(lc)
     return lc
 end
@@ -225,11 +226,14 @@ function LocalContext(
             g=GlobalContext(),
             v=Vars(),
             d=LxDefs();
+            #
             rpath="",
-            alias=Alias()
+            alias=Alias(),
+            keep_current_lc::Bool=false,
         )
     return LocalContext(
-        g, v, d, PageHeadings(), rpath, alias
+        g, v, d, PageHeadings(), rpath;
+        alias, keep_current_lc
     )
 end
 

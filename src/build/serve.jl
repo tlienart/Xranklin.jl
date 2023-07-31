@@ -103,6 +103,7 @@ function serve(
     # both the global and the local contexts) will live.
     gc     = DefaultGlobalContext()
     folder = ifelse(isempty(folder), pwd(), dir)
+
     set_paths!(gc, folder)
 
     # activate the folder environment

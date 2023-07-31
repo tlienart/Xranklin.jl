@@ -1,4 +1,4 @@
-include(joinpath(@__DIR__, "..", "utils.jl"))
+include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
 @test_in_dir "_triggers" "i107" begin
     write(FOLDER / "counter", 0)

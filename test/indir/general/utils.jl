@@ -1,4 +1,4 @@
-include(joinpath(@__DIR__, "..", "utils.jl"))
+include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
 # also testing reexports
 @test_in_dir "_reexp" "rexp" begin
