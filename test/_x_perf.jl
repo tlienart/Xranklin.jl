@@ -16,7 +16,7 @@ using BenchmarkTools
 
 # ====================================
 # Time to create a DefaultLocalContext
-# as of 29/7/2023 it's around 0.33ms. 
+# as of 29/7/2023 it's around 0.33ms << 1ms
 begin
     u = raw"""
     import Literate
@@ -50,5 +50,32 @@ begin
     """
 
     gc = X.DefaultGlobalContext()
+    X.process_utils(gc, u)
     @btime X.DefaultLocalContext($gc; rpath=randstring(5));
 end
+
+
+# =================================================================
+# Time to create a DefaultLocalContext and evaluate a front matter
+# with or without a date doesn't change much, it takes around 1.8-2.0ms.
+# eval of hfun fill takes negligible time on top of that
+begin
+    u = raw"""
+        @reexport using Dates
+        """
+    gc = X.DefaultGlobalContext()
+    X.process_utils(gc, u)
+    function foo(_gc)
+        lc = X.DefaultLocalContext(_gc; rpath=randstring(5))
+        c = """
+            +++
+            pub = Date(2023, 8, 15)
+            title = "hello"
+            +++
+            ABC {{pub}}
+            """
+        html(c, lc)
+    end
+    @btime foo($gc);
+end
+

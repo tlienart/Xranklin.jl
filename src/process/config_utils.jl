@@ -140,7 +140,7 @@ end
 # ------------- #
 
 """""
-    process_utils(utils, gc)
+    process_utils(gc, utils)
 
 Process a utils string into a given global context object. This is always called
 in a "fresh" GC context (i.e. one where no code has been executed yet).

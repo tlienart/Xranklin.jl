@@ -1,3 +1,8 @@
+#
+# very coarse timings logger to allow digging into what is most expensive.
+# will probably either be completely removed or replaced by a stand-alone module
+#
+
 const TIMER  = Vector{NamedTuple{(:depth,:label,:duration), Tuple{Int64,String,Float64}}}()
 const TIMERN = Ref(0)
 
