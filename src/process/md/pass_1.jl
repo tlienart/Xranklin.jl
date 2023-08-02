@@ -29,6 +29,8 @@ function process_md_file_pass_1(
     # called from process_file which sets the cur_lc so
     # necessarily we have lc === cur_lc() here.
 
+    __t = tic()
+
     prev_hash     = lc.page_hash[]
     from_cache    = !iszero(prev_hash)
     ignore_cache  = from_cache & getvar(lc, :ignore_cache, false)
@@ -52,21 +54,26 @@ function process_md_file_pass_1(
                 !isempty(getvar(lc, :_generated_ihtml, ""))
            ))
 
+    toc(__t, "mdp1 inner | cache check")
+
     if skip
         restore_page_context!(lc, bk_state)
 
     else
         # set notebook counters at the top (might already be there)
-        reset_counter!(lc.nb_code)
-        reset_counter!(lc.nb_vars)
+        reset_notebook_counters!(lc)
 
         # reset whether there's parsing / block errors
         setvar!(lc, :_has_parser_error, false)
         setvar!(lc, :_has_failed_blocks, false)
 
         # evaluate
+        __t = tic()
         ihtml = convert_md(page_content_md, lc)
         setvar!(lc, :_generated_ihtml, ihtml)
+        toc(__t, "mdp1 - convert_md")
+
+        __t = tic()
 
         # Now that the page has been evaluated, we can discard entries
         # from `indep_code` mapping that are obsolete (e.g. if an indep
@@ -86,7 +93,9 @@ function process_md_file_pass_1(
 
         # Check if any tag was removed / added so it can be adjusted in
         # the gc later on
+        __ti = tic()
         tags_dict   = get_page_tags(lc)
+        toc(__ti, "get page tags")
         old_keys    = keys(bk_tags_dict)
         new_keys    = keys(tags_dict)
         tags_remove = setdiff(old_keys, new_keys)
@@ -101,6 +110,8 @@ function process_md_file_pass_1(
         if Pkg.project().path != bkpf
             Pkg.activate(bkpf)
         end
+
+        toc(__t, "rest of mdp1")
     end
 
     return skip

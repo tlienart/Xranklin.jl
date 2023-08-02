@@ -16,6 +16,8 @@ function eval_vars_cell!(
         )::Nothing
     isempty(cell_code) && return
 
+    __t = tic()
+
     if ctx isa LocalContext && ctx !== cur_lc()
         set_current_local_context(ctx)
     end
@@ -72,9 +74,15 @@ function eval_vars_cell!(
         deleteat!(nb.code_pairs, cntr:lnb)
     end
 
+    toc(__t, "varcell / init")
+    __t = tic()
+
     # eval cell and recover the names of the variables assigned
     vpairs   = _eval_vars_cell(nb.mdl, code)
     vnames   = [vp.var for vp in vpairs]
+
+    toc(__t, "varcell / eval")
+    __t = tic()
 
     # list of all variables that either have just been assigned
     # or were removed/reset through the existing_assignments phase
@@ -104,7 +112,11 @@ function eval_vars_cell!(
     end
 
     # finalise
-    return finish_cell_eval!(nb, VarsCodePair((code, vpairs)))
+    finish_cell_eval!(nb, VarsCodePair((code, vpairs)))
+
+    toc(__t, "varcell / finalise")
+
+    return
 end
 
 

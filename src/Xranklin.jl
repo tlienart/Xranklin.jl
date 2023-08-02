@@ -76,35 +76,17 @@ const FRANKLIN_ENV = Dict{Symbol, Any}(
     :output_site_folder  => "__site",
     :output_pdf_folder   => "__pdf",
     :output_cache_folder => "__cache",
+    # see logging.jl
+    :log_times           => false,
 )
 env(s::Symbol)        = FRANKLIN_ENV[s]
 setenv!(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
-
-const TIMER  = Dict{Float64,Pair{String, Float64}}()
-const TIMERN = Ref(0)
-
-nest()  = (TIMERN[] += 1)
-dnest() = (TIMERN[] -= 1)
-
-tic() = begin
-    nest()
-    t0 = time()
-    TIMER[t0] = "" => 0.0
-    return t0
-end
-toc(t0, s) = begin
-    depth = dnest()
-    δt = time() - t0
-    s  = "."^depth * " (d:$depth) $s $(time_fmt(δt))" => δt
-    @info s.first
-    TIMER[t0] = s
-    return
-end
 
 # ------------------------------------------------------------------------
 
 include("misc_utils.jl")
 include("html_utils.jl")
+include("logging/timer.jl")
 
 # ------------------------------------------------------------------------
 

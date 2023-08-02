@@ -41,7 +41,12 @@ function convert_md(
     # partition the markdown and form groups (paragraphs)
     groups = nothing
     try
-        groups = FP.md_partition(md; kw...) |> FP.md_grouper
+        __t = tic()
+        parts  = FP.md_partition(md; kw...)
+        toc(__t, "convertmd / partition")
+        __t = tic()
+        groups = parts |> FP.md_grouper
+        toc(__t, "convertmd / grouping")
     catch e
         if isa(e, FP.FranklinParserException)
             # if it comes directly from the first pass processing a file
@@ -98,8 +103,10 @@ function convert_md(
 
     # go over each group, if it's a paragraph add the paragraph separators
     # around it, then convert each block in the group and write that to stream
+    __t = tic()
     for g in groups
         if g.role in (:PARAGRAPH, :PARAGRAPH_NOP)
+            __ti = tic()
             par = g.role == :PARAGRAPH
             process_latex_objects!(g.blocks, c; tohtml)
             pio = IOBuffer()
@@ -113,23 +120,33 @@ function convert_md(
             else
                 write(io, bulk)
             end
+            toc(__ti, "convertmd / paragraph")
 
         elseif g.role == :LIST
+            __ti = tic()
             convert_list(io, g, c; tohtml, kw...)
+            toc(__ti, "convertmd / list")
 
         elseif g.role == :TABLE
+            __ti = tic()
             convert_table(io, g, c; tohtml, kw...)
+            toc(__ti, "convertmd / table")
 
         # environment groups (begin...end)
         elseif startswith(string(g.role), "ENV_")
+            __ti = tic()
             b = try_resolve_lxenv(g.blocks, c; tohtml)
             write(io, convert(b, c))
+            toc(__ti, "convertmd / env")
 
         # all other groups are constituted of a single block
         else
+            __ti = tic()
             write(io, convert(first(g.blocks), c))
+            toc(__ti, "convertmd / $(first(g.blocks).name)")
         end
     end
+    toc(__t, "convertmd / group conversion")
     return String(take!(io))
 end
 

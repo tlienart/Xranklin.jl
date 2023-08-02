@@ -156,8 +156,8 @@ const DefaultLocalVars = Vars(
     :_output_path       => "",
     :_relative_path     => "",
     :_relative_url      => "",
-    :_creation_time     => 0.0,
-    :_modification_time => 0.0,
+    :_creation___t => 0.0,
+    :_modification___t => 0.0,
     # mddefs related
     :_setvar => Set{Symbol}(),
     # set of anchor ids defined on the page (used to check removals)
@@ -189,8 +189,8 @@ const DefaultLocalVars = Vars(
 const DefaultLocalVarsAlias = Alias(
     :fd_rpath        => :_relative_path,
     :fd_url          => :_relative_url,
-    :fd_ctime        => :_creation_time,
-    :fd_mtime        => :_modification_time,
+    :fd_c__t => :_creation_time,
+    :fd_m__t => :_modification_time,
     :reeval          => :ignore_cache,
     :force_eval_all  => :ignore_cache,
     :hasmath         => :_hasmath,

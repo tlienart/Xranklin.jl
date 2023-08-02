@@ -6,6 +6,11 @@ Base.length(nb::Notebook)    = length(nb.code_pairs)
 increment!(nb::Notebook)     = (nb.cntr_ref[] += 1)
 reset_counter!(nb::Notebook) = (nb.cntr_ref[] = 1)
 
+reset_notebook_counters!(lc::LocalContext) = begin
+    reset_counter!(lc.nb_vars)
+    is_dummy(lc.nb_code) || reset_counter!(lc.nb_code)
+end
+
 """
     reset_notebook!(nb)
 
@@ -34,11 +39,12 @@ function reset_notebook!(
 end
 
 function reset_both_notebooks!(
-            c::Context;
+            lc::LocalContext;
             leave_indep::Bool=false
         )
-    reset_notebook!(c.nb_code; leave_indep)
-    reset_notebook!(c.nb_vars)
+    
+    is_dummy(lc.nb_code) || reset_notebook!(lc.nb_code; leave_indep)
+    reset_notebook!(lc.nb_vars)
     return
 end
 
@@ -79,6 +85,7 @@ This can happen if an indep code block gets modified.
 See process/md/process_md_file_io!
 """
 function refresh_indep_code!(lc::LocalContext)
+    is_dummy(lc.nb_code) && return
     actual_code_on_page = Set([cp.code for cp in lc.nb_code.code_pairs])
     keys_to_remove = Set{String}()
     for k in keys(lc.nb_code.indep_code)

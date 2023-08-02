@@ -88,13 +88,16 @@ function full_pass(
         # if so, discard the hash of pages which would depend upon those
         # to guarantee that they're process_file_from_triggered and consider
         # the latest dependent file.
+        __t = tic()
         for rp in have_changed_deps(gc.deps_map)
             pgh = path(gc, :cache) / noext(rp) / "pg.hash"
             rm(pgh, force=true)
         end
+        toc(__t, "fullpass / init check")
     end
 
     if utils_changed || config_changed
+        __t = tic()
         # save code blocks marked as independent from context to avoid
         # having to reload them
         bk_indep_code  = Dict{String,Dict{String,CodeRepr}}()
@@ -136,9 +139,11 @@ function full_pass(
         end
         # Now *all* pages will now be built from a resetted code and
         # vars module with the latest utils.
+        toc(__t, "fullpass / utils or config changed")
     end
 
     # now we can skip utils/config (will happen in full_pass_other)
+    __t = tic()
     append!(skip_files, [
         path(gc, :folder) => "config.md",
         path(gc, :folder) => "config.jl",
@@ -161,6 +166,7 @@ function full_pass(
             """
         )
     end
+    toc(__t, "fullpass / misc")
 
     # ---------------------------------------------
     start = time()
@@ -169,22 +175,26 @@ function full_pass(
         """
     # ---------------------------------------------
 
+    __t = tic()
     full_pass_markdown(gc,
         watched_files[:md];
         skip_files,
         allow_init_skip,
         final
-    )
+    ); toc(__t, "fullpass / markdown")
+    __t = tic()
     full_pass_html(gc,
         watched_files[:html];
         skip_files,
         final
-    )
+    ); toc(__t, "fullpass / html")
+    __t = tic()
     full_pass_other(gc,
         merge(watched_files[:other], watched_files[:infra]);
         skip_files
-    )
+    ); toc(__t, "fullpass / other")
 
+    __t = tic()
     # HACK: attached-but-ignored
     # flatten watched files rpath
     watched_rpaths = String[]
@@ -203,13 +213,13 @@ function full_pass(
         fp = folder => rp
         watched_files[:other][fp] = mtime(joinpath(fp...))
     end
-
-
+    toc(__t, "fullpass / attached but ignored")
 
     #
     # RSS, Sitemap, Robots generation
     #
     if final
+        __t = tic()
         gen_rss     = getvar(gc, :generate_rss, false)
         gen_sitemap = getvar(gc, :generate_sitemap, false)
         gen_robots  = getvar(gc, :generate_robots, false)
@@ -232,6 +242,7 @@ function full_pass(
         gen_rss     && generate_rss_feeds(gc)
         gen_sitemap && generate_sitemap(gc)
         gen_robots  && generate_robots_txt(gc)
+        toc(__t, "fullpass / final aux")
     end
 
     # ---------------------------------------------------------
@@ -332,7 +343,9 @@ function _md_loop_1(gc, fp, skip_dict=nothing, allow_init_skip=false; reproc=fal
 
     reproc && reset_both_notebooks!(lc; leave_indep=true)
 
+    __t = tic()
     skip = process_md_file_pass_1(lc, fpath; allow_init_skip)
+    toc(__t, "mdp1 ($(lc.rpath))")
     isnothing(skip_dict) || (skip_dict[fp] = skip)
 
     return skip
@@ -382,7 +395,9 @@ function full_pass_markdown(
 
     n_watched   = length(watched)
     iszero(n_watched) && return
+    __t = tic()
     allocate_children_contexts(gc, watched)
+    toc(__t, "fpmd / allocate children")
 
     # keep track of files to skip (either because marked as such
     # or because their hash hasn't changed) so that they can also
@@ -402,17 +417,22 @@ function full_pass_markdown(
 
     # ----------------------------------------------------------------------
     @info "> Full Pass [MD/1]"
+    __t = tic()
     rp(fp) = get_rpath(gc, joinpath(fp...))
     msg(fp, n="1️⃣") = " $n ⟨$(hl(str_fmt(rp(fp))))⟩"
     for (fp, _) in watched
         @info msg(fp)
+        __ti = tic()
         skip = _md_loop_1(gc, fp, skip_dict, allow_init_skip)
+        toc(__ti, "fdmp / md1 : $(rp(fp))")
         skip && @info " ... ($(hl("skipped '$(rp(fp))'", :yellow)))"
     end
+    toc(__t, "fdmp / md1")
 
     # ----------------------------------------------------------------------
     # Some pages may have been skipped from cache but should in fact be
     # done anyway because they depend upon a page that changed
+    __t = tic()
     all_to_trigger = Set{String}()
     for (_, lci) in gc.children_contexts
         union!(all_to_trigger, lci.to_trigger)
@@ -440,16 +460,21 @@ function full_pass_markdown(
             skip_dict[fp] = false
         end
     end
+    toc(__t, "fdmp / md1-retrig")
     # ----------------------------------------------------------------------
 
     @info "> Full Pass [MD/I] (sequential)"
+    __t = tic()
     _md_loop_i(gc)
+    toc(__t, "fdmp / mdi")
 
     @info "> Full Pass [MD/2]"
+    __t = tic()
     for (fp, _) in watched
         @info msg(fp, "2️⃣")
         _md_loop_2(gc, fp, skip_dict, final)
     end
+    toc(__t, "fdmp / md2")
 
     return
 end
