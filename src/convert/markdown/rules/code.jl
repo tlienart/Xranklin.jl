@@ -469,8 +469,8 @@ function _eval_repl_code(
             println(io, "<div class=\"repl-help\">")
             println(io, strip(replace(
                 Markdown.html(r),
-                r"<a href=\"@ref\">(.*?)</a>" => s"\1",
-                "class=\"language-jldoctest\"" => "class=\"language-julia-repl\"",
+                r"<a href=\"@ref(.*?)\">(.*?)</a>" => s"\1",
+                "class=\"language-jldoctest\""     => "class=\"language-julia-repl\"",
                 r"(?:\&\#36\;)+((.|\n)*?)(?:\&\#36\;)+" => s"\\(\1\\)"
             )))
             println(io, "</div>")
