@@ -16,7 +16,7 @@ end
 end 
 
 @testset "aux" begin
-    p = "indir"/"aux"
+    p = "indir"/"auxfiles"
     include(p/"literate.jl")
     include(p/"rss.jl")
     include(p/"sitemap-robots.jl")
