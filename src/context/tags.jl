@@ -122,16 +122,16 @@ function write_tag_page(
     end
 
     # convert tag layout and write to file (we don't care about retrieving it from GC)
-    __t = tic()
+    
     lc = TagLocalContext(gc; rpath=trp)
-    toc(__t, "write_tag_page / ctx [$id]")
+    
     setvar!(lc, :tag_id, id)
     setvar!(lc, :tag_name, gc.tags[id].name)
-    __t = tic()
+    
     open(tp, "w") do f
         write(f, html2(ct, lc))
     end
-    toc(__t, "write_tag_page / process [$id]")
+    
     if getvar(gc, :_final, false)
         adjust_base_url(lc, tp, final=true)
     end

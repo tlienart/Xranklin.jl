@@ -87,8 +87,6 @@ function serve(
             launch::Bool = true,
         )::Nothing
 
-    reset_timer()
-
     if debug
         Logging.disable_logging(Logging.Debug - 100)
         ENV["JULIA_DEBUG"] = "all"
@@ -103,7 +101,7 @@ function serve(
     # notebooks which each have their module. The first creation of a module
     # will also create the overall `parent_module` in which all modules (for
     # both the global and the local contexts) will live.
-    __t = tic()
+    
     gc     = DefaultGlobalContext()
     folder = ifelse(isempty(folder), pwd(), dir)
 
@@ -128,8 +126,8 @@ function serve(
     utils_unchanged = !any(isfile, (cached_utils, current_utils)) ||
                       utilscmp(cached_utils, current_utils)
 
-    toc(__t, "serve / init")
-    __t = tic()
+    
+    
 
     # same for config except the cached version may be from a .jl or .md
     config_unchanged = false
@@ -141,11 +139,10 @@ function serve(
         config_unchanged || break
     end
     
-    toc(__t, "serve / cmp config+utils")
+    
 
     deserialized_gc_success = false
     if !clear && isfile(gc_cache_path())
-        __t   = tic()
         start = time()
         # try to load previously-serialised contexts if any, the process config
         # and process_utils happen within the deserialise so that children
@@ -166,11 +163,11 @@ function serve(
         # check if layout files have changed, if they have --> clear
         clear = clear || changed_layout_hashes(gc)
 
-        toc(__t, "serve / cache loading")
+        
     end
 
     if clear || !utils_unchanged
-        __t = tic()
+        
         # if there was a successfully deserialised gc, we discard it
         # if there wasn't, then the gc is currently a fresh one
         if deserialized_gc_success
@@ -185,13 +182,9 @@ function serve(
         end
 
         @debug "clear: $clear / utils: $utils_unchanged; reprocess config/utils"
-        __t1 = tic()
         process_config(gc)
-        toc(__t1, "process config")
-        __t2 = tic()
         process_utils(gc)
-        toc(__t2, "process utils")
-        toc(__t, "serve / scratch init")
+        
     end
 
     # useful to check if changes to utils are relevant or not, see
@@ -205,11 +198,11 @@ function serve(
     # scrape the folder to collect all files that should be watched for
     # changes; this set will be updated in the loop if new files get
     # added that should be watched
-    __t = tic()
+    
     wf = find_files_to_watch(gc)
-    toc(__t, "serve / fill watcher")
+    
 
-    __t = tic()
+    
     gc = full_pass(
         gc, wf;
         initial_pass    = true,
@@ -218,7 +211,7 @@ function serve(
         final,
         allow_no_index
     )
-    toc(__t, "serve / fullpass")
+    
 
     # ---------------------------------------------------------------
     # Start the build loop unless we're in single pass mode (single)
@@ -237,7 +230,7 @@ function serve(
 
     # ---------------------------------------------------------------
     # Finalise by caching notebooks etc
-    __t = tic()
+    
     with_parser_error = String[]
     with_failed_block = String[]
     for (rp, lc) in gc.children_contexts
@@ -289,7 +282,7 @@ function serve(
     # cache
     serialize_contexts(gc)
 
-    toc(__t, "serve / finalise + serialise")
+    
 
     # ---------------------------------------------------------------
     # Cleanup:

@@ -30,10 +30,12 @@ function convert_md(
     # stream to which the converted text will be written
     io = IOBuffer()
     if is_math(c)
-        blocks = FP.math_partition(md; kw...)
-        process_latex_objects!(blocks, c; tohtml)
-        for b in blocks
-            write(io, b.ss)
+        @timeit TIMER "mathproc" begin
+            blocks = FP.math_partition(md; kw...)
+            process_latex_objects!(blocks, c; tohtml)
+            for b in blocks
+                write(io, b.ss)
+            end
         end
         return String(take!(io))
     end
@@ -41,12 +43,10 @@ function convert_md(
     # partition the markdown and form groups (paragraphs)
     groups = nothing
     try
-        __t = tic()
-        parts  = FP.md_partition(md; kw...)
-        toc(__t, "convertmd / partition")
-        __t = tic()
-        groups = parts |> FP.md_grouper
-        toc(__t, "convertmd / grouping")
+        @timeit TIMER "partitioning" begin
+            parts  = FP.md_partition(md; kw...)
+            groups = parts |> FP.md_grouper
+        end
     catch e
         if isa(e, FP.FranklinParserException)
             # if it comes directly from the first pass processing a file
@@ -103,50 +103,48 @@ function convert_md(
 
     # go over each group, if it's a paragraph add the paragraph separators
     # around it, then convert each block in the group and write that to stream
-    __t = tic()
-    for g in groups
-        if g.role in (:PARAGRAPH, :PARAGRAPH_NOP)
-            __ti = tic()
-            par = g.role == :PARAGRAPH
-            process_latex_objects!(g.blocks, c; tohtml)
-            pio = IOBuffer()
-            for b in g.blocks
-                cb = convert(b, c)
-                write(pio, cb)
-            end
-            bulk = strip(String(take!(pio)), '\n')
-            if par
-                write(io, before_par, bulk, after_par)
+    
+    @timeit TIMER "groups" begin
+        for g in groups
+            if g.role in (:PARAGRAPH, :PARAGRAPH_NOP)
+                @timeit TIMER ":par" begin
+                    par = g.role == :PARAGRAPH
+                    @timeit TIMER "lobj" process_latex_objects!(g.blocks, c; tohtml)
+                    pio = IOBuffer()
+                    @timeit TIMER "forl" begin
+                        for b in g.blocks
+                            @timeit TIMER "conv $(b.name)" cb = convert(b, c)
+                            write(pio, cb)
+                        end
+                    end
+                    bulk = strip(String(take!(pio)), '\n')
+                    if par
+                        write(io, before_par, bulk, after_par)
+                    else
+                        write(io, bulk)
+                    end
+                end
+
+            elseif g.role == :LIST
+                @timeit TIMER ":list" convert_list(io, g, c; tohtml, kw...)
+
+            elseif g.role == :TABLE
+                @timeit TIMER ":table" convert_table(io, g, c; tohtml, kw...)
+
+            # environment groups (begin...end)
+            elseif startswith(string(g.role), "ENV_")
+                @timeit TIMER ":env" begin
+                    b = try_resolve_lxenv(g.blocks, c; tohtml)
+                    write(io, convert(b, c))
+                end
+
+            # all other groups are constituted of a single block
             else
-                write(io, bulk)
+                @timeit TIMER ":other" write(io, convert(first(g.blocks), c))
             end
-            toc(__ti, "convertmd / paragraph")
-
-        elseif g.role == :LIST
-            __ti = tic()
-            convert_list(io, g, c; tohtml, kw...)
-            toc(__ti, "convertmd / list")
-
-        elseif g.role == :TABLE
-            __ti = tic()
-            convert_table(io, g, c; tohtml, kw...)
-            toc(__ti, "convertmd / table")
-
-        # environment groups (begin...end)
-        elseif startswith(string(g.role), "ENV_")
-            __ti = tic()
-            b = try_resolve_lxenv(g.blocks, c; tohtml)
-            write(io, convert(b, c))
-            toc(__ti, "convertmd / env")
-
-        # all other groups are constituted of a single block
-        else
-            __ti = tic()
-            write(io, convert(first(g.blocks), c))
-            toc(__ti, "convertmd / $(first(g.blocks).name)")
         end
     end
-    toc(__t, "convertmd / group conversion")
+
     return String(take!(io))
 end
 
@@ -164,9 +162,12 @@ math(b::Block, c; kw...)   = math(content(b), c; kw...)
 
 
 function html(md::SS, c::Context; kw...)
-    r = convert_md(md, c; kw...)
+    @timeit TIMER "convert_md" r = convert_md(md, c; kw...)
+    
     (is_recursive(c) | is_glob(c)) && return r
-    return html2(r, c)
+    @timeit TIMER "html2" r = html2(r, c)
+
+    return r
 end
 html(md::SS; rpath="__local__", kw...) = html(md, DefaultLocalContext(; rpath); kw...)
 html(md::String, c...; kw...) = html(subs(md), c...; kw...)
@@ -198,7 +199,8 @@ function convert_block(b::Block, c::Context; tohtml=true)::String
     # other blocks
     n = lowercase(String(b.name))
     f = Symbol(ifelse(tohtml, "html", "latex") * "_$n")
-    return eval(:($f($b, $c)))
+    @timeit TIMER "cblock" r = eval(:($f($b, $c)))
+    return r
 end
 html(b::Block, c::Context)  = convert_block(b, c)
 latex(b::Block, c::Context) = convert_block(b, c; tohtml=false)

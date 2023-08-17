@@ -34,6 +34,7 @@ import IOCapture
 import ANSIColoredPrinters: HTMLPrinter
 import OrderedCollections: LittleDict
 import Reexport: @reexport
+using TimerOutputs
 
 # copied from CommonMark.jl, used in dealing with autolink
 @inline issafe(c::Char) = c in "?:/,-+@._()#=*&%" ||
@@ -76,8 +77,6 @@ const FRANKLIN_ENV = Dict{Symbol, Any}(
     :output_site_folder  => "__site",
     :output_pdf_folder   => "__pdf",
     :output_cache_folder => "__cache",
-    # see logging.jl
-    :log_times           => false,
 )
 env(s::Symbol)        = FRANKLIN_ENV[s]
 setenv!(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
@@ -86,7 +85,8 @@ setenv!(s::Symbol, v) = (FRANKLIN_ENV[s] = v; nothing)
 
 include("misc_utils.jl")
 include("html_utils.jl")
-include("logging/timer.jl")
+
+const TIMER = TimerOutput()
 
 # ------------------------------------------------------------------------
 

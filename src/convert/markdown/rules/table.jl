@@ -196,16 +196,17 @@ end
 
 
 function row_partition(row::SS)
+
     tokens = FP.default_md_tokenizer(row)
     idx1   = findfirst(t -> t.name == :PIPE, tokens)
     parts  = FP.md_partition(row; tokens=@view tokens[idx1:end])
-    # there will typically only be one part, in any case we only consider text
-    # parts and the pipes in those and determine substrings based on that
-    pipes = Token[]
+    filter!(p -> p.name == :TEXT, parts)
+
+    pipes = Int[]
     for p in parts
-        pp = filter(t -> t.name == :PIPE, p.inner_tokens)
-        append!(pipes, ifelse(p.name == :TEXT, pp, Token[]))
+        append!(pipes, findall('|', p.ss) .+ from(p.ss) .- 1)
     end
+
     ps = parent_string(row)
 
     # partitioning into cells, remember that there is necessarily a starting |
@@ -215,10 +216,10 @@ function row_partition(row::SS)
     for i in eachindex(pipes)
         i == 1 && continue
         nextp = pipes[i]
-        push!(cells, subs(ps, next_index(curp), prev_index(nextp)))
+        push!(cells, subs(ps, nextind(ps, curp), prevind(ps, nextp)))
         curp  = nextp
     end
     # last cell
-    push!(cells, subs(ps, next_index(curp), to(row)))
+    push!(cells, subs(ps, nextind(ps, curp), to(row)))
     return cells
 end

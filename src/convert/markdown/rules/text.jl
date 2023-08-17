@@ -12,9 +12,9 @@ latex_failed(b, _) = latex_failed(string(b.ss))
 # INLINE
 #
 
-# plain text
-html_text(b, _)  = FP.prepare_text(b)
-latex_text(b, _) = FP.prepare_text(b; tohtml=false)
+# plain text (only gets called in md context)
+html_text(b, _)  = FP.prepare_md_text(b)
+latex_text(b, _) = FP.prepare_md_text(b; tohtml=false)
 
 # emphasis
 html_emph_em(b, c)         = html_prepost(rhtml(b, c; nop=true), "<em>")
