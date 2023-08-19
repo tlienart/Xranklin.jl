@@ -38,9 +38,6 @@ ct = read(joinpath(@__DIR__, "ex" / "pg1.md"), String)
 # this is a decomposition of the call to html
 # the most significant call, by far, is the convert_md.
 
-X.env(:log_times)
-X.reset_timer()
-
 @btime html($ct)
 
 @btime X.convert_md($ct, $lc)
@@ -53,6 +50,7 @@ X.topk(X.TIMER)
 
 #######################
 
+# run aug 20: ~1.081 ms
 begin
     u = raw"""
         @reexport using Dates
@@ -74,6 +72,7 @@ end
 
 #
 # Creation of DefaultLocalContext + eval front matter ⌛ ~1.9ms 🟠
+# rerun aug 20: ~1.7ms
 #
 # with or without a date doesn't change much eval of hfun fill takes
 # negligible time on top of that
@@ -99,6 +98,7 @@ end
 
 #
 # Creation of DefaultLocalContext ⌛ ~ 0.3ms ✅
+# rerun aug 19, ok.
 #
 begin
     u = raw"""
