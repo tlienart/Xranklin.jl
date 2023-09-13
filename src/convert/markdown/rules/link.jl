@@ -214,7 +214,7 @@ end
 """
 [A]: B
 
-Note: C can be global context
+Note: C can be global context (general refs given in config.md)
 """
 function _refref(b::Block, c::Context; tohtml=true)
     ss = b.ss
