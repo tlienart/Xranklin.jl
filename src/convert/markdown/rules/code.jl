@@ -453,7 +453,7 @@ function _eval_repl_code(
     else
         # only the first line is considered, rest ignored
         line = first(split(ci.code, r"\r?\n", limit=2))
-        r    = eval(Meta.parse("@doc $line"))
+        r    = lc.nb_code.mdl.eval(Meta.parse("@doc $line"))
 
         # close code first, then print result
         if !tohtml
