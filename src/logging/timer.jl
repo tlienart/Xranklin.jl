@@ -9,8 +9,10 @@ const TIMERN = Ref(0)
 reset_timer() = (empty!(TIMER); TIMERN[] = 0;)
 
 save_timer() = begin
-    open(path(:cache) / "timer", "w") do outf
-        serialize(outf, TIMER)
+    if isfile(path(:cache) / "timer")
+        open(path(:cache) / "timer", "w") do outf
+            serialize(outf, TIMER)
+        end
     end
 end
 
