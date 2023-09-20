@@ -1,9 +1,0 @@
-[input]
-base_directory = "__site"
-url_prefix = "https://tlienart.github.io/Xranklin.jl/"
-html_selector = "body"
-exclude_html_selector = "style"
-files = [
-    {path = "index.html", url = "", title = "Building websites with Franklin"},
-    {path = "workflow/getting_started/index.html", url = "workflow/getting_started/", title = "Getting started"},
-]
