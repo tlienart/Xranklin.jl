@@ -118,202 +118,213 @@ function serve(
         setvar!(gc, :project, Pkg.project().path)
     end
 
-    # in case the user explicitly specifies stuff to ignore
-    append!(gc.vars[:ignore], skip)
+    #
+    # i262: wrap the whole logic in a try-finally to guarantee the
+    # environment is set back to what it was in case the server crashes
+    #
+    try 
 
-    # if there is a utils.jl that was cached, check if it has changed,
-    # if it has, we clear even if clear is false
-    cached_utils    = path(gc, :cache)  / "utils.jl"
-    current_utils   = path(gc, :folder) / "utils.jl"
-    utils_unchanged = !any(isfile, (cached_utils, current_utils)) ||
-                      utilscmp(cached_utils, current_utils)
+        # in case the user explicitly specifies stuff to ignore
+        append!(gc.vars[:ignore], skip)
 
-    toc(__t, "serve / init")
-    __t = tic()
+        # if there is a utils.jl that was cached, check if it has changed,
+        # if it has, we clear even if clear is false
+        cached_utils    = path(gc, :cache)  / "utils.jl"
+        current_utils   = path(gc, :folder) / "utils.jl"
+        utils_unchanged = !any(isfile, (cached_utils, current_utils)) ||
+                        utilscmp(cached_utils, current_utils)
 
-    # same for config except the cached version may be from a .jl or .md
-    config_unchanged = false
-    for case in ("config.jl", "config.md")
-        cached_config    = path(gc, :cache) / case
-        current_config   = path(gc, :folder) / case
-        config_unchanged = !any(isfile, (cached_config, current_config)) ||
-                           filecmp(cached_config, current_config)
-        config_unchanged || break
-    end
-    
-    toc(__t, "serve / cmp config+utils")
+        toc(__t, "serve / init")
+        __t = tic()
 
-    deserialized_gc_success = false
-    if !clear && isfile(gc_cache_path())
-        __t   = tic()
-        start = time()
-        # try to load previously-serialised contexts if any, the process config
-        # and process_utils happen within the deserialise so that children
-        # contexts are attached to an up-to-date gc.
-        try
-            deserialize_gc(gc)
+        # same for config except the cached version may be from a .jl or .md
+        config_unchanged = false
+        for case in ("config.jl", "config.md")
+            cached_config    = path(gc, :cache) / case
+            current_config   = path(gc, :folder) / case
+            config_unchanged = !any(isfile, (cached_config, current_config)) ||
+                            filecmp(cached_config, current_config)
+            config_unchanged || break
+        end
+        
+        toc(__t, "serve / cmp config+utils")
+
+        deserialized_gc_success = false
+        if !clear && isfile(gc_cache_path())
+            __t   = tic()
+            start = time()
+            # try to load previously-serialised contexts if any, the process
+            # config and process_utils happen within the deserialise so that
+            # children contexts are attached to an up-to-date gc.
+            try
+                deserialize_gc(gc)
+                δt = time() - start; @info """
+                    🏁 ... done $(hl(time_fmt(δt), :red))
+                    """
+                deserialized_gc_success = true
+            catch
+                @info """
+                    ❌ failed to deserialize cache, this can happen if the
+                    previous session crashed.
+                    """
+                clear = true
+            end
+
+            # check if layout files have changed, if they have --> clear
+            clear = clear || changed_layout_hashes(gc)
+
+            toc(__t, "serve / cache loading")
+        end
+
+        if clear || !utils_unchanged
+            __t = tic()
+            # if there was a successfully deserialised gc, we discard it
+            # if there wasn't, then the gc is currently a fresh one
+            if deserialized_gc_success
+                # changed_layout_hashes -> restart from scratch
+                folder = path(gc, :folder)
+                gc     = DefaultGlobalContext()
+                set_paths!(gc, folder)
+            end
+            # if clear, destroy output directories if any
+            for odir in (path(gc, :site), path(gc, :pdf), path(gc, :cache))
+                rm(odir; force=true, recursive=true)
+            end
+
+            @debug "clear: $clear / utils: $utils_unchanged; reprocess config/utils"
+            __t1 = tic()
+            process_config(gc)
+            toc(__t1, "process config")
+            __t2 = tic()
+            process_utils(gc)
+            toc(__t2, "process utils")
+            toc(__t, "serve / scratch init")
+        end
+
+        # useful to check if changes to utils are relevant or not, see
+        # build_loop and utils_changed
+        if isfile(current_utils)
+            setvar!(gc, :_utils_code, read(current_utils, String))
+        end
+
+        if !isempty(base_url_prefix)
+            setvar!(gc, :base_url_prefix, base_url_prefix)
+        end
+
+        # scrape the folder to collect all files that should be watched for
+        # changes; this set will be updated in the loop if new files get
+        # added that should be watched
+        __t = tic()
+        wf = find_files_to_watch(gc)
+        toc(__t, "serve / fill watcher")
+
+        __t = tic()
+        gc = full_pass(
+            gc, wf;
+            initial_pass    = true,
+            config_changed  = !config_unchanged,
+            utils_changed   = !utils_unchanged,
+            final,
+            allow_no_index
+        )
+        toc(__t, "serve / fullpass")
+
+        # ---------------------------------------------------------------
+        # Start the build loop unless we're in single pass mode (single)
+        # or in final build mode (final).
+        if !any((single, final))
+            loop = (cntr, watcher) -> build_loop(cntr, watcher, wf)
+            LiveServer.serve(
+                    port           = port,
+                    coreloopfun    = loop,
+                    dir            = path(gc, :site),
+                    host           = host,
+                    launch_browser = launch
+                )
+            println()
+        end
+
+        # ---------------------------------------------------------------
+        # Finalise by caching notebooks etc
+        __t = tic()
+        with_parser_error = String[]
+        with_failed_block = String[]
+        for (rp, lc) in gc.children_contexts
+            if getvar(lc, :_has_parser_error, false)
+                push!(with_parser_error, rp)
+            elseif getvar(lc, :_has_failed_blocks, false)
+                push!(with_failed_block, rp)
+            end
+        end
+        fin   = "."
+        noerr = all(isempty, (with_failed_block, with_parser_error))
+        if noerr
+            fin = " (💯)."
+        else
+            fin = " but some had issues..."
+        end
+        msg = """
+            Processed $(length(gc.children_contexts)) pages$fin
+            """
+        if !isempty(with_parser_error)
+            n = length(with_parser_error)
+            msg *= """
+                \n⚠ these page(s) failed to be parsed properly:\n
+                """
+            for rp in with_parser_error
+                msg *= """
+                        * $rp
+                    """
+            end
+        end
+        if !isempty(with_failed_block)
+            msg *= """
+                \n⚠ these page(s) have blocks that couldn't be resolved:\n
+                """
+            for rp in with_failed_block
+                msg *= """
+                        * $rp
+                    """
+            end
+        end
+        if noerr
+            @info msg
+        else
+            @warn msg * "\n"
+        end
+        println()
+        @info "Starting caching process & cleanup"
+
+        # cache
+        serialize_contexts(gc)
+
+        toc(__t, "serve / finalise + serialise")
+
+    finally
+        # ---------------------------------------------------------------
+        # Cleanup:
+        # > wipe parent module (make all children modules inaccessible
+        #   so that the garbage collector should be able to destroy them)
+        # > unlink global and local context so that the gc can destroy them.
+        if cleanup
+            start = time()
+            @info "🗑️ cleaning up all objects..."
+            parent_module(wipe=true)
+            save_timer()
+            setenv!(:cur_global_ctx, nothing)
+            setenv!(:cur_local_ctx,  nothing)
             δt = time() - start; @info """
                 🏁 ... done $(hl(time_fmt(δt), :red))
                 """
-            deserialized_gc_success = true
-        catch
-            @info """
-                ❌ failed to deserialize cache, maybe the previous session crashed.
-                """
-            clear = true
+            println("")
         end
-
-        # check if layout files have changed, if they have --> clear
-        clear = clear || changed_layout_hashes(gc)
-
-        toc(__t, "serve / cache loading")
-    end
-
-    if clear || !utils_unchanged
-        __t = tic()
-        # if there was a successfully deserialised gc, we discard it
-        # if there wasn't, then the gc is currently a fresh one
-        if deserialized_gc_success
-            # changed_layout_hashes -> restart from scratch
-            folder = path(gc, :folder)
-            gc     = DefaultGlobalContext()
-            set_paths!(gc, folder)
+        # > deactivate env if changed
+        if Pkg.project().path != old_project
+            @info "🔄 reactivating your previous environment..."
+            Pkg.activate(old_project)
         end
-        # if clear, destroy output directories if any
-        for odir in (path(gc, :site), path(gc, :pdf), path(gc, :cache))
-            rm(odir; force=true, recursive=true)
-        end
-
-        @debug "clear: $clear / utils: $utils_unchanged; reprocess config/utils"
-        __t1 = tic()
-        process_config(gc)
-        toc(__t1, "process config")
-        __t2 = tic()
-        process_utils(gc)
-        toc(__t2, "process utils")
-        toc(__t, "serve / scratch init")
+        ENV["JULIA_DEBUG"] = ""
     end
-
-    # useful to check if changes to utils are relevant or not, see
-    # build_loop and utils_changed
-    if isfile(current_utils)
-        setvar!(gc, :_utils_code, read(current_utils, String))
-    end
-
-    isempty(base_url_prefix) || setvar!(gc, :base_url_prefix, base_url_prefix)
-
-    # scrape the folder to collect all files that should be watched for
-    # changes; this set will be updated in the loop if new files get
-    # added that should be watched
-    __t = tic()
-    wf = find_files_to_watch(gc)
-    toc(__t, "serve / fill watcher")
-
-    __t = tic()
-    gc = full_pass(
-        gc, wf;
-        initial_pass    = true,
-        config_changed  = !config_unchanged,
-        utils_changed   = !utils_unchanged,
-        final,
-        allow_no_index
-    )
-    toc(__t, "serve / fullpass")
-
-    # ---------------------------------------------------------------
-    # Start the build loop unless we're in single pass mode (single)
-    # or in final build mode (final).
-    if !any((single, final))
-        loop = (cntr, watcher) -> build_loop(cntr, watcher, wf)
-        LiveServer.serve(
-                port           = port,
-                coreloopfun    = loop,
-                dir            = path(gc, :site),
-                host           = host,
-                launch_browser = launch
-            )
-        println()
-    end
-
-    # ---------------------------------------------------------------
-    # Finalise by caching notebooks etc
-    __t = tic()
-    with_parser_error = String[]
-    with_failed_block = String[]
-    for (rp, lc) in gc.children_contexts
-        if getvar(lc, :_has_parser_error, false)
-            push!(with_parser_error, rp)
-        elseif getvar(lc, :_has_failed_blocks, false)
-            push!(with_failed_block, rp)
-        end
-    end
-    fin   = "."
-    noerr = all(isempty, (with_failed_block, with_parser_error))
-    if noerr
-        fin = " (💯)."
-    else
-        fin = " but some had issues..."
-    end
-    msg = """
-        Processed $(length(gc.children_contexts)) pages$fin
-        """
-    if !isempty(with_parser_error)
-        n = length(with_parser_error)
-        msg *= """
-            \n⚠ the following page(s) failed to be parsed properly:\n
-            """
-        for rp in with_parser_error
-            msg *= """
-                    * $rp
-                """
-        end
-    end
-    if !isempty(with_failed_block)
-        msg *= """
-            \n⚠ the following page(s) have blocks that couldn't be resolved:\n
-            """
-        for rp in with_failed_block
-            msg *= """
-                    * $rp
-                """
-        end
-    end
-    if noerr
-        @info msg
-    else
-        @warn msg * "\n"
-    end
-    println()
-    @info "Starting caching process & cleanup"
-
-    # cache
-    serialize_contexts(gc)
-
-    toc(__t, "serve / finalise + serialise")
-
-    # ---------------------------------------------------------------
-    # Cleanup:
-    # > wipe parent module (make all children modules inaccessible
-    #   so that the garbage collector should be able to destroy them)
-    # > unlink global and local context so that the gc can destroy them.
-    if cleanup
-        start = time()
-        @info "🗑️ cleaning up all objects..."
-        parent_module(wipe=true)
-        save_timer()
-        setenv!(:cur_global_ctx, nothing)
-        setenv!(:cur_local_ctx,  nothing)
-        δt = time() - start; @info """
-            🏁 ... done $(hl(time_fmt(δt), :red))
-            """
-        println("")
-    end
-    # > deactivate env if changed
-    if Pkg.project().path != old_project
-        @info "🔄 reactivating your previous environment..."
-        Pkg.activate(old_project)
-    end
-    ENV["JULIA_DEBUG"] = ""
     return
 end
 

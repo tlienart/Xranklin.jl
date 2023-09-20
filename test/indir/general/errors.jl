@@ -33,9 +33,9 @@ include(joinpath(@__DIR__, "..", "..", "utils.jl"))
 
     for e in (
         "Warning: Processed 3 pages but some had issues...",
-        "⚠ the following page(s) failed to be parsed properly:",
+        "⚠ these page(s) failed to be parsed properly:",
         "* errbad.md",
-        "⚠ the following page(s) have blocks that couldn't be resolved:",
+        "⚠ these page(s) have blocks that couldn't be resolved:",
         "* err.md"
     )
         @test occursin(e, infos)
