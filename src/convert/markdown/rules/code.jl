@@ -445,6 +445,7 @@ function _eval_repl_code(
                 println(io, "($(project_name)) pkg> $(strip(line))")
                 isempty(captured.output) || println(io, strip(captured.output))
             end
+            counter += 1
         end
     
     #
