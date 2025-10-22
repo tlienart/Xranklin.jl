@@ -146,7 +146,7 @@ function _eval_vars_cell(
         end
     end
     return [
-        VarPair((vn, getproperty(mdl, vn)))
+        VarPair((vn, @invokelatest getglobal(mdl, vn)))
         for vn in vnames if vn isa Symbol
     ]
 end

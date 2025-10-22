@@ -135,7 +135,7 @@ function _process_literate_file(
          )::String
     # check if Literate.jl is loaded, otherwise interrupt
     if !env(:literate)
-        if !isdefined(get_utils_module(lc), :Literate)
+        if !@invokelatest isdefined(get_utils_module(lc), :Literate)
             @warn """
                 \\literate{...}
                 It looks like you have not imported Literate in your Utils.
