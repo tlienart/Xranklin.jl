@@ -48,7 +48,7 @@ end
 Checks whether a name is an existing module or submodule of `p`.
 """
 function ismodule(n::Symbol, p::Module=Main)::Bool
-    return isdefined(p, n) && typeof(getfield(p, n)) == Module
+    return @invokelatest(isdefined(p, n)) && typeof(@invokelatest(getglobal(p, n))) == Module
 end
 
 """
@@ -88,7 +88,7 @@ function parent_module(;
 
     n = modulename("parent")
     if !wipe && ismodule(n)
-        return getfield(Main, n)
+        return @invokelatest getglobal(Main, n)
     end
     # we don't use newmodule here to avoid the WARNING: replacing module
     return newmodule(n, Main)
@@ -108,7 +108,7 @@ function submodule(
 
     p = parent_module()
     if !wipe && ismodule(n, p)
-        m = getfield(p, n)
+        m = @invokelatest getglobal(p, n)
     else
         m = newmodule(n, p)
     end

@@ -167,7 +167,7 @@ function process_utils(
 
     # check names of hfun, lx and vars; since we're working with an initially
     # fresh GC (see docstring), all the proper names recuperated here are 'fresh'.
-    ns  = String.(names(utils_mdl, all=true))
+    ns  = String.(@invokelatest names(utils_mdl, all=true))
     filter!(
         n -> n[1] != '#' &&
              n ∉ ("eval", "include", string(nameof(utils_mdl))),

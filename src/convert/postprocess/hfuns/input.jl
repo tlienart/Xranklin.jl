@@ -40,7 +40,7 @@ function _hfun_fill_1(
         return stripped_repr(v)
     elseif vname in utils_var_names(lc.glob)
         mdl = cur_gc().nb_code.mdl
-        return stripped_repr(getproperty(mdl, vname))
+        return stripped_repr(@invokelatest getglobal(mdl, vname))
     else
         @warn """
             {{fill $vname}}

@@ -344,7 +344,7 @@ function append_result_html!(
     figshow = false
     Utils   = get_utils_module(lc)
 
-    if isdefined(Utils, :html_show) && hasmethod(Utils.html_show, (R,))
+    if @invokelatest(isdefined(Utils, :html_show)) && hasmethod(Utils.html_show, (R,))
         write(io, Utils.html_show(result))
 
     elseif fig.save && hasmethod(Base.show, (IO, MIME"image/svg+xml", R))
@@ -393,7 +393,7 @@ function append_result_latex!(
 
     Utils = get_utils_module(lc)
 
-    if isdefined(Utils, :latex_show) && hasmethod(Utils.latex_show, (R,))
+    if @invokelatest(isdefined(Utils, :latex_show)) && hasmethod(Utils.latex_show, (R,))
         write(io, Utils.latex_show(result))
 
     elseif fig.save && hasmethod(Base.show, (IO, MIME"application/pdf", R))

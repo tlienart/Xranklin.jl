@@ -158,7 +158,7 @@ function _dbb_fill(
     # try fill from Utils
     elseif !fail && (fname in utils_var_names(lc.glob))
         mdl = get_utils_module(lc)
-        res = string(getproperty(mdl, fname))
+        res = string(@invokelatest getglobal(mdl, fname))
 
     else
         fail = true
