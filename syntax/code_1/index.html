@@ -1325,7 +1325,7 @@ randstring(5)
 <div class="trim">
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">randstring(5)</code></pre>
-<div class="code-output"><pre><code class="code-result language-plaintext">"up8Bu"</code></pre></div></fieldset>
+<div class="code-output"><pre><code class="code-result language-plaintext">"B3tqR"</code></pre></div></fieldset>
 
 </div><div class="trim">
 
@@ -1515,7 +1515,7 @@ date
 abc
 
 <span class="sgr31"><span class="sgr1">shell&gt;</span></span> date
-Tue Nov  7 08:06:43 UTC 2023
+Thu Oct 23 16:25:53 UTC 2025
 </code></pre>
 </fieldset>
 
@@ -1545,31 +1545,25 @@ rand(StableRNG(1))
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia-repl"><span class="sgr34"><span class="sgr1">(docs) pkg&gt;</span></span> activate --temp
 <span class="sgr33"><span class="sgr1">┌ Warning: </span></span>The Pkg REPL mode is intended for interactive use only, and should not be used from scripts. It is recommended to use the functional API instead.
-<span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ Pkg.REPLMode /opt/hostedtoolcache/julia/1.9.3/x64/share/julia/stdlib/v1.9/Pkg/src/REPLMode/REPLMode.jl:382</span>
-<span class="sgr32"><span class="sgr1">  Activating</span></span> new project at `/tmp/jl_NuoSmi`
+<span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ Pkg.REPLMode /opt/hostedtoolcache/julia/1.12.1/x64/share/julia/stdlib/v1.12/Pkg/src/REPLMode/REPLMode.jl:390</span>
+<span class="sgr32"><span class="sgr1">  Activating</span></span> new project at `/tmp/jl_GFDnad`
 
-<span class="sgr34"><span class="sgr1">(jl_NuoSmi) pkg&gt;</span></span> add StableRNGs
+<span class="sgr34"><span class="sgr1">(jl_GFDnad) pkg&gt;</span></span> add StableRNGs
 <span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
-<span class="sgr32"><span class="sgr1">   Installed</span></span> StableRNGs ─ v1.0.0
-<span class="sgr32"><span class="sgr1">    Updating</span></span> `/tmp/jl_NuoSmi/Project.toml`
-  <span class="sgr90">[860ef19b] </span><span class="sgr92">+ StableRNGs v1.0.0</span>
-<span class="sgr32"><span class="sgr1">    Updating</span></span> `/tmp/jl_NuoSmi/Manifest.toml`
-  <span class="sgr90">[860ef19b] </span><span class="sgr92">+ StableRNGs v1.0.0</span>
-  <span class="sgr90">[2a0f44e3] </span><span class="sgr92">+ Base64</span>
-  <span class="sgr90">[b77e0a4c] </span><span class="sgr92">+ InteractiveUtils</span>
-  <span class="sgr90">[56ddb016] </span><span class="sgr92">+ Logging</span>
-  <span class="sgr90">[d6f4376e] </span><span class="sgr92">+ Markdown</span>
-  <span class="sgr90">[9a3f8284] </span><span class="sgr92">+ Random</span>
+<span class="sgr32"><span class="sgr1">   Installed</span></span> StableRNGs ─ v1.0.3
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `/tmp/jl_GFDnad/Project.toml`
+  <span class="sgr90">[860ef19b] </span><span class="sgr92">+ StableRNGs v1.0.3</span>
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `/tmp/jl_GFDnad/Manifest.toml`
+  <span class="sgr90">[860ef19b] </span><span class="sgr92">+ StableRNGs v1.0.3</span>
+  <span class="sgr90">[9a3f8284] </span><span class="sgr92">+ Random v1.11.0</span>
   <span class="sgr90">[ea8e919c] </span><span class="sgr92">+ SHA v0.7.0</span>
-  <span class="sgr90">[9e88b42a] </span><span class="sgr92">+ Serialization</span>
-  <span class="sgr90">[8dfed614] </span><span class="sgr92">+ Test</span>
-<span class="sgr32"><span class="sgr1">Precompiling</span></span> project...
-<span class="sgr32">  ✓ </span>StableRNGs
+<span class="sgr32"><span class="sgr1">Precompiling</span></span> packages...
+    432.6 ms<span class="sgr32">  ✓ </span>StableRNGs
   1 dependency successfully precompiled in 1 seconds
 
-<span class="sgr34"><span class="sgr1">(jl_NuoSmi) pkg&gt;</span></span> st
-<span class="sgr32"><span class="sgr1">Status</span></span> `/tmp/jl_NuoSmi/Project.toml`
-  <span class="sgr90">[860ef19b] </span>StableRNGs v1.0.0
+<span class="sgr34"><span class="sgr1">(jl_GFDnad) pkg&gt;</span></span> st
+<span class="sgr32"><span class="sgr1">Status</span></span> `/tmp/jl_GFDnad/Project.toml`
+  <span class="sgr90">[860ef19b] </span>StableRNGs v1.0.3
 </code></pre>
 then<pre><code class="julia">using StableRNGs
 rand(StableRNG(1))</code></pre>
@@ -1645,7 +1639,7 @@ im
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia-repl"><span class="sgr33"><span class="sgr1">help?&gt;</span></span> im
 </code></pre>
 <div class="repl-help">
-<pre><code>im</code></pre>
+<pre><code class="language-julia">im</code></pre>
 <p>The imaginary unit.</p>
 <p>See also: , , .</p>
 <h1>Examples</h1>
@@ -1901,8 +1895,7 @@ colorant&quot;cornflowerblue&quot;
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">using Colors
 colorant&quot;cornflowerblue&quot;</code></pre>
-<div class="code-output"><img class="code-figure" src="/Xranklin.jl/assets/syntax/code_1/figs-html/__autofig_1682931969501726440.svg">
-</div></fieldset>
+<div class="code-output"><pre><code class="code-result language-plaintext">RGB{N0f8}(0.392, 0.584, 0.929)</code></pre></div></fieldset>
 
 </div><p>If you inspect the HTML, you will see that the image displayed corresponds to a generated path that looks like</p>
 <pre><code class="plaintext">/assets/syntax/code/figs-html/__autofig_1682931969501726440.svg</code></pre>
@@ -1924,8 +1917,10 @@ x = range(0, pi, length=350)
 z = 0.2 * randn(length(x))
 y = @. sin(exp(x)) * sinc(x) + z
 plot(x, y)</code></pre>
-<div class="code-output"><img class="code-figure" src="/Xranklin.jl/assets/syntax/code_1/figs-html/__autofig_11451626263744098032.svg">
-</div><fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
+<div class="code-output"><pre><code class="code-stderr language-plaintext">ERROR: UndefVarError: `set` not defined in `Main.__FRANKLIN_1061450`
+Suggestion: check for spelling errors or missing imports.
+Stacktrace:
+</code></pre></div><fieldset class="note"><legend class="note-legend">⚠️ Note</legend>
 
 In order to show properly, the last object needs to be showable. With some
 libraries such as PyPlot this requires an additional command to retrieve the
@@ -1942,7 +1937,7 @@ df = DataFrame(
     gender = [&quot;M&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;]
   )
 )</code></pre>
-<div class="code-output"><div><div style = "float: left;"><span>4×3 DataFrame</span></div><div style = "clear: both;"></div></div><div class = "data-frame" style = "overflow-x: scroll;"><table class = "data-frame" style = "margin-bottom: 6px;"><thead><tr class = "header"><th class = "rowNumber" style = "font-weight: bold; text-align: right;">Row</th><th style = "text-align: left;">names</th><th style = "text-align: left;">age</th><th style = "text-align: left;">gender</th></tr><tr class = "subheader headerLastRow"><th class = "rowNumber" style = "font-weight: bold; text-align: right;"></th><th title = "String" style = "text-align: left;">String</th><th title = "Int64" style = "text-align: left;">Int64</th><th title = "String" style = "text-align: left;">String</th></tr></thead><tbody><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">1</td><td style = "text-align: left;">Vlad</td><td style = "text-align: right;">50</td><td style = "text-align: left;">M</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">2</td><td style = "text-align: left;">Martha</td><td style = "text-align: right;">34</td><td style = "text-align: left;">F</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">3</td><td style = "text-align: left;">Hasan</td><td style = "text-align: right;">23</td><td style = "text-align: left;">M</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">4</td><td style = "text-align: left;">Carl</td><td style = "text-align: right;">42</td><td style = "text-align: left;">M</td></tr></tbody></table></div></div><div class="lskip"> </div><h3 id="custom_show" ><a href="#custom_show"> Custom show</a></h3><p>If you have defined a custom <code>html_show(r)</code> in your <code>Utils</code> that accepts an object of the type
+<div class="code-output"><div><div style = "float: left;"><span>4×3 DataFrame</span></div><div style = "clear: both;"></div></div><div class = "data-frame" style = "overflow-x: scroll;"><table class = "data-frame" style = "margin-bottom: 6px;"><thead><tr class = "columnLabelRow"><th class = "stubheadLabel" style = "font-weight: bold; text-align: right;">Row</th><th style = "text-align: left;">names</th><th style = "text-align: left;">age</th><th style = "text-align: left;">gender</th></tr><tr class = "columnLabelRow"><th class = "stubheadLabel" style = "font-weight: bold; text-align: right;"></th><th title = "String" style = "text-align: left;">String</th><th title = "Int64" style = "text-align: left;">Int64</th><th title = "String" style = "text-align: left;">String</th></tr></thead><tbody><tr class = "dataRow"><td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td><td style = "text-align: left;">Vlad</td><td style = "text-align: right;">50</td><td style = "text-align: left;">M</td></tr><tr class = "dataRow"><td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td><td style = "text-align: left;">Martha</td><td style = "text-align: right;">34</td><td style = "text-align: left;">F</td></tr><tr class = "dataRow"><td class = "rowLabel" style = "font-weight: bold; text-align: right;">3</td><td style = "text-align: left;">Hasan</td><td style = "text-align: right;">23</td><td style = "text-align: left;">M</td></tr><tr class = "dataRow"><td class = "rowLabel" style = "font-weight: bold; text-align: right;">4</td><td style = "text-align: left;">Carl</td><td style = "text-align: right;">42</td><td style = "text-align: left;">M</td></tr></tbody></table></div></div><div class="lskip"> </div><h3 id="custom_show" ><a href="#custom_show"> Custom show</a></h3><p>If you have defined a custom <code>html_show(r)</code> in your <code>Utils</code> that accepts an object of the type
 of the result of a code block and returns a string, then that will be used to represent the
 result on the page.</p>
 <p>For instance in the <code>utils.jl</code> for the present website, we've defined</p>
@@ -2049,14 +2044,14 @@ sqrt(-1)
 
   <fieldset class="md-result"><legend class="md-result-legend">result</legend><pre><code class="julia">sqrt(-1)</code></pre>
 <div class="code-output"><pre><code class="code-stderr language-plaintext">ERROR: DomainError with -1.0:
-sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).
+sqrt was called with a negative real argument but will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).
 Stacktrace:
   [1] throw_complex_domainerror(f::Symbol, x::Float64)
     @ Base.Math ./math.jl:33
   [2] sqrt
-    @ ./math.jl:677 [inlined]
+    @ ./math.jl:627 [inlined]
   [3] sqrt(x::Int64)
-    @ Base.Math ./math.jl:1491
+    @ Base.Math ./math.jl:1546
 </code></pre></div></fieldset>
 
 </div>
