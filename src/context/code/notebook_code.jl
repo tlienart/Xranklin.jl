@@ -165,7 +165,7 @@ function _eval_code_cell(
     end
     code = String(take!(io))
 
-    # evaluate code 
+    # evaluate code
     res = eval_nb_cell(mdl, code; cell_name, repl_mode)
 
     # the return value may be suppressed so we extract it and check
@@ -182,7 +182,7 @@ function _eval_code_cell(
                 is_show = isa(lex, Expr) &&
                             length(lex.args) > 1 &&
                             lex.args[1] == Symbol("@show")
-    
+
                 is_show && (result = nothing)
             end
         end
@@ -213,7 +213,7 @@ end
 
 
 reformat_stderr(s)         = replace(s, r"Main\.__FRANKLIN_\d+\sstring" => "[Franklin]")
-has_ansi_escape_codes(s)   = occursin(r"\e\[[^m]*m", s)    
+has_ansi_escape_codes(s)   = occursin(r"\e\[[^m]*m", s)
 strip_ansi_escape_codes(s) = replace(s, r"\e\[[^m]*m" => "")
 function ansi(s)
     io = IOBuffer()
@@ -344,8 +344,8 @@ function append_result_html!(
     figshow = false
     Utils   = get_utils_module(lc)
 
-    if @invokelatest(isdefined(Utils, :html_show)) && hasmethod(Utils.html_show, (R,))
-        write(io, Utils.html_show(result))
+    if @invokelatest(isdefined(Utils, :html_show)) && hasmethod((@invokelatest getglobal(Utils, :html_show)), (R,))
+        write(io, Base.@invokelatest getglobal(Utils, :html_show)(result))
 
     elseif fig.save && hasmethod(Base.show, (IO, MIME"image/svg+xml", R))
         _write_img(result, fig.fpath * ".svg", MIME("image/svg+xml"))
@@ -393,8 +393,8 @@ function append_result_latex!(
 
     Utils = get_utils_module(lc)
 
-    if @invokelatest(isdefined(Utils, :latex_show)) && hasmethod(Utils.latex_show, (R,))
-        write(io, Utils.latex_show(result))
+    if @invokelatest(isdefined(Utils, :latex_show)) && hasmethod((@invokelatest getglobal(Utils, :latex_show)), (R,))
+        write(io, Base.@invokelatest getglobal(Utils, :latex_show)(result))
 
     elseif fig.save && hasmethod(Base.show, (IO, MIME"application/pdf", R))
         _write_img(result, fig.fpath * ".pdf", MIME("application/pdf"))
