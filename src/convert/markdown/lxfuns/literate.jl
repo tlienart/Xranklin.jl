@@ -146,7 +146,7 @@ function _process_literate_file(
             setenv!(:literate, true)
         end
     end
-    L = get_utils_module(lc).Literate
+    L = @invokelatest getglobal(get_utils_module(lc), :Literate)
 
     # check the version, we want a version after 2.9 as that's the one that
     # introduced the 4-backticks fence (as opposed to 3 earlier).
