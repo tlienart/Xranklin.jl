@@ -126,10 +126,11 @@ function full_pass(
             setvar!(gc, :project, Pkg.project().path)
         end
 
-        # always re-process config
+        # always re-process config and utils since a fresh GC was created
+        # above (Utils module is empty); utils_changed only determines
+        # whether we need to re-read the file vs. use the cached code
         process_config(gc)
-        # maybe re-process utils
-        utils_changed && process_utils(gc)
+        process_utils(gc)
 
         # reinstate independent code from backup
         for rp in keys(bk_indep_code)
@@ -436,7 +437,7 @@ function full_pass_markdown(
     all_to_trigger = Set{String}()
     for (_, lci) in gc.children_contexts
         union!(all_to_trigger, lci.to_trigger)
-    end    
+    end
     check_trigger = Dict(
         fp => skip_dict[fp] && (get_rpath(gc, joinpath(fp...)) in all_to_trigger)
         for (fp, _) in watched

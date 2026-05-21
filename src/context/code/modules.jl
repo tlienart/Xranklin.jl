@@ -233,7 +233,7 @@ function setup_var_module(gc::GlobalContext)
 end # setup_var_module(gc)
 
 function get_utils_module(gc::GlobalContext)
-    return gc.nb_vars.mdl.Utils
+    return @invokelatest getglobal(gc.nb_vars.mdl, :Utils)
 end
 get_utils_module(lc::LocalContext) = get_utils_module(lc.glob)
 
